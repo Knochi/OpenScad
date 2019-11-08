@@ -141,7 +141,6 @@ module slot() {
   
     slotGap = (slotStyle=="V-Slot") ? 5.68 : slotGap;
   
-  echo(slotGap);
     totalHeight = extrusionHeight / 2 - centerSquare / 2;
     difference() {
         translate([0,totalHeight / 2 + centerSquare / 2])
