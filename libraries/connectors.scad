@@ -1,7 +1,7 @@
 $fn=20;
 fudge=0.1;
 
-XH(8,true);
+*XH(8,true);
 module XH(pins,center=false){
   pitch=2.5;
   A=(pins-1)*2.5;
