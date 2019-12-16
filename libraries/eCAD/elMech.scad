@@ -4,6 +4,7 @@ heatsink([9,9,5],5,3.5);
 translate([12,0,0]) pushButton(col="red");
 translate([12,15,0]) pushButton(col="green");
 translate([12,30,0]) pushButton(col="white");
+translate([-15,0,0]) rotEncoder();
 
 module heatsink(dimensions, fins, sltDpth){
   finWdth=dimensions.x / (fins*2-1);
@@ -66,5 +67,38 @@ module KMR2(){
   //pads
   color("grey") for (i=([-1,1]),j=[-1,1]){
     translate([i*(4.6-0.5)/2,j*(2.2-0.6)/2,0.1/2]) cube([0.5,0.6,0.1],true);
+  }
+}
+
+module rotEncoder(diff="none",thick=3){
+  //SparkFun Rotary Encoder COM-10982 - https://www.sparkfun.com/products/10982
+  if (diff=="body"){
+    union(){
+      translate([0,0,-thick/2-fudge/2]){
+        rndRect(12.4+1,13.2+1,thick+fudge,1,0);
+        translate([0,0,0]) rndRect(11,15+1,thick+fudge,1,0);
+      }
+    }
+  }
+  else if (diff=="dome"){
+    translate([0,0,-thick/2-fudge/2]) cylinder(h=thick+fudge,d=9+1);
+  }
+  else{
+    union(){
+      color("darkgrey") translate([0,0,0])
+        hull() for (ix=[-1,1],iy=[-1,1])
+          translate([ix*(12-1)/2,iy*(13.2-1)/2,0]) cylinder(d=1,h=7.5);//rndRect(12,13.2,7.5,1,0); //base
+      color("grey") translate([-12.4/2,-11/2,fudge]) cube([12.4,11,7.5]);//base sheet
+      color("lightgrey") translate([0,0,7.5-fudge]) cylinder(h=7+fudge,d=9,$fn=100); //screw dome
+      color("white",0.5) translate([0,0,7.5+7.0-fudge]) cylinder(h=10.5, d=6); //handle
+      color("grey") //5pins on top
+        for (i=[-4.1:8.2/4:4.1]){
+          translate([i-0.8/2,7,-2.9]) cube([0.8,0.3,4.3]);
+        }
+      color("grey") //3 pins front
+        for (i=[-2.5:2.5:2.5]){
+          translate([i-0.9/2,-7.5,-2.8]) cube([0.9,0.3,7]);
+        }
+    }//union
   }
 }
