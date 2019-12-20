@@ -31,6 +31,34 @@ translate([160,0,0]) SDCard(showCard=true);
 translate([200,0,0]) tubeSocket9pinFlange();
 
 *rotate([0,0,-90]) femHeaderSMD(20,2,center=true);
+
+!PJ398SM();
+module PJ398SM(){
+  //vertical 3.5mm Jack Socket
+  //https://www.thonk.co.uk/shop/3-5mm-jacks/
+  bodyDims=[9,4.5+6,9];
+  difference(){
+    union(){
+      color("darkSlateGray") translate([0,(4.5+6)/2-4.5,9/2]) cube(bodyDims,true);
+      for (ix=[-1,1])
+        color("darkSlateGray") translate([ix*(5/2+1),0,bodyDims.z+1/2]) cube([1,6,1],true);
+      color("silver") translate([0,0,bodyDims.z+1/2]) cube([6,6,1],true);
+      color("silver") translate([0,0,bodyDims.z+1]) cylinder(d=6,h=4.5);
+    }
+    color("silver") translate([0,0,-fudge/2]) cylinder(d=3.6,h=14.5+fudge);
+  }
+  //pins  
+  translate([0,-3.38,-3.5/2]) color("silver") cube([1,0.1,3.5],true);
+  translate([0,4.92,-3.5/2]) color("silver") cube([1,0.1,3.5],true);
+  
+  color("silver") hull(){
+    translate([0,-6,7]) color("silver") 
+      rotate([0,90,0]) cylinder(d=0.1,h=0.8,center=true);
+    translate([0,-6.48,-3.5]) color("silver") 
+      rotate([0,90,0]) cylinder(d=0.1,h=0.8,center=true);
+  }
+}
+
 module femHeaderSMD(pins=10,rows=1,height=3.7,pPeg=true,center=false){
   pitch=2.54;
   pinDims=[0.64,2.5/2+0.2*2,0.2];
