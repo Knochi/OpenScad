@@ -33,6 +33,7 @@ function BEZ33(u) = pow(u,3);
 function PointAlongBez4(p0, p1, p2, p3, u) = 
 	BEZ03(u)*p0+BEZ13(u)*p1+BEZ23(u)*p2+BEZ33(u)*p3;
 // End public domain Bezier stuff
+
 function d2BEZ03(u) = 6*(1-u);
 function d2BEZ13(u) = 18*u-12;
 function d2BEZ23(u) = -18*u+6;
@@ -185,6 +186,7 @@ module BezierVisualize(p,precision=0.05,eps=0.00001,lineThickness=0.25,controlLi
     }
     p1 = DecodeSpecialBezierPoints(p);
     l = Bezier(p1,precision=precision,eps=eps);
+   
     for (i=[0:len(l)-2]) {
         hull() {
             translate(l[i]) point(lineThickness);
@@ -246,18 +248,24 @@ translate([-20,0,0])
 BezierVisualize([[0,0,10],[10,5,3],[10,10,20],[20,20,20],SYMMETRIC(),[0,0,8],[0,0,0]], lineThickness=1,nodeSize=2);
 
 translate([0,-15]) BezierVisualize([[0,0],/*C*/[5,0],/*C*/OFFSET([-5,0]),[10,10],REPEAT_MIRRORED([1,0]),REPEAT_MIRRORED([0,1]) ]);
+
 linear_extrude(height=5) {
-polygon(Bezier([[0,0],/*C*/[5,0],/*C*/SYMMETRIC(),[10,10],/*C*/[15,10],/*C*/OFFSET([-5,0]),[20,0]],precision=0.05));
+  polygon(Bezier([[0,0],/*C*/[5,0],/*C*/SYMMETRIC(),[10,10],/*C*/[15,10],/*C*/OFFSET([-5,0]),[20,0]],precision=0.05));
+
 translate([0,15])
-polygon(Bezier([[0,0],/*C*/[5,0],/*C*/SMOOTH_REL(2),[10,10],/*C*/[15,10],/*C*/POLAR(5,180),[20,0]],precision=0.05));
+  polygon(Bezier([[0,0],/*C*/[5,0],/*C*/SMOOTH_REL(2),[10,10],/*C*/[15,10],/*C*/POLAR(5,180),[20,0]],precision=0.05));
+  
 translate([0,30])
-polygon(Bezier([[0,0],/*C*/[5,0],/*C*/SMOOTH_ABS(1.5),[10,10],/*C*/[15,10],/*C*/OFFSET([-5,0]),[20,0]],precision=0.05));
+  polygon(Bezier([[0,0],/*C*/[5,0],/*C*/SMOOTH_ABS(1.5),[10,10],/*C*/[15,10],/*C*/OFFSET([-5,0]),[20,0]],precision=0.05));
+  
 translate([0,45])
-polygon(Bezier([[0,0],/*C*/[5,0],/*C*/SMOOTH_REL(-1),[10,10],/*C*/[15,10],/*C*/OFFSET([-5,0]),[20,0]],precision=0.05));
+  polygon(Bezier([[0,0],/*C*/[5,0],/*C*/SMOOTH_REL(-1),[10,10],/*C*/[15,10],/*C*/OFFSET([-5,0]),[20,0]],precision=0.05));
+  
 translate([0,60])
-polygon(Bezier([[0,0],/*C*/[5,0],/*C*/SMOOTH_ABS(-1),[10,10],/*C*/[15,10],/*C*/OFFSET([-5,0]),[20,0]],precision=0.05));
+  polygon(Bezier([[0,0],/*C*/[5,0],/*C*/SMOOTH_ABS(-1),[10,10],/*C*/[15,10],/*C*/OFFSET([-5,0]),[20,0]],precision=0.05));
+  
 translate([0,75])
-polygon(Bezier([[0,0],/*C*/LINE(),/*C*/LINE(),[10,10],/*C*/SHARP(),/*C*/OFFSET([-5,0]),[20,0]],precision=0.05));
+  polygon(Bezier([[0,0],/*C*/LINE(),/*C*/LINE(),[10,10],/*C*/SHARP(),/*C*/OFFSET([-5,0]),[20,0]],precision=0.05));
 }
 translate([0,-40])
 BezierVisualize(BezierSmoothPoints([[0,0],[10,10],[20,0]],closed=true,tension=0.25),precision=-.1);

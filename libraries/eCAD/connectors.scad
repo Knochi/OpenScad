@@ -25,7 +25,41 @@ translate([100,0,0]) DSub();
 translate([130,0,0]) BIL30(col="red",panel=2);
 translate([160,0,0]) SDCard(showCard=true);
 
-
+!miniFitJr();
+module miniFitJr(pins=8,rows=2,give2D="none"){
+  pitch=4.2;
+  A=(pins/rows-1)*pitch;
+  B=A+5.4;
+  C=A+10.8;
+  D=A+5.8;
+  
+  ovBdDims=[B,23.9,9.6];
+  cvtyDims=[4,10+fudge,4];
+  hookPoly=[[0,0],[3,0],[3,1.4],[2,1.4]];
+  
+  if (give2D=="cutOut")
+    union(){
+      square([C,5.6],true);
+      square([D,10],true);
+      translate([0,(11.6-10)/2]) square([4,11.6],true);
+    }
+  else
+    difference(){
+      union(){
+        cube(ovBdDims,true);
+        translate([0,(ovBdDims.y-1)/2,0]) cube([ovBdDims.x+2,1,ovBdDims.z+2],true);
+        for (ix=[-1,1],iz=[-1,1])
+          translate([ix*ovBdDims.x/2,(ovBdDims.y-11.9)/2,iz*ovBdDims.z/2]) cube([2,11.9,2],true);
+        translate([0,-ovBdDims.y/2,ovBdDims.z/2]) rotate([90,0,90]) 
+          linear_extrude(height=3.4,center=true) polygon(hookPoly);
+      }
+      for(ix=[-(pins/rows-1)/2:(pins/rows-1)/2],iz=[-(rows-1)/2:(rows-1)/2])
+        translate([ix*pitch,-(ovBdDims.y-cvtyDims.y)/2-fudge,iz*pitch]) cube(cvtyDims,true);
+      translate([0,(ovBdDims.y-1)/2,(ovBdDims.z+1+fudge)/2]) 
+        cube([4.6,1+fudge,1+fudge],true);
+    }
+  
+}
 
 *BIL30(give2D="");
 module BIL30(col="red",panel=2,give2D="none"){
