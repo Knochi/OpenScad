@@ -7,6 +7,10 @@
 // 5. "give2D" gives back different named 2D shapes for cutouts, drills etc
 // 6. Colors: don't use white and black, use ivory and darkSlateGrey instead for contrast reasons
 
+//--- CSG export to FreeCad --
+// 1. don't use linear_extrude(size). Use polyhedrons instead
+// 2. If you want to color sth. place the color before each primitive
+
 $fn=50;
 fudge=0.1;
 
@@ -17,61 +21,110 @@ usbA();
 translate([10,-4,0]) pinHeader(10,2);
 translate([10,4,0]) pinHeader(5,1);
 translate([10,8,0]) pinHeaderRA(10);
-translate([35,0,0]) duraClik(2);
-translate([35,10,0]) duraClikRA(2);
+translate([35,0,0]) duraClik(4);
+translate([35,10,0]) duraClikRA(4);
 translate([55,0,0]) ETH();
 translate([70,0,0]) screwTerminal(2,false);
 translate([100,0,0]) DSub();
 translate([130,0,0]) BIL30(col="red",panel=2);
 translate([160,0,0]) SDCard(showCard=true);
+translate([200,0,0]) tubeSocket9pinFlange();
 
-!miniFitJr();
-module miniFitJr(pins=8,rows=2,give2D="none"){
-  pitch=4.2;
-  A=(pins/rows-1)*pitch;
-  B=A+5.4;
-  C=A+10.8;
-  D=A+5.8;
-  
-  ovBdDims=[B,23.9,9.6];
-  cvtyDims=[4,10+fudge,4];
-  hookPoly=[[0,0],[3,0],[3,1.4],[2,1.4]];
-  
-  if (give2D=="cutOut")
+*rotate([0,0,-90]) femHeaderSMD(20,2,center=true);
+
+!PJ398SM();
+module PJ398SM(){
+  //vertical 3.5mm Jack Socket
+  //https://www.thonk.co.uk/shop/3-5mm-jacks/
+  bodyDims=[9,4.5+6,9];
+  difference(){
     union(){
-      square([C,5.6],true);
-      square([D,10],true);
-      translate([0,(11.6-10)/2]) square([4,11.6],true);
+      color("darkSlateGray") translate([0,(4.5+6)/2-4.5,9/2]) cube(bodyDims,true);
+      for (ix=[-1,1])
+        color("darkSlateGray") translate([ix*(5/2+1),0,bodyDims.z+1/2]) cube([1,6,1],true);
+      color("silver") translate([0,0,bodyDims.z+1/2]) cube([6,6,1],true);
+      color("silver") translate([0,0,bodyDims.z+1]) cylinder(d=6,h=4.5);
     }
-  else
-    difference(){
-      union(){
-        cube(ovBdDims,true);
-        translate([0,(ovBdDims.y-1)/2,0]) cube([ovBdDims.x+2,1,ovBdDims.z+2],true);
-        for (ix=[-1,1],iz=[-1,1])
-          translate([ix*ovBdDims.x/2,(ovBdDims.y-11.9)/2,iz*ovBdDims.z/2]) cube([2,11.9,2],true);
-        translate([0,-ovBdDims.y/2,ovBdDims.z/2]) rotate([90,0,90]) 
-          linear_extrude(height=3.4,center=true) polygon(hookPoly);
+    color("silver") translate([0,0,-fudge/2]) cylinder(d=3.6,h=14.5+fudge);
+  }
+  //pins
+  translate([0,-3.38,-3.5/2]) color("silver") cube([1,0.1,3.5],true);
+  translate([0,4.92,-3.5/2]) color("silver") cube([1,0.1,3.5],true);
+
+  color("silver") hull(){
+    translate([0,-6,7]) color("silver")
+      rotate([0,90,0]) cylinder(d=0.1,h=0.8,center=true);
+    translate([0,-6.48,-3.5]) color("silver")
+      rotate([0,90,0]) cylinder(d=0.1,h=0.8,center=true);
+  }
+}
+
+module femHeaderSMD(pins=10,rows=1,height=3.7,pPeg=true,center=false){
+  pitch=2.54;
+  pinDims=[0.64,2.5/2+0.2*2,0.2];
+  bdDims=[pins*2.54/rows,2.5*rows,height-pinDims.z];
+
+
+  cntrOffset= (center) ? [0,0,height/2+pinDims.z] : [(pins/rows-1)*pitch/2,pitch/2*(rows-1),height/2+pinDims.z] ;
+
+  translate(cntrOffset){
+
+        difference(){
+          color("darkslategrey") cube(bdDims,true);
+          translate([0,0,-(bdDims.z-pinDims.z)/2])
+            color("darkslategrey")
+              cube([bdDims.x+fudge,2*rows,pinDims.z+fudge],true);
+
+            if (rows==1) for (ix=[-(pins-1)/2:(pins-1)/2]){
+              translate([ix*pitch,0,0]) color("darkslategrey")
+                cube([0.7,0.7,bdDims.z+fudge],true);
+              translate([ix*pitch,0,(bdDims.z-1)/2]) mirror([0,0,1])
+                frustum(size=[2,2,1+fudge],flankAng=40, col="darkslategrey");
+            }
+            else for (ix=[-(pins/2-1)/2:(pins/2-1)/2],iy=[-1,1]){
+              translate([ix*pitch,iy*pitch/2,0]) color("darkslategrey")
+                cube([0.7,0.7,bdDims.z+fudge],true);
+              translate([ix*pitch,iy*pitch/2,(bdDims.z-1)/2]) mirror([0,0,1])
+                frustum(size=[2,2,1+fudge],flankAng=40, col="darkslategrey");
+            }
+          }
+
+    //pins
+    if (rows==1){
+        for (ix=[-(pins-1)/2:2:(pins-1)/2])
+          translate([ix*pitch,pinDims.y/2+1-pinDims.z*2,-(bdDims.z+pinDims.z)/2])
+            color("gold") cube(pinDims,true);
+        for (ix=[-(pins-3)/2:2:(pins-1)/2])
+          translate([ix*pitch,-(pinDims.y/2+1-pinDims.z*2),-(bdDims.z+pinDims.z)/2]) color("gold")
+            cube(pinDims,true);
       }
-      for(ix=[-(pins/rows-1)/2:(pins/rows-1)/2],iz=[-(rows-1)/2:(rows-1)/2])
-        translate([ix*pitch,-(ovBdDims.y-cvtyDims.y)/2-fudge,iz*pitch]) cube(cvtyDims,true);
-      translate([0,(ovBdDims.y-1)/2,(ovBdDims.z+1+fudge)/2]) 
-        cube([4.6,1+fudge,1+fudge],true);
+    else {
+        for (ix=[-(pins/2-1)/2:(pins/2-1)/2],iy=[-1,1])
+          translate([ix*pitch,iy*(pinDims.y/2+pitch/2+0.7),-(bdDims.z+pinDims.z)/2])
+            color("gold") cube(pinDims,true);
+        if (pPeg)
+          for (ix=[-1,1])
+            translate([-ix*((pins/2-2)*pitch)/2,0,-(bdDims.z/2+1.3)]){
+              color("darkSlateGrey") cylinder(d1=1.2,d2=1.6,h=0.2);
+              translate([0,0,0.2]) color("darkSlateGrey") cylinder(d=1.6,h=1.1+pinDims.z+fudge);
+            }
+
     }
-  
+
+  }//cntrOffset
 }
 
 *BIL30(give2D="");
 module BIL30(col="red",panel=2,give2D="none"){
   //4mm Jack
   //Hirschmann BIL30 (SKS-kontakt.de)
-  
+
   if (give2D=="cutOut")
     intersection(){
       circle(d=8.2);
       square([8.2+fudge,7.2],true);
     }
-  else translate([0,0,5]) 
+  else translate([0,0,5])
     mirror([0,0,1]){
     color(col) difference(){
       union(){
@@ -84,7 +137,7 @@ module BIL30(col="red",panel=2,give2D="none"){
       }
       translate([0,0,-fudge/2]) cylinder(d=4.5,h=18);
     }
-    
+
     color("silver") difference(){
       union(){
         translate([0,0,1]) cylinder(d=6,h=17.5);
@@ -99,7 +152,7 @@ module BIL30(col="red",panel=2,give2D="none"){
 
 module screwTerminal(pins=2,center=false){
   *translate([-(RM)/2,4.2,0]) rotate([90,0,0]) import("screwTerm.stl");
-  
+
   RM=5.08;
   ovDims=[RM*(pins-1)+RM+1,8,10];
   baseHght=6.3;
@@ -123,18 +176,18 @@ module screwTerminal(pins=2,center=false){
 *DSub(gender="male",give2D="cutOutBack");
 module DSub(pins=9, gender="female", give2D=false){
   // DIN 41652-1
-  
+
   //e.g. D-Sub 9 dims
   A=31.19; //sheet width
   E=12.93; //sheet height
-  
+
   Bm=16.79; //male inner
   Bf=16.46; //female outer
   C=25; //drill dist
   G=6.12; // thick
   bodyDims=[19.2,10.72,4.1]; //bodywidth
-  
-  
+
+
   //fixed Dims
   Dm=7.9;
   Df=8.02;
@@ -142,7 +195,7 @@ module DSub(pins=9, gender="female", give2D=false){
   rMale=2.62;
   rSheet=1;
   sheetThck=0.8;
-  
+
   if (give2D=="cutOutFront") { //CutOut for Front Mounted
     for (i=[-1,1])
       translate([i*C/2,0]) circle(d=3.1);
@@ -151,7 +204,7 @@ module DSub(pins=9, gender="female", give2D=false){
         translate([i*14.8/2,-8.81/2]) circle(2.11);
       }
   }
-  
+
   else if (give2D=="cutOutBack") { //CutOut for Front Mounted
     for (i=[-1,1])
       translate([i*C/2,0]) circle(d=3.1);
@@ -160,7 +213,7 @@ module DSub(pins=9, gender="female", give2D=false){
         translate([i*12.01/2,-3.96/2]) circle(3.35);
       }
   }
-  
+
   else {
     //sheet
     color("silver") difference(){
@@ -171,7 +224,7 @@ module DSub(pins=9, gender="female", give2D=false){
       for (i=[-1,1])
         translate([i*C/2,0,-sheetThck-fudge/2]) cylinder(d=3.05,h=sheetThck+fudge);
     }
-    
+
     //plug
     color("darkSlateGrey")
     if (gender=="female")
@@ -181,12 +234,12 @@ module DSub(pins=9, gender="female", give2D=false){
         rndTrapez([Bm+1.2,Dm+1.2,6],rMale+0.6);
         translate([0,0,fudge]) rndTrapez([Bm,Dm,6+fudge],rMale);
       } //else gender
-    
-    
+
+
     //body
     color("silver") translate([0,0,-bodyDims.z-sheetThck]) rndTrapez(bodyDims,rFem);
     } //else give2D
-    
+
   //submodule
   module rndTrapez(size=[],rad){
   xOffsetRad=tan(10)*(size.y-2*rad); //tan(alpha)=(GK/AK)
@@ -195,9 +248,9 @@ module DSub(pins=9, gender="female", give2D=false){
         translate([i*(size.x/2-rad),size.y/2-rad,0]) cylinder(r=rad,h=size.z);
         translate([i*(size.x/2-rad-xOffsetRad),-size.y/2+rad,0]) cylinder(r=rad,h=size.z);
       }
-    }  
+    }
   } //module
-  
+
 }
 
 module XH(pins,center=false){
@@ -224,7 +277,7 @@ module XH(pins,center=false){
       translate([(B-1)/2+fudge,-1,(-7-3.25)/2+7]) rotate([0,0,-90]) slotSide();
       translate([-(B-1)/2+-fudge,-1,(-7-3.25)/2+7]) rotate([0,0,-90]) slotSide();
     }
-  
+
   module slotFrnt(){
     translate([0,0,-(3.8-1.5)/2]) rotate([90,0,0]) cylinder(d=1.5,h=1,center=true);
     translate([-0.75/2,0,fudge/2]) cube([0.75,1,3.8+fudge],true);
@@ -257,7 +310,7 @@ module ETH(){
     translate([i*11.43/2,pinsYOffset,-3]) cylinder(d1=2,d2=3,h=1);
     color("silver") translate([i*15.49/2,pinsYOffset+3.05,-3/2]) cube([0.4,1,3],true);
   }
-  
+
 }
 
 
@@ -265,14 +318,14 @@ module usbA(){
   outerDims=[13.3,14,5.8]; //from Assmann/Wuerth
   innerDims=[12.5,8.88,5.12]; //from USB.org
   tongDims=[11.1,8.38,1.84]; //from usb.org
-  
+
   o2iOffset=[0,(outerDims.y-innerDims.y)/2,0];
   in2tngOffset=[0,(innerDims.y-tongDims.y)/2,tongDims.z/2];
-  
+
   bodyHght=6.9;
   shellZOffset=-outerDims.z/2+bodyHght;
   shellThick=0.3;
-  
+
   //sheet metal shell
   translate([0,0,shellZOffset]){
     rotate([90,0,0]) sheetBox([outerDims.x,outerDims.z,outerDims.y],shellThick,shellThick*2,inlay=outerDims.y-innerDims.y);
@@ -288,26 +341,26 @@ module usbA(){
   }
   //flanges
   color("silver"){
-  translate([0,-outerDims.y/2,bodyHght-outerDims.z-0.2]) 
+  translate([0,-outerDims.y/2,bodyHght-outerDims.z-0.2])
     rotate([90,0,-90]) flange(1,innerDims.x,shellThick);
-  translate([0,-outerDims.y/2,bodyHght+0.2]) 
+  translate([0,-outerDims.y/2,bodyHght+0.2])
     rotate([-90,0,-90]) flange(1,innerDims.x,shellThick);
-  translate([-outerDims.x/2-0.2,-outerDims.y/2,bodyHght-outerDims.z/2]) 
+  translate([-outerDims.x/2-0.2,-outerDims.y/2,bodyHght-outerDims.z/2])
     rotate([0,0,-90]) flange(1,innerDims.z,shellThick);
-  translate([outerDims.x/2+0.2,-outerDims.y/2,bodyHght-outerDims.z/2]) 
+  translate([outerDims.x/2+0.2,-outerDims.y/2,bodyHght-outerDims.z/2])
     rotate([0,0,180]) flange(1,innerDims.z,shellThick);
   }
-  
+
 }
 
 *pinHeader();
-module pinHeader(pins=10, rows=2,center=false, diff="none", thick=3+fudge, 
+module pinHeader(pins=10, rows=2,center=false, diff="none", thick=3+fudge,
        plugJmprCol=[]){
-  
+
   cntrOffset= center ? [-(pins-rows)/rows*2.54/2,-(rows-1)*2.54/2,0]:[0,0,0];
   pinLength=11.6;
   pinOffSet=1.53;
-  
+
   translate(cntrOffset){
     if (diff=="pins"){
       translate([(pins-1)*2.54/2,0,0]) rndRect(pins*2.54,2.54,thick,1.27,0);
@@ -321,7 +374,7 @@ module pinHeader(pins=10, rows=2,center=false, diff="none", thick=3+fudge,
         translate ([i*2.54,j*2.54,2.54/2]){
           color("DarkSlateGray")cube(2.54,true);
           color("gold") translate([0,0,pinOffSet]) cube([0.64,0.64,pinLength],true);
-          if (plugJmprCol[pinNo-1]) translate([0,0,2.54/2]) 
+          if (plugJmprCol[pinNo-1]) translate([0,0,2.54/2])
           jumperWire(plugJmprCol[pinNo-1]);
         }
       }
@@ -330,24 +383,24 @@ module pinHeader(pins=10, rows=2,center=false, diff="none", thick=3+fudge,
 }
 
 *pinHeaderRA(pins=10,rows=3,center=false);
-module pinHeaderRA(pins=10, rows=2,center=false, diff="none", thick=3+fudge, 
+module pinHeaderRA(pins=10, rows=2,center=false, diff="none", thick=3+fudge,
        plugJmprCol=[]){
   //Dimensions from MPE-Garry 088-2
-  
+
   B=6; //hor. pin Length
   C=3.3;//vert. pin Length
   W=3.9; //bodyPosition
   A=B+W; //first row to tip dist.
   RM=2.54;
-  
+
   pinSQ=0.64;
   bodyDims=[(pins/2)*RM,2.5,5];
   pinZOffset=(bodyDims.z-RM)/2;
-  
+
   cntrOffset= center ? [-(pins-rows)/rows*2.54/2,-(rows-1)*2.54/2,0]:[0,0,0];
   pinLength=11.6;
   pinOffSet=1.53;
-  
+
   translate(cntrOffset){
     if (diff=="pins"){
       translate([(pins-1)*2.54/2,0,0]) rndRect(pins*2.54,2.54,thick,1.27,0);
@@ -360,12 +413,12 @@ module pinHeaderRA(pins=10, rows=2,center=false, diff="none", thick=3+fudge,
         elev=(rows-j-1)*RM;
         pinNo=(i*rows+1)+j;
         //angled pin
-        color("gold") translate ([i*2.54,j*2.54,0]){ 
+        color("gold") translate ([i*2.54,j*2.54,0]){
           translate([-pinSQ/2,-pinSQ/2,-C]) cube([pinSQ,pinSQ,C+pinZOffset+elev]);//vertical Pins
           translate([-pinSQ/2,0,elev-pinSQ/2+pinZOffset]) cube([pinSQ,A+elev,pinSQ]); //horiz pins
           translate([0,0,2.54/4+elev-pinSQ+pinZOffset]) rotate([0,90,0]) cylinder(d=pinSQ,h=pinSQ,center=true);
         }
-        if (plugJmprCol[pinNo-1]) translate([i*2.54,W+2.5,elev+pinZOffset]) 
+        if (plugJmprCol[pinNo-1]) translate([i*2.54,W+2.5,elev+pinZOffset])
           rotate([-90,0,0]) jumperWire(plugJmprCol[pinNo-1]);
       }
       //body
@@ -377,8 +430,8 @@ module pinHeaderRA(pins=10, rows=2,center=false, diff="none", thick=3+fudge,
 module boxHeader(pins,center=false){
   fudge=0.1;
   RM=2.54;
-  
-  
+
+
   //Dimensions from WE PartNo: 612 0xx 216 21
   height=8.85;
   pinHght=11.5;
@@ -388,10 +441,10 @@ module boxHeader(pins,center=false){
   A=RM*(pins/2-1);//pin to pin distance
   B=RM*(pins/2)+7.66; //overall Width
   C=RM*(pins/2-1)+7.88; //inner Width
-  
-  
+
+
   cntrOffset= center ? 0 : [RM*(pins/2-1)/2,RM/2,0];
-  
+
   translate(cntrOffset){
     color("grey")
        difference(){
@@ -411,20 +464,20 @@ module boxHeader(pins,center=false){
 module duraClikRA(pos=2,diff="none"){
   //Molex DuraClik Right Angle
   A=4+2*pos; //ovWith
-  
+
   ovHght=6.4;
   baseHght=5.7;
   ovDpth=9.4;
   resess=[4,2.4+fudge,2.3+fudge];
   plug=[1+2*pos,5+fudge,4.7];
   plugZ=0.7;
-  
+
 
   translate([0,ovDpth/2,0])
   if (diff=="housing"){
     translate([0,0,ovHght/2]) cube([A+fudge,ovDpth+fudge,ovHght+fudge],true);
   }
-  
+
   else {
    color("Ivory")
     difference(){
@@ -446,21 +499,21 @@ module duraClik(pos=2,givePoly=false){
   B= (pos>2) ? 3.7+pos*2 : 8;
   C= (pos>6) ? pos*2-0.9 : (pos>2) ? pos*2 : 0;
   D= (pos>5) ? 11.8 : (pos>2) ? -0.2+2*pos : 6.3;
-  
+
   ovDpth=7.8;
-  
-  
+
+
   baseThck=3;
   scktThck=5.05;
   ovHght=baseThck+scktThck;
   resess=[4.3,1.6+fudge,7.2+fudge]; //resess
-  
+
   iLckDpth=3;
-  
+
   plug=[1+2*pos,4.7,5+fudge];
   plgY=2.3;
-  
-  
+
+
   if (givePoly) square([A,ovDpth],true);
   color("Ivory")
   difference(){
@@ -469,19 +522,19 @@ module duraClik(pos=2,givePoly=false){
       translate([0,0,baseThck+(scktThck/2)-fudge/2]) cube([B-2,ovDpth,scktThck+fudge],true); //socket
       translate([0,0,baseThck+(scktThck/2)-fudge/2]) cube([B,iLckDpth,scktThck+fudge],true); //flange
     }
-    translate([0,-(ovDpth-plug[1])/2+plgY,ovHght-plug[2]/2+fudge]) 
+    translate([0,-(ovDpth-plug[1])/2+plgY,ovHght-plug[2]/2+fudge])
       difference(){
         cube(plug,true); //plug
         translate([0,-plug[1]/2+0.24,plug[2]/2-0.5+fudge]) cube([1.8,0.5,1],true);
       }
     if (C) {
       translate([-C/2,-(ovDpth)/2-fudge,-fudge/2]) cube([(C-D)/2,2.3,scktThck+fudge]);
-      translate([D/2,-(ovDpth)/2-fudge,-fudge/2]) cube([(C-D)/2,2.3,scktThck+fudge]); 
+      translate([D/2,-(ovDpth)/2-fudge,-fudge/2]) cube([(C-D)/2,2.3,scktThck+fudge]);
     }
     else translate([0,-(ovDpth-resess[1])/2-fudge,resess[2]/2-fudge]) cube(resess,true); //resess
-  
+
   }
-  
+
 }
 
 *SDCard();
@@ -500,7 +553,7 @@ module SDCard(showCard=true){
 
 *jumperWire();
 module jumperWire(col="red",wireLen=5){
-  
+
   color("darkSlateGrey") difference(){
     translate([0,0,7]) cube([2.6,2.6,14],true);
     translate([0,0,14-3/2]) cube([2.4,2.4,3+fudge],true);
@@ -513,7 +566,7 @@ module jumperWire(col="red",wireLen=5){
 // metall sheet housing (e.g. for USB connector)
 module sheetBox(outer=[20,10,15], thick=0.5, radius=1, inlay=0, inlayCol="ivory"){
   inRad= ((radius-thick)<=0) ? 0.1 : radius-thick;
-  
+
   color("silver")
   translate([0,0,-outer.z/2])
     linear_extrude(outer.z)
@@ -524,7 +577,7 @@ module sheetBox(outer=[20,10,15], thick=0.5, radius=1, inlay=0, inlayCol="ivory"
         hull()
           for (i=[-1,1],j=[-1,1])
             translate([i*(outer.x/2-thick-inRad),j*(outer.y/2-thick-inRad)]) circle(inRad);
-        
+
         }
    color(inlayCol)
     translate([0,0,-outer.z/2])
@@ -536,9 +589,9 @@ module sheetBox(outer=[20,10,15], thick=0.5, radius=1, inlay=0, inlayCol="ivory"
 
 //quadPin(0.64,5);
 module quadPin(width=0.64,length,center=false){
-  
+
   zOffset= center ? 0 : length/2;
-  
+
   translate([0,0,zOffset]){
     cube([width,width,length-width],true);
     translate([0,0,(length-width)/2]) rotate(45) cylinder(d1=width*sqrt(2),d2=0.1,h=width/2,$fn=4);
@@ -547,7 +600,7 @@ module quadPin(width=0.64,length,center=false){
 }
 
 
-module flange(dia, length, thick){ 
+module flange(dia, length, thick){
   intersection(){
     translate([0,0,-length/2]) cube([dia,dia,length]);
     difference(){
@@ -577,51 +630,158 @@ module testJack4mm(hdCol="red"){
 
 
 
+*tubeSocket9Pin();
+
+module tubeSocket9Pin(){
+  //body
+  translate([0,0,3.5]) difference(){
+         union(){
+           color("tan") cylinder(d=18.3,h=8.5);
+           translate([0,0,12-2.8-1-3.5]) ring();
+         }
+        for (ir=[36*1.5:36:36*10])
+          rotate([0,0,ir]) translate([12/2,0,0]){
+            translate([0,-2.2/2,-fudge/2]) color("tan") cube([1.1,2.2,17.5-9+fudge]);
+            translate([0,0,+1]) color("tan") cylinder(d=2.2,h=17.5-10+fudge);
+          }
+      }
+
+  for (ir=[36*1.5:36:36*10])
+      color("silver") rotate([0,0,ir]) translate([10.5,0,0]) pin();
+
+  module ring(){
+    color("tan") rotate_extrude(){
+      translate([0,-1,0]) square([(22.8-2)/2,2]);
+      translate([(22.8-2)/2,0,0]) circle(d=2);
+    }
+  }
+
+  module pin(){
+    pinThck=0.2;
+    pinWdth=1.5;
+    translate([0,0,-3+pinWdth/2]) rotate([0,-90,0]){
+      cylinder(d=pinWdth,h=pinThck,center=true);
+      translate([(3-pinWdth/2)/2,0,0]) cube([3-pinWdth/2,pinWdth,pinThck],true);
+      translate([3.5/2+(3-pinWdth/2),0,0]) cube([3.5,2.6,pinThck],true);
+      hull(){
+        translate([6.5-pinWdth/2,0,0]) rotate([90,0,0]) cylinder(d=pinThck,h=2.7,center=true);
+        translate([6.5-pinWdth/2,0,(20-12-2.2)/2]) rotate([90,0,0]) cylinder(d=pinThck,h=2.7,center=true);
+      }
+    }
+  }
+
+}
+
+module tubeSocket9pinFlange(flange=true){
+
+  //https://www.tubesandmore.com/products/socket-9-pin-pc-mount
+  // without flange VT9-PT
+  //https://www.tubesandmore.com/sites/default/files/associated_files/p-st9-620.pdf
+
+  sheetThck=(19.5-18.3)/2;
+
+  translate([0,0,-3.2]){
+    //sheet metal
+      if (flange) translate([0,0,17.5-6.5]){
+          difference(){
+            color("grey") hull(){
+              for (ix=[-1,1])
+                translate([ix*28/2,0,0]) cylinder(d=34.8-28,h=sheetThck);
+                cylinder(d=23.2,h=sheetThck);
+            }
+            for (ix=[-1,1])
+                translate([ix*28/2,0,-fudge/2]) color("grey") cylinder(d=3.5,h=sheetThck+fudge);
+            color("grey") cylinder(d=18.3,h=sheetThck+fudge);
+        }
+
+
+        difference(){
+          intersection(){
+            translate([0,0,sheetThck])color("grey") cylinder(d=23.2,h=6.5-2);
+            color("grey") translate([0,0,(6.5-2+fudge)/2]) cube([19.6,23.2+fudge,6.5-2+fudge+sheetThck],center=true);
+          }
+          color("grey") translate([0,0,-fudge/2]) cylinder(d=18.3+fudge,h=6.5+fudge);
+        }
+      }
+    //plastic body
+
+      translate([0,0,9]) difference(){
+         color("tan") cylinder(d=18.3,h=17.5-9);
+        for (ir=[36*1.5:36:36*10])
+          rotate([0,0,ir]) translate([12/2,0,0]){
+            translate([0,-2.2/2,-fudge/2]) color("tan") cube([1.1,2.2,17.5-9+fudge]);
+            translate([0,0,+1]) color("tan") cylinder(d=2.2,h=17.5-10+fudge);
+          }
+      }
+
+    //pins
+    for (ir=[36*1.5:36:36*10])
+      color("silver") rotate([0,0,ir]) translate([10,0,0]) rotate([0,-90,0]) pin();
+  }
+
+  module pin(){
+    pinThck=0.2;
+
+    cylinder(d=1.6,h=pinThck,center=true);
+    translate([3.2/2,0,0]) cube([3.2,1.6,pinThck],true);
+    translate([3.2+(8-3.2)/2,0,0]) cube([8-3.2,2.7,pinThck],true);
+    hull(){
+      translate([3.2+(8-3.2),0,0]) rotate([90,0,0]) cylinder(d=pinThck,h=2.7,center=true);
+      translate([3.2+(8-3.2)+1-pinThck/2,0,(20-12-2.2)/2]) rotate([90,0,0]) cylinder(d=pinThck,h=2.7,center=true);
+    }
+  }
+
+}
+
+
+
+
+
 
 module mUSB(){
   //usb.org CabConn20.pdf
-  
+
   M= 6.9;   //Rece inside width
   N= 1.85;  //Rece inside Height -left/right
-  
+
   C= 3.5;   //Plastic width
   X= 0.6;   //plastic height
   U= 0.22;  //plastic from shell
   P= 0.48;  //Conntacst from plastic
-  
+
   Q= 5.4;   //shell inside bevel width
   R= 1.1;   //shell inside bevel height -left/right
-  
-  S= 4.75;  //Latch separation 
+
+  S= 4.75;  //Latch separation
   T= 0.6;   //Latch width -left/right
   V= 1.05;  //Latch recess
   W= 2.55;  //Latch recess
   Y= 0.56;  //Latch Height
   Z= 60;    //Latch Angle
-  
+
   H= 2.6;   //Pin1-5 separation
   I= 1.3;   //Pin2-4 separation
   conWdth= 0.37; //# contact width
-  
-  
+
+
   conThck= 0.1; //contact thickness
-  
+
   //JAE DX4R005J91
   r=0.25; //corner radius
   t=0.25; //sheet thickness
-  
+
   //flaps
   flpLngth=0.6;
   flpDimTop=[6.2,flpLngth,t];
   flpDimBot=[5.2,flpLngth,t];
   flpDimSide=[0.75,flpLngth,t];
-  
+
   flpAng=40;
-  
-  
+
+
   THT_OZ=-(5-1.8);
   legDim=[0.9,0.65-r/2,t];
-  
+
   translate([0,-THT_OZ,0]){
     //THT pins
     color("silver"){
@@ -631,9 +791,9 @@ module mUSB(){
             bend(size=legDim,radius=r,angle=-90,center=true)
               flap(legDim);
       }
-      translate([0,THT_OZ,t/2]) cube([6.45-r*2,0.9,t],true);  
+      translate([0,THT_OZ,t/2]) cube([6.45-r*2,0.9,t],true);
     }
-    
+
     //SMD pads
     padDim=[1,1,t];
     color("silver")
@@ -644,7 +804,7 @@ module mUSB(){
         translate([ix*(M+t)/2,-(padDim.x/2),1.1/2+t/2+r])
           cube([t,padDim.x,1.1-r],true);
       }
-      
+
     //SMD pins
       for (ix=[-H/2,-I/2,0,I/2,H/2]){
         color("gold")
@@ -653,11 +813,11 @@ module mUSB(){
             bend([conWdth,1-r,conThck],center=true,angle=90,radius=r)
               cube([conWdth,1-r,conThck],center=true);
         color("gold")
-        translate([ix,-W/2-1-t,-X+t+N-(conThck)/2]) 
-          cube([conWdth,W-fudge,conThck],true); 
+        translate([ix,-W/2-1-t,-X+t+N-(conThck)/2])
+          cube([conWdth,W-fudge,conThck],true);
      }
-   
-     
+
+
     //plastics
     color("darkSlateGrey")
       translate([0,-t,N/2+t])
@@ -666,9 +826,9 @@ module mUSB(){
             for (ix=[-1,1],iy=[-1,1])
               translate([ix*(M/2-r),iy*(N/2-r)]) cylinder(r=r-0.01, h=1);
     color("darkSlateGrey")
-       translate([0,-W/2-1-t,-X/2+t+N-U]) plastic();     
-          
-          
+       translate([0,-W/2-1-t,-X/2+t+N-U]) plastic();
+
+
     //metal-body with cutouts
     color("silver"){
       difference(){
@@ -695,16 +855,16 @@ module mUSB(){
               flap(flpDimSide);
     }
   }
-  
+
   module plastic(){
     difference(){
       cube([C,W,X],true);
       for (ix=[-H/2,-I/2,0,I/2,H/2])
-        translate([ix,0,-X/2+(X-P+conThck-fudge)/2]) 
-          cube([conWdth,W+fudge,X-P+conThck+fudge],true); 
+        translate([ix,0,-X/2+(X-P+conThck-fudge)/2])
+          cube([conWdth,W+fudge,X-P+conThck+fudge],true);
     }
   }
-  
+
   module shell(){
     translate([0,0,N-R/2+t])
       rotate([90,0,0]){
@@ -724,10 +884,10 @@ module mUSB(){
         translate([ix*(Q/2-r/2),-N+(R/2+r),0]) cylinder(r=radius,h=length);
     }
   }
- 
+
   module flap(size){
     hull() for (ix=[-1,1])
-      translate([ix*(size.x/2-r),size.y/2-r,0]) cylinder(r=r,h=size.z,center=true); 
+      translate([ix*(size.x/2-r),size.y/2-r,0]) cylinder(r=r,h=size.z,center=true);
     translate([0,-r/2,0]) cube([size.x,size.y-r,size.z],true);
   }
 }
@@ -747,20 +907,20 @@ module bend(size=[50,20,2],angle=45,radius=10,center=false, flatten=false){
   alpha=angle*PI/180; //convert in RAD
   strLngth=abs(radius*alpha);
   i = (angle<0) ? -1 : 1;
-  
-  
+
+
   bendOffset1= (center) ? [-size.z/2,0,0] : [-size.z,0,0];
   bendOffset2= (center) ? [0,0,-size.x/2] : [size.z/2,0,-size.x/2];
   bendOffset3= (center) ? [0,0,0] : [size.x/2,0,size.z/2];
-  
+
   childOffset1= (center) ? [0,size.y/2,0] : [0,0,size.z/2*i-size.z/2];
   childOffset2= (angle<0 && !center) ? [0,0,size.z] : [0,0,0]; //check
-  
-  flatOffsetChld= (center) ? [0,size.y/2+strLngth,0] : [0,strLngth,0];  
-  flatOffsetCb= (center) ? [0,strLngth/2,0] : [0,0,0];  
-  
+
+  flatOffsetChld= (center) ? [0,size.y/2+strLngth,0] : [0,strLngth,0];
+  flatOffsetCb= (center) ? [0,strLngth/2,0] : [0,0,0];
+
   angle=abs(angle);
-  
+
   if (flatten){
     translate(flatOffsetChld) children();
     translate(flatOffsetCb) cube([size.x,strLngth,size.z],center);
@@ -768,15 +928,47 @@ module bend(size=[50,20,2],angle=45,radius=10,center=false, flatten=false){
   else{
     //move child objects
     translate([0,0,i*radius]+childOffset2) //checked for cntr+/-, cntrN+
-      rotate([i*angle,0,0]) 
+      rotate([i*angle,0,0])
       translate([0,0,i*-radius]+childOffset1) //check
         children(0);
     //create bend object
-    
+
     translate(bendOffset3) //checked for cntr+/-, cntrN+/-
       rotate([0,i*90,0]) //re-orientate bend
        translate([-radius,0,0]+bendOffset2)
-        rotate_extrude(angle=angle) 
+        rotate_extrude(angle=angle)
           translate([radius,0,0]+bendOffset1) square([size.z,size.x]);
+  }
+}
+
+*frustum([3,2,0.9],method="poly");
+module frustum(size=[1,1,1], flankAng=5, center=false, method="poly", col="darkSlateGrey"){
+  //cube with a trapezoid crosssection
+  //https://en.wikibooks.org/wiki/OpenSCAD_User_Manual/Primitive_Solids#polyhedron
+  cntrOffset= (center) ? [0,0,-size.z/2] : [size.x/2,size.y/2,0];
+
+  flankRed=tan(flankAng)*size.z; //reduction in width by angle
+  faceScale=[(size.x-flankRed*2)/size.x,(size.y-flankRed*2)/size.y]; //scale factor for linExt
+
+  if (method=="linExt")
+    translate(cntrOffset)
+      linear_extrude(size.z,scale=faceScale)
+        square([size.x,size.y],true);
+  else{ //for export to FreeCAD/StepUp
+    polys= [[-size.x/2,-size.y/2,-size.z/2], //0
+            [ size.x/2,-size.y/2,-size.z/2], //1
+            [ size.x/2, size.y/2,-size.z/2], //2
+            [-size.x/2, size.y/2,-size.z/2],//3
+            [-(size.x/2-flankRed),-(size.y/2-flankRed),size.z/2], //4
+            [  size.x/2-flankRed ,-(size.y/2-flankRed),size.z/2], //5
+            [  size.x/2-flankRed , (size.y/2-flankRed),size.z/2], //5
+            [-(size.x/2-flankRed), (size.y/2-flankRed),size.z/2]]; //5
+    faces= [[0,1,2,3],  // bottom
+            [4,5,1,0],  // front
+            [7,6,5,4],  // top
+            [5,6,2,1],  // right
+            [6,7,3,2],  // back
+            [7,4,0,3]]; // left
+   color(col) polyhedron(polys,faces,convexity=2);
   }
 }

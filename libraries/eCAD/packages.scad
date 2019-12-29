@@ -1,4 +1,4 @@
-$fn=20;
+$fn=50;
 fudge=0.1;
 
 
@@ -14,8 +14,184 @@ translate([33,0,0]) sk6812mini();
 translate([37,0,0]) miniTOPLED();
 translate([40,0,0]) APA102();
 translate([45,0,0]) SMF();
+translate([50,0,0]) sumidaCR43();
 
 
+!ACT1210();
+module ACT1210(rad=0.06){
+  
+  spcng=0.25;
+  ovDim=[3.2,2.5,2.35]; //overall dimensions without solder bubbles
+  topDim=[3.2,2.5,0.7];
+  radDim=[-rad*2,-rad*2,-rad*2]; //reduce dim by radius
+  
+  
+  difference(){
+    translate([0,0,1.65+0.7/2]) 
+      color("darkSlateGrey") if (rad)  minkowski($fn=20){
+         cube(topDim+[-rad*2,-rad*2,-rad*2],true);
+         sphere(rad);
+      }
+      else
+        color("darkSlateGrey") cube(topDim,true);
+      translate([0,0,ovDim.z-0.05]) 
+      color("white") linear_extrude(0.1)  text("ACT1210",valign="center",halign="center",size=0.5);
+    }    
+    
+    body();
+
+  
+  coil();
+  translate([-1*(ovDim.x/2-0.1),1.2,0.75]) rotate([90,0,-90]) contact();                    // -1,+1,0,-1
+  translate([-1*(ovDim.x/2-0.1),-1*1.2,0.75]) mirror([0,1,0]) rotate([90,0,-90]) contact(); // -1,-1,1,-1
+  translate([1*(ovDim.x/2-0.1),-1*1.2,0.75]) mirror([0,0,0]) rotate([90,0,90]) contact();   // +1,-1,0,+1
+  translate([1*(ovDim.x/2-0.1),1*1.2,0.75]) mirror([0,1,0]) rotate([90,0,90]) contact();    // +1,+1,1,+1
+    
+  
+    
+  module contact(){
+    thck=0.1;
+    rad=0.05;
+    color("silver") rndRect([0.9,0.35,thck],rad);
+    translate([0.9-0.35,-0.6,0]) 
+      color("silver") cube([0.35,0.6+rad,thck]);
+    translate([0.9-0.35,-0.6,0]) 
+      mirror([0,1,0]) 
+        color("silver") bend(size=[0.35,0.46,thck],angle=-90,radius=0.15,center=false, flatten=false)
+          cube([0.35,0.46,thck]);
+    translate([0.9-0.35,-0.6-0.1/2,-0.46-0.1/2]) rotate([0,-90,90]) 
+      color("silver") bend([0.46,0.3,thck],-90,0.2) cube([0.46,0.3,thck]);
+  }  
+    
+  module coil(){
+    translate([0,0,0.7*1.5]) rotate([90,0,90]) color("salmon")rndRect([2.3,1.6-0.5,1.7],0.3,true);
+  }
+    
+  module body(){
+    bdDim=[0.7,2.5,1.4];
+    for (m=[0,1])
+    color("darkSlateGrey") mirror([m,0,0]) translate([(ovDim.x-bdDim.x)/2,0,bdDim.z/2+spcng]) 
+      difference(){
+        cube(bdDim,true);
+        for (iy=[-1,1]){
+          color("darkSlateGrey") 
+            translate([0,iy*(bdDim.y-0.5+fudge)/2,-(bdDim.z-0.4+fudge)/2]) 
+              cube([bdDim.x+fudge,0.5+fudge,0.4+fudge],true);
+          color("darkSlateGrey")
+            translate([(bdDim.x+fudge)/2,iy*(bdDim.y-1.1+fudge)/2,-(bdDim.z-1+fudge)/2])
+              cube([0.2+fudge,1.1+fudge,1+fudge],true);
+        }
+      }
+    //bar
+      color("darkSlateGrey") translate([0,0,0.7*1.5]) cube([ovDim.x-2*bdDim.x,bdDim.y-0.5,0.7],true);
+  }
+}
+
+
+*sumidaCR43();
+module sumidaCR43(){
+  ovDia=4.3;
+  ovHght=3.2;
+  coilDia=3.1;
+  
+  difference(){
+    coil();
+    color("white") translate([0,0,3.15]) linear_extrude(0.1) text("CR43",valign="center",halign="center",size=0.8);
+  }
+  
+  base();
+  for (m=[0,1]) mirror([m,0,0])
+  translate([1.7-0.3,0,0]) 
+    contact();
+  
+  
+  module contact(){
+    thck=0.15;
+    sgmnts=[[0.6,0.7,thck],[1.2-thck,0.5,thck],[thck,0.5,0.6-thck]]; //segment dims from center outward
+    
+    for (m=[0,1]) mirror([0,m,0]){
+      color("silver") translate([0,sgmnts[0].y/2,0.34-thck/2]) cube(sgmnts[0],true);
+      color("silver") translate([(sgmnts[1].x-sgmnts[0].x)/2,1.2+sgmnts[1].y/2,thck/2]) cube(sgmnts[1],true);
+      color("silver") translate([-sgmnts[0].x/2+sgmnts[1].x,1.2+sgmnts[1].y/2,thck/2]) 
+        rotate([90,0,0]) cylinder(d=thck,h=sgmnts[1].y,center=true);
+      color("silver") translate([-sgmnts[0].x/2+sgmnts[1].x,1.2+sgmnts[1].y/2,sgmnts[2].z/2+thck/2]) cube(sgmnts[2],true);
+      color("silver") translate([0,1.2,thck/2]) 
+        rotate([0,90,0]) cylinder(d=thck,h=sgmnts[0].x,center=true);
+      
+    }
+  }
+  
+  module coil(){
+    difference(){
+      intersection(){
+        union(){
+          color("darkslategrey") translate([0,0,0.5]) cylinder(d=ovDia,h=0.6);
+          color("salmon") translate([0,0,0.5+0.6]) cylinder(d=coilDia,h=1.5);
+          color("darkslategrey") translate([0,0,0.5+0.6+1.5]) cylinder(d=ovDia,h=0.6);
+        }
+         color("darkSlateGrey") translate([0,0,(ovHght+fudge)/2]) cube([ovDia+fudge,3.8,ovHght+fudge],true);
+      }
+      for (ix=[-1,1]){
+      color("darkslategrey") translate([ix*3.8/2,0,-fudge/2]) cylinder(d=0.6,h=ovHght+fudge);
+      color("darkslategrey") translate([ix*(3.8+0.6)/2,0,(ovHght)/2]) cube([0.6,0.6,ovHght+fudge],true);
+      }
+    }
+  }
+  
+  module base(){
+    ovDims=[4.5,3.9,0.45];
+    crnrRad=0.2;
+    
+    
+    translate([0,0,0.05]){
+    difference(){
+      union(){
+        difference(){
+          color("darkslategrey") translate([0,0,ovDims.z/2]) rndRect(ovDims+[-0.4,0,0],crnrRad,true);
+          for (ix=[-1,1])
+            color("darkslategrey") translate([ix*(ovDims.x-1)/2,0,ovDims.z/2]) cube([1+fudge,2,ovDims.z+fudge],true);
+        }
+      
+        for (iy=[0,1]) mirror([0,iy,0])
+          translate([0,-1,0]) difference(){
+            color("darkslategrey") translate([0,0,ovDims.z/2]) 
+              rndRect([ovDims.x,0.7*2,ovDims.z],crnrRad,true);
+            color("darkslategrey") translate([0,-0.7/2-fudge/2,ovDims.z/2]) 
+              cube([ovDims.x+fudge,0.7+fudge,ovDims.z+fudge],true);
+          }       
+      }
+    
+    for (i=[-1,1])
+      color("darkslategrey") translate([i*(ovDims.x+fudge)/2,0,-0.01]) 
+        rotate([90,0,-i*90]) linear_extrude(1.5) 
+          polygon([[-0.7,0],[-0.45,0.3],[0.45,0.3],[0.7,0]]);
+    }
+  }
+  }
+}
+
+
+*resRadial(power=5);
+module resRadial(type="SQM", power=5){
+  pitch=5;
+  dims= (power>2) ? (power>3) ? (power>5) ? (power>7) ? 
+        [13,9,51] : [13,9,39] : [13,9,25] :  [12,8,25] : [11,7,20]; 
+         //10W         7W           5W          3W           2W         
+  gapOffset=(dims.x-pitch-0.8)/2;
+  //body
+  color("ivory") difference(){
+    translate([0,0,dims.z/2]) cube(dims,true);
+    rotate([90,0,0])
+      translate([0,0,-(dims.y+fudge)/2]) linear_extrude(dims.y+fudge) 
+        polygon([[-dims.x/2-fudge,-fudge],
+                [-gapOffset,gapOffset],
+                [gapOffset,gapOffset],
+                [dims.x/2+fudge,-fudge]]);
+  }
+  //pins
+  color("silver") for (ix=[-1,1])
+    translate([ix*pitch/2,0,-3.5]) cylinder(d=0.8,h=3.5+gapOffset);
+}
 
 module LED5050(pins=6){
   // e.g. WS2812(B)
@@ -346,6 +522,63 @@ module SOT23(pins=3, label=""){
     
 }
 
+*potentiometer();
+module potentiometer(){
+  // taiwan alpha RV24AF
+  // http://www.taiwanalpha.com/downloads?target=products&id=104
+  dia=24;
+  //can
+  translate([0,-0.5,18]) rotate([-90,0,0])
+    rotate_extrude()
+      union(){
+        square([dia/2,5.5]);
+        translate([dia/2-2,5.5]) circle(d=4);
+        square([dia/2-2,7.5]);
+      }
+  //PCB
+  translate([0,-0.5/2,0]){
+    color("brown") translate([0,0,18]) rotate([90,0,0]) cylinder(r=12.4,h=1.5);
+    intersection(){
+      translate([0,0,14.5]) rotate([90,0,0]) color("brown") cylinder(r=13.5,h=1.5);
+      translate([0,-(1.5+fudge)/2,9]) color("brown") cube([19.1,1.5+fudge,18],true);
+    }
+  }
+  //pivot
+  translate([0,-1.5,18]){
+    rotate([90,0,0]) cylinder(d=10,h=2.7);
+    translate([0,-2.7,0]) rotate([90,0,0]) cylinder(d=8,h=6.5);
+    translate([0,-2.7-6.5,0]) rotate([90,0,0]) cylinder(d=6,h=15-6.5);
+  }
+  
+  for (im=[0,1])
+    mirror([im,0,0]) translate([-7.7,0,0]) pin();
+    translate([0,-2.5,0]) pin(straight);
+  
+  //pins
+  module pin(type="poly"){
+    hght=4;
+    rad=0.7;
+    thck=0.5;
+    
+    
+    translate([0,0,-4+1.4/2]) rotate([90,0,0]) cylinder(r=rad,h=thck,center=true);
+    if (type=="poly"){
+      translate([0,0,-(hght-rad)/2]) cube([rad*2,thck,hght-rad],true);
+      hull(){
+        translate([0,thck/2,0]) rotate([90,0,0]) linear_extrude(thck) 
+          polygon([[-1.9,0],[rad,0],[-1.9,2]]);
+        translate([0.45,0,3.17]) rotate([90,0,0]) cylinder(d=3.1,h=thck,center=true);
+      }
+    }
+    else{
+      translate([0,0,-(hght-rad-3.17)/2]) cube([rad*2,thck,hght+3.17-rad],true);
+      translate([0,0,3.17]) rotate([90,0,0]) cylinder(r=rad,h=thck,center=true);
+    }
+  }
+}
+
+
+// ---- helper modules ---
 *bendLeg();
 module bendLeg(){
   //from JEDEC MO-137E (SSOP)
@@ -444,5 +677,60 @@ module frustum(size=[1,1,1], flankAng=5, center=false, method="poly"){
             [6,7,3,2],  // back
             [7,4,0,3]]; // left
     polyhedron(polys,faces);
+  }
+}
+
+module rndRect(size=[5,5,2],rad=1,center=false){
+  cntrOffset= (center) ? [0,0,0] : [size.x/2,size.y/2,size.z/2];
+  translate(cntrOffset) hull() for (ix=[-1,1],iy=[-1,1])
+    translate([ix*(size.x/2-rad),iy*(size.y/2-rad),0]) cylinder(r=rad,h=size.z,center=true);
+}
+
+
+
+// bend modifier
+// bends an child object along the x-axis
+// size: size of the child object to be bend
+// angle: angle to bend the object, negative angles bend down
+// radius: bend radius, if center= false is measured on the outer if center=true is measured on the mid
+// center=true: bend relative to the childrens center
+// center=false: bend relative to the childrens lower left edge
+// flatten: calculates only the stretched length of the bend and adds a cube accordingly
+
+module bend(size=[50,20,2],angle=45,radius=10,center=false, flatten=false){
+  alpha=angle*PI/180; //convert in RAD
+  strLngth=abs(radius*alpha);
+  i = (angle<0) ? -1 : 1;
+  
+  
+  bendOffset1= (center) ? [-size.z/2,0,0] : [-size.z,0,0];
+  bendOffset2= (center) ? [0,0,-size.x/2] : [size.z/2,0,-size.x/2];
+  bendOffset3= (center) ? [0,0,0] : [size.x/2,0,size.z/2];
+  
+  childOffset1= (center) ? [0,size.y/2,0] : [0,0,size.z/2*i-size.z/2];
+  childOffset2= (angle<0 && !center) ? [0,0,size.z] : [0,0,0]; //check
+  
+  flatOffsetChld= (center) ? [0,size.y/2+strLngth,0] : [0,strLngth,0];  
+  flatOffsetCb= (center) ? [0,strLngth/2,0] : [0,0,0];  
+  
+  angle=abs(angle);
+  
+  if (flatten){
+    translate(flatOffsetChld) children();
+    translate(flatOffsetCb) cube([size.x,strLngth,size.z],center);
+  }
+  else{
+    //move child objects
+    translate([0,0,i*radius]+childOffset2) //checked for cntr+/-, cntrN+
+      rotate([i*angle,0,0]) 
+      translate([0,0,i*-radius]+childOffset1) //check
+        children();
+    //create bend object
+    
+    translate(bendOffset3) //checked for cntr+/-, cntrN+/-
+      rotate([0,i*90,0]) //re-orientate bend
+       translate([-radius,0,0]+bendOffset2)
+        rotate_extrude(angle=angle) 
+          translate([radius,0,0]+bendOffset1) square([size.z,size.x]);
   }
 }
