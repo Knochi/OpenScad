@@ -50,13 +50,21 @@ module PJ398SM(){
   //pins
   translate([0,-3.38,-3.5/2]) color("silver") cube([1,0.1,3.5],true);
   translate([0,4.92,-3.5/2]) color("silver") cube([1,0.1,3.5],true);
+  
+  *color("silver")
+  translate([0,-4.5,7]) rotate([0,-90,180]) rotate_extrude(angle=90) 
+    translate([6-4.5,0,0]) color("silver") square([0.1,0.8],true);
 
-  color("silver") hull(){
     translate([0,-6,7]) color("silver")
       rotate([0,90,0]) cylinder(d=0.1,h=0.8,center=true);
     translate([0,-6.48,-3.5]) color("silver")
       rotate([0,90,0]) cylinder(d=0.1,h=0.8,center=true);
-  }
+  
+    
+  alpha=atan(0.48/10.5);
+  lgLngth=sqrt(pow(0.48,2)+pow(10.5,2));
+  color("silver")
+  translate([-0.4,-6.48-0.1/2,-3.5]) rotate([-alpha,0,0]) cube([0.8,0.1,lgLngth]);
 }
 
 module femHeaderSMD(pins=10,rows=1,height=3.7,pPeg=true,center=false){
