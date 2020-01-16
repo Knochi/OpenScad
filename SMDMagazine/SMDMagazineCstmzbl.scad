@@ -1,8 +1,11 @@
+// Customizable Version of SMD Magazine by robin7331
+// https://www.thingiverse.com/thing:3952021
+
 $fn=50;
 
 /* [Dimensions] */
 width=15;
-slotThck=2;
+gap=2;
 
 /* [Advanced] */
 
@@ -18,7 +21,7 @@ module compliantMag(){
   ovDims=[31.5*2,65,width];
   minWallThck=2.5;
   d1=22;
-  d2=ovDims.y-minWallThck*2;
+  d2=60;
   d3=3;
   difference(){
     union(){
@@ -29,8 +32,17 @@ module compliantMag(){
         translate([0,ovDims.y/2,0]) cylinder(d=d2+3,h=ovDims.z-1);
         translate([-31.7+d3/2,60.6,-1]) cylinder(d=d3,h=width);
       }
-    translate([-27.4-d1/2,50.75,-1-fudge/2]) cylinder(d=d1,h=width+fudge);
-    translate([0,ovDims.y/2,0]) cylinder(d=d2,h=ovDims.z-1+fudge);
+    
+      *translate([-27.4-d1/2,50.75,-1-fudge/2]) cylinder(d=d1,h=width+fudge);
+      //center diameter
+      translate([0,ovDims.y/2,0]) cylinder(d=d2,h=ovDims.z-1+fudge);
+      //channel (sketch#2)
+      translate([0,ovDims.y-minWallThck-gap,0]) cube([ovDims.x/2+fudge,gap,ovDims.z-1+fudge]);
+      translate([ovDims.x/2-14,ovDims.y,0]) 
+        linear_extrude(ovDims.z-1+fudge) 
+          polygon([[fudge,fudge],[-3.5+fudge,fudge],[-6.5-fudge,-2.5-fudge],[-3-fudge,-2.5-fudge]]);
+      //hook (sketch#3)
+      
     }//diff
 }
 
