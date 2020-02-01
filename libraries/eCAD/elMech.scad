@@ -6,6 +6,28 @@ translate([12,15,0]) pushButton(col="green");
 translate([12,30,0]) pushButton(col="white");
 translate([-15,0,0]) rotEncoder();
 
+!SMDSwitch();
+module SMDSwitch(){
+  translate([0,0,1.4/2]) cube([6.7,2.6,1.4],true);
+  //pins
+  for (ix=[-1,1],iy=[-1,1])
+    color("silver") translate([ix*(6.7+0.5)/2,iy*(2.6-0.4)/2,0.15/2]) cube([0.5,0.4,0.15],true);
+  for (ix=[-1,1]){
+  color("silver") translate([ix*4.5/2,-(1.25+2.6)/2,0.15/2]) cube([0.4,1.25,0.15],true);
+  color("white") translate([ix*1.5/2,0,1.4+1.5/2]) cube([1.3,0.65,1.5],true);
+  }
+  
+  color("silver") translate([4.5/2-3,-(1.25+2.6)/2,0.15/2]) cube([0.4,1.25,0.15],true);
+  //stem
+  
+  //studs
+  for (ix=[-1,1])
+    translate([ix*3/2,0,0]){
+      translate([0,0,-0.3]) cylinder(d=0.75,h=0.3);
+      translate([0,0,-0.5]) cylinder(d1=0.4,d2=0.75,h=0.2);
+    }
+}
+
 module heatsink(dimensions, fins, sltDpth){
   finWdth=dimensions.x / (fins*2-1);
   bdyHght=dimensions.z - sltDpth;

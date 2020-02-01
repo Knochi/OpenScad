@@ -1,0 +1,27 @@
+{
+    "parameterSets": {
+        "Mag6x2": {
+            "$fn": "50",
+            "TFMStyle": "uShape",
+            "TFMType": "linear",
+            "coilThck": "2.5",
+            "coreLngth": "4",
+            "coreThck": "1",
+            "discThck": "0.5",
+            "fudge": "0.1",
+            "gap": "0.2",
+            "magDims": "[6, 7, 2]",
+            "magSpc": "2",
+            "rotorDia": "41",
+            "sheetThck": "0.2",
+            "showBody": "true",
+            "showCoil": "false",
+            "showIron": "false",
+            "showRotor": "false",
+            "showStator": "true",
+            "spcng": "0.2",
+            "teeth": "12"
+        }
+    },
+    "fileFormatVersion": "1"
+}
