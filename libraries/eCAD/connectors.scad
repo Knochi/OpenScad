@@ -16,7 +16,7 @@ fudge=0.1;
 
 
 translate([-30,0,0]) XH(2);
-translate([-15,0,0]) mUSB();
+translate([-15,0,0]) mUSB(true);
 usbA();
 translate([10,-4,0]) pinHeader(10,2);
 translate([10,4,0]) pinHeader(5,1);
@@ -524,6 +524,7 @@ module duraClik(pos=2,givePoly=false){
 
 
   if (givePoly) square([A,ovDpth],true);
+    
   color("Ivory")
   difference(){
     union(){
@@ -747,7 +748,7 @@ module tubeSocket9pinFlange(flange=true){
 
 
 
-module mUSB(){
+module mUSB(showPlug=false){
   //usb.org CabConn20.pdf
 
   M= 6.9;   //Rece inside width
@@ -862,9 +863,11 @@ module mUSB(){
           rotate([0,ix*-90,180])
             bend(flpDimSide,angle=flpAng,radius=r,center=true)
               flap(flpDimSide);
-    }
-  }
-
+    }//metalBody
+  }//assy
+  
+  if (showPlug) translate([0,-2.5-1.3,-2.7]) plug();
+    
   module plastic(){
     difference(){
       cube([C,W,X],true);
@@ -886,12 +889,20 @@ module mUSB(){
 
   //the usb shape
   module shape(radius=r,length=5){
-    hull(){
-      for (ix=[-1,1],iy=[-1,1])
-        translate([ix*(M/2-r),iy*(R/2-r),0]) cylinder(r=radius,h=length);
-      for (ix=[-1,1])
-        translate([ix*(Q/2-r/2),-N+(R/2+r),0]) cylinder(r=radius,h=length);
-    }
+    if (length)
+      hull(){
+        for (ix=[-1,1],iy=[-1,1])
+          translate([ix*(M/2-r),iy*(R/2-r)]) cylinder(r=radius,h=length);
+        for (ix=[-1,1])
+          translate([ix*(Q/2-r/2),-N+(R/2+r)]) cylinder(r=radius,h=length);
+      }
+    else
+     hull(){
+        for (ix=[-1,1],iy=[-1,1])
+          translate([ix*(M/2-r),iy*(R/2-r)]) circle(r=radius);
+        for (ix=[-1,1])
+          translate([ix*(Q/2-r/2),-N+(R/2+r)]) circle(r=radius);
+      } 
   }
 
   module flap(size){
@@ -899,9 +910,23 @@ module mUSB(){
       translate([ix*(size.x/2-r),size.y/2-r,0]) cylinder(r=r,h=size.z,center=true);
     translate([0,-r/2,0]) cube([size.x,size.y-r,size.z],true);
   }
+  
+  module plug(){
+    rad=0.9;
+    cham=2;
+    sze=[10.6,18.5,8.5];
+    poly=[[-sze.x/2,rad],[-sze.x/2,sze.z-cham],[-sze.x/2+cham,sze.z],
+          [sze.x/2-cham,sze.z],[sze.x/2,sze.z-cham],[sze.x/2,rad]];
+    rotate([90,0,0]) color("darkSlateGrey") linear_extrude(sze.y){
+      polygon(poly);
+      hull() for (ix=[-1,1]) translate([ix*(sze.x/2-rad),rad]) circle(rad);
+      }
+    translate([0,0,sze.z/2]) rotate([-90,180,0]) 
+      color("silver") linear_extrude(5.4) offset(-0.2) shape(0.4,0);
+  }
 }
 
-!BatteryHolder(true);
+*BatteryHolder(true);
 module BatteryHolder(showCoin=true){
   //linx BAT-HLD-001 https://linxtechnologies.com/wp/wp-content/uploads/bat-hld-001.pdf
   sheetThck=0.3;

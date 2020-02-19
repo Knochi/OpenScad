@@ -17,7 +17,7 @@ translate([45,0,0]) SMF();
 translate([50,0,0]) sumidaCR43();
 
 
-!ACT1210();
+*ACT1210();
 module ACT1210(rad=0.06){
   
   spcng=0.25;
@@ -191,6 +191,32 @@ module resRadial(type="SQM", power=5){
   //pins
   color("silver") for (ix=[-1,1])
     translate([ix*pitch/2,0,-3.5]) cylinder(d=0.8,h=3.5+gapOffset);
+}
+
+!LED_3mm();
+module LED_3mm(){
+  bdDia= 2.9;
+  bdHght= 4.6;
+  rngDia= 3.2;
+  ovHght= 5.1;
+  pitch= 2.54;
+  legLngth=[27,27-1.5];
+  
+  //body
+  color("white",0.7){
+    translate([0,0,ovHght-bdDia/2]) sphere(d=bdDia);
+    translate([0,0,ovHght-bdHght]){
+      cylinder(d=bdDia,h=bdHght-bdDia/2);
+      cylinder(d=rngDia,h=1);
+    }
+  }
+  
+  //legs
+  for (leg=[[-1,0],[1,1]]){
+    color("silver") translate([leg.x*pitch/2,0,-legLngth[leg[1]]/2+ovHght-bdHght]) 
+      cube([0.5,0.5,legLngth[leg[1]]],true); 
+    echo(leg);
+  }
 }
 
 module LED5050(pins=6){

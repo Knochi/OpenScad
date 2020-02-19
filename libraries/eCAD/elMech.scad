@@ -5,8 +5,42 @@ translate([12,0,0]) pushButton(col="red");
 translate([12,15,0]) pushButton(col="green");
 translate([12,30,0]) pushButton(col="white");
 translate([-15,0,0]) rotEncoder();
+translate([30,0,0]) SMDSwitch();
 
-!SMDSwitch();
+!AlphaPot();
+module AlphaPot(size=9, shaft="T18", vertical=true){
+  ovDim=[9.5,6.5+4.85,10];
+  yOffset=ovDim.y/2-6.5;
+  
+  
+  translate([0,yOffset,ovDim.z/2]) cube(ovDim,true);
+  translate([0,0,ovDim.z]) cylinder(d=7,h=5);
+  translate([0,0,ovDim.z]) shaft();
+  
+  module shaft(){
+    L=15;
+    F=7;
+    T=6;
+    M=1;
+    C1=0.5; //chamfer at Tip
+    C2=0.25; //chamfer at middle
+    dia=6;
+    difference(){
+      union(){
+        translate([0,0,L-C1]) cylinder(d1=dia,d2=dia-C1*2,h=C1);
+        translate([0,0,L-T+C2]) cylinder(d=dia,h=T-C1-C2);
+        translate([0,0,L-T]) cylinder(d1=dia-C2*2,d2=dia,h=C2);
+        translate([0,0,L-F]) cylinder(d=dia-C2*2,h=M);
+        translate([0,0,L-F-C2]) cylinder(d1=dia,d2=dia-C2*2,h=C2);
+        translate([0,0,5]) cylinder(d=dia,h=L-F-C2-5);
+      }
+      translate([0,0,L-F+(F+fudge)/2]) cube([dia+fudge,1,F+fudge],true);
+    }
+  }
+}
+
+
+*SMDSwitch();
 module SMDSwitch(){
   translate([0,0,1.4/2]) cube([6.7,2.6,1.4],true);
   //pins
