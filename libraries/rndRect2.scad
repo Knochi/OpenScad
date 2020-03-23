@@ -5,9 +5,12 @@
 */
 $fn=50;
 //rndRect(size=[50,100,3],3,2.1,false,"none","layer1",[0,0]);
-rndRect(size=[20,20,1],radius=3);
 
-module rndRect(size=[10,10,1],radius=1,drill=1,center=true,diff="none",label="none",drillOffset=[0,0]) {
+
+rndRect(size=[100+0.5,36+0.5,2],radius=1.25,drill=3,drillOffset=[3,3.5],center=false);
+
+ 
+module rndRect(size=[10,10,1],radius=1,drill=1,diff="none",label="none",drillOffset=[0,0],center=false) {
   fudge=0.1;
   //set radius to minimum if less then size.x or high
   dims = (size.y==undef) ? [size.x,size.x,size.x] : size;
@@ -15,8 +18,10 @@ module rndRect(size=[10,10,1],radius=1,drill=1,center=true,diff="none",label="no
   radius = (radius>(comp/2)) ?  comp/2 : radius; //set radius
   
   
-  cntrOffset = center ? [0,0,-size.z/2] : [size.x * 0.5,size.y *0.5,0];
-
+  cntrOffset = center ? [0,0,-size.z/2] : [size.x/2,size.y/2,0];
+  //cntrOffset = [0,0,-size.z/2];
+  echo(cntrOffset);
+  
   translate(cntrOffset){
     if (diff=="screws"){ //drill holes
       for (i=[-1,1]){ 
@@ -27,7 +32,7 @@ module rndRect(size=[10,10,1],radius=1,drill=1,center=true,diff="none",label="no
       }
     }//if screwheads
     
-    else if (drill>=radius*2){//if drill bigger than radius make screw Head cover
+    /*else if (drill>=radius*2){//if drill bigger than radius make screw Head cover
       difference(){
         translate([0,0,dims.z/2]) cube(dims,true); //base is cube
           for (i=[-1:2:1]){
@@ -49,7 +54,7 @@ module rndRect(size=[10,10,1],radius=1,drill=1,center=true,diff="none",label="no
             }
           }
         }//diff
-    }//else
+    }//else*/
     
     else { //make rounded plate with screw holes
       difference(){

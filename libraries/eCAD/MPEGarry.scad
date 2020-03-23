@@ -1,6 +1,7 @@
 /* Library for MPE-Garry Connectors */
 fudge=0.1;
 
+$fn=20;
 //demo
 MPE_192(6);
 translate([10,0,0]) MPE_196(6);
@@ -10,6 +11,46 @@ translate([20,-20,0]) MPE_098(pins=12,variant=3);
 translate([20,-30,0]) MPE_098(pins=6,variant=4);
 translate([20,-40,0]) MPE_098(pins=6,variant=5);
 translate([20,-50,0]) MPE_098(pins=12,variant=6);
+
+
+!MPE_204();
+module MPE_204(pins=6,variant=1,center=false){
+  //MPW Garry 1.27mm pitch horizontal female header Series 204
+  bdDims=[4.1,pins*1.27+0.41,2.2];
+  cntrOffset = 1;
+  pinDia=0.44;
+  holeDia=0.51;
+  pinLngth=3; //Lngth under PCB
+  rad=0.5;
+  bdOffset=[-4.1+5.3,-bdDims.y+(0.41+1.27)/2,0];
+  //body
+  difference(){
+    color("darkSlateGrey") translate(bdOffset) cube(bdDims);
+    color("darkSlateGrey") translate(bdOffset+[-fudge,-fudge/2,(bdDims.z-1.7)/2]) 
+      cube([0.3+fudge,bdDims.y+fudge,1.7]);
+    for (iy=[0:pins-1])
+      color("darkSlateGrey") translate([bdOffset.x,iy*-1.27,bdDims.z/2])
+        rotate([0,90,0]){ 
+          cylinder(d=holeDia,h=bdDims.x+fudge);
+          translate([0,0,bdDims.x-(1-holeDia)/2+fudge]) cylinder(d2=1+fudge*2,d1=holeDia,h=(1-holeDia+fudge)/2);
+      }
+  }
+  
+  for (iy=[0:pins-1])
+    translate([0,iy*-1.27,0]) pin();
+  
+  module pin(){
+    color("gold") translate([0,0,-pinLngth+pinDia/2]){
+      sphere(d=pinDia);
+      cylinder(d=pinDia,h=pinLngth+bdDims.z/2-rad-pinDia/2);
+    }
+    color("gold") translate([rad,0,bdDims.z/2-rad]) 
+      rotate([90,0,180]) rotate_extrude(angle=90) translate([rad,0,0]) circle(d=pinDia);
+    color("gold") translate([rad,0,bdDims.z/2]) rotate([0,90,0]) cylinder(d=pinDia,h=bdOffset.x+0.3-rad);
+    color("gold") translate([bdOffset.x+0.3,0,bdDims.z/2]) rotate([0,-90,0]) cylinder(d2=pinDia,d1=1,h=(1-pinDia)/2);
+  }
+  
+}
 
 module MPE_192(pins,cntrX=false,diff="none"){
   
@@ -25,7 +66,7 @@ module MPE_192(pins,cntrX=false,diff="none"){
   translate(cntrOffset){
   if (diff=="none"){
    
-      color("darkgrey") cube([bdyWdth,bdyDpth,bdyHght]);
+      color("darkSlateGrey") cube([bdyWdth,bdyDpth,bdyHght]);
       for (i=[(1.27+0.41)/2:1.27:pins*1.27]){//pins
         color("gold") union(){
           translate([i,3.4,bdyHght/2]) rotate([90,0,0]) cylinder(h=6.4,d=pinDia);//horizontal
@@ -59,7 +100,7 @@ module MPE_196(pins,cntrX=false,diff="none"){
   translate(cntrOffset){
   if (diff=="none"){
    
-      color("darkgrey") cube([bdyWdth,bdyDpth,bdyHght]);
+      color("darkSlateGrey") cube([bdyWdth,bdyDpth,bdyHght]);
       for (i=[(1.27+0.41)/2:1.27:pins*1.27]){//pins
         color("gold") union(){
           translate([i,3.4-0.7,bdyHght/2]) rotate([90,0,0]) cylinder(h=6.4-0.7,d=pinDia);//horizontal
@@ -109,7 +150,7 @@ module MPE_094(pins, center=false, diff="none", thick=8.5){ //receptable housing
     }
     else {
       difference(){
-        color("darkgrey") cube([2.54*(pins/2)+0.5,5.08,8.5]);
+        color("darkSlateGrey") cube([2.54*(pins/2)+0.5,5.08,8.5]);
         for (i=[0:2.54:(pins/2-1)*2.54],j=[1.27,1.27+2.54]){
           translate([i+1.27+0.25-holeX/2,j-holeY/2,-fudge/2+2]) cube([holeX,holeY,6.5+fudge]);
         }
@@ -125,8 +166,8 @@ module MPE_094(pins, center=false, diff="none", thick=8.5){ //receptable housing
 
 
 
-
-module MPE_098(pins,center=false,variant=1,diff="none"){
+*rotate(-90) MPE_098(20,3,true,center=true);
+module MPE_098(pins,variant=1,peg=false,diff="none",center=false){
   //-- variations --
   //single row, low profile (3.7mm)      - 1,2 (Pin Layout 1,2)
   //dual row, low profile                - 3
@@ -138,58 +179,159 @@ module MPE_098(pins,center=false,variant=1,diff="none"){
   
   cntrOffset = center ? [-pins/(2*rows)*2.54,-1.25*rows,0] : [-1.27,-1.25,0];
 
-  holeX=0.7;
-  holeY=0.7;
+  holeX=0.9;
+  holeY=0.9;
   drill=1.2;
+  frstm=1.7;
+  gap= (rows>1) ? 4.4 : 1.7;
+  pegDist=(pins/2-2)*2.54;
   
   pinWdth=0.64;
-  pinLen=(4.5-holeX)/2;
+  pinLen= (rows>1) ? (4.65-holeX)/2 : (4.5-holeX)/2;
   
   translate(cntrOffset){
     if (diff=="none"){
-      color("darkgrey")
       difference(){
-        translate([0,0,0.2]) cube([pins*2.54/rows,2.5*rows,bdHght]);
+        color("darkSlateGrey") translate([0,0,0.2]) cube([pins*2.54/rows,2.5*rows,bdHght]);
+        color("darkSlateGrey") translate([-fudge/2,((2.5*rows)-gap)/2,0]) cube([pins*2.54/rows+fudge,gap,0.5]);
         
         if (rows==1){
           for (i=[0:2.54:(pins-1)*2.54]){
-            translate([i+1.27,1.25,(bdHght+0.2-fudge)/2+0.2]) cube([holeX,holeY,bdHght+0.2],true);
-          }
+            color("darkSlateGrey") translate([i+1.27,1.25,(bdHght+0.2-fudge)/2+0.2]) cube([holeX,holeY,bdHght+0.2],true);
+            translate([i+1.27,1.25,bdHght]) mirror([0,0,1]) frustum([frstm+fudge,frstm+fudge,0.6],45);
+            }
         }
         else {
           for (r=[-1.27,+1.27]){ //row
-            for (c=[0:2.54:(pins-1)*2.54]){ //column
-              translate([c+1.27,2.5+r,(bdHght+0.2-fudge)/2+0.2]) cube([holeX,holeY,bdHght+0.2],true);
+            for (c=[0:2.54:(pins-1)/2*2.54]){ //column
+              color("darkSlateGrey") translate([c+1.27,2.5+r,(bdHght+0.2-fudge)/2+0.2]) cube([holeX,holeY,bdHght+0.2],true);
+              translate([c+1.27,2.5+r,bdHght]) mirror([0,0,1]) frustum([frstm+fudge,frstm+fudge,0.6],45);
             }
           }
         }
       
       }//difference
       
+      //pins
       if (rows == 1){
-        color("gold")
+        
         for (i=[0:2.54*2:(pins-1)*2.54]){
-          translate([i-pinWdth/2+1.27,1.25+holeY/2,0]) cube([pinWdth,pinLen,0.2]);
+          translate([i-pinWdth/2+1.27,1.25+holeY/2,0]) pin();
         }
         color("gold")
         for (i=[2.54:2.54*2:(pins-1)*2.54]){
-          translate([i-pinWdth/2+1.27,+1.25-holeY/2-pinLen,0]) cube([pinWdth,pinLen,0.2]);
+          translate([i-pinWdth/2+1.27,+1.25-holeY/2,0]) mirror([0,1,0]) pin();
         }
       }
-      else{
+      else{ //two rows
         color("gold")
-        for (r=[-pinLen+2.5-1.27-holeY/2,2.5+1.27+holeY/2]){
-          for (c=[0:2.54:(pins-1)*2.54/2]){
-            translate([c-pinWdth/2+1.27,r,0]) cube([pinWdth,pinLen,0.2]);
+        for (ix=[0:2.54:(pins-1)*2.54/2],iy=[-1,1]){
+            translate([ix-pinWdth/2+1.27,2.5+iy*(+1.27+holeY/2),0]) mirror([0,1-iy,0]) pin(); //cube([pinWdth,pinLen,0.2]);
           }
-        }
+        
       }
-      
-    } //if none
+      //pegs
+      if ((peg)&&(rows>1))
+        for (ix=[2.54,2.54+pegDist]){
+          color("darkslateGrey") translate([ix,2.54,-0.8]) cylinder(d=1.6,h=1.3);
+        color("darkslateGrey") translate([ix,2.54,-1.1]) cylinder(d1=1.6-0.3,d2=1.6,h=0.3);
+        }
+    } // none
+    
     else if (diff=="drill"){
       for (i=[0:2.54:(pins-1)*2.54]){
           #translate([i+1.27,1.25,-thick+fudge/2]) cylinder(h=thick,d=drill);
       }
     }// if drill
   }
+  
+  module pin(){
+    rad=0.5;
+    //cube([pinWdth,pinLen,0.2]);
+    color("gold") translate([0,0,rad]) rotate([-90,0,0]) bend([pinWdth,pinLen,0.2],90,rad) cube([pinWdth,pinLen-rad,0.2]);
+  }
 }
+
+
+// ---- helpers ---
+
+// bend modifier
+// bends an child object along the x-axis
+// size: size of the child object to be bend
+// angle: angle to bend the object, negative angles bend down
+// radius: bend radius, if center= false is measured on the outer if center=true is measured on the mid
+// center=true: bend relative to the childrens center
+// center=false: bend relative to the childrens lower left edge
+// flatten: calculates only the stretched length of the bend and adds a cube accordingly
+
+
+module bend(size=[50,20,2],angle=45,radius=10,center=false, flatten=false){
+  alpha=angle*PI/180; //convert in RAD
+  strLngth=abs(radius*alpha);
+  i = (angle<0) ? -1 : 1;
+
+
+  bendOffset1= (center) ? [-size.z/2,0,0] : [-size.z,0,0];
+  bendOffset2= (center) ? [0,0,-size.x/2] : [size.z/2,0,-size.x/2];
+  bendOffset3= (center) ? [0,0,0] : [size.x/2,0,size.z/2];
+
+  childOffset1= (center) ? [0,size.y/2,0] : [0,0,size.z/2*i-size.z/2];
+  childOffset2= (angle<0 && !center) ? [0,0,size.z] : [0,0,0]; //check
+
+  flatOffsetChld= (center) ? [0,size.y/2+strLngth,0] : [0,strLngth,0];
+  flatOffsetCb= (center) ? [0,strLngth/2,0] : [0,0,0];
+
+  angle=abs(angle);
+
+  if (flatten){
+    translate(flatOffsetChld) children();
+    translate(flatOffsetCb) cube([size.x,strLngth,size.z],center);
+  }
+  else{
+    //move child objects
+    translate([0,0,i*radius]+childOffset2) //checked for cntr+/-, cntrN+
+      rotate([i*angle,0,0])
+      translate([0,0,i*-radius]+childOffset1) //check
+        children(0);
+    //create bend object
+
+    translate(bendOffset3) //checked for cntr+/-, cntrN+/-
+      rotate([0,i*90,0]) //re-orientate bend
+       translate([-radius,0,0]+bendOffset2)
+        rotate_extrude(angle=angle)
+          translate([radius,0,0]+bendOffset1) square([size.z,size.x]);
+  }
+}
+
+*frustum([3,2,0.9],method="poly");
+module frustum(size=[1,1,1], flankAng=5, center=false, method="poly", col="darkSlateGrey"){
+  //cube with a trapezoid crosssection
+  //https://en.wikibooks.org/wiki/OpenSCAD_User_Manual/Primitive_Solids#polyhedron
+  cntrOffset= (center) ? [0,0,-size.z/2] : [size.x/2,size.y/2,0];
+
+  flankRed=tan(flankAng)*size.z; //reduction in width by angle
+  faceScale=[(size.x-flankRed*2)/size.x,(size.y-flankRed*2)/size.y]; //scale factor for linExt method only
+
+  if (method=="linExt")
+    translate(cntrOffset)
+      linear_extrude(size.z,scale=faceScale)
+        square([size.x,size.y],true);
+  else{ //for export to FreeCAD/StepUp
+    polys= [[-size.x/2,-size.y/2,-size.z/2], //0
+            [ size.x/2,-size.y/2,-size.z/2], //1
+            [ size.x/2, size.y/2,-size.z/2], //2
+            [-size.x/2, size.y/2,-size.z/2],//3
+            [-(size.x/2-flankRed),-(size.y/2-flankRed),size.z/2], //4
+            [  size.x/2-flankRed ,-(size.y/2-flankRed),size.z/2], //5
+            [  size.x/2-flankRed , (size.y/2-flankRed),size.z/2], //5
+            [-(size.x/2-flankRed), (size.y/2-flankRed),size.z/2]]; //5
+    faces= [[0,1,2,3],  // bottom
+            [4,5,1,0],  // front
+            [7,6,5,4],  // top
+            [5,6,2,1],  // right
+            [6,7,3,2],  // back
+            [7,4,0,3]]; // left
+   color(col) polyhedron(polys,faces,convexity=2);
+  }
+}
+
