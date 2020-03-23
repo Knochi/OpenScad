@@ -5,6 +5,62 @@ translate([12,0,0]) pushButton(col="red");
 translate([12,15,0]) pushButton(col="green");
 translate([12,30,0]) pushButton(col="white");
 translate([-15,0,0]) rotEncoder();
+translate([30,0,0]) SMDSwitch();
+
+!AlphaPot();
+module AlphaPot(size=9, shaft="T18", vertical=true){
+  ovDim=[9.5,6.5+4.85,10];
+  yOffset=ovDim.y/2-6.5;
+  
+  
+  translate([0,yOffset,ovDim.z/2]) cube(ovDim,true);
+  translate([0,0,ovDim.z]) cylinder(d=7,h=5);
+  translate([0,0,ovDim.z]) shaft();
+  
+  module shaft(){
+    L=15;
+    F=7;
+    T=6;
+    M=1;
+    C1=0.5; //chamfer at Tip
+    C2=0.25; //chamfer at middle
+    dia=6;
+    difference(){
+      union(){
+        translate([0,0,L-C1]) cylinder(d1=dia,d2=dia-C1*2,h=C1);
+        translate([0,0,L-T+C2]) cylinder(d=dia,h=T-C1-C2);
+        translate([0,0,L-T]) cylinder(d1=dia-C2*2,d2=dia,h=C2);
+        translate([0,0,L-F]) cylinder(d=dia-C2*2,h=M);
+        translate([0,0,L-F-C2]) cylinder(d1=dia,d2=dia-C2*2,h=C2);
+        translate([0,0,5]) cylinder(d=dia,h=L-F-C2-5);
+      }
+      translate([0,0,L-F+(F+fudge)/2]) cube([dia+fudge,1,F+fudge],true);
+    }
+  }
+}
+
+
+*SMDSwitch();
+module SMDSwitch(){
+  translate([0,0,1.4/2]) cube([6.7,2.6,1.4],true);
+  //pins
+  for (ix=[-1,1],iy=[-1,1])
+    color("silver") translate([ix*(6.7+0.5)/2,iy*(2.6-0.4)/2,0.15/2]) cube([0.5,0.4,0.15],true);
+  for (ix=[-1,1]){
+  color("silver") translate([ix*4.5/2,-(1.25+2.6)/2,0.15/2]) cube([0.4,1.25,0.15],true);
+  color("white") translate([ix*1.5/2,0,1.4+1.5/2]) cube([1.3,0.65,1.5],true);
+  }
+  
+  color("silver") translate([4.5/2-3,-(1.25+2.6)/2,0.15/2]) cube([0.4,1.25,0.15],true);
+  //stem
+  
+  //studs
+  for (ix=[-1,1])
+    translate([ix*3/2,0,0]){
+      translate([0,0,-0.3]) cylinder(d=0.75,h=0.3);
+      translate([0,0,-0.5]) cylinder(d1=0.4,d2=0.75,h=0.2);
+    }
+}
 
 !Button_1188E();
 module Button_1188E(){

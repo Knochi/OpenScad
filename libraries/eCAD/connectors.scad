@@ -16,7 +16,7 @@ fudge=0.1;
 
 
 translate([-30,0,0]) XH(2);
-translate([-15,0,0]) mUSB();
+translate([-15,0,0]) mUSB(true);
 usbA();
 translate([10,-4,0]) pinHeader(10,2);
 translate([10,4,0]) pinHeader(5,1);
@@ -29,10 +29,11 @@ translate([100,0,0]) DSub();
 translate([130,0,0]) BIL30(col="red",panel=2);
 translate([160,0,0]) SDCard(showCard=true);
 translate([200,0,0]) tubeSocket9pinFlange();
+translate([230,0,0]) PJ398SM();
 
 *rotate([0,0,-90]) femHeaderSMD(20,2,center=true);
 
-!PJ398SM();
+*PJ398SM();
 module PJ398SM(){
   //vertical 3.5mm Jack Socket
   //https://www.thonk.co.uk/shop/3-5mm-jacks/
@@ -523,6 +524,7 @@ module duraClik(pos=2,givePoly=false){
 
 
   if (givePoly) square([A,ovDpth],true);
+    
   color("Ivory")
   difference(){
     union(){
@@ -746,7 +748,7 @@ module tubeSocket9pinFlange(flange=true){
 
 
 
-module mUSB(){
+module mUSB(showPlug=false){
   //usb.org CabConn20.pdf
 
   M= 6.9;   //Rece inside width
@@ -861,9 +863,11 @@ module mUSB(){
           rotate([0,ix*-90,180])
             bend(flpDimSide,angle=flpAng,radius=r,center=true)
               flap(flpDimSide);
-    }
-  }
-
+    }//metalBody
+  }//assy
+  
+  if (showPlug) translate([0,-2.5-1.3,-2.7]) plug();
+    
   module plastic(){
     difference(){
       cube([C,W,X],true);
@@ -885,12 +889,20 @@ module mUSB(){
 
   //the usb shape
   module shape(radius=r,length=5){
-    hull(){
-      for (ix=[-1,1],iy=[-1,1])
-        translate([ix*(M/2-r),iy*(R/2-r),0]) cylinder(r=radius,h=length);
-      for (ix=[-1,1])
-        translate([ix*(Q/2-r/2),-N+(R/2+r),0]) cylinder(r=radius,h=length);
-    }
+    if (length)
+      hull(){
+        for (ix=[-1,1],iy=[-1,1])
+          translate([ix*(M/2-r),iy*(R/2-r)]) cylinder(r=radius,h=length);
+        for (ix=[-1,1])
+          translate([ix*(Q/2-r/2),-N+(R/2+r)]) cylinder(r=radius,h=length);
+      }
+    else
+     hull(){
+        for (ix=[-1,1],iy=[-1,1])
+          translate([ix*(M/2-r),iy*(R/2-r)]) circle(r=radius);
+        for (ix=[-1,1])
+          translate([ix*(Q/2-r/2),-N+(R/2+r)]) circle(r=radius);
+      } 
   }
 
   module flap(size){
@@ -898,8 +910,81 @@ module mUSB(){
       translate([ix*(size.x/2-r),size.y/2-r,0]) cylinder(r=r,h=size.z,center=true);
     translate([0,-r/2,0]) cube([size.x,size.y-r,size.z],true);
   }
+  
+  module plug(){
+    rad=0.9;
+    cham=2;
+    sze=[10.6,18.5,8.5];
+    poly=[[-sze.x/2,rad],[-sze.x/2,sze.z-cham],[-sze.x/2+cham,sze.z],
+          [sze.x/2-cham,sze.z],[sze.x/2,sze.z-cham],[sze.x/2,rad]];
+    rotate([90,0,0]) color("darkSlateGrey") linear_extrude(sze.y){
+      polygon(poly);
+      hull() for (ix=[-1,1]) translate([ix*(sze.x/2-rad),rad]) circle(rad);
+      }
+    translate([0,0,sze.z/2]) rotate([-90,180,0]) 
+      color("silver") linear_extrude(5.4) offset(-0.2) shape(0.4,0);
+  }
 }
 
+*BatteryHolder(true);
+module BatteryHolder(showCoin=true){
+  //linx BAT-HLD-001 https://linxtechnologies.com/wp/wp-content/uploads/bat-hld-001.pdf
+  sheetThck=0.3;
+  poly=[[-7.25,7.25],
+        [7.25,7.25],
+        [10.3,4.6],
+        [10.3,-4.5],
+        [7,-7.5],
+        [-7,-7.5],
+        [-10.3,-4.5],
+        [-10.3,4.6]];
+  flapAng=atan((10.3-7.25)/(7.25-4.6))-90;
+  flapLen=norm([7.25,7.25]-[10.3,4.6]);
+  
+  if (showCoin) color("silver") cylinder(d=20,h=3.2);
+  
+  color("grey") translate([0,0,4.1-sheetThck]) linear_extrude(sheetThck) topShape();
+  
+  for (m=[0,1]) mirror([m,0,0]){
+    color("grey") translate([10.3,0,4.1-sheetThck]) side();
+    //pads
+    for(iy=[-1,1]) translate([10.3,iy*1.5+1.05,sheetThck]) rotate([-90,0,-90]) 
+      color("grey") bend([2,0.9,sheetThck],90,sheetThck) cube([2,0.9,sheetThck]);
+    //flaps
+    color("grey") translate([7.25,7.25,4.1-sheetThck]) 
+      rotate(flapAng) bend([flapLen,2.7,sheetThck],-90,sheetThck) cube([flapLen,2.7,sheetThck]);
+  }
+  
+  
+  
+  
+  module side(){
+  translate([0,9/2+0.1]) rotate(-90)
+    bend([9.1,2.7+0.8,sheetThck],-90,sheetThck) linear_extrude(sheetThck) 
+      translate([9.1/2,0]) rotate(90){  
+        translate([2.7/2,0]) square([2.7,9.1],true);
+        for (iy=[-1,1]) translate([0.8/2+2.7,iy*1.5]) square([0.8,2],true);
+      }
+    
+}
+  
+  module topShape(){
+    difference(){
+      union(){
+        polygon(poly);
+        for (ix=[-1,1]) translate([ix*5.8,-5.9]) circle(d=4);
+        }
+      translate([0,-16.35]) circle(d=20);
+      for (ix=[-1,1]){
+        translate([ix*5.5,2.5]) circle(d=6.25);
+        translate([ix*5.5,-1.7]) square([3.2,5.6],true);
+      }
+    }//diff
+  }
+  
+}
+
+// ---- helpers ---
 
 // bend modifier
 // bends an child object along the x-axis
