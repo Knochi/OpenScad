@@ -6,6 +6,38 @@ translate([12,15,0]) pushButton(col="green");
 translate([12,30,0]) pushButton(col="white");
 translate([-15,0,0]) rotEncoder();
 
+!Button_1188E();
+module Button_1188E(){
+  shtThck=0.2;
+  bdDims=[7,2.5-shtThck,3.5];
+  btDims=[3,1,1.4];
+  //body
+  color("ivory") translate([0,shtThck/2,bdDims.z/2]) cube(bdDims,true);
+  translate([0,-bdDims.y/2,0]) sheet();
+  //button
+  color("darkSlateGrey") translate([0,-(bdDims.y+btDims.y)/2,bdDims.z/2]) cube(btDims,true);
+  //stems & pins
+  for (ix=[-1,1]){
+    color("ivory") translate([ix*2.3/2,-0.4,-0.75]) 
+      cylinder(d=0.7,h=0.75);
+    color("silver") translate([ix*4.2/2,(bdDims.y+0.6)/2,shtThck/2]) cube([0.6,0.6,shtThck],true);
+  }
+  
+  module sheet(){
+    difference(){
+      union(){
+        color("silver") translate([0,0,bdDims.z/2]) cube([bdDims.x,shtThck,bdDims.z],true);
+        color("silver") translate([0,0,0.7/2]) cube([7.8-shtThck*2,shtThck,0.7],true);
+        color("silver") translate([7.8/2-shtThck,0,0.7/2]) rotate([0,-90,-90]) 
+          bend([0.7,0.4,shtThck],90,0.2,true) cube([0.7,0.4,shtThck],true);
+        color("silver") translate([-(7.8/2-shtThck),0,0.7/2]) rotate([0,90,90]) 
+          bend([0.7,0.4,shtThck],90,0.2,true) cube([0.7,0.4,shtThck],true);
+      }
+      translate([0,0,bdDims.z/2]) cube([4,shtThck+fudge,2.2],true);
+    }
+  }
+}
+
 module heatsink(dimensions, fins, sltDpth){
   finWdth=dimensions.x / (fins*2-1);
   bdyHght=dimensions.z - sltDpth;
@@ -70,7 +102,7 @@ module KMR2(){
   }
 }
 
-module rotEncoder(diff="none",thick=3){
+module rotEncoder(diff="none",thick=3,knob=false){
   //SparkFun Rotary Encoder COM-10982 - https://www.sparkfun.com/products/10982
   if (diff=="body"){
     union(){
@@ -87,7 +119,8 @@ module rotEncoder(diff="none",thick=3){
     union(){
       color("darkgrey") translate([0,0,0])
         hull() for (ix=[-1,1],iy=[-1,1])
-          translate([ix*(12-1)/2,iy*(13.2-1)/2,0]) cylinder(d=1,h=7.5);//rndRect(12,13.2,7.5,1,0); //base
+          translate([ix*(12-1)/2,iy*(13.2-1)/2,0]) 
+            cylinder(d=1,h=7.5);//rndRect(12,13.2,7.5,1,0); //base
       color("grey") translate([-12.4/2,-11/2,fudge]) cube([12.4,11,7.5]);//base sheet
       color("lightgrey") translate([0,0,7.5-fudge]) cylinder(h=7+fudge,d=9,$fn=100); //screw dome
       color("white",0.5) translate([0,0,7.5+7.0-fudge]) cylinder(h=10.5, d=6); //handle
@@ -99,6 +132,49 @@ module rotEncoder(diff="none",thick=3){
         for (i=[-2.5:2.5:2.5]){
           translate([i-0.9/2,-7.5,-2.8]) cube([0.9,0.3,7]);
         }
+        if (knob) color("white",0.5) translate([0,0,7.5+7+10.5-10.3]) cylinder(d1=15,d2=14.5,h=12.5);
     }//union
+  }
+}
+
+module arcadeButton(){
+  
+}
+
+module bend(size=[50,20,2],angle=45,radius=10,center=false, flatten=false){
+  alpha=angle*PI/180; //convert in RAD
+  strLngth=abs(radius*alpha);
+  i = (angle<0) ? -1 : 1;
+
+
+  bendOffset1= (center) ? [-size.z/2,0,0] : [-size.z,0,0];
+  bendOffset2= (center) ? [0,0,-size.x/2] : [size.z/2,0,-size.x/2];
+  bendOffset3= (center) ? [0,0,0] : [size.x/2,0,size.z/2];
+
+  childOffset1= (center) ? [0,size.y/2,0] : [0,0,size.z/2*i-size.z/2];
+  childOffset2= (angle<0 && !center) ? [0,0,size.z] : [0,0,0]; //check
+
+  flatOffsetChld= (center) ? [0,size.y/2+strLngth,0] : [0,strLngth,0];
+  flatOffsetCb= (center) ? [0,strLngth/2,0] : [0,0,0];
+
+  angle=abs(angle);
+
+  if (flatten){
+    translate(flatOffsetChld) children();
+    translate(flatOffsetCb) cube([size.x,strLngth,size.z],center);
+  }
+  else{
+    //move child objects
+    translate([0,0,i*radius]+childOffset2) //checked for cntr+/-, cntrN+
+      rotate([i*angle,0,0])
+      translate([0,0,i*-radius]+childOffset1) //check
+        children(0);
+    //create bend object
+
+    translate(bendOffset3) //checked for cntr+/-, cntrN+/-
+      rotate([0,i*90,0]) //re-orientate bend
+       translate([-radius,0,0]+bendOffset2)
+        rotate_extrude(angle=angle)
+          translate([radius,0,0]+bendOffset1) square([size.z,size.x]);
   }
 }

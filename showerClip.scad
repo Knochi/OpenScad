@@ -1,10 +1,13 @@
 $fn=50;
 fudge=0.1;
 spc=0.1;
+screwDia=2.9;
+screwLngth=16;
+
 
 /* [show] */
 showCut=true;
-export="handle"; //["handle","hook"]
+export="none"; //["none","handle","hook"]
 
 if (export=="handle")
   !handle();
@@ -17,19 +20,25 @@ difference(){
     hook();
     translate([0,0,5.8]) rotate([180,0,0]) handle();
   }
-  color("darkred") translate([0,0,-10]) cube([8,8,20]);
+  color("darkred") translate([0,0,-7]) cube([8,8,25]);
 }
 
+color("silver")
+  translate([0,0,-4.6]){
+    cylinder(d=screwDia-fudge*2,h=screwLngth);
+    cylinder(d=5.2,h=2.3);
+  }
 module handle(){
   hndlDia=7;
   hndlOffset=(14)/2;
   fltOffset=4.7;
-  ovHght=12;
+  ovHght=10;
   
   difference(){
     body();
     translate([0,0,-fudge]){
-      cylinder(d=2.8,h=ovHght+fudge*2);
+      //screw
+      cylinder(d=screwDia,h=ovHght+fudge*2);
       cylinder(d=5+spc*2,h=1.1+fudge); 
       translate([(12+fltOffset)/2,0,(8.5+fudge*2)/2]) cube([12-fltOffset,12,8.5+fudge*2],true);
       intersection(){
@@ -37,7 +46,10 @@ module handle(){
         translate([0,0,6/2]) cube([5+spc*2+fudge,4.3+spc*2,6],true);
       }
     }
-    translate([0,0,ovHght-1.8]) cylinder(d1=2.8,d2=6,h=1.8);
+    //screw head countersunk
+    *translate([0,0,ovHght-1.8]) cylinder(d1=2.8,d2=6,h=1.8);
+    //screw head cylindric
+    translate([0,0,ovHght-2.0]) cylinder(d=5.5,h=2.0+fudge);
   } 
   
   module body(){
@@ -58,7 +70,7 @@ module hook(){
   
   difference(){
     body();
-    translate([0,0,-fudge]) cylinder(d=2.8,h=8);
+    translate([0,0,-fudge]) cylinder(d=2.8,h=12);
     for (iy=[-1,1])
       translate([0,iy*(5-slice+fudge)/2,(4.8-fudge)/2]) cube([6.5,slice+fudge,4.8+fudge],true);
   }
