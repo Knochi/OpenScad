@@ -193,7 +193,7 @@ module resRadial(type="SQM", power=5){
     translate([ix*pitch/2,0,-3.5]) cylinder(d=0.8,h=3.5+gapOffset);
 }
 
-!LED_3mm();
+*LED_3mm();
 module LED_3mm(){
   bdDia= 2.9;
   bdHght= 4.6;
@@ -672,6 +672,18 @@ module TRACO(givePoly=false){
     color("silver") for (i=[-2.54,0,2.54]) translate([i,0,-4.6/2+0.5]) cube([0.5,0.3,4.6],true);
     color("white") translate([0,-1.9,3])  rotate([90,0,0]) linear_extrude(0.2) text("TSR 1-2450",size=1.5,halign="center");
   }
+}
+
+module r_SMD(size="0603"){
+  //overall dimensions and contact width
+  dims= (size=="0805") ? [2.0,1.25,0.50,0.35] : 
+        (size=="0603") ? [1.6,0.80,0.45,0.25] : 
+        (size=="0402") ? [1  ,0.50,0.35,0.20] :
+        (size=="0201") ? [0.6,0.30,0.30,0.10] : [0.4,0.2,0.13,0.10];
+  color("darkSlateGrey") translate([0,0,dims.z/2]) cube([dims.x-dims[3]*2,dims.y,dims.z],true);
+  color("lightGrey") for (ix=[-1,1]) 
+    translate([ix*(dims.x-dims[3])/2,0,dims.z/2]) 
+      cube([dims[3],dims.y,dims.z],true);
 }
 
 *frustum([3,2,0.9],method="poly");
