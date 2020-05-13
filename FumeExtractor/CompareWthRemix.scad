@@ -1,16 +1,21 @@
 use <rndrect2.scad>
 use <KnochisToolbox.scad>
+use <eCad\packages.scad>
 
 /* -- [Dimensions] -- */
 fanDims=[80,80,25];
 fanDrillDist=71.5;
 fanDrillDia=4; //for M4screws
 
+LEDPos=[33,-30,33];
+LEDRot=[150,0,-25];
+
 /* -- [show] -- */
 showLeft=true;
 showRight=true;
 showFan=true;
 showLid=true;
+showWorkArea=true;
 
 echo(norm([11,-39.3,-33.3]-[11,-33.4,-27.44]));
 /* -- [Hidden] -- */
@@ -23,6 +28,27 @@ wallThck=3.75;
 
 ovDims=[88,44+56,88];
 
+translate(LEDPos) rotate(LEDRot) LED_5mm(lightConeAng=35,lightConeHght=120);
+mirror([1,0,0]) translate(LEDPos) rotate(LEDRot) LED_5mm(lightConeAng=35,lightConeHght=120);
+
+LEDPot();
+module LEDPot(){
+  difference(){
+    hull(){
+      for (ix=[-1,1],iz=[40,22])
+        translate([ix*(40-2.5),-28,iz-2.5]) rotate([90,0,0]) cylinder(d=5,h=44-28);
+    }
+    for (m=[0,1])
+      mirror([m,0,0]) translate(LEDPos) rotate(LEDRot) translate([0,0,6]) cylinder(d=60,h=20);
+    
+    translate([-(ovDims.x+fudge)/2,-28,-24]) 
+      rotate([90+13.24,0,0]) cube([ovDims.x+fudge,ovDims.z,10]);
+    translate([0,-28+fudge,10]) rotate([90,0,0]) cylinder(d=65,h=40);
+  
+  }
+}
+if (showWorkArea) translate([0,-44-ovDims.z/2,-ovDims.z/2]) cube([ovDims.x,ovDims.z,1],true);
+  
 //Lets modify the original files
 //right Housing
 if (showRight) {
@@ -70,7 +96,7 @@ module fan(){
   rad=(fanDims.x-fanDrillDist)/2;
   
   difference(){
-    rndRect(fanDims,4.3,rad,center=true);
+    rndRect(fanDims,rad,4.3,center=true);
     cylinder(d=cntrOpening,h=fanDims.z+fudge,center=true);
   }
   //wires

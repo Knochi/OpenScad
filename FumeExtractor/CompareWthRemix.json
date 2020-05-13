@@ -1,0 +1,22 @@
+{
+    "parameterSets": {
+        "Standardwerte des Designs": {
+            "$fn": "40",
+            "LEDPos": "[33, -30, 33]",
+            "LEDRot": "[150, 0, -25]",
+            "elCompYOffset": "-2",
+            "fanDims": "[80, 80, 25]",
+            "fanDrillDia": "4",
+            "fanDrillDist": "71.5",
+            "fanYOffset": "15",
+            "fudge": "0.1",
+            "showFan": "true",
+            "showLeft": "true",
+            "showLid": "true",
+            "showRight": "true",
+            "showWorkArea": "true",
+            "wallThck": "3.75"
+        }
+    },
+    "fileFormatVersion": "1"
+}
