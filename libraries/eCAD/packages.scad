@@ -707,6 +707,18 @@ module TRACO(givePoly=false){
   }
 }
 
+module r_SMD(size="0603"){
+  //overall dimensions and contact width
+  dims= (size=="0805") ? [2.0,1.25,0.50,0.35] : 
+        (size=="0603") ? [1.6,0.80,0.45,0.25] : 
+        (size=="0402") ? [1  ,0.50,0.35,0.20] :
+        (size=="0201") ? [0.6,0.30,0.30,0.10] : [0.4,0.2,0.13,0.10];
+  color("darkSlateGrey") translate([0,0,dims.z/2]) cube([dims.x-dims[3]*2,dims.y,dims.z],true);
+  color("lightGrey") for (ix=[-1,1]) 
+    translate([ix*(dims.x-dims[3])/2,0,dims.z/2]) 
+      cube([dims[3],dims.y,dims.z],true);
+}
+
 *frustum([3,2,0.9],method="poly");
 module frustum(size=[1,1,1], flankAng=5, center=false, method="poly"){
   //cube with a trapezoid crosssection
