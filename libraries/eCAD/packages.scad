@@ -52,7 +52,7 @@ module ACT1210(rad=0.06){
   module contact(){
     thck=0.1;
     rad=0.05;
-    color("silver") rndRect([0.9,0.35,thck],rad);
+    color("silver") rndRectInt([0.9,0.35,thck],rad);
     translate([0.9-0.35,-0.6,0]) 
       color("silver") cube([0.35,0.6+rad,thck]);
     translate([0.9-0.35,-0.6,0]) 
@@ -64,7 +64,7 @@ module ACT1210(rad=0.06){
   }  
     
   module coil(){
-    translate([0,0,0.7*1.5]) rotate([90,0,90]) color("salmon")rndRect([2.3,1.6-0.5,1.7],0.3,true);
+    translate([0,0,0.7*1.5]) rotate([90,0,90]) color("salmon")rndRectInt([2.3,1.6-0.5,1.7],0.3,true);
   }
     
   module body(){
@@ -147,7 +147,7 @@ module sumidaCR43(){
     difference(){
       union(){
         difference(){
-          color("darkslategrey") translate([0,0,ovDims.z/2]) rndRect(ovDims+[-0.4,0,0],crnrRad,true);
+          color("darkslategrey") translate([0,0,ovDims.z/2]) rndRectInt(ovDims+[-0.4,0,0],crnrRad,true);
           for (ix=[-1,1])
             color("darkslategrey") translate([ix*(ovDims.x-1)/2,0,ovDims.z/2]) cube([1+fudge,2,ovDims.z+fudge],true);
         }
@@ -155,7 +155,7 @@ module sumidaCR43(){
         for (iy=[0,1]) mirror([0,iy,0])
           translate([0,-1,0]) difference(){
             color("darkslategrey") translate([0,0,ovDims.z/2]) 
-              rndRect([ovDims.x,0.7*2,ovDims.z],crnrRad,true);
+              rndRectInt([ovDims.x,0.7*2,ovDims.z],crnrRad,true);
             color("darkslategrey") translate([0,-0.7/2-fudge/2,ovDims.z/2]) 
               cube([ovDims.x+fudge,0.7+fudge,ovDims.z+fudge],true);
           }       
@@ -216,6 +216,39 @@ module LED_3mm(){
     color("silver") translate([leg.x*pitch/2,0,-legLngth[leg[1]]/2+ovHght-bdHght]) 
       cube([0.5,0.5,legLngth[leg[1]]],true); 
     echo(leg);
+  }
+}
+!LED_5mm();
+module LED_5mm(lightConeAng=15,lightConeHght=50){
+  bdDia= 5;
+  bdHght= 7.6;
+  rngDia= 5.8;
+  ovHght= 8.6;
+  pitch= 2.54;
+  legLngth=[25.4+1,25.4];
+  
+  //body
+  color("white",0.7){
+    translate([0,0,ovHght-bdDia/2]) sphere(d=bdDia);
+    translate([0,0,ovHght-bdHght-1]){
+      cylinder(d=bdDia,h=bdHght-bdDia/2+1);
+      cylinder(d=rngDia,h=1);
+    }
+  }
+  
+  //legs
+  for (leg=[[-1,0],[1,1]]){
+    color("silver") translate([leg.x*pitch/2,0,-legLngth[leg[1]]/2+ovHght-bdHght]) 
+      cube([0.5,0.5,legLngth[leg[1]]],true); 
+    echo(leg);
+  }
+  //lightcone
+  if (lightConeAng){
+    hc=lightConeHght;
+    alpha=(180-lightConeAng)/2;
+    a=hc/sin(alpha);
+    c=2*a*sin(lightConeAng/2);
+    %translate([0,0,ovHght-bdDia/2]) cylinder(d1=0.1,d2=c,h=lightConeHght);
   }
 }
 
@@ -718,7 +751,7 @@ module frustum(size=[1,1,1], flankAng=5, center=false, method="poly"){
   }
 }
 
-module rndRect(size=[5,5,2],rad=1,center=false){
+module rndRectInt(size=[5,5,2],rad=1,center=false){
   cntrOffset= (center) ? [0,0,0] : [size.x/2,size.y/2,size.z/2];
   translate(cntrOffset) hull() for (ix=[-1,1],iy=[-1,1])
     translate([ix*(size.x/2-rad),iy*(size.y/2-rad),0]) cylinder(r=rad,h=size.z,center=true);
