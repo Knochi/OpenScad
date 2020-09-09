@@ -48,28 +48,39 @@ module AirPump(){
       }}
 }
 
-*AirValve();
-module AirValve(){
+!AirValve();
+module AirValve(clamp=false){
   // CEME 5000EN1,5P; SH-V08298C-R(C1)4
   
   bdyDia=23.5;
   bdyLngth=30;
   pipDia=4.9;
   
-  //body
-  color("teal") cylinder(d=bdyDia,h=bdyLngth);
+  clmpDims=[38,15,30];
+  clmpSpcng=1;
+  clmpDrill=4.2;
   
-  //contacts
-  for (ix=[-1,1]){
-    color("teal") translate([ix*16.8/2,0,-1.2]) cube([4,7.5,2.4],true);
-    color("silver") translate([ix*16/2,0,-13.4/2]) cube([0.6,6.5,13.4],true);
+  clmpOffset= (clamp) ? [0,-bdyLngth/2,bdyDia/2+(clmpDims.z-bdyDia)/2] : [0,0,0];
+  
+  translate(clmpOffset) rotate([-90,0,0]){
+    //body
+    color("teal") cylinder(d=bdyDia,h=bdyLngth);
+    
+    //contacts
+    for (ix=[-1,1]){
+      color("teal") translate([ix*16.8/2,0,-1.2]) cube([4,7.5,2.4],true);
+      color("silver") translate([ix*16/2,0,-13.4/2]) cube([0.6,6.5,13.4],true);
+    }
+    //pipes
+    color("ivory"){
+      translate([0,0,bdyLngth]) cylinder(d=12,h=7.2);
+      translate([0,0,bdyLngth+7-pipDia/2]) rotate([90,0,0]) pipe(31.7-6);
+      translate([0,0,bdyLngth+7]) pipe(11.3);
+    }
   }
-  //pipes
-  color("ivory"){
-    translate([0,0,bdyLngth]) cylinder(d=12,h=7.2);
-    translate([0,0,bdyLngth+7-pipDia/2]) rotate([90,0,0]) pipe(31.7-6);
-    translate([0,0,bdyLngth+7]) pipe(11.3);
-  }
+  //clamp
+  if (clamp)
+    color("darkSlateGrey") clamp();
   
   module pipe(length=30){
     tipLngth=5.5;
@@ -81,7 +92,32 @@ module AirValve(){
       cylinder(d1=5.5,d2=tipDia,h=1.5);
     }
     cylinder(d=pipDia,h=length-tipLngth);
+  }
+  
+  module clamp(){
+    hlfClmpDims=[clmpDims.x,clmpDims.y,(clmpDims.z-clmpSpcng)/2];
+    drillDist=bdyDia+fudge+(clmpDims.x-bdyDia)/2-fudge; //is in middle of remaining space
+    minWallThck=(clmpDims.z-bdyDia-fudge*2)/2;
     
+    difference(){
+      union(){
+        difference(){
+          translate([0,0,clmpDims.z/2]){
+            rotate([90,0,0]) cylinder(d=bdyDia+fudge*2+minWallThck*2,h=clmpDims.y,center=true);
+            translate([0,0,(clmpSpcng+minWallThck)/2]) 
+              cube([clmpDims.x,clmpDims.y,minWallThck],true);
+          }
+          translate([0,0,(hlfClmpDims.z+clmpSpcng-fudge)/2])
+            cube(hlfClmpDims+[fudge,fudge,clmpSpcng+fudge],true);
+        }
+        translate([0,0,hlfClmpDims.z/2]) cube(hlfClmpDims,true);
+      }
+        
+      translate([0,0,clmpDims.z/2]) rotate([90,0,0]) 
+        cylinder(d=bdyDia+fudge*2,h=clmpDims.y+fudge,center=true);
+      for (ix=[-1,1])
+        translate([ix*drillDist/2,0,-fudge/2]) cylinder(d=clmpDrill,h=clmpDims.z+fudge);
+    }//diff
   }
 }
 
