@@ -6,8 +6,86 @@ translate([12,15,0]) pushButton(col="green");
 translate([12,30,0]) pushButton(col="white");
 translate([-15,0,0]) rotEncoder();
 translate([30,0,0]) SMDSwitch();
+translate([-40,0,0]) AirValve();
+translate([-80,0,0]) AirPump();
 
-!AlphaPot();
+*AirPump();
+module AirPump(){
+  //CJP37-C12A2
+  mtrDia=24.1;
+  mtrLngth=31;
+  bdyDia=27.1;
+  bdyLngth=27.3;
+  rad=1;
+  flngDims=[36.6,10];
+  
+  color("grey") cylinder(d=mtrDia,h=mtrLngth);
+  color("ivory") translate([0,0,mtrLngth+0.6]) cylinder(d=bdyDia,h=bdyLngth);
+  color("silver"){
+    hull(){
+      translate([0,0,mtrLngth]) cylinder(d=bdyDia+0.6,h=0.6);
+      translate([29.8-rad-(bdyDia+0.6)/2,-(bdyDia+0.6)/2+36.6/2,mtrLngth+0.3]) 
+        cube([0.1,36.6,0.6],true);
+    }
+  //flange
+    translate([29.8-rad-(bdyDia+0.6)/2,flngDims.x-(bdyDia+0.6)/2,mtrLngth]) rotate(-90)
+      bend([flngDims.x,0,0.6],90,rad) 
+        linear_extrude(0.6) difference(){
+          union(){
+            hull() for (ix=[0,1]) 
+              translate([ix*(flngDims.x-rad*2)+rad,flngDims.y-rad*2]) circle(rad);
+            translate([0,0]) square([flngDims.x,flngDims.y-2*rad]);
+          }
+        translate([4.3/2+2.5,flngDims.y-rad-4.3/2-2.5]) circle(d=4.3);
+      }
+    }
+  //pipe
+    color("ivory") translate([0,0,mtrLngth+bdyLngth]){ 
+      cylinder(d=4,h=5.3);
+      translate([0,0,5.3]){
+        cylinder(d=4.8,h=1);
+        translate([0,0,1]) cylinder(d1=4.8,d2=3,h=3);
+      }}
+}
+
+*AirValve();
+module AirValve(){
+  // CEME 5000EN1,5P; SH-V08298C-R(C1)4
+  
+  bdyDia=23.5;
+  bdyLngth=30;
+  pipDia=4.9;
+  
+  //body
+  color("teal") cylinder(d=bdyDia,h=bdyLngth);
+  
+  //contacts
+  for (ix=[-1,1]){
+    color("teal") translate([ix*16.8/2,0,-1.2]) cube([4,7.5,2.4],true);
+    color("silver") translate([ix*16/2,0,-13.4/2]) cube([0.6,6.5,13.4],true);
+  }
+  //pipes
+  color("ivory"){
+    translate([0,0,bdyLngth]) cylinder(d=12,h=7.2);
+    translate([0,0,bdyLngth+7-pipDia/2]) rotate([90,0,0]) pipe(31.7-6);
+    translate([0,0,bdyLngth+7]) pipe(11.3);
+  }
+  
+  module pipe(length=30){
+    tipLngth=5.5;
+    tipDia=4.5;
+    pipDia=5.0;
+    //tip
+    translate([0,0,length-tipLngth]){
+      cylinder(d=tipDia,h=tipLngth);
+      cylinder(d1=5.5,d2=tipDia,h=1.5);
+    }
+    cylinder(d=pipDia,h=length-tipLngth);
+    
+  }
+}
+
+*AlphaPot();
 module AlphaPot(size=9, shaft="T18", vertical=true){
   ovDim=[9.5,6.5+4.85,10];
   yOffset=ovDim.y/2-6.5;
@@ -62,7 +140,7 @@ module SMDSwitch(){
     }
 }
 
-!Button_1188E();
+*Button_1188E();
 module Button_1188E(){
   shtThck=0.2;
   bdDims=[7,2.5-shtThck,3.5];
@@ -192,6 +270,31 @@ module rotEncoder(diff="none",thick=3,knob=false){
     }//union
   }
 }
+
+*leverSwitch();
+module leverSwitch(){
+  //https://cdn-reichelt.de/documents/datenblatt/C200/KS-C3900.pdf
+  
+  bodyDims=[29.5,14,17];
+  screwDia=12;
+  screwLngth=10.5;
+  lvrLngth=17.5;
+  lvrDia=[3.6,5.8]; //tip Dia
+  
+  translate([0,0,-bodyDims.z/2]) cube(bodyDims,true);
+  difference(){
+    cylinder(d=screwDia,h=screwLngth);
+    rotate(90) translate([0,screwDia/2,(screwLngth+fudge)/2]) 
+      cube([2,1.4*2,screwLngth+fudge],true);
+  }
+  
+  translate([0,0,screwLngth]) rotate([0,15,0]) hull(){
+    sphere(d=lvrDia[0]);
+    translate([0,0,lvrLngth-lvrDia[1]]) sphere(d=lvrDia[1]);
+  }
+}
+
+
 
 module arcadeButton(){
   
