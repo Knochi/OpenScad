@@ -984,6 +984,54 @@ module BatteryHolder(showCoin=true){
   
 }
 
+*PCBFuseATO();
+module PCBFuseATO(center=false){
+  ovDims=[20,6,17.5];
+  pinOffset=[4.6,1.2];
+  cntrOffset= center ? [0,0,0] : [pinOffset.x,-pinOffset.y,0];
+  translate(cntrOffset){
+    difference(){
+      color("darkSlateGrey") translate([0,0,ovDims.z/2]) cube(ovDims,true);
+      color("darkSlateGrey") translate([0,0,0.5-fudge]) 
+        cube([ovDims.x-3,ovDims.y+fudge,1+fudge],true);
+      color("darkSlateGrey") translate([0,0,ovDims.z-3.5/2]) 
+        cube([ovDims.x-2,ovDims.y-2,3.5+fudge],true);
+    }
+   for (ix=[-1,1])
+     color("silver") translate([ix*4.6,1.2,-3.1]) cylinder(d=2,h=3.1+1);
+   color("darkSlateGrey") translate([0,0,-4.1]) cylinder(d=2.4,h=4.1+1);
+ }
+}
+
+*PCBFuseMini();
+module PCBFuseMini(center=false){
+  //Littlefuse 153008
+  ovDims=[17.3,6.1,10.4];
+  pinOffset=[7.62/2,3.46/2];
+  latchDims=[0.76,5.4,2.54];
+  cntrOffset= center ? [0,0,0] : [pinOffset.x,-pinOffset.y,0];
+  pinDims=[1,0.4,3.9];
+  
+  translate(cntrOffset){
+    difference(){
+      color("darkSlateGrey") translate([0,0,ovDims.z/2]) cube(ovDims,true);
+      color("darkSlateGrey") translate([0,0,0.5-fudge]) 
+        cube([ovDims.x-3,ovDims.y+fudge,1+fudge],true);
+      color("darkSlateGrey") translate([0,0,ovDims.z-3.5/2]) 
+        cube([12,5.4,3.5+fudge],true);
+    }
+  //latches
+  for (ix=[-1,1])
+    translate([ix*12.1/2,0,ovDims.z+latchDims.z/2])
+    color("darkSlateGrey") cube(latchDims,true);
+  //pins
+  for (ixy=[-1,1])
+    color("silver") translate([ixy*pinOffset.x,-ixy*pinOffset.y,-(pinDims.z-1)/2]) 
+      cube(pinDims+[0,0,1],true);
+   color("darkSlateGrey") translate([0,0,-4.1]) cylinder(d=2.4,h=pinDims.z+1);
+ }
+}
+
 // ---- helpers ---
 
 // bend modifier

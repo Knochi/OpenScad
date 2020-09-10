@@ -15,6 +15,7 @@ translate([37,0,0]) miniTOPLED();
 translate([40,0,0]) APA102();
 translate([45,0,0]) SMF();
 translate([50,0,0]) sumidaCR43();
+translate([57,0,0]) !TY_6028();
 
 
 *ACT1210();
@@ -218,7 +219,8 @@ module LED_3mm(){
     echo(leg);
   }
 }
-!LED_5mm();
+
+*LED_5mm();
 module LED_5mm(lightConeAng=15,lightConeHght=50){
   bdDia= 5;
   bdHght= 7.6;
@@ -635,6 +637,37 @@ module potentiometer(){
     }
   }
 }
+module TRACO(givePoly=false){
+  if (givePoly) translate([-11.7/2,-2]) square([11.7,7.6]);
+  else{
+    color("darkslategrey") 
+    difference(){
+      translate([-11.7/2,-2,0]) cube([11.7,7.6,10.2]);
+      translate([-10.7/2,-2-fudge/2,-fudge]) cube([10.7,7.6+fudge,0.5+fudge]);
+    }
+    color("silver") for (i=[-2.54,0,2.54]) translate([i,0,-4.6/2+0.5]) cube([0.5,0.3,4.6],true);
+    color("white") translate([0,-1.9,3])  rotate([90,0,0]) linear_extrude(0.2) text("TSR 1-2450",size=1.5,halign="center");
+  }
+}
+
+*WE_sideLED();
+module WE_sideLED(){
+  rad=0.2;
+  translate([0,0,0.5])
+    difference(){
+      color("ivory") cube([3.2,0.5,1],true);
+      for (ix=[-1,1], iz=[-1,1])
+        color("gold") translate([ix*(1.6),0,iz*(0.5)]) rotate([90,0,0]) cylinder(r=rad,h=0.6,center=true);
+  }
+  difference(){
+    color("lightgrey") translate([0,0.4-0.25,0]) rotate_extrude(angle=180) square([1.1,1]);
+    color("ivory") translate([0,0,0.5]) cube([3.2,0.5,1],true);
+  }
+  translate([1.6,-0.25,1]) rotate([90,180,0]){
+    color("green") linear_extrude(0.02) import("155124_paint.dxf");
+    color("gold") linear_extrude(0.02) import("155124_plating.dxf");
+  }
+}
 
 
 // ---- helper modules ---
@@ -694,18 +727,7 @@ module lead(dims=[1.04,0.51,0.7],thick=0.2){
   }
 }
 
-module TRACO(givePoly=false){
-  if (givePoly) translate([-11.7/2,-2]) square([11.7,7.6]);
-  else{
-    color("darkslategrey") 
-    difference(){
-      translate([-11.7/2,-2,0]) cube([11.7,7.6,10.2]);
-      translate([-10.7/2,-2-fudge/2,-fudge]) cube([10.7,7.6+fudge,0.5+fudge]);
-    }
-    color("silver") for (i=[-2.54,0,2.54]) translate([i,0,-4.6/2+0.5]) cube([0.5,0.3,4.6],true);
-    color("white") translate([0,-1.9,3])  rotate([90,0,0]) linear_extrude(0.2) text("TSR 1-2450",size=1.5,halign="center");
-  }
-}
+
 
 module r_SMD(size="0603"){
   //overall dimensions and contact width
@@ -804,4 +826,51 @@ module bend(size=[50,20,2],angle=45,radius=10,center=false, flatten=false){
         rotate_extrude(angle=angle) 
           translate([radius,0,0]+bendOffset1) square([size.z,size.x]);
   }
+}
+
+*TY_6028();
+module TY_6028(){
+  //body
+  W=6;
+  L=6;
+  H=2.8;
+  dI=2.3;
+  e=1.35;
+  f=4;
+  
+  //base
+  rad=0.35;
+  baseDims=[4.35,W,0.5];
+  capDims=[[L, 5.65,0.5],[3.5,3.1,0.5]]; //outer, corners
+  solder=0.15;
+  
+  translate([0,0,solder])
+  color("darkSlateGrey"){
+    //linear_extrude(baseDims.z)
+      hull() for (ix=[-1,1],iy=[-1,1])
+        translate([ix*(baseDims.x/2-rad),iy*(W/2-rad)]) 
+          cylinder(r=rad,h=baseDims.z);
+  //cap octagon
+  cap();
+  translate([0,0,H-capDims[0].z-solder]) cap();  
+    }
+    
+  module cap(){
+    //linear_extrude(capDims[0].z)
+      hull(){ 
+        for (ix=[-1,1],iy=[-1,1])
+          translate([ix*(capDims[1].x/2-rad),iy*(capDims[0].y/2-rad)])
+            cylinder(r=rad,h=capDims[0].z);
+        for (ix=[-1,1],iy=[-1,1])
+          translate([ix*(capDims[0].x/2-rad),iy*(capDims[1].y/2-rad)])
+            cylinder(r=rad,h=capDims[0].z);
+      }
+    }
+    //coil
+    color("salmon") translate([0,0,0.5+solder]) cylinder(d=capDims[0].y-0.5,h=H-1-solder);
+    //pads
+    color("silver") for(iy=[-1,1])
+      translate([0,iy*f/2,solder/2]) cube([baseDims.x,e,solder],true);
+    color("silver") for(iy=[-1,1])
+      translate([0,iy*(baseDims.y-e)/2,solder/2]) cube([dI,e,solder],true);
 }
