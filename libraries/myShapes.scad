@@ -25,7 +25,8 @@ module calcFacets(r=5){
 
 module arc(r=1,angle=60){
   //draws a closed arc shape from zero to target angle
-  frgFrmFn= ceil(($fn/360)*angle); //fragments for arc calculated from fn
+  //frgFrmFn= ceil(($fn/360)*angle); //fragments for arc calculated from fn#
+  frgFrmFn= $fn; //fragments for arc calculated from fn
   
   n= ( $fn>0 ?( frgFrmFn>=3 ? frgFrmFn : 3):ceil(max(min(angle/$fa,r*2*PI/$fs),5)));
   polygon(arcPoints(r,angle,n));
