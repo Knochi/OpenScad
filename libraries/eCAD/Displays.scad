@@ -3,10 +3,40 @@ $fn=20;
 fudge=0.1;
 
 Midas69x16();
-
+translate([0,100,0]) EA_W128032(true);
 translate([100,0,0]) LCD_20x4();
 translate([200,0,0]) LCD_16x2();
 translate([320,0,0]) FutabaVFD();
+
+!Adafruit128x128TFT();
+module Adafruit128x128TFT(){
+  drillDist=[1.55*25.4,1.5*25.4];
+  PCBDims=[1.75*25.4,1.3*25.4,1.6];
+  
+  translate([0,0,-1.6]) linear_extrude(PCBDims.z) difference(){
+    PCB();
+    for (ix=[-1,1],iy=[-1,1])
+      translate([ix*drillDist.x/2,iy*drillDist.y/2]) circle(d=2.5);
+  }
+    display();
+  
+  module PCB(){
+    for (ix=[-1,1])
+      translate([ix*drillDist.x/2,0])
+        hull() for (iy=[-1,1])
+          translate([0,iy*drillDist.y/2]) circle(r=2.54);
+    square([PCBDims.x,PCBDims.y],true);
+  }
+ 
+ module display(){
+   frmDims=[38.2,32.2,3]; //display frame
+   color("white") translate([(frmDims.x-PCBDims.x)/2+1,0,1.5]) difference(){
+      cube(frmDims,true);
+      translate([-(33.5-38.2)/2-2,0,0]) cube([33.5,28.9,3+fudge],true);
+   }
+   translate([-(PCBDims.x-1.13*25.4)/2+0.3*25.4,0,1.5]) color("darkslategrey") cube([1.13*25.4,(0.65-0.11)*2*25.4,3],true);
+ } 
+}
 
 module Midas69x16(orientation="flat",center=true){
   glassThck=0.55;
@@ -204,6 +234,37 @@ module HCS12SS(){
   }
 }
 
+
+module EA_W128032(center=false){
+  //Electronic Assembly 128x32 px 2.22"
+  
+  panelDims=[62,24,2.35];//overall Dims
+  
+  flexDims=[12.5,19.6,0.3];
+  flexRad=1.5;//bend radius
+  flexOffset=2;//offset for bend
+  bendLngth=(2*PI*flexRad)/4; //one quarter of a circle
+  flexTailLngth=flexDims.y-flexOffset-bendLngth;
+  cntrOffset= center ? [0,0,0] : panelDims/2;
+  
+  
+  
+  translate(cntrOffset){
+    //panel
+    cube(panelDims,true);
+    
+    //flex bend 90 degrees
+    color("brown") translate([0,-(panelDims.y+flexOffset)/2,0]){
+      cube([flexDims.x,flexOffset,flexDims.z],true);
+      translate([0,-flexOffset/2,-flexRad]) rotate([90,0,-90]) 
+        rotate_extrude(angle=90) translate([flexRad,0]) 
+          square([flexDims.z,flexDims.x],true);
+      translate([0,-flexRad-flexOffset/2,-flexTailLngth/2-flexRad]) 
+        cube([flexDims.x,flexDims.z,flexTailLngth],true);
+      
+    }
+  }
+}
 
 
 function xTilt(dist,ang)=[tan(ang)*dist,dist]; 
