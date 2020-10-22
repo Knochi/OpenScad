@@ -15,7 +15,7 @@ translate([37,0,0]) miniTOPLED();
 translate([40,0,0]) APA102();
 translate([45,0,0]) SMF();
 translate([50,0,0]) sumidaCR43();
-translate([57,0,0]) !TY_6028();
+translate([57,0,0]) TY_6028();
 
 
 *ACT1210();
@@ -280,6 +280,61 @@ module LED5050(pins=6){
         translate([0.1,0,0.45]) cube([0.2,1.0,0.9],true);
       }
 }
+!PLCC2();
+module PLCC2(){
+  // e.g. WS2812(B)
+  dims=[3,3.4,1.8];
+  pinDims= [2.3,1.1,1];
+  pinThck= 0.1;
+  grvHght=0.8; //height of groove
+  grvDia=2.4;
+  grvDiaBtm=grvDia-2*tan(30)*grvHght;
+  
+  marking=[0.7,0.2]; //width,height
+  
+  //body
+  color("ivory")
+    difference(){
+      union(){
+        translate([0,0,dims.z-grvHght/2]) 
+          frustum([dims.x,dims.y,grvHght],4,true);
+        mirror([0,0,1]) translate([0,0,-0.1-(grvHght+0.1)/2]) 
+          frustum([dims.x,dims.y,dims.z-grvHght-0.1],4,true);
+      }
+        //cube(dims-[0,0,0.1],true);
+      //groove
+      translate([0,0,dims.z-grvHght]) 
+        cylinder(d2=grvDia,d1=grvDiaBtm,h=grvHght+0.01);
+      //marking
+       translate([dims.x/2,dims.y/2,dims.z-marking[1]]) linear_extrude(marking[1]+fudge)      
+        polygon([[-marking.x-fudge,fudge],[fudge,fudge],[fudge,-marking.x-fudge]]);
+    }
+    
+  //glass
+  color("grey",0.6) 
+    translate([0,0,dims.z-grvHght]) cylinder(d1=grvDiaBtm,d2=grvDia,h=grvHght);
+    
+  //leads
+  *color("silver")
+    for (i=[-pins/2+1:2:pins/2],r=[-90,90])
+      rotate([0,0,r]) translate([dims.x/2,i*pitch,0]){
+        translate([-1.1/2+0.2,0,0.1]) cube([1.1,1.0,0.2],true);
+        translate([0.1,0,0.45]) cube([0.2,1.0,0.9],true);
+      }
+   color("silver"){
+     translate([0,dims.y/2,0]) uContact();   
+     mirror([0,1,0]) translate([0,dims.y/2,0]) uContact();  
+   } 
+   module uContact(){
+     translate([0,-pinDims.y/2,pinThck/2]) cube([pinDims.x,pinDims.y,pinThck],true);
+     translate([0,0,pinThck/2]) 
+      bend([pinDims.x,pinDims.z-pinThck*2,pinThck],90,pinThck/2,center=true) 
+        cube([pinDims.x,pinDims.z-pinThck*2,pinThck],true);
+     translate([0,pinThck/2,pinDims.z-pinThck]) rotate([90,0,0]) 
+      bend([pinDims.x,pinThck,pinThck],90,pinThck/2,true);
+   }
+}
+
 
 module sk6812mini(pins=4){
   // e.g. SK6812Mini aka NeoPixel mini

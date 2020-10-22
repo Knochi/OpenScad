@@ -17,13 +17,16 @@
 $fn = 100;
 
 showDebug=false;
+
+//example shapes
 shape1=[[0,15],[10,12],[13,0],[0,0]]; //Quadrant I defined clockwise
 shape2=[[-10,20],[-20,5],[-10,3]]; // Quadrant IV defined anticlockwise
 shape3=[[8.8,-4],[12.5,-7],[18,-18],[12,-15],[2.5,-22]];
 shape4=[[0,0],[56,0],[7.5,-28]];
 
-translate([0,-30/2]) circle(d=30);
-difference(){
+
+
+*difference(){
   polygon(shape4);
   fillet2D(shape4[0],shape4[1],shape4[2],7);
 }
