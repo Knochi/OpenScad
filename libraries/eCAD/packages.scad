@@ -280,7 +280,7 @@ module LED5050(pins=6){
         translate([0.1,0,0.45]) cube([0.2,1.0,0.9],true);
       }
 }
-!PLCC2();
+*PLCC2();
 module PLCC2(){
   // e.g. WS2812(B)
   dims=[3,3.4,1.8];

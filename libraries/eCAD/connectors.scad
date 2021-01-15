@@ -21,6 +21,7 @@ usbA();
 translate([10,-4,0]) pinHeader(10,2);
 translate([10,4,0]) pinHeader(5,1);
 translate([10,8,0]) pinHeaderRA(10);
+translate([10,24,0]) boxHeader(10);
 translate([35,0,0]) duraClik(4);
 translate([35,10,0]) duraClikRA(4);
 translate([55,0,0]) ETH();
@@ -182,7 +183,13 @@ module screwTerminal(pins=2,center=false){
   }
 }
 
-*DSub(gender="male",give2D="cutOutBack");
+
+module DSubTHT(pins=9){
+  
+}
+
+
+*DSub(gender="female",give2D=false);
 module DSub(pins=9, gender="female", give2D=false){
   // DIN 41652-1
 
@@ -436,7 +443,7 @@ module pinHeaderRA(pins=10, rows=2,center=false, diff="none", thick=3+fudge,
   }
 }
 
-module boxHeader(pins,center=false){
+module boxHeader(pins=10,center=false){
   fudge=0.1;
   RM=2.54;
 
@@ -452,10 +459,10 @@ module boxHeader(pins,center=false){
   C=RM*(pins/2-1)+7.88; //inner Width
 
 
-  cntrOffset= center ? 0 : [RM*(pins/2-1)/2,RM/2,0];
+  cntrOffset= center ? [0,0,0] : [RM*(pins/2-1)/2,RM/2,0];
 
   translate(cntrOffset){
-    color("grey")
+    color("darkslateGrey")
        difference(){
         translate([0,0,height/2]) cube([B,ovDpth,height],true);
         translate([0,0,(2.35+height)/2]) cube([C,6.35,height-2.35+fudge],true);

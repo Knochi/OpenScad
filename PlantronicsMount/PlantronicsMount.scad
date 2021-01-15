@@ -6,6 +6,8 @@ $fn=50;
 rmtDims=[21,74,10.5];
 ratio=[12/21,64/74];
 tblThck=25;
+minTblThck=22;
+maxTblThck=28;
 cblRad=10;
 cblDia=3;
 cblStrgthLngth=rmtDims.y+4.5+1.5;
@@ -13,6 +15,7 @@ cblOffset=[-cblRad,rmtDims.y/2+4.5,-4.5/2+rmtDims.z-1.7];
 plgDia=7.8;
 minWallThck=2;
 screwDia=3;
+screwPitch=2;
 thmbScrewDia=10;
 cmplxHookWdth=thmbScrewDia+5;
 
@@ -20,7 +23,7 @@ cmplxHookWdth=thmbScrewDia+5;
 showRemote=true;
 showHook=true;
 showClamp=true;
-export="none"; //["none","hook","body"]
+export="none"; //["none","hook","body","thmbScrew"]
 
 /* [Hidden] */
 fudge=0.1;
@@ -104,25 +107,33 @@ module clamp(){
   hookWdth=rmtDims.x/2+minWallThck-cblOffset.x;
   hookOffset=[cblOffset.x-mainRad/2+hookWdth/2,-rmtDims.y/2-minWallThck/2,-tblThck/2];
   cmplxHkOffset=[cblOffset.x-mainRad,hookOffset.y-minWallThck/2,cblOffset.z-cblRad];
-  
-  difference(){
-    union(){
-      if (export=="none") difference(){
-          body();
-          cmplxHook(true);
-        }
-      if (showHook) cmplxHook();
-    }
+
+ //body
+ if ((export=="none")||(export=="body"))
+ difference(){
+    body();
+    cmplxHook(true);
     plantronicsRemote(true);
+ }
+ 
+  //hook
+ if ((export=="none")||(export=="hook"))
+ difference(){
+    cmplxHook();
+    plantronicsRemote(true);
+    
     if (export=="hook") //render thread with hook only
       render(convexity=2) 
         translate(cmplxHkOffset+[cmplxHookWdth/2,cmplxHookWdth/2,-tblThck+cmplxHkOffset.z*2-fudge*2]) 
-          metric_thread(diameter=thmbScrewDia,pitch=1,length=clmpDims.z+fudge*4,internal=true);
-    else 
-      translate(cmplxHkOffset+[cmplxHookWdth/2,cmplxHookWdth/2,-tblThck+cmplxHkOffset.z*2-fudge*2]) 
+          metric_thread(diameter=thmbScrewDia+fudge,pitch=screwPitch,length=clmpDims.z+fudge*4,internal=true);
+    else if (export=="none")
+      translate(cmplxHkOffset+[cmplxHookWdth/2,cmplxHookWdth/2,-tblThck+cmplxHkOffset.z*2-fudge*2])
         cylinder(d=thmbScrewDia,h=clmpDims.z+fudge*4); 
+      
   }
-  //simple table clamp
+  //thumbscrew
+  if ((export=="thmbScrew")||(export=="none"))
+    translate(cmplxHkOffset+[cmplxHookWdth/2,cmplxHookWdth/2,-tblThck+cmplxHkOffset.z*2-fudge*2]) thmbScrew();
   
   
   
@@ -139,22 +150,7 @@ module clamp(){
     }
     
   }//body
-  module smplHook(){
-    cube([hookWdth,minWallThck,tblThck+minWallThck],true);
-    translate([0,rmtDims.y/4,-(tblThck+minWallThck)/2]) 
-      cube([hookWdth,rmtDims.y/2,minWallThck],true);
-      
-    //tip
-    translate([0,rmtDims.y/2,-tblThck/2-minWallThck]){
-      rotate([-10,00,0]) rotate_extrude(angle=180) 
-         square([hookWdth/2,minWallThck]);
-      rotate([0,-90,0]) rotate_extrude(angle=10)
-        translate([minWallThck/2,0,0]) square([minWallThck,hookWdth],center=true);
-    }
-    //chamfer
-    translate([0,0,-(tblThck+minWallThck)/2]) rotate([0,90,0]) 
-      cylinder(d=minWallThck,h=hookWdth,center=true);
-  }
+  
   
   module cmplxHook(cut=false){
     if (cut)
@@ -167,24 +163,25 @@ module clamp(){
      difference(){
       union(){
         translate(cmplxHkOffset+[0,0,0]) rotate([-90,-90,0]) 
-          linear_extrude(cmplxHookWdth) cmplxShape();
+          linear_extrude(mainRad/2) cmplxShape();
          translate(cmplxHkOffset) rotate([180,-90,0])
         rotate_extrude(angle=90) cmplxShape();
       }
       hull(){
-        translate([cblOffset.x-mainRad/2,-rmtDims.y/2+mainRad/2-minWallThck,0]) 
+        translate([cblOffset.x-mainRad/2,-rmtDims.y/2+mainRad/2-minWallThck,-fudge/2]) 
           chmfCylinder(r=mainRad/2+fudge,h=clmpDims.z+fudge,chmf=2+fudge);
-        translate([-mainRad/2+rmtDims.x/2+minWallThck,-rmtDims.y/2+mainRad/2-minWallThck,0]) 
+        translate([-mainRad/2+rmtDims.x/2+minWallThck,-rmtDims.y/2+mainRad/2-minWallThck,-fudge/2]) 
           chmfCylinder(r=mainRad/2+fudge,h=clmpDims.z+fudge,chmf=2+fudge);
       }
-     translate(cmplxHkOffset+[cmplxHookWdth-screwDia-crnRad,fudge,-cmplxHkOffset.z+clmpDims.z/2])
-       rotate([90,0,0]){
-         cylinder(d=screwDia+fudge,h=20+fudge);
-         translate([0,0,5]) cylinder(d=screwDia*2,h=15);
+      //screw
+       translate(cmplxHkOffset+[cmplxHookWdth-screwDia-crnRad,fudge,-cmplxHkOffset.z+clmpDims.z/2])
+         rotate([90,0,0]){
+           cylinder(d=screwDia+fudge,h=20+fudge);
+       translate([0,0,5]) cylinder(d=screwDia*2,h=15);
        }
     
    
-    }
+    } //diff
     //lower part
     translate(cmplxHkOffset+[0,0,-cmplxHkOffset.z*2-tblThck]){
       rotate([-90,0,-90]) rotate_extrude(angle=90) cmplxShape();
@@ -207,6 +204,18 @@ module clamp(){
   
   }//cmplxHook
   
+  module thmbScrew(){
+    difference(){
+      union(){
+        if (export=="thmbScrew")
+          metric_thread(diameter=thmbScrewDia-fudge,pitch=screwPitch,length=clmpDims.z+minWallThck,leadin=1);  
+        else cylinder(d=thmbScrewDia,h=clmpDims.z+minWallThck);
+          translate([0,0,-5]) linear_extrude(5) thumbScrewShape(drill=0);
+      }
+      // center bore for print stability
+      translate([0,0,-5-fudge/2]) cylinder(d=thmbScrewDia/3,h=5+clmpDims.z+minWallThck+fudge);
+    }
+  }
 }
 
 *chmfCylinder();
