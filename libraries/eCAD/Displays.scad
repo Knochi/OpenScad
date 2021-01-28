@@ -5,10 +5,33 @@ fudge=0.1;
 Midas69x16();
 translate([0,100,0]) EA_W128032(true);
 translate([100,0,0]) LCD_20x4();
-translate([200,0,0]) LCD_16x2();
-translate([320,0,0]) FutabaVFD();
+translate([100,60,0]) LCD_16x2();
+translate([100,120,0]) FutabaVFD();
+translate([200,0,0]) Adafruit128x128TFT();
+translate([400,0,0]) raspBerry7Inch();
 
-!Adafruit128x128TFT();
+
+translate([400,0,-95/2-10]) cube([240,190,95],true);
+
+module raspBerry7Inch(cutOut=false,matThck=3){
+  ovDims=[192.96,110.76,5.96+2.5];
+  lensDims=[ovDims.x,ovDims.y,0.72];
+  aaDims=[154.08,85.92,0.02];
+  hsngDims=[166.2,100.6,5.96-lensDims.z];
+  cutOutDims=[176.8,102.13,matThck];
+
+  if (cutOut)
+    translate([0,0,-(matThck/2)]) cube(cutOutDims,true);
+  else{
+    color("darkSlateGrey") translate([0,0,lensDims.z/2]) rndRect(lensDims,6.5,0);
+    color("grey") translate([0,0,lensDims.z]) cube(aaDims,true);
+    color("silver") translate([0,0,-hsngDims.z/2]) cube(hsngDims,true);
+    }
+
+}
+
+
+*Adafruit128x128TFT();
 module Adafruit128x128TFT(){
   drillDist=[1.55*25.4,1.5*25.4];
   PCBDims=[1.75*25.4,1.3*25.4,1.6];
@@ -265,6 +288,28 @@ module EA_W128032(center=false){
     }
   }
 }
+
+
+
+module rndRect(size, rad, drill=0, center=true){  
+  if (len(size)==2) //2D shape
+    difference(){
+      hull() for (ix=[-1,1],iy=[-1,1])
+        translate([ix*(size.x/2-rad),iy*(size.y/2-rad)]) circle(rad);
+      for (ix=[-1,1],iy=[-1,1])
+        translate([ix*(size.x/2-rad),iy*(size.y/2-rad)]) circle(d=drill);
+    }
+  else
+    
+    linear_extrude(size.z,center=center) 
+    difference(){
+      hull() for (ix=[-1,1],iy=[-1,1])
+      translate([ix*(size.x/2-rad),iy*(size.y/2-rad)]) circle(rad);
+      for (ix=[-1,1],iy=[-1,1])
+        translate([ix*(size.x/2-rad),iy*(size.y/2-rad)]) circle(d=drill);
+    }
+}
+
 
 
 function xTilt(dist,ang)=[tan(ang)*dist,dist]; 

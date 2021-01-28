@@ -10,12 +10,15 @@ translate([10,0,0]) QFN(label="QFN");
 translate([16,0,0]) SOIC(8,"SOIC");
 translate([22,0,0]) SSOP(14,"SSOP");
 translate([28,0,0]) LED5050(6);
+translate([33,4,0]) LED3030();
 translate([33,0,0]) sk6812mini();
 translate([37,0,0]) miniTOPLED();
 translate([40,0,0]) APA102();
 translate([45,0,0]) SMF();
 translate([50,0,0]) sumidaCR43();
 translate([57,0,0]) TY_6028();
+
+
 
 
 *ACT1210();
@@ -193,6 +196,29 @@ module resRadial(type="SQM", power=5){
   color("silver") for (ix=[-1,1])
     translate([ix*pitch/2,0,-3.5]) cylinder(d=0.8,h=3.5+gapOffset);
 }
+
+*LED3030();
+module LED3030(){
+  //e.g. Osram Duris S5
+  ovDims=[3,3,0.6];
+  difference(){
+    color("ivory") translate([0,0,ovDims.z/2]) cube(ovDims,true);
+    color("orange") difference(){
+      translate([0,0,ovDims.z]) rndRectInt([2.55,2.55,0.1],0.5,true);
+      translate([-2.55/2,2.55/2,ovDims.z]) cylinder(d=1,$fn=4,center=true);
+    }
+    translate([0,0,-0.05]) pads(0.2);
+  }
+  
+  pads();
+  module pads(thick=0.1){
+    color("silver") translate([(1.55-2.68)/2,0,thick/2]) 
+      rndRectInt([1.55,2.4,thick],0.1,true);
+    color("silver") translate([-(0.58-2.68)/2,0,thick/2]) 
+      rndRectInt([0.58,2,thick],0.1,true);
+  }
+}
+
 
 *LED_3mm();
 module LED_3mm(){

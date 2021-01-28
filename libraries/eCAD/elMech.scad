@@ -8,6 +8,71 @@ translate([-15,0,0]) rotEncoder();
 translate([30,0,0]) SMDSwitch();
 translate([-40,0,0]) AirValve();
 translate([-80,0,0]) AirPump();
+translate([-140,0,0]) SSR();
+
+
+*PT15();
+module PT15(rotor="R",center=true){
+  cntrOffset= center ? [[0,0,0],[0,0,0]] : [[0,0,10],[90,0,0]];
+  //body
+  translate(cntrOffset[0]) rotate(cntrOffset[1]){
+     linear_extrude(6) difference(){
+      circle(d=15);
+      circle(d=5);
+    }
+    difference(){
+      color("ivory") translate([0,0,0.5]) cylinder(d=5,h=5);
+      linear_extrude(6) rotorR();
+    }
+  }
+
+  module rotorR(){
+    difference(){
+            circle(d=4);
+            translate([-(4.02+fudge)/2,4.02/2-(4.02-3.52),0]) square(4.02+fudge);
+          }
+  }
+}
+
+module SSR(){
+  //Solid State Relay
+  //e.g. Fotek SSR-40 DA
+
+  bdDims=[60,45.4,22.1];
+  pltDims=[62.5,44.4,2.65];
+  color("whiteSmoke") translate([0,0,1.1]) body();
+  color("silver") plate();
+
+  module body(){
+    sltWdth=(bdDims.x-37-10)/2;
+    difference(){
+      translate([0,0,bdDims.z/2])  cube(bdDims,true);
+      //mounting holes
+      for (ix=[-1,1]){
+        translate([ix*(37+10)/2,0,-fudge/2]) cylinder(d=10,h=bdDims.z+fudge);
+        translate([ix*((bdDims.x-sltWdth)/2+fudge),0,bdDims.z/2]) cube([sltWdth+fudge,10,bdDims.z+fudge],true);
+      }
+      //screw terminals
+      for (ix=[-1,1],iy=[-1,1]){
+        translate([ix*((bdDims.x-11.6)/2+fudge),iy*(16.75+10.8)/2,bdDims.z-8/2]) cube([11.6+fudge,10.8,8+fudge],true);
+      translate([0,0,bdDims.z-0.8/2]) cube([30.25,43.3,0.8+fudge],true);
+        
+      }
+    }
+  }
+
+  module plate(){
+    linear_extrude(pltDims.z) difference(){
+      square([pltDims.x,pltDims.y],true);
+      translate([(pltDims.x-4.8)/2-4.6,0]) circle(d=4.8);
+      translate([-((pltDims.x-7.3)/2-3.75),0])
+        hull() for (ix=[-1,1])
+            translate([ix*(7.3-4.4)/2,0]) circle(d=4.4);
+    }
+  }
+
+
+}
 
 *AirPump();
 module AirPump(){
@@ -48,7 +113,7 @@ module AirPump(){
       }}
 }
 
-!AirValve();
+*AirValve();
 module AirValve(clamp=false){
   // CEME 5000EN1,5P; SH-V08298C-R(C1)4
   
