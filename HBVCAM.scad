@@ -4,7 +4,7 @@ fudge=0.1;
 $fs=0.5;
 
 /* [Dimensions] */
-bdyDia=20;
+bdyDia=18;
 minWallThck=1.2;
 brngBore=10;
 brngDia=15;
@@ -17,13 +17,19 @@ showBodyMain=true; //show main Body
 showBodyCap=true;
 showStepper=false;
 showBearings=true;
+showMonitor=true;
 
 
+
+if (showMonitor) rotate([90,0,0]) translate([0,-160,-66]) asusVA24D();
 
 if (showStepper)
   translate([40+minWallThck,0,0]) rotate([0,-90,0]) microStepper();
 
-camASY();
+rotate([90,0,0]) camASY();
+
+
+
 module camASY(){
   //https://www.banggood.com/HBV-5640-FF-Fixed-Focus-5MP-USB-OV5640-Laptop-Camera-Module-5-Million-Pixels-Camera-2592+1944-p-1709224.html
   
@@ -124,4 +130,24 @@ module bearing(d=10,D=15,B=4){
     cylinder(d=D,h=B,center=true);
     cylinder(d=d,h=B+fudge,center=true);
   }
+}
+
+*asusVA24D();
+module asusVA24D(){
+  //dummy of asus monitor
+  ovDims=[539.7,323.55,59.30];
+  bezelThck=14.39;
+  AADims=[527.04,296.46]; //active area
+  AAcntrPos=[0,18.83/2];
+
+  difference(){
+    color("darkSlateGrey") translate([0,-AAcntrPos.y,0]) union(){
+      translate([0,0,-bezelThck/2+ovDims.z]) cube([ovDims.x,ovDims.y,bezelThck],true);
+      translate([0,0,(ovDims.z-bezelThck)/2]) cube([ovDims.x*0.7,ovDims.y*0.5,ovDims.z-bezelThck],true);
+    }
+      for (ix=[-1,1],iy=[-1,1])
+        translate([ix*100/2,iy*100/2,-fudge/2]) cylinder(d=4,h=20);
+      color("grey") translate([0,0,ovDims.z]) cube([AADims.x,AADims.y,fudge],true);
+    }
+  
 }

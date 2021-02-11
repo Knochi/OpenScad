@@ -5,6 +5,7 @@ translate([12,0,0]) pushButton(col="red");
 translate([12,15,0]) pushButton(col="green");
 translate([12,30,0]) pushButton(col="white");
 translate([-15,0,0]) rotEncoder();
+translate([-15,30,0]) microStepper();
 translate([30,0,0]) SMDSwitch();
 translate([-40,0,0]) AirValve();
 translate([-80,0,0]) AirPump();
@@ -33,6 +34,25 @@ module PT15(rotor="R",center=true){
           }
   }
 }
+
+module microStepper(angle=0){
+  //Machifit GA12BY15
+  color("gold") translate([0,0,-9/2]) cube([12,10,9],true); //gearbox
+  
+  color("silver"){
+    //shaft
+    rotate(angle){
+      difference(){
+        cylinder(d=3,h=10);
+        translate([3-0.5,0,1+9/2]) cube([3,3,9+fudge],true);
+      }
+      cylinder(d=4,h=0.8);
+    }
+    //motor body
+    translate([0,0,-19.8]) cylinder(d=12,h=10.8);
+  }
+}
+
 
 module SSR(){
   //Solid State Relay

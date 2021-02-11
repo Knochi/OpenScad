@@ -18,7 +18,7 @@ fudge=0.1;
 translate([-30,0,0]) XH(2);
 translate([-15,0,0]) mUSB(true);
 usbA();
-translate([10,-4,0]) pinHeader(10,2);
+translate([10,-4,0]) pinHeader(10,2,markPin1=true);
 translate([10,4,0]) pinHeader(5,1);
 translate([10,8,0]) pinHeaderRA(10);
 translate([10,24,0]) boxHeader(10);
@@ -370,7 +370,7 @@ module usbA(){
 }
 
 *pinHeader();
-module pinHeader(pins=10, rows=2,center=false, diff="none", thick=3+fudge,
+module pinHeader(pins=10, rows=2,center=false, markPin1=false, diff="none", thick=3+fudge,
        plugJmprCol=[]){
 
   cntrOffset= center ? [-(pins-rows)/rows*2.54/2,-(rows-1)*2.54/2,0]:[0,0,0];
@@ -389,9 +389,13 @@ module pinHeader(pins=10, rows=2,center=false, diff="none", thick=3+fudge,
         pinNo=(i*rows+1)+j;
         translate ([i*2.54,j*2.54,2.54/2]){
           color("DarkSlateGray")cube(2.54,true);
-          color("gold") translate([0,0,pinOffSet]) cube([0.64,0.64,pinLength],true);
+          if ((pinNo==1)&&markPin1)
+            color("red") translate([0,0,pinOffSet]) cube([0.64,0.64,pinLength],true);
+          else
+            color("gold") translate([0,0,pinOffSet]) cube([0.64,0.64,pinLength],true);
           if (plugJmprCol[pinNo-1]) translate([0,0,2.54/2])
-          jumperWire(plugJmprCol[pinNo-1]);
+            jumperWire(plugJmprCol[pinNo-1]);
+          
         }
       }
     }
