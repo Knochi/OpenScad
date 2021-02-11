@@ -3,7 +3,7 @@ fudge=0.1;
 
 use <bend.scad>
 
-*translate([20,0,0]) SE0802();
+translate([20,0,0]) SE0802();
 solenoid();
 
 
