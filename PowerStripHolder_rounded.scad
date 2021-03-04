@@ -16,7 +16,7 @@ fudge=0.1;
 
 // [show]
 showSection=false;
-cableSide=true;
+cableSide=false;
 
 powerStripWthSwitch();
 

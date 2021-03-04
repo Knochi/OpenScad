@@ -94,6 +94,20 @@ module SSR(){
 
 }
 
+!MEN1281();
+module MEN1281(){
+  for (ix=[-1,1]){
+    translate([ix*(10-2.5)/2,0,1.2])
+      cube([2.5,5,2.4],true);
+    translate([ix*(10-2.5)/2,0,-3.1]) cylinder(d=2.5,h=3.1);
+    }
+    translate([0,0,5.4]) cylinder(d=3,h=7-5.4);
+    translate([0,1.5,2.4]) rotate([90,0,0]) 
+      linear_extrude(3) 
+        polygon([[-5,0],[-5,1],[-5+1.6,1],[-1.5,3],
+                 [1.5,3],[5-1.6,1],[5,1],[5,0]]);
+    
+}
 *AirPump();
 module AirPump(){
   //CJP37-C12A2
