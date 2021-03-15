@@ -16,7 +16,7 @@ fudge=0.1;
 
 
 translate([-30,0,0]) XH(2);
-translate([-15,0,0]) mUSB(true);
+translate([-15,0,0]) mUSB(false);
 usbA();
 translate([10,-4,0]) pinHeader(10,2,markPin1=true);
 translate([10,4,0]) pinHeader(5,1);
@@ -266,6 +266,23 @@ module DSub(pins=9, gender="female", give2D=false){
       }
     }
   } //module
+
+}
+
+*SH();
+module SH(pins=4,sideEntry=true,center=false){
+  pitch=1;
+  A=(pins-1)*pitch;
+  B=A+3;
+  bdyDims= sideEntry ? [B,4.25,2.9] : [B,2.9,4.25];
+  centerOffset= center ? [A/2,0,0] : [0,0,0];
+  plugDims=[pins,3+fudge,2.1]; //
+
+  color("darkSlateGray") translate([0,0,bdyDims.z/2]) 
+  difference(){
+    cube(bdyDims,true);
+    translate([0,-(bdyDims.y-plugDims.y+fudge)/2,0]) cube(plugDims,true);
+  }
 
 }
 

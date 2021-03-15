@@ -4,17 +4,33 @@ MGW12();
 translate([0,-50,0]) MGN12();
 
 module MGN12(length=300,pos=0.2,type="H",center=true){
-  //RDBB/CNA linear rails 
+  //RDBB/CNA linear rails CNA Store
   //https://de.aliexpress.com/store/group/MGN12-and-MGW12/1452393_259128619.html
   
+  // travel length is rail_length-block_length(L)!
+
   //ASY
   H=13;
   H1=3;
   N=7.5;
-  
-  
-  rail();
-  translate([-length/2+pos*length,0,H1]) block();
+
+  //Block Dimensions
+  W=27;
+  B=20;
+  B1=3.5;
+  C= (type=="H") ? 20 : 15; //Block Drill distance X
+  L1=(type=="H") ? 32.4 : 21.7; //Block length of contact plate
+  L= (type=="H") ? 45.4 : 34.7; //Block overall length
+  Gs=2;
+  MxL=[3,3.5];
+
+  travel=length-L;
+  if ($children)
+    translate([-travel/2+pos*travel,0,0]) children();
+  else{
+    color("silver") rail();
+    color("lightGrey") translate([-travel/2+pos*travel,0,H1]) block();
+  }
 
   module rail(){
     wr=12; //width of rail
@@ -40,14 +56,6 @@ module MGN12(length=300,pos=0.2,type="H",center=true){
 
   module block(){
     rad=1;
-    W=27;
-    B=20;
-    B1=3.5;
-    C= (type=="H") ? 20 : 15; //Drill distance X
-    L1=(type=="H") ? 32.4 : 21.7; //length of contact plate
-    L= (type=="H") ? 45.4 : 34.7; //overall length
-    Gs=2;
-    MxL=[3,3.5];
     
     translate([0,0,(H-H1)/2]) difference(){
       rotate([0,90,0]) rndCube([H-H1,W,L],rad,true);
@@ -69,9 +77,22 @@ module MGW12(length=300,pos=0.2,type="H",center=true){
   //Rail
   
   //Block
-  
-  rail();
-  translate([-length/2+pos*length,0,H1]) block();
+  W=40;
+  B=28;
+  B1=6;
+  C= (type=="H") ? 28 : 15; //Drill distance X
+  L1=(type=="H") ? 45.6 : 31.3; //length of contact plate
+  L= (type=="H") ? 60.4 : 46.1; //overall length
+  Gs=1.4;
+  MxL=[3,3.6];
+
+  travel=length-L;
+  if (len(children()) )
+    translate([-travel/2+pos*travel,0,0]) children();
+  else{
+    color("silver") rail();
+    color("lightGrey") translate([-travel/2+pos*travel,0,H1]) block();
+  }
 
   module rail(){
     wr=24; //width of rail
@@ -97,14 +118,7 @@ module MGW12(length=300,pos=0.2,type="H",center=true){
 
   module block(){
     rad=1;
-    W=40;
-    B=28;
-    B1=6;
-    C= (type=="H") ? 28 : 15; //Drill distance X
-    L1=(type=="H") ? 45.6 : 31.3; //length of contact plate
-    L= (type=="H") ? 60.4 : 46.1; //overall length
-    Gs=1.4;
-    MxL=[3,3.6];
+   
     
     translate([0,0,(H-H1)/2]) difference(){
       rotate([0,90,0]) rndCube([H-H1,W,L],rad,true);

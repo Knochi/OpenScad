@@ -13,7 +13,7 @@
  */
  
 // The type of extrusion, 2020 or 2040
-extrusionSize = "2020"; // [2020, 2040, 2080]
+extrusionSize = "4040"; // [2020, 2040, 2080]
 
 // The length of the extrusion
 extrusionLength = 50;  // [1:300]
@@ -70,6 +70,11 @@ if (extrusionSize == "2080") {
     profile2080();
 }
 
+if (extrusionSize == "4040") {
+    linear_extrude(extrusionLength)
+    profile4040();
+}
+
 module profile2020() {
   
     centerDia = (slotStyle=="V-Slot") ? 4.2 : centerDia;
@@ -107,7 +112,22 @@ module profile2040() {
                 profile2020();
             roundedSquare(outerWallThickness / 4, extrusionWidth, slotGap);
         }
-        joinerCutout();
+        joiner2CutOut();
+    }
+}
+
+module profile4040() {
+    difference() {
+        union() {
+            for (ix=[-1,1],iy=[-1,1]){
+            translate([ix*extrusionHeight/2,iy*extrusionHeight / 2])
+                profile2020();
+            }
+            
+            roundedSquare(outerWallThickness / 4, extrusionWidth*2, slotGap);
+            roundedSquare(outerWallThickness / 4, slotGap, extrusionWidth*2);
+        }
+        joiner4CutOut();
     }
 }
 
@@ -120,11 +140,11 @@ module profile2080() {
                 profile2040();
             roundedSquare(outerWallThickness / 4, extrusionWidth, slotGap);
         }
-        joinerCutout();
+        joiner2CutOut();
     }
 }
 
-module joinerCutout() {
+module joiner2CutOut() {
         centerGap = ((extrusionWidth - slotMax) / 2 - innerWallThickness) * 2;
         roundedSquare(wallThickness / 4, extrusionWidth - wallThickness * 2, centerGap);
         difference() {
@@ -135,6 +155,24 @@ module joinerCutout() {
             translate([0, -extrusionHeight / 2])
             roundedSquare(wallThickness / 4, centerSquare, centerSquare);
         }
+}
+
+module joiner4CutOut() {
+        centerGap = ((extrusionWidth - slotMax) / 2 - innerWallThickness) * 2;
+        
+        for (ir=[0:90:270]) 
+            rotate(ir) translate([extrusionWidth/2,0]){
+                roundedSquare(wallThickness / 4, extrusionWidth - wallThickness * 2, centerGap);
+                difference() {
+                circle(d = extrusionWidth - wallThickness, $fn = 4);
+                roundedSquare(wallThickness / 4, extrusionWidth, centerGap);
+                translate([0, extrusionHeight / 2])
+                    roundedSquare(wallThickness / 4, centerSquare, centerSquare);
+                translate([0, -extrusionHeight / 2])
+                    roundedSquare(wallThickness / 4, centerSquare, centerSquare);
+                }
+        }
+        circle(d=extrusionWidth*2-centerSquare*sqrt(2),$fn=4);
 }
 
 module slot() {
