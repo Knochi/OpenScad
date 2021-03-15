@@ -42,8 +42,8 @@ module camASY(){
   capDia=bdyDia-minWallThck*2-spcng*2;
   scrwDia=1.5;
   scrwPosDia=brngBore+minWallThck+(capDia-brngBore-minWallThck)/2;
-  %body();
-  translate(hbvPos) HBVCAM();
+  body();
+  if (showHBV) translate(hbvPos) HBVCAM();
   
   if (showBearings) for(ix=[-1,1])
     translate([ix*(bdyWdth/2+brngThck/2+minWallThck),0,0]) rotate([0,90,0]) bearing(brngBore,brngDia,brngThck);
