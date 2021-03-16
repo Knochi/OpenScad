@@ -501,29 +501,63 @@ module SMDpassive(size="0805", thick=0, label=""){
     translate([i*(bdDims.x+mtlLngth)/2,0,ovThick/2]) cube([mtlLngth,bdDims.y,ovThick],true);
 }
 
-*QFN(pos=64);
-module QFN(pos=28,label=""){
+*QFN(54,[7,7,1],0.4);
+module QFN(pos=28,size=[5,5,1], pitch=0.5,label="QFN"){
   // JEDEC MO-220
+  // https://www.jedec.org/system/files/docs/MO-220K01.pdf
+  /*
+   -- Variation Designators --
+  1st digit - max thickness (A)
+  V: 1.0; W: 0.8
+  
+  2nd/3rd digit - body length/width (D/E)
+  [A:G] - [1.0:0.5:4.0] e.g. F=3.5mm (1.0+5*0.5)
+  [H:R] - [5.0:1:12.0]
+  [S:U] - [4.5:1:6.5]
+  
+  4th digit - pitch (e)
+  A: 1.0; B:0.8; C:0.65; D:0.5; E:0.4
+  */
   
   //QFN24 (4x4), 28 or QFN32 (5x5)
-  //common
-  A=0.85;   //total thickness 
-  A1=0.035; //standoff        
-  A3=0.2;   //lead Frame Thick
+  
+  // --- LEAD WIDTH ---
+  bnom= (pitch==1.0)  ? 0.4 :
+        (pitch==0.8)  ? 0.3 :
+        (pitch==0.65) ? 0.3 :
+        (pitch==0.5)  ? 0.25 :
+        (pitch==0.4)  ? 0.20 : 0.25; //default pitch=0.5
+  bmin= (pitch==1.0)  ? 0.3 :
+        (pitch==0.8)  ? 0.25 :
+        (pitch==0.65) ? 0.25 :
+        (pitch==0.5)  ? 0.18 :
+        (pitch==0.4)  ? 0.15 : 0.18; //default pitch=0.5
+          
+  // --- COMMON DIMENSIONS ---
+  A=size.z;   //max thickness V=1.0, W=0.8
+  A1=0.02;    //nominal standoff        
+  //A2= (size.z<1) ? 0.6 : 0.8 //nominal body Hght
+  A3=0.2;   //lead Frame Thick incl. standoff
+  //theta=10; //flank angle 0..14° 
+  //K= 0.2    //minimum spacing lead corner
+  //R= bmin/2 //radius of leads
   b=0.25;   //lead width
   
   //28/32/64
-  D= (pos<28) ? 4.0 : 
+  //length/width from pins or size
+  D= (len(size)<2) ? size.x ://auto size when nothing provided
+     (pos<28) ? 4.0 : 
      (pos<48) ? 5.0 : 
-     (pos<64) ? 7.0 : 9.0;    //body size X
+     (pos<64) ? 7.0 : 9.0 ;    //body size X
   
-  E=D;      //body size y
+  E= (len(size)<2) ? size.y :D;      //body size y
+  //thermal pad size.x
   J=(pos<28) ? 2.6 : //28
     (pos<48) ? 3.1 : //32
     (pos<64) ? 5.15 : 7.15;  //48/64 //pad size x 
   
   K=J;      //pad size Y
-  e=0.5;    //pitch
+  e=pitch;    //pitch
   L= ((pos==32) || (pos==48)) ? 0.4 : 0.55;   //lead Length /0.4
   //pos=28;
   fudge=0.01; //very small fudge

@@ -1,4 +1,7 @@
 use <connectors.scad>
+use <packages.scad>
+use <elMech.scad>
+
 
 $fn=20;
 fudge=0.1;
@@ -6,6 +9,8 @@ fudge=0.1;
 // Colors
 boardGreenCol=[0.07,0.3,0.12]; //from KiCAD
 goldPinsCol=[0.859,0.738,0.496];
+FR4Col=[0.43,0.46,0.295];
+
 piPico();
 
 module piPico(){
@@ -17,11 +22,17 @@ module piPico(){
   pcbDims=[21,51,1];
   holeDist=[11.4,pcbDims.y-4];
   
+  //parts
+  MCUPos=[0,0.5,0];
+  btnPos=[-pcbDims.x/2+7,pcbDims.y/2-12,0];
+  
   translate([0,0,-pcbDims.z/2]){
     PCB();
     pads();
   }
   translate([0,pcbDims.y/2-1,0]) rotate(180) mUSB();
+  translate(MCUPos) QFN(54,[7,7,1],0.4,"RP2040");
+  translate(btnPos) rotate(90) KMR2();
   
   module pads(){
     //pads
@@ -52,13 +63,13 @@ module piPico(){
       translate([0,-pcbDims.y/2+1.61]) rotate(-90) picoPad(true,true);
       
       for (ix=[-1,1],iy=[-1,1])
-        translate([ix*holeDist.x/2,iy*holeDist.y/2,0]) cylinder(d=3.8,h=pcbDims.z+fudge,center=true);
+        translate([ix*holeDist.x/2,iy*holeDist.y/2,0])  color(boardGreenCol) cylinder(d=3.8,h=pcbDims.z+fudge,center=true);
     }
   }
   
   module drillPad(){
-    color(goldPinsCol) difference(){
-      cylinder(d=3.8,h=pcbDims.z,center=true);
+    color(FR4Col) difference(){
+      cylinder(d=3.8,h=pcbDims.z-fudge,center=true);
       cylinder(d=2.1,h=pcbDims.z+fudge,center=true);
     }
   }

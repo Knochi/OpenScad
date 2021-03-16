@@ -94,7 +94,7 @@ module SSR(){
 
 }
 
-!MEN1281();
+*MEN1281();
 module MEN1281(){
   for (ix=[-1,1]){
     translate([ix*(10-2.5)/2,0,1.2])
@@ -351,7 +351,7 @@ module pushButton(panelThck=2,col="darkSlateGrey"){
   }
 }
 
-*KMR2();
+!KMR2();
 module KMR2(){
   // C and K Switches Series KMR 2
   // https://www.ckswitches.com/media/1479/kmr2.pdf

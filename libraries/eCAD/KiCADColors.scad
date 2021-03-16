@@ -1,6 +1,12 @@
 metalGreyPinCol=[0.824,0.820,0.781];
 goldPinCol=[0.859,0.738,0.496];
 blackBodyCol=[0.148,0.145,0.145];
+greenBoardCol=[0.07,0.3,0.12];
+FR4darkCol=[0.2,0.17,0.087];
+FR4Col=[0.43,0.46,0.295];
+
+//testcube
+*color(FR4Col) cube();
 
 /* From KiCAD wrl file
 Shape {
@@ -36,7 +42,7 @@ Shape {
         }
     }
 }
-Shape {
+Shape { //black body
     appearance Appearance {material DEF IC-BODY-EPOXY-04 Material {
         ambientIntensity 0.293
         diffuseColor 0.148 0.145 0.145
