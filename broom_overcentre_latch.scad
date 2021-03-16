@@ -220,7 +220,7 @@ module right_hinge()
         {
             mount_clearance();
             translate(A)
-            circle(d=hinge_pin_hole_diameter+2*t+2*hinge_clearance);
+            circle(d=hinge_pin_hole_diameter+2*t+2*hinge_clearance,h=hinge_height/4+vertical_clearance/2+1);
         }
 
         translate([0,0,hinge_height*3/4+vertical_clearance/2-epsilon])
@@ -252,7 +252,7 @@ module left_hinge()
         {
             mount_clearance();
             translate(A)
-            circle(d=hinge_pin_hole_diameter+2*t+2*hinge_clearance);
+            circle(d=hinge_pin_hole_diameter+2*t+2*hinge_clearance,h=hinge_height/4+vertical_clearance/2+1);
         }
         
         translate([0,0,hinge_height/4+vertical_clearance/2-epsilon])
@@ -354,18 +354,18 @@ module mount_holes()
     rotate([90,0,0])
     rotate(180/8)
     {
-        cylinder(h=t*t+0.5,d=mount_screw_diameter,$fn=20,center=true);
+        cylinder(h=t*t+0.5,d=mount_screw_diameter,$fn=8,center=true);
             
         translate([0,0,t])
         if (mount_screw_counterbore_diameter>0)
         {
             cylinder(d=mount_screw_counterbore_diameter,
-                h=mount_screw_countersunk_depth+epsilon,$fn=20);
+                h=mount_screw_countersunk_depth+epsilon,$fn=8);
         } else 
         {
             cylinder(d1=mount_screw_diameter,
                 d2=mount_screw_diameter+(mount_screw_countersunk_depth+epsilon)*2,
-                h=mount_screw_countersunk_depth+epsilon,$fn=20);
+                h=mount_screw_countersunk_depth+epsilon,$fn=8);
         }
     }
 }
