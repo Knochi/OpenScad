@@ -124,13 +124,13 @@ module femHeaderSMD(pins=10,rows=1,height=3.7,pPeg=true,center=false){
   }//cntrOffset
 }
 
-*BIL30(give2D="");
-module BIL30(col="red",panel=2,give2D="none"){
+*BIL30(panel=3,cutOut=false);
+module BIL30(col="red",panel=2,cutOut=false){
   //4mm Jack
   //Hirschmann BIL30 (SKS-kontakt.de)
 
-  if (give2D=="cutOut")
-    intersection(){
+  if (cutOut)
+    translate([0,0,-panel-fudge/2]) linear_extrude(panel+fudge) intersection(){
       circle(d=8.2);
       square([8.2+fudge,7.2],true);
     }

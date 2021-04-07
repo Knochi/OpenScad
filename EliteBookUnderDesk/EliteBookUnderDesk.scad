@@ -4,11 +4,12 @@ $fn=20;
 extrusionWidth=0.4;
 wallCount=8;
 screwDia=3.5;
-counterSinkDia=7.5; //how deep a virtual
+counterSinkDia=8.5; 
 bookDims=[117*2,326,17.8];
 feetDims=[9,21.5,2.2];
 feetDist=[190,236,212.5]; //x, y1, y2
 feetxOffset=(25.5-17.5)/2;
+tblThck=19.4;
 spcng=1;
 fudge=0.1;
 
@@ -17,12 +18,19 @@ minWallThck=extrusionWidth*wallCount;
 
 HPEliteBook840G5();
 //left back
-translate([-(bookDims.x+minWallThck)/2-spcng/2,(feetDist[1])/2,(bookDims.z+spcng)/2-feetDims.z/2-spcng/2]) clamp(stopper=true,isLeft=true);
-mirror([1,0,0]) translate([-(bookDims.x+minWallThck)/2-spcng/2,(feetDist[2])/2,(bookDims.z+spcng)/2-feetDims.z/2-spcng/2])  clamp(stopper=true,isLeft=false);
-translate([-(bookDims.x+minWallThck)/2-spcng/2,-(feetDist[1])/2,(bookDims.z+spcng)/2-feetDims.z/2-spcng/2]) clamp(stopper=false,isLeft=true);
-mirror([1,0,0]) translate([-(bookDims.x+minWallThck)/2-spcng/2,-(feetDist[2])/2,(bookDims.z+spcng)/2-feetDims.z/2-spcng/2])  clamp(stopper=false,isLeft=false);
+translate([-(bookDims.x+minWallThck)/2-spcng/2,(feetDist[1])/2,(bookDims.z+spcng)/2-feetDims.z/2-spcng/2]) 
+  clamp(stopper=true,isLeft=true);
+mirror([1,0,0]) translate([-(bookDims.x+minWallThck)/2-spcng/2,(feetDist[2])/2,(bookDims.z+spcng)/2-feetDims.z/2-spcng/2])  
+  clamp(stopper=true,isLeft=false);
+translate([-(bookDims.x+minWallThck)/2-spcng/2,-(feetDist[1])/2,(bookDims.z+spcng)/2-feetDims.z/2-spcng/2]) 
+  clamp(stopper=false,isLeft=true);
+mirror([1,0,0]) translate([-(bookDims.x+minWallThck)/2-spcng/2,-(feetDist[2])/2,(bookDims.z+spcng)/2-feetDims.z/2-spcng/2])  
+  clamp(stopper=false,isLeft=false);
 
-!clamp(false);
+
+//USBHub
+translate([0,bookDims.y/2,bookDims.z+minWallThck+tblThck]) rotate(180) USBHub();
+*clamp(false);
 module clamp(stopper=true,isLeft=true){
   topWdth=20;
   footxOffset= isLeft ? feetxOffset : -feetxOffset;
@@ -91,8 +99,12 @@ module clamp(stopper=true,isLeft=true){
 }
 
 module HPEliteBook840G5(){
+  crnRad=3;
+  //color("silver") translate([-234/2,0,0]) rotate([90,0,0]) linear_extrude(326,center=true) import("EliteBook840G5_contour.svg");
   
-  color("silver") translate([-234/2,0,0]) rotate([90,0,0]) linear_extrude(326,center=true) import("EliteBook840G5_contour.svg");
+  color("silver") translate([0,0,bookDims.z/2]) rotate([90,0,0]) linear_extrude(bookDims.y,center=true) 
+    hull() for (ix=[-1,1],iy=[-1,1])
+      translate([ix*(bookDims.x/2-crnRad),iy*(bookDims.z/2-crnRad)]) circle(crnRad);
   //feet
   color("darkgrey")for (iy=[-1,1]){
     translate([-feetDist.x/2+feetxOffset,iy*feetDist[1]/2,0]) foot();
@@ -103,5 +115,29 @@ module HPEliteBook840G5(){
     hull() for (iy=[-1,1]) 
       translate([0,iy*(feetDims.y-feetDims.x)/2,-feetDims.z]) 
         cylinder(d=feetDims.x,h=feetDims.z);
+  }
+}
+
+
+*USBHub();
+module USBHub(){
+  //roline USB-C HUB 14025039
+  //https://www.reichelt.de/usb-3-0-hub-4-port-usb-c-zu-4x-usb-3-0-typ-a-roline-14025039-p289002.html
+  bdyDims=[93.5,28.5,10];
+  crnRad=1;
+  chmfer=0.5;
+  poly=[[-bdyDims.y/2+chmfer,-bdyDims.z/2],[-bdyDims.y/2,-bdyDims.z/2+chmfer],[-bdyDims.y/2,bdyDims.z/2-crnRad],
+        [-bdyDims.y/2+crnRad,bdyDims.z/2-crnRad],[-bdyDims.y/2+crnRad,-bdyDims.z/2]];
+  translate([0,0,bdyDims.z/2]) rotate([90,0,90]){
+    difference(){
+      color("sandybrown") linear_extrude(bdyDims.x,center=true){
+        translate([(bdyDims.y-bdyDims.z)/2,0]) circle(d=bdyDims.z);
+        translate([-bdyDims.z/4+crnRad/2,0]) square([bdyDims.y-bdyDims.z/2-crnRad,bdyDims.z],true);
+        translate([-bdyDims.y/2+crnRad,bdyDims.z/2-crnRad]) circle(crnRad);
+        polygon(poly);
+      }
+      translate([0,0,-bdyDims.x/2+5]) cube([12.3,4.6,10+fudge],true);
+    }
+    color("darkSlateGrey") translate([0,0,bdyDims.x/2]) cylinder(d=6,h=8.6);
   }
 }
