@@ -4,7 +4,7 @@ $fn=20;
 extrusionWidth=0.4;
 wallCount=8;
 screwDia=3.5;
-counterSinkDia=7.5; //how deep a virtual
+counterSinkDia=8; //how deep a virtual
 bookDims=[117*2,326,17.8];
 feetDims=[9,21.5,2.2];
 feetDist=[190,236,212.5]; //x, y1, y2
@@ -22,8 +22,9 @@ mirror([1,0,0]) translate([-(bookDims.x+minWallThck)/2-spcng/2,(feetDist[2])/2,(
 translate([-(bookDims.x+minWallThck)/2-spcng/2,-(feetDist[1])/2,(bookDims.z+spcng)/2-feetDims.z/2-spcng/2]) clamp(stopper=false,isLeft=true);
 mirror([1,0,0]) translate([-(bookDims.x+minWallThck)/2-spcng/2,-(feetDist[2])/2,(bookDims.z+spcng)/2-feetDims.z/2-spcng/2])  clamp(stopper=false,isLeft=false);
 
-!clamp(false);
-module clamp(stopper=true,isLeft=true){
+
+!mirror([1,0,0]) clamp(true,false);
+module clamp(stopper=false,isLeft=true){
   topWdth=20;
   footxOffset= isLeft ? feetxOffset : -feetxOffset;
   bottomWdth=(bookDims.x-feetDist.x+minWallThck+spcng+feetDims.x)/2+feetDims.x+footxOffset;
@@ -31,7 +32,8 @@ module clamp(stopper=true,isLeft=true){
   rad=4; //edge radii (median line)
   radOffset=rad-minWallThck/2;
   stprPos=[bottomWdth-feetDims.x*1.5,0,-(bookDims.z+feetDims.z+spcng)/2];
-
+  plateZOffset=(bookDims.z+minWallThck+feetDims.z+spcng)/2;
+  
   rotate([90,0,0]){
     linear_extrude(clampWdth,center=true)
       square([minWallThck,bookDims.z+feetDims.z-radOffset*2+spcng],true);
@@ -46,10 +48,10 @@ module clamp(stopper=true,isLeft=true){
         translate([rad,0]) square([minWallThck,clampWdth],true);
   }
     //top screwplate
-    translate([0,0,(bookDims.z+minWallThck+feetDims.z+spcng)/2]) plate(top=true);
+    translate([0,0,plateZOffset]) plate(top=true);
   
     //bottom restplate
-    translate([0,0,-(bookDims.z+minWallThck+feetDims.z+spcng)/2]) plate(top=false);
+    translate([0,0,-plateZOffset]) plate(top=false);
   
     //stopper
     if (stopper)
@@ -57,14 +59,18 @@ module clamp(stopper=true,isLeft=true){
       translate(stprPos){
         difference(){
           translate([0,clampWdth/4,feetDims.z/2]) cube([feetDims.x*2,clampWdth/2,feetDims.z],true);
-           hull() for (iy=[-1,1])
+          hull() for (iy=[-1,1])
             translate([0,iy*(feetDims.y-feetDims.x)/2,feetDims.z/2]) 
               cylinder(d=feetDims.x,h=feetDims.z+fudge,center=true);
+              for(iy=[-1,1]) 
+                translate([topWdth/2,iy*clampWdth/4,-plateZOffset+(minWallThck-fudge)/2]-stprPos) 
+                  cylinder(d=screwDia*2+spcng,h=feetDims.z+fudge);
          }
          for (ix=[-1,1])
            translate([ix*feetDims.x*0.75,0,feetDims.z/2]) 
             cylinder(d=feetDims.x/2,h=feetDims.z,center=true);
       }
+      
   module plate(top=false){
     width= top ? topWdth : bottomWdth;
     
