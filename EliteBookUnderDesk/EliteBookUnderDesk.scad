@@ -124,20 +124,46 @@ module USBHub(){
   //roline USB-C HUB 14025039
   //https://www.reichelt.de/usb-3-0-hub-4-port-usb-c-zu-4x-usb-3-0-typ-a-roline-14025039-p289002.html
   bdyDims=[93.5,28.5,10];
-  crnRad=1;
-  chmfer=0.5;
+  crnRad=2;
+  chmfer=1;
+  spcng=0.4;
+  hubMinWallThck=2;
+  capHght=5*hubMinWallThck;
+  
   poly=[[-bdyDims.y/2+chmfer,-bdyDims.z/2],[-bdyDims.y/2,-bdyDims.z/2+chmfer],[-bdyDims.y/2,bdyDims.z/2-crnRad],
         [-bdyDims.y/2+crnRad,bdyDims.z/2-crnRad],[-bdyDims.y/2+crnRad,-bdyDims.z/2]];
   translate([0,0,bdyDims.z/2]) rotate([90,0,90]){
+    difference(){ //body
+      color("sandybrown") linear_extrude(bdyDims.x,center=true)     
+        hubShape();
+      translate([0,0,-bdyDims.x/2+5]) cube([12.3,4.6,10+fudge],true);
+    }
+    //cable strain relief
+    color("darkSlateGrey") translate([0,0,bdyDims.x/2]) cylinder(d=6,h=8.6);
+  }
+  !endCap();
+  module endCap(){
+    endCapDims=[bdyDims.y+(hubMinWallThck+spcng)*2,capHght,bdyDims.z+(hubMinWallThck+spcng)*2];
+    //translate([endCapDims.x/2,0,endCapDims.z/2]) rotate([90,0,180]) 
     difference(){
-      color("sandybrown") linear_extrude(bdyDims.x,center=true){
-        translate([(bdyDims.y-bdyDims.z)/2,0]) circle(d=bdyDims.z);
+      union(){
+        hull() for(ix=[-1,1],iy=[-1,1])
+          translate([ix*(bdyDims.y/2-crnRad+spcng),iy*(bdyDims.z/2-crnRad+spcng),0]) 
+            cylinder(r=crnRad+hubMinWallThck,h=capHght);
+        translate([-30-endCapDims.x/2+minWallThck/2,-endCapDims.z/2,0]){
+          cube([30+crnRad+minWallThck,minWallThck,capHght]);
+          translate([0,minWallThck/2,0]) cylinder(d=minWallThck,h=capHght);
+        }
+      }
+      translate([0,0,hubMinWallThck]) linear_extrude(capHght-hubMinWallThck+fudge) offset(spcng) hubShape();
+      translate([0,0,-fudge/2]) linear_extrude(hubMinWallThck+fudge) offset(-hubMinWallThck/2) hubShape();
+    }
+  }
+  
+  module hubShape(){
+    translate([(bdyDims.y-bdyDims.z)/2,0]) circle(d=bdyDims.z);
         translate([-bdyDims.z/4+crnRad/2,0]) square([bdyDims.y-bdyDims.z/2-crnRad,bdyDims.z],true);
         translate([-bdyDims.y/2+crnRad,bdyDims.z/2-crnRad]) circle(crnRad);
         polygon(poly);
-      }
-      translate([0,0,-bdyDims.x/2+5]) cube([12.3,4.6,10+fudge],true);
-    }
-    color("darkSlateGrey") translate([0,0,bdyDims.x/2]) cylinder(d=6,h=8.6);
   }
 }
