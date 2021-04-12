@@ -141,7 +141,8 @@ module USBHub(){
     //cable strain relief
     color("darkSlateGrey") translate([0,0,bdyDims.x/2]) cylinder(d=6,h=8.6);
   }
-  !endCap();
+
+  translate() rotate([-90,0,-90]) endCap();
   module endCap(){
     endCapDims=[bdyDims.y+(hubMinWallThck+spcng)*2,capHght,bdyDims.z+(hubMinWallThck+spcng)*2];
     //translate([endCapDims.x/2,0,endCapDims.z/2]) rotate([90,0,180]) 

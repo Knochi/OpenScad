@@ -189,68 +189,120 @@ module DSubTHT(pins=9){
 }
 
 
-*DSub(gender="female",give2D=false);
-module DSub(pins=9, gender="female", give2D=false){
+*DSub(pins=15,isFemale=true,mountBehind=false,cutOut=true);
+module DSub(pins=9, isFemale=true, mountBehind=true, cutOut=false){
   // DIN 41652-1
+  // http://www.interfacebus.com/Connector_D-Sub_Mechanical_Dimensions.html
 
-  //e.g. D-Sub 9 dims
-  A=31.19; //sheet width
-  E=12.93; //sheet height
+  // Array of Dimensions to use depending on pin count
+  //          0:pins, 1:A   2:B   3:C   4:D   5:E   6:F   7:G   8:H   9:J  10:K  11:L
+  DSubDimsTbl= [[  9,31.19,17.04,25.12, 8.48,12.93,10.97, 6.05,19.53,10.97, 1.52, 1.02], //size 1
+                [ 15,39.52,25.37,33.45, 8.48,12.93,10.97, 6.05,27.76,10.97, 1.52, 1.02], //size 2
+                [ 25,53.42,39.09,47.17, 8.48,12.93,11.07, 6.05,41.53,10.97, 1.78, 1.25], //size 3
+                [ 37,],//size 4
+                [ 50,,,11.33,15.75,11.07,6.05,,13.82],//size 5
+                [104,,,12.90,17.35]];//size 6
+  //Tolerances
+  DSubTol=[];
+  //pick the right row
+  DSubDims=   (pins<= 9) ? DSubDimsTbl[0] :  //Shell size 1
+              (pins<=15) ? DSubDimsTbl[1] :  //Shell size 2
+              (pins<=25) ? DSubDimsTbl[2] :  //Shell size 3 
+              (pins<=37) ? DSubDimsTbl[3] :  //Shell size 4
+              (pins<=50) ? DSubDimsTbl[4] :  //Shell size 5
+              DSubDimsTbl[5];                //Shell size 6
 
+  // -- Break Down the Dims --
+  A=DSubDims[1]; //Sheet width
+  E=DSubDims[5]; //Sheet Height
+  C=DSubDims[3]; //drillDist
+  
+  B=DSubDims[2]; //plug width (inner for male, outer for female)
   Bm=16.79; //male inner
   Bf=16.46; //female outer
-  C=25; //drill dist
+  
+  D=DSubDims[4]; //plug height
   G=6.12; // thick
-  bodyDims=[19.2,10.72,4.1]; //bodywidth
+  
 
+  H=DSubDims[8]; //terminal body width
+  J=DSubDims[9]; //terminal body hght
+  bodyDims=[H,J,4.1]; //bodywidth
 
   //fixed Dims
-  Dm=7.9;
-  Df=8.02;
   rFem=2.59;
   rMale=2.62;
+  rPlug=0.102*25.4; //minimum radius
+  rTerm=0.062*25.4; //minimum radius
   rSheet=1;
   sheetThck=0.8;
+  spcng=0.3;
 
-  if (give2D=="cutOutFront") { //CutOut for Front Mounted
-    for (i=[-1,1])
-      translate([i*C/2,0]) circle(d=3.1);
-    hull() for (i=[-1,1]) {
-        translate([i*17.98/2,8.81/2]) circle(2.11);
-        translate([i*14.8/2,-8.81/2]) circle(2.11);
-      }
-  }
+  //pins
+  pitch= (pins<=15) ? [2.74,2.84] : [2.77,2.84];
+  pinDia=1;
 
-  else if (give2D=="cutOutBack") { //CutOut for Front Mounted
-    for (i=[-1,1])
-      translate([i*C/2,0]) circle(d=3.1);
-    hull() for (i=[-1,1]) {
-        translate([i*13.77/2,3.96/2]) circle(3.35);
-        translate([i*12.01/2,-3.96/2]) circle(3.35);
+  
+  if (cutOut){
+    if (mountBehind) { //CutOut for Back Mounted
+    cutOutDims=[B+sheetThck*2+spcng,D+sheetThck*2+spcng];
+      for (ix=[-1,1])
+        translate([ix*C/2,0]) circle(d=3.1);
+      rndTrapez(cutOutDims,rPlug);
       }
-  }
+  
+
+    else{ //CutOut for Front Mounted
+      for (ix=[-1,1])
+        translate([ix*C/2,0]) circle(d=3.1);
+      rndTrapez([H,J],rTerm);
+      }
+  }//cutout
 
   else {
     //sheet
     color("silver") difference(){
       hull(){
         for (i=[-1,1],j=[-1,1])
-          translate([i*(A/2-rSheet),j*(E/2-rSheet),-sheetThck]) cylinder(r=rSheet,h=sheetThck);
+          translate([i*(A/2-rSheet),j*(E/2-rSheet),-sheetThck]) 
+            cylinder(r=rSheet,h=sheetThck);
       }
       for (i=[-1,1])
-        translate([i*C/2,0,-sheetThck-fudge/2]) cylinder(d=3.05,h=sheetThck+fudge);
+        translate([i*C/2,0,-sheetThck-fudge/2]) 
+          cylinder(d=3.05,h=sheetThck+fudge);
     }
 
     //plug
-    color("darkSlateGrey")
-    if (gender=="female")
-      rndTrapez([Bf,Df,6],rFem);
-    else
+    
+    if (isFemale)
       difference(){
-        rndTrapez([Bm+1.2,Dm+1.2,6],rMale+0.6);
-        translate([0,0,fudge]) rndTrapez([Bm,Dm,6+fudge],rMale);
-      } //else gender
+        rndTrapez([B,D,6],rFem);
+      for (ix=[-(pins-1)/4:(pins-1)/4])
+        translate([ix*pitch.x,pitch.y/2,0])
+           cylinder(d=pinDia,h=6+fudge);
+      for (ix=[-(floor(pins/2-1)/2):(floor(pins/2-1)/2)])
+        translate([ix*pitch.x,-pitch.y/2,0])
+           cylinder(d=pinDia,h=6+fudge);
 
+      }
+    else{ //male
+      difference(){
+        rndTrapez([B+sheetThck*2,D+sheetThck*2,6],rMale+sheetThck);
+        translate([0,0,fudge]) rndTrapez([B,D,6+fudge],rMale);
+      } 
+      //pins
+      for (ix=[-(pins-1)/4:(pins-1)/4])
+        color("gold") translate([ix*pitch.x,pitch.y/2,0]){
+           cylinder(d=pinDia,h=5.1-pinDia/2);
+           translate([0,0,5.1-pinDia/2]) sphere(d=pinDia);
+      }
+      for (ix=[-(floor(pins/2-1)/2):(floor(pins/2-1)/2)])
+        color("gold") translate([ix*pitch.x,-pitch.y/2,0]){
+           cylinder(d=pinDia,h=5.1-pinDia/2);
+           translate([0,0,5.1-pinDia/2]) sphere(d=pinDia);
+      }
+
+    }
 
     //body
     color("silver") translate([0,0,-bodyDims.z-sheetThck]) rndTrapez(bodyDims,rFem);
@@ -259,6 +311,14 @@ module DSub(pins=9, gender="female", give2D=false){
   //submodule
   module rndTrapez(size=[],rad){
   xOffsetRad=tan(10)*(size.y-2*rad); //tan(alpha)=(GK/AK)
+  if (len(size)==2) //2D shape
+    hull(){
+      for (ix=[-1,1]){
+        translate([ix*(size.x/2-rad),size.y/2-rad]) circle(r=rad);
+        translate([ix*(size.x/2-rad-xOffsetRad),-size.y/2+rad]) circle(r=rad);
+      }
+    }
+  else //3dShape
     hull(){
       for (i=[-1,1]){
         translate([i*(size.x/2-rad),size.y/2-rad,0]) cylinder(r=rad,h=size.z);
