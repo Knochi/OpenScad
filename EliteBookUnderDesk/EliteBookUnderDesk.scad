@@ -14,45 +14,46 @@ spcng=1;
 fudge=0.1;
 
 /* --[hidden] -- */
-minWallThck=extrusionWidth*wallCount;
+clampMinWallThck=extrusionWidth*wallCount;
 
 HPEliteBook840G5();
 //left back
-translate([-(bookDims.x+minWallThck)/2-spcng/2,(feetDist[1])/2,(bookDims.z+spcng)/2-feetDims.z/2-spcng/2]) 
+translate([-(bookDims.x+clampMinWallThck)/2-spcng/2,(feetDist[1])/2,(bookDims.z+spcng)/2-feetDims.z/2-spcng/2]) 
   clamp(stopper=true,isLeft=true);
-mirror([1,0,0]) translate([-(bookDims.x+minWallThck)/2-spcng/2,(feetDist[2])/2,(bookDims.z+spcng)/2-feetDims.z/2-spcng/2])  
+mirror([1,0,0]) translate([-(bookDims.x+clampMinWallThck)/2-spcng/2,(feetDist[2])/2,(bookDims.z+spcng)/2-feetDims.z/2-spcng/2])  
   clamp(stopper=true,isLeft=false);
-translate([-(bookDims.x+minWallThck)/2-spcng/2,-(feetDist[1])/2,(bookDims.z+spcng)/2-feetDims.z/2-spcng/2]) 
-  clamp(stopper=false,isLeft=true);
-mirror([1,0,0]) translate([-(bookDims.x+minWallThck)/2-spcng/2,-(feetDist[2])/2,(bookDims.z+spcng)/2-feetDims.z/2-spcng/2])  
+//left front
+translate([-(bookDims.x+clampMinWallThck)/2-spcng/2,-(feetDist[1])/2,(bookDims.z+spcng)/2-feetDims.z/2-spcng/2]) 
+  clamp(stopper=false,isLeft=true,nudge=true);
+mirror([1,0,0]) translate([-(bookDims.x+clampMinWallThck)/2-spcng/2,-(feetDist[2])/2,(bookDims.z+spcng)/2-feetDims.z/2-spcng/2])  
   clamp(stopper=false,isLeft=false);
 
 
 //USBHub
-translate([0,bookDims.y/2,bookDims.z+minWallThck+tblThck]) rotate(180) USBHub();
-*clamp(false);
-module clamp(stopper=true,isLeft=true){
+translate([0,-bookDims.y/2,bookDims.z+clampMinWallThck+spcng-fudge]) rotate(0) USBHub();
+*clamp(stopper=false,nudge=true);
+module clamp(stopper=true,isLeft=true,nudge=false){
   topWdth=20;
   footxOffset= isLeft ? feetxOffset : -feetxOffset;
-  bottomWdth=(bookDims.x-feetDist.x+minWallThck+spcng+feetDims.x)/2+feetDims.x+footxOffset;
+  bottomWdth=(bookDims.x-feetDist.x+clampMinWallThck+spcng+feetDims.x)/2+feetDims.x+footxOffset;
   clampWdth=50;
   rad=4; //edge radii (median line)
-  radOffset=rad-minWallThck/2;
+  radOffset=rad-clampMinWallThck/2;
   stprPos=[bottomWdth-feetDims.x*1.5,0,-(bookDims.z+feetDims.z+spcng)/2];
-  plateZOffset=(bookDims.z+minWallThck+feetDims.z+spcng)/2;
+  plateZOffset=(bookDims.z+clampMinWallThck+feetDims.z+spcng)/2;
   
   rotate([90,0,0]){
     linear_extrude(clampWdth,center=true)
-      square([minWallThck,bookDims.z+feetDims.z-radOffset*2+spcng],true);
+      square([clampMinWallThck,bookDims.z+feetDims.z-radOffset*2+spcng],true);
   
     //bottom radius
     translate([rad,-((bookDims.z+feetDims.z+spcng)/2-radOffset),0])
       rotate([0,0,180]) rotate_extrude(angle=90) 
-        translate([rad,0]) square([minWallThck,clampWdth],true);
+        translate([rad,0]) square([clampMinWallThck,clampWdth],true);
     //top radius
     translate([rad,((bookDims.z+feetDims.z+spcng)/2-radOffset),0])
       rotate([0,0,90]) rotate_extrude(angle=90) 
-        translate([rad,0]) square([minWallThck,clampWdth],true);
+        translate([rad,0]) square([clampMinWallThck,clampWdth],true);
   }
     //top screwplate
     translate([0,0,plateZOffset]) plate(top=true);
@@ -70,7 +71,7 @@ module clamp(stopper=true,isLeft=true){
             translate([0,iy*(feetDims.y-feetDims.x)/2,feetDims.z/2]) 
               cylinder(d=feetDims.x,h=feetDims.z+fudge,center=true);
               for(iy=[-1,1]) 
-                translate([topWdth/2,iy*clampWdth/4,-plateZOffset+(minWallThck-fudge)/2]-stprPos) 
+                translate([topWdth/2,iy*clampWdth/4,-plateZOffset+(clampMinWallThck-fudge)/2]-stprPos) 
                   cylinder(d=screwDia*2+spcng,h=feetDims.z+fudge);
          }
          for (ix=[-1,1])
@@ -79,26 +80,36 @@ module clamp(stopper=true,isLeft=true){
       }
       
   module plate(top=false){
-    width= top ? topWdth : bottomWdth;
+    ndgDims=[10,1.6];
+    ndgSpcng=0.2;
+    width= top ? nudge ? topWdth+ndgDims.x : topWdth : bottomWdth;
     
     difference(){
       union(){
         translate([(width)/2,0,0])
-          cube([width-rad*2,clampWdth,minWallThck],true);
+          cube([width-rad*2,clampWdth,clampMinWallThck],true);
         hull() for(iy=[-1,1])
-          translate([width-rad,iy*(clampWdth/2-rad),0]) cylinder(r=rad,h=minWallThck,center=true);
+          translate([width-rad,iy*(clampWdth/2-rad),0]) cylinder(r=rad,h=clampMinWallThck,center=true);
       }
-      if (top) for(iy=[-1,1]){
-        translate([topWdth/2,iy*clampWdth/4,0]){
-          cylinder(d=screwDia+fudge,h=minWallThck+fudge,center=true);
-        translate([0,0,-(minWallThck+fudge)/2]) 
-          cylinder(d1=counterSinkDia,d2=0.05,h=counterSinkDia/2);
+      if (top){
+        for(iy=[-1,1]){
+          translate([topWdth/2,iy*clampWdth/4,0]){
+            cylinder(d=screwDia+fudge,h=clampMinWallThck+fudge,center=true);
+          translate([0,0,-(clampMinWallThck+fudge)/2]) 
+            cylinder(d1=counterSinkDia,d2=0.05,h=counterSinkDia/2);
+          }
         }
+        if (nudge) 
+          translate([width-ndgDims.x/2-ndgSpcng-rad,0,0]){ 
+            translate([0,0,(clampMinWallThck+fudge)/2-(ndgDims.y+ndgSpcng)/2]) 
+              cube([ndgDims.x+ndgSpcng*2,clampWdth+fudge,ndgDims.y+ndgSpcng+fudge],true);
+            translate([0,0,-fudge-clampMinWallThck/2]) cylinder(d=10+spcng,h=1+fudge); //possible magnet
+          }
       }
       else
         for(iy=[-1,1]) 
         translate([topWdth/2,iy*clampWdth/4,0]) 
-          cylinder(d=screwDia*2+spcng,h=minWallThck+fudge,center=true);
+          cylinder(d=screwDia*2+spcng,h=clampMinWallThck+fudge,center=true);
     }    
   }  
 }
@@ -129,11 +140,11 @@ module USBHub(){
   //roline USB-C HUB 14025039
   //https://www.reichelt.de/usb-3-0-hub-4-port-usb-c-zu-4x-usb-3-0-typ-a-roline-14025039-p289002.html
   bdyDims=[93.5,28.5,10];
-  crnRad=2;
+  crnRad=1.6;
   chmfer=1;
   spcng=0.4;
   hubMinWallThck=2;
-  capHght=5*hubMinWallThck;
+  capHght=10;
   
   poly=[[-bdyDims.y/2+chmfer,-bdyDims.z/2],[-bdyDims.y/2,-bdyDims.z/2+chmfer],[-bdyDims.y/2,bdyDims.z/2-crnRad],
         [-bdyDims.y/2+crnRad,bdyDims.z/2-crnRad],[-bdyDims.y/2+crnRad,-bdyDims.z/2]];
@@ -146,18 +157,21 @@ module USBHub(){
     //cable strain relief
     color("darkSlateGrey") translate([0,0,bdyDims.x/2]) cylinder(d=6,h=8.6);
   }
-  !endCap();
+
+  translate([-bdyDims.x/2,0,bdyDims.z/2]) rotate([90,0,90]) endCap();
+  *endCap();
   module endCap(){
+    armLngth=30;
     endCapDims=[bdyDims.y+(hubMinWallThck+spcng)*2,capHght,bdyDims.z+(hubMinWallThck+spcng)*2];
     //translate([endCapDims.x/2,0,endCapDims.z/2]) rotate([90,0,180]) 
-    difference(){
+    translate([0,0,-hubMinWallThck-spcng]) difference(){
       union(){
         hull() for(ix=[-1,1],iy=[-1,1])
           translate([ix*(bdyDims.y/2-crnRad+spcng),iy*(bdyDims.z/2-crnRad+spcng),0]) 
             cylinder(r=crnRad+hubMinWallThck,h=capHght);
-        translate([-30-endCapDims.x/2+minWallThck/2,-endCapDims.z/2,0]){
-          cube([30+crnRad+minWallThck,minWallThck,capHght]);
-          translate([0,minWallThck/2,0]) cylinder(d=minWallThck,h=capHght);
+        translate([endCapDims.x/2-(crnRad+hubMinWallThck),-endCapDims.z/2,0]){
+          cube([armLngth+(crnRad+hubMinWallThck)-hubMinWallThck/2,hubMinWallThck,capHght]);
+          translate([armLngth+(crnRad+hubMinWallThck)-hubMinWallThck/2,hubMinWallThck/2,0]) cylinder(d=hubMinWallThck,h=capHght);
         }
       }
       translate([0,0,hubMinWallThck]) linear_extrude(capHght-hubMinWallThck+fudge) offset(spcng) hubShape();
