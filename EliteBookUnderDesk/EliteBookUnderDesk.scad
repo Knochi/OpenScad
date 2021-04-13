@@ -17,7 +17,6 @@ fudge=0.1;
 /* --[hidden] -- */
 clampMinWallThck=extrusionWidth*wallCount;
 
-*HPEliteBook840G5();
 //left back
 translate([-(bookDims.x+clampMinWallThck)/2-spcng/2,(feetDist[1])/2,(bookDims.z+spcng)/2-feetDims.z/2-spcng/2]) 
   clamp(stopper=true,isLeft=true);
@@ -32,7 +31,6 @@ mirror([1,0,0]) translate([-(bookDims.x+clampMinWallThck)/2-spcng/2,-(feetDist[2
 
 //USBHub
 translate([0,-bookDims.y/2,bookDims.z+clampMinWallThck+spcng-fudge]) rotate(0) USBHub();
-*clamp(stopper=false,nudge=true);
 
 module clamp(stopper=true,isLeft=true,nudge=false){
   topWdth=20;
@@ -43,19 +41,29 @@ module clamp(stopper=true,isLeft=true,nudge=false){
   radOffset=rad-clampMinWallThck/2;
   stprPos=[bottomWdth-feetDims.x*1.5,0,-(bookDims.z+feetDims.z+spcng)/2];
   plateZOffset=(bookDims.z+clampMinWallThck+feetDims.z+spcng)/2;
-  
+  vertPlateHght=bookDims.z+feetDims.z-radOffset*2+spcng; //hight of the vertical part
+
+  hull() for (iy=[-1,1])
+    translate([0,iy*(clampWdth-clampMinWallThck)/2,0]) 
+      cylinder(d=clampMinWallThck,h=vertPlateHght,center=true);
   rotate([90,0,0]){
-    linear_extrude(clampWdth,center=true)
-      square([clampMinWallThck,bookDims.z+feetDims.z-radOffset*2+spcng],true);
+    
+    *linear_extrude(clampWdth,center=true) hull()
+      for (iy=[-1,1])
+        translate([0,iy*(bookDims.z+feetDims.z-radOffset*2+spcng)/2])
+          circle(d=clampMinWallThck);
+      //square([clampMinWallThck,bookDims.z+feetDims.z-radOffset*2+spcng],true);
   
     //bottom radius
     translate([rad,-((bookDims.z+feetDims.z+spcng)/2-radOffset),0])
       rotate([0,0,180]) rotate_extrude(angle=90) 
-        translate([rad,0]) square([clampMinWallThck,clampWdth],true);
+        translate([rad,0]) hull() for(iy=[-1,1])
+          translate([0,iy*(clampWdth-clampMinWallThck)/2]) circle(d=clampMinWallThck); //square([clampMinWallThck,clampWdth],true);
     //top radius
     translate([rad,((bookDims.z+feetDims.z+spcng)/2-radOffset),0])
       rotate([0,0,90]) rotate_extrude(angle=90) 
-        translate([rad,0]) square([clampMinWallThck,clampWdth],true);
+        translate([rad,0]) hull() for(iy=[-1,1])
+          translate([0,iy*(clampWdth-clampMinWallThck)/2]) circle(d=clampMinWallThck);
   }
     //top screwplate
     translate([0,0,plateZOffset]) plate(top=true);
@@ -80,18 +88,20 @@ module clamp(stopper=true,isLeft=true,nudge=false){
            translate([ix*feetDims.x*0.75,0,feetDims.z/2]) 
             cylinder(d=feetDims.x/2,h=feetDims.z,center=true);
       }
-      
+  *plate(true);
   module plate(top=false){
     ndgDims=[10,1.6];
     ndgSpcng=0.2;
     width= top ? nudge ? topWdth+ndgDims.x : topWdth : bottomWdth;
     
     difference(){
-      union(){
-        translate([(width)/2,0,0])
-          cube([width-rad*2,clampWdth,clampMinWallThck],true);
+      union(){ //body
+        hull() for (iy=[-1,1])
+          translate([rad,iy*(clampWdth-clampMinWallThck)/2,0]) 
+            rotate([0,90,0]) cylinder(d=clampMinWallThck,h=width-rad*2);
         hull() for(iy=[-1,1])
-          translate([width-rad,iy*(clampWdth/2-rad),0]) cylinder(r=rad,h=clampMinWallThck,center=true);
+          translate([width-rad,iy*(clampWdth/2-rad),0]) 
+            rotate_extrude() translate([rad-clampMinWallThck/2,0]) circle(d=clampMinWallThck);
       }
       if (top){
         for(iy=[-1,1]){
