@@ -11,15 +11,22 @@ feetDims=[9,21.5,2.2];
 feetDist=[190,236,212.5]; //x, y1, y2
 feetxOffset=(25.5-17.5)/2;
 tblThck=19.4;
+magnetDia=5;
 spcng=1;
 fudge=0.1;
 
 /* --[hidden] -- */
 clampMinWallThck=extrusionWidth*wallCount;
 
+<<<<<<< .mine
 
 
 HPEliteBook840G5();
+=======
+
+
+
+>>>>>>> .theirs
 //left back
 translate([-(bookDims.x+clampMinWallThck)/2-spcng/2,(feetDist[1])/2,(bookDims.z+spcng)/2-feetDims.z/2-spcng/2]) 
   clamp(stopper=true,isLeft=true);
@@ -137,7 +144,7 @@ module clamp(stopper=true,isLeft=true,nudge=false){
           translate([width-ndgDims.x/2-ndgSpcng-rad,0,0]){ 
             translate([0,0,(clampMinWallThck+fudge)/2-(ndgDims.y+ndgSpcng)/2]) 
               cube([ndgDims.x+ndgSpcng*2,clampWdth+fudge,ndgDims.y+ndgSpcng+fudge],true);
-            translate([0,0,-fudge-clampMinWallThck/2]) cylinder(d=10+spcng,h=1+fudge); //possible magnet
+            translate([0,0,-fudge-clampMinWallThck/2]) cylinder(d=magnetDia+spcng,h=1+fudge); //possible magnet
           }
       }
       else
@@ -176,7 +183,7 @@ module USBHub(){
   bdyDims=[93.5,28.5,10];
   crnRad=1.6;
   chmfer=1;
-  spcng=0.4;
+  spcng=0.2;
   hubMinWallThck=2;
   capHght=10;
   
@@ -195,21 +202,27 @@ module USBHub(){
   translate([-bdyDims.x/2,0,bdyDims.z/2]) rotate([90,0,90]) endCap();
   *endCap();
   module endCap(){
-    armLngth=30;
+    armLngth=40;
     endCapDims=[bdyDims.y+(hubMinWallThck+spcng)*2,capHght,bdyDims.z+(hubMinWallThck+spcng)*2];
     //translate([endCapDims.x/2,0,endCapDims.z/2]) rotate([90,0,180]) 
-    translate([0,0,-hubMinWallThck-spcng]) difference(){
+    translate([0,0,-hubMinWallThck-spcng]) 
+    difference(){
       union(){
         hull() for(ix=[-1,1],iy=[-1,1])
           translate([ix*(bdyDims.y/2-crnRad+spcng),iy*(bdyDims.z/2-crnRad+spcng),0]) 
             cylinder(r=crnRad+hubMinWallThck,h=capHght);
         translate([endCapDims.x/2-(crnRad+hubMinWallThck),-endCapDims.z/2,0]){
           cube([armLngth+(crnRad+hubMinWallThck)-hubMinWallThck/2,hubMinWallThck,capHght]);
-          translate([armLngth+(crnRad+hubMinWallThck)-hubMinWallThck/2,hubMinWallThck/2,0]) cylinder(d=hubMinWallThck,h=capHght);
+          translate([armLngth+(crnRad+hubMinWallThck)-hubMinWallThck/2,hubMinWallThck/2,0]) 
+            cylinder(d=hubMinWallThck,h=capHght);
         }
       }
       translate([0,0,hubMinWallThck]) linear_extrude(capHght-hubMinWallThck+fudge) offset(spcng) hubShape();
       translate([0,0,-fudge/2]) linear_extrude(hubMinWallThck+fudge) offset(-hubMinWallThck/2) hubShape();
+      //magnet
+      for (ix=[-2:2])
+      translate([bdyDims.y/2+hubMinWallThck+28+ix*magnetDia*0.7,-bdyDims.z/2-hubMinWallThck-spcng-fudge,capHght/2]) 
+        rotate([-90,0,0]) cylinder(d=magnetDia+spcng,h=1+fudge,$fn=50);
     }
   }
   
