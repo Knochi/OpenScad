@@ -1,4 +1,5 @@
 $fn=20;
+include <myShapes.scad>
 
 /* -- [Dimensions] -- */
 extrusionWidth=0.4;
@@ -16,6 +17,8 @@ fudge=0.1;
 /* --[hidden] -- */
 clampMinWallThck=extrusionWidth*wallCount;
 
+
+
 HPEliteBook840G5();
 //left back
 translate([-(bookDims.x+clampMinWallThck)/2-spcng/2,(feetDist[1])/2,(bookDims.z+spcng)/2-feetDims.z/2-spcng/2]) 
@@ -31,7 +34,7 @@ mirror([1,0,0]) translate([-(bookDims.x+clampMinWallThck)/2-spcng/2,-(feetDist[2
 
 //USBHub
 translate([0,-bookDims.y/2,bookDims.z+clampMinWallThck+spcng-fudge]) rotate(0) USBHub();
-!clamp(stopper=false,nudge=true);
+*clamp(stopper=true,nudge=true);
 module clamp(stopper=true,isLeft=true,nudge=false){
   topWdth=20;
   footxOffset= isLeft ? feetxOffset : -feetxOffset;
@@ -42,6 +45,7 @@ module clamp(stopper=true,isLeft=true,nudge=false){
   stprPos=[bottomWdth-feetDims.x*1.5,0,-(bookDims.z+feetDims.z+spcng)/2];
   plateZOffset=(bookDims.z+clampMinWallThck+feetDims.z+spcng)/2;
   vertPlateHght=bookDims.z+feetDims.z-radOffset*2+spcng; //hight of the vertical part
+  stpRad= min(feetDims.x/4,feetDims.z); //edge radius to apply to stopper part
 
   hull() for (iy=[-1,1])
     translate([0,iy*(clampWdth-clampMinWallThck)/2,0]) 
@@ -73,20 +77,38 @@ module clamp(stopper=true,isLeft=true,nudge=false){
   
     //stopper
     if (stopper)
-      //color("red") translate(stprPos) sphere(2);
       translate(stprPos){
         difference(){
-          translate([0,clampWdth/4,feetDims.z/2]) cube([feetDims.x*2,clampWdth/2,feetDims.z],true);
+          translate([0,clampWdth/4,feetDims.z/2]){
+            cube([feetDims.x*2-stpRad*2,clampWdth/2,feetDims.z],true);
+              for (mx=[0,1])
+                mirror([mx,0,0]) translate([(feetDims.x-stpRad),0,-stpRad/2]) 
+                  translate([0,clampWdth/4,0]) rotate([90,0,0]) rotate_extrude(angle=90) square([stpRad,clampWdth/2]);
+          }
+          //cutout for foot
           hull() for (iy=[-1,1])
             translate([0,iy*(feetDims.y-feetDims.x)/2,feetDims.z/2]) 
-              cylinder(d=feetDims.x,h=feetDims.z+fudge,center=true);
-              for(iy=[-1,1]) 
-                translate([topWdth/2,iy*clampWdth/4,-plateZOffset+(clampMinWallThck-fudge)/2]-stprPos) 
-                  cylinder(d=screwDia*2+spcng,h=feetDims.z+fudge);
+              cylinder(d=feetDims.x+stpRad*2,h=feetDims.z+fudge,center=true);
+          //repeat drill hole
+          for(iy=[-1,1]) 
+            translate([topWdth/2,iy*clampWdth/4,-plateZOffset+(clampMinWallThck-fudge)/2]-stprPos) 
+              cylinder(d=screwDia*2+spcng,h=feetDims.z+fudge);
          }
          for (ix=[-1,1])
-           translate([ix*feetDims.x*0.75,0,feetDims.z/2]) 
-            cylinder(d=feetDims.x/2,h=feetDims.z,center=true);
+           translate([ix*feetDims.x*0.75,0,0]) 
+            rotate([0,0,180]) rotate_extrude(angle=180){
+               translate([feetDims.x/4-stpRad,0]) arc(stpRad,90);
+               square([feetDims.x/4-stpRad,stpRad]);
+            }
+
+          //rnd corners of cutout
+          for(mx=[0,1])
+            mirror([mx,0,0]) translate([feetDims.x*0.75-(feetDims.x/4-stpRad),(feetDims.y-feetDims.x)/2,0]) 
+              rotate([90,-90,0]) rotate_extrude(angle=90) square([stpRad,(feetDims.y-feetDims.x)/2]);
+            translate([0,(feetDims.y-feetDims.x)/2,0]) rotate_extrude(angle=180) 
+              translate([feetDims.x*0.75-(feetDims.x/4-stpRad),0]) mirror([1,0]) arc(stpRad,90);
+          //connect to base
+          translate([0,clampWdth/2-clampMinWallThck/4,-clampMinWallThck/4]) cube([feetDims.x*2,clampMinWallThck/2,clampMinWallThck/2],true);
       }
   *plate(true);
   module plate(top=false){
