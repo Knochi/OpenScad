@@ -33,8 +33,8 @@ int get_fragments_from_r(double r, double fn, double fs, double fa)
 
 
 //draw an arc with 2 radiusses
-$fn=50;
-!arcDualRad([0,0],73,15,12,50);
+//$fn=50;
+*arcDualRad([0,0],73,15,12,50);
 module arcDualRad(M1,r1,r2,angle1,angle2){
 /* two arcs with tangential transistion
 /  give: center(M1) and radius(r1) of first arc

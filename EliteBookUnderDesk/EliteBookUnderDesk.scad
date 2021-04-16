@@ -18,15 +18,9 @@ fudge=0.1;
 /* --[hidden] -- */
 clampMinWallThck=extrusionWidth*wallCount;
 
-<<<<<<< .mine
-
 
 HPEliteBook840G5();
-=======
 
-
-
->>>>>>> .theirs
 //left back
 translate([-(bookDims.x+clampMinWallThck)/2-spcng/2,(feetDist[1])/2,(bookDims.z+spcng)/2-feetDims.z/2-spcng/2]) 
   clamp(stopper=true,isLeft=true);
