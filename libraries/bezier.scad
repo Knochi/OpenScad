@@ -250,7 +250,10 @@ BezierVisualize([[0,0,10],[10,5,3],[10,10,20],[20,20,20],SYMMETRIC(),[0,0,8],[0,
 translate([0,-15]) BezierVisualize([[0,0],/*C*/[5,0],/*C*/OFFSET([-5,0]),[10,10],REPEAT_MIRRORED([1,0]),REPEAT_MIRRORED([0,1]) ]);
 
 linear_extrude(height=5) {
-  polygon(Bezier([[0,0],/*C*/[5,0],/*C*/SYMMETRIC(),[10,10],/*C*/[15,10],/*C*/OFFSET([-5,0]),[20,0]],precision=0.05));
+  polygon(Bezier([                    [ 0, 0],/*C*/[ 5,0],
+                  /*C*/SYMMETRIC()   ,[10,10],/*C*/[15,10],
+                  /*C*/OFFSET([-5,0]),[20, 0]]
+                  ,precision=0.05));
 
 translate([0,15])
   polygon(Bezier([[0,0],/*C*/[5,0],/*C*/SMOOTH_REL(2),[10,10],/*C*/[15,10],/*C*/POLAR(5,180),[20,0]],precision=0.05));
@@ -268,5 +271,5 @@ translate([0,75])
   polygon(Bezier([[0,0],/*C*/LINE(),/*C*/LINE(),[10,10],/*C*/SHARP(),/*C*/OFFSET([-5,0]),[20,0]],precision=0.05));
 }
 translate([0,-40])
-BezierVisualize(BezierSmoothPoints([[0,0],[10,10],[20,0]],closed=true,tension=0.25),precision=-.1);
+BezierVisualize(BezierSmoothPoints([[0,0],[10,10],[20,0]],closed=false,tension=0.25),precision=-.1);
 //</skip>
