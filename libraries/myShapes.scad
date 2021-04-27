@@ -4,10 +4,11 @@ translate([0,20,0]) linear_extrude(1) star(N=36,ri=5,re=6);
 translate([15,0,0]) skewedCube([10,10,4],[45,0],center=true);
 translate([30,0,0]) linear_extrude(1)  arc(r=10, angle=50);
 translate([30,30,0]) rotate_extrude() rotate(30) arc(r=10, angle=60);
-
+circFromPoints([[56,32],[61,17],[50,30]],true);
 
 //-- compare facet handling of arc with rotate_extrude
 //$fs=0.2;
+
 
 translate([60,0,2]){
    $fn=ceil(rands(0,50,1)[0]);
@@ -30,12 +31,27 @@ int get_fragments_from_r(double r, double fn, double fs, double fa)
       defaults: $fn=0; $fa=12, $fs=2
 */
 
-
+*rndRect(center=true);
+module rndRect(size=[10,10], rad=1, center=false){
+  /* square or cube with rounded corners
+ accepts 2 or 3 Dimensions 
+  */
+  if (len(size)==3){
+    cntrOffset= center ? [0,0,0] : size/2;    
+    hull() for(ix=[-1,1],iy=[-1,1])
+      translate([ix*(size.x/2-rad),iy*(size.y/2-rad),0]+cntrOffset) cylinder(r=rad,h=size.z,center=true);
+  }
+  else{
+    cntrOffset= center ? [0,0] : size/2;    
+    hull() for(ix=[-1,1],iy=[-1,1])
+      translate([ix*(size.x/2-rad),iy*(size.y/2-rad),0]+cntrOffset) circle(r=rad);
+  }
+}
 
 //draw an arc with 2 radiusses
 //$fn=50;
-*arcDualRad([0,0],73,15,12,50);
-module arcDualRad(M1,r1,r2,angle1,angle2){
+*arcDualRad(73,15,12,50);
+module arcDualRad(r1,r2,angle1,angle2){
 /* two arcs with tangential transistion
 /  give: center(M1) and radius(r1) of first arc
 /        radius(r2) of 2nd arc
@@ -49,13 +65,14 @@ module arcDualRad(M1,r1,r2,angle1,angle2){
   //draw two arcs
   *translate(M1) arc(r1,angle1);
   *translate(M2) rotate(angle1) arc(r2,angle2);
-  //generate Polygon
+  //calculate fragments for each arc
   n1=arcFragments(r1,angle1);
   n2=arcFragments(r2,angle2);
-  arc1Poly=translatePoints(arcPoints(r1,angle1,n1,poly=[]),M1);
+  //generate Polygons
+  arc1Poly=arcPoints(r1,angle1,n1,poly=[]);
   arc2Poly=translatePoints(rotatePoints(arcPoints(r2,angle2,n2,poly=[]),angle1) ,M2);
-  echo(arc2Poly);
-  polygon(concat([M1],arc2Poly,arc1Poly));
+  //combine and draw polygons
+  polygon(concat([[0,0]],arc2Poly,arc1Poly));
   
 }
 
@@ -109,7 +126,7 @@ module skewedCube(size=[1,1,1],skew=[45,45],center=false){
 }
 
 // give two or three 2D points to draw a circle
-module circFromPoints(points=[],showPoints=false){
+module circFromPoints(points=[],debug=false){
   //using trigonometric approach from
   //https://www.weltderfertigung.de/suchen/lernen/mathematik/punktberechnung-kreismittelpunkt-und-radius.php
   p1=points[0];
@@ -127,44 +144,16 @@ module circFromPoints(points=[],showPoints=false){
   //done when only 2 points are given
   if (len(points)==2)
     translate(M1) circle(c/2);
+
   else{ //continue with radius and center from 3 points
-    //2nd right triangle between p1 and p3
-    a2=p3.y-p1.y;
-    b2=p3.x-p1.x;
-    c2=norm(p1-p3); //diameter of 2nd circle
-
-    M2=[p1.x+b2/2,p1.y+a2/2];
-
-    //3rd right triangle betwee p2 and p3
-
-    a3=p3.y-p2.y;
-    b3=p3.x-p2.x;
-    //c3=norm(p2-p3); 
-
-    M3=[p2.x+b3/2,p2.y+a3/2];
-    echo("M3",M3);
-
-    //the last triangle is between M1, M3 and 
-    //"M" the center of the circle which has to be determined
-    //calculate beta of this tri
-    W1=atan2(a1,b1);
-    W2=atan2((M3.y-M1.y),(M3.x-M1.x));
-    W3=atan2((p2.y-M3.y),(p3.x-M3.x));
-    W4=atan2((M3.y-M1.y),(M3.x-M1.x));
-    beta=90-(W1-W2);
-    gamma=90-W3-W4;
-    alpha=180-beta-gamma;
-    a=norm(M3-M1);
-    c=(a*sin(gamma))/sin(alpha);
-    alpha2=90-(beta-W2);
-    M1M=[sin(alpha2)*c,cos(alpha2)*c];//Offset between M1 and M
-    M=[M1.x+M1M.x,M1.y-M1M.y];
-    r=norm(p1-M); //distance between center and one of the points
+    M=centerFrom3P(points);
+    r=radiusFrom3P(points);
+    //r=norm(p1-M); //distance between center and one of the points
     translate(M) circle(r);
-    if (showPoints) echo(str("radius: ",r,"\n center: ",M));
+    if (debug) echo(str("radius: ",r,"\n center: ",M));
   }
 
-  if (showPoints){
+  if (debug){
     color("red") translate(p1) circle();
     color("red") translate(p2) circle();
     if (p3) color("red") translate(p3) circle();
@@ -174,6 +163,54 @@ module circFromPoints(points=[],showPoints=false){
 
 
 // --- functions ---
+
+function centerFrom3P(points=[])=
+//using trigonometric approach from
+//https://www.weltderfertigung.de/suchen/lernen/mathematik/punktberechnung-kreismittelpunkt-und-radius.php
+
+  let(
+    p1=points[0],
+    p2=points[1],
+    p3=points[2],
+
+    //first triangle from 2 points
+    a1=p2.y-p1.y,
+    b1=p2.x-p1.x,
+    c1=norm(p1-p2), //diameter of first circle
+
+    //center of circle from 2 points
+    M1=[p1.x+b1/2,p1.y+a1/2],
+
+    a2=p3.y-p1.y,
+    b2=p3.x-p1.x,
+    c2=norm(p1-p3), //diameter of 2nd circle
+    M2=[p1.x+b2/2,p1.y+a2/2],
+
+    a3=p3.y-p2.y,
+    b3=p3.x-p2.x,
+
+    M3=[p2.x+b3/2,p2.y+a3/2],
+
+    W1=atan2(a1,b1),
+    W2=atan2((M3.y-M1.y),(M3.x-M1.x)),
+    W3=atan2((p2.y-M3.y),(p3.x-M3.x)),
+    W4=atan2((M3.y-M1.y),(M3.x-M1.x)),
+
+    beta=90-(W1-W2),
+    gamma=90-W3-W4,
+    alpha=180-beta-gamma,
+    a=norm(M3-M1),
+    c=(a*sin(gamma))/sin(alpha),
+    alpha2=90-(beta-W2),
+    M1M=[sin(alpha2)*c,cos(alpha2)*c]//Offset between M1 and M
+  ) [M1.x+M1M.x,M1.y-M1M.y]; //M
+
+function radiusFrom3P(points)=
+  norm(points[0]-centerFrom3P(points));
+
+function angleFrom2P(points,radius=1)=
+  2*asin(norm(points[0]-points[1])/(2*radius));
+
 function arcPoints(r=1,angle=60,steps=10,poly=[[0,0]],iter)=
   let(
     iter = (iter == undef) ? steps-1 : iter,
@@ -195,8 +232,6 @@ function translatePoints(points=[[0,0],[1,1]],vector=[2,2],output=[],iter)=
     iter=(iter == undef) ? 0 : iter
   )
   (iter<=len(points)-1) ? translatePoints(points,vector,concat(output,[points[iter]+vector]),iter=iter+1) : output;
-
-
 
 echo(rotatePoints());
 function rotatePoints(points=[[0,0],[1,1],[5,5]],angle=90,output=[],iter)=
