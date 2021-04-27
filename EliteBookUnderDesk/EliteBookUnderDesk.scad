@@ -30,7 +30,7 @@ mirror([1,0,0]) translate([-(bookDims.x+clampMinWallThck)/2-spcng/2,(feetDist[2]
 translate([-(bookDims.x+clampMinWallThck)/2-spcng/2,-(feetDist[1])/2,(bookDims.z+spcng)/2-feetDims.z/2-spcng/2]) 
   clamp(stopper=false,isLeft=true,nudge=true);
 mirror([1,0,0]) translate([-(bookDims.x+clampMinWallThck)/2-spcng/2,-(feetDist[2])/2,(bookDims.z+spcng)/2-feetDims.z/2-spcng/2])  
-  clamp(stopper=false,isLeft=false);
+  !clamp(stopper=false,isLeft=false);
 
 
 //USBHub
