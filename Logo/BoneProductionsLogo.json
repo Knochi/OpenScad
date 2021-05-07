@@ -1,0 +1,51 @@
+{
+    "parameterSets": {
+        "Standard": {
+            "$fn": "20",
+            "baseLineDist": "12",
+            "boneColor": "#4c4c4c",
+            "boneThck": "6",
+            "bridgeUN": "true",
+            "cptlHght": "12",
+            "debug": "false",
+            "fillColor": "#dbbc7e",
+            "fillOffset": "0.1",
+            "fudge": "0.1",
+            "input": "baseLineDist",
+            "ltrPHght": "0",
+            "ltrSpc": "0.5",
+            "oDia": "8",
+            "showBone": "true",
+            "showFill": "true",
+            "showStroke": "true",
+            "stroke": "1.5",
+            "strokeColor": "#b0a998",
+            "tiltAng": "45",
+            "tiltB": "true"
+        },
+        "Narrow": {
+            "$fn": "20",
+            "baseLineDist": "10",
+            "boneColor": "#4c4c4c",
+            "boneThck": "6",
+            "bridgeUN": "true",
+            "cptlHght": "13.5",
+            "debug": "false",
+            "fillColor": "#dbbc7e",
+            "fillOffset": "0.1",
+            "fudge": "0.1",
+            "input": "baseLineDist",
+            "ltrPHght": "0",
+            "ltrSpc": "0.5",
+            "oDia": "8",
+            "showBone": "true",
+            "showFill": "true",
+            "showStroke": "true",
+            "stroke": "1.5",
+            "strokeColor": "#b0a998",
+            "tiltAng": "45",
+            "tiltB": "true"
+        }
+    },
+    "fileFormatVersion": "1"
+}

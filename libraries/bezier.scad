@@ -178,16 +178,19 @@ function BezierSmoothPoints(points,tension=0.5,closed=false)
 module BezierVisualize(p,precision=0.05,eps=0.00001,lineThickness=0.25,controlLineThickness=0.125,nodeSize=1) {
     $fn = 16;
     dim = len(p[0]);
+    
     module point(size) {
         if (dim==2)
             circle(d=size);
         else
             sphere(d=size);
     }
+    
     p1 = DecodeSpecialBezierPoints(p);
     l = Bezier(p1,precision=precision,eps=eps);
-   
-    for (i=[0:len(l)-2]) {
+    
+    //handle lines
+    if (lineThickness) for (i=[0:len(l)-2]) {
         hull() {
             translate(l[i]) point(lineThickness);
             translate(l[i+1]) point(lineThickness);
@@ -245,7 +248,7 @@ translate([-30,0,0])
 filletLine3D(start=[0,0,0], end=[0,0,5], direction1=[5,0,0],direction2=[0,5,0]);
 
 translate([-20,0,0])
-BezierVisualize([[0,0,10],[10,5,3],[10,10,20],[20,20,20],SYMMETRIC(),[0,0,8],[0,0,0]], lineThickness=1,nodeSize=2);
+!BezierVisualize([[0,0,10],[10,5,3],[10,10,20],[20,20,20],SYMMETRIC(),[0,0,8],[0,0,0]], lineThickness=1,nodeSize=2);
 
 translate([0,-15]) BezierVisualize([[0,0],/*C*/[5,0],/*C*/OFFSET([-5,0]),[10,10],REPEAT_MIRRORED([1,0]),REPEAT_MIRRORED([0,1]) ]);
 
