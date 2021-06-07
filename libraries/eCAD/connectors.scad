@@ -29,10 +29,26 @@ translate([70,0,0]) screwTerminal(2,false);
 translate([100,0,0]) DSub();
 translate([130,0,0]) BIL30(col="red",panel=2);
 translate([160,0,0]) SDCard(showCard=true);
+translate([160,40,0]) uSDCard(showCard=true);
 translate([200,0,0]) tubeSocket9pinFlange();
 translate([230,0,0]) PJ398SM();
 
 *rotate([0,0,-90]) femHeaderSMD(20,2,center=true);
+
+
+!uSDCard();
+module uSDCard(showCard=true){
+  //push-push by Wuerth 
+  //https://www.we-online.de/katalog/datasheet/693071010811.pdf
+    color("silver") difference(){
+      cube([14,15.2,1.98],true);
+      translate([-(14-11.2+fudge)/2,-(15.2-1.3+fudge)/2,0]) cube([11.2+fudge,1.3+fudge,1.98+fudge],true);
+    }
+    if(showCard){
+      color("darkslateGrey") translate([-(14-11)/2+0.1,-0.6,0]) cube([11,15,0.7],true);
+      color("darkslateGrey",0.5) translate([-(14-11)/2+0.1,-5,0]) cube([11,15,0.7],true);
+    }
+}
 
 *PJ398SM();
 module PJ398SM(){

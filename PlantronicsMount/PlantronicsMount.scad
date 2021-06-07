@@ -151,7 +151,7 @@ module clamp(){
     
   }//body
   
-  
+  *cmplxHook();
   module cmplxHook(cut=false){
     if (cut)
       translate(cmplxHkOffset+[cmplxHookWdth-screwDia-crnRad,-fudge,-cmplxHkOffset.z+clmpDims.z/2])
@@ -183,15 +183,19 @@ module clamp(){
    
     } //diff
     //lower part
-    translate(cmplxHkOffset+[0,0,-cmplxHkOffset.z*2-tblThck]){
-      rotate([-90,0,-90]) rotate_extrude(angle=90) cmplxShape();
-      rotate([0,0,-90]) linear_extrude(tblThck+cmplxHkOffset.z*2) cmplxShape();
-      translate([0,cmplxHookWdth,0]) rotate([90,90,0]) linear_extrude(cmplxHookWdth) cmplxShape();
-      translate([0,cmplxHookWdth,0]) rotate([90,90,0]) cmplxShape(true);
+    translate(cmplxHkOffset+[0,0,-cmplxHkOffset.z*2-tblThck]) difference(){
+      union(){
+        rotate([-90,0,-90]) rotate_extrude(angle=90) cmplxShape();
+        rotate([0,0,-90]) linear_extrude(tblThck+cmplxHkOffset.z*2) cmplxShape();
+        translate([0,cmplxHookWdth,0]) rotate([90,90,0]) linear_extrude(cmplxHookWdth) cmplxShape();
+        translate([0,cmplxHookWdth,0]) rotate([90,90,0]) cmplxShape(true);
+      }
+      translate([cmplxHookWdth/2,cblOffset.z-cblRad-clmpDims.z/2,0])
+        cylinder(d=min(cmplxHookWdth,clmpDims.z)/3,h=tblThck+cmplxHkOffset.z*2+fudge);
     }
   }//else
       
-      
+    *cmplxShape();  
     module cmplxShape(cap=false){
       translate([-cblOffset.z+cblRad+clmpDims.z/2,+cmplxHookWdth/2]){
         hull() for (ix=[-1,1],iy=[-1,1])

@@ -30,6 +30,30 @@ int get_fragments_from_r(double r, double fn, double fs, double fa)
       }
       defaults: $fn=0; $fa=12, $fs=2
 */
+$fn=20;
+*rndCube();
+module rndCube(size=[1,1,1],rad=0.1,center=false){
+  //"for (ix,iy,iz) hull() - sphere()" is very unefficient
+  cntrOffset= center ? [0,0,0] : size/2;
+  prtRad= (min(size)<=rad*2) ? min(size)/2 : rad; //limit radius to half of shortest side
+
+  translate(cntrOffset) 
+   hull() for (ix=[0,1],iy=[0,1],iz=[0,1]){ 
+    mirror ([ix,0,0]) mirror([0,iy,0]) mirror([0,0,iz]) 
+      translate([(size.x/2-prtRad),(size.y/2-prtRad),(size.z/2-prtRad)]) 
+        rotate_extrude(angle=90) arc(prtRad,90);
+  }
+}
+
+
+module rndCubeSlow(size=[1,3,3], rad=1.5, center=false){
+  //rounded cube
+  cntrOffset= center ? [0,0,0] : size/2;
+  prtRad= (min(size)<rad) ? min(size)/2 : rad; //limit radius to half of shortest side
+
+  translate(cntrOffset) hull() for (ix=[-1,1], iy=[-1,1], iz=[-1,1])
+    translate([ix*(size.x/2-prtRad),iy*(size.y/2-prtRad),iz*(size.z/2-prtRad)]) sphere(prtRad);
+}
 
 *rndRect(center=true);
 module rndRect(size=[10,10], rad=1, center=false){
@@ -44,7 +68,7 @@ module rndRect(size=[10,10], rad=1, center=false){
   else{
     cntrOffset= center ? [0,0] : size/2;    
     hull() for(ix=[-1,1],iy=[-1,1])
-      translate([ix*(size.x/2-rad),iy*(size.y/2-rad),0]+cntrOffset) circle(r=rad);
+      translate([ix*(size.x/2-rad),iy*(size.y/2-rad)]+cntrOffset) circle(r=rad);
   }
 }
 
@@ -162,6 +186,8 @@ module circFromPoints(points=[],debug=false){
 }
 
 
+
+
 // --- functions ---
 
 function centerFrom3P(points=[])=
@@ -241,3 +267,6 @@ function rotatePoints(points=[[0,0],[1,1],[5,5]],angle=90,output=[],iter)=
     y2= sin(angle)*points[iter].x+cos(angle)*points[iter].y
   )
   (iter<len(points)-1) ? rotatePoints(points,angle,concat(output,[[x2,y2]]),iter=iter+1) : concat(output,[[x2,y2]]);
+
+echo(str("fact: ",fact(5)));
+function fact(n,result=1)= n ? fact((n-1),n*result)  : result;
