@@ -33,6 +33,32 @@ translate([200,0,0]) tubeSocket9pinFlange();
 translate([230,0,0]) PJ398SM();
 
 *rotate([0,0,-90]) femHeaderSMD(20,2,center=true);
+!M411P();
+module M411P(){
+ magDims=[14.2,8.8-5.75,4.7];
+ magWdth=1.3;
+ pitch=2.2;
+  
+ color("silver") translate([0,-magDims.y/2,magDims.z/2]) magnet();
+ 
+ color("gold") for (ix=[-1.5:1.5]){
+  translate([ix*pitch,-magDims.y+0.65/2+0.15,magDims.z/2]) pin();
+   
+ }
+ 
+ module pin(){
+   sphere(d=0.65);
+   rotate([-90,0,0]) cylinder(d=0.65,h=magDims.y);
+ }
+ module magnet(){
+   rotate([90,90,0]) for (i=[-1,1]){
+     translate([0,i*(magDims.x-magDims.z)/2]) 
+      rotate_extrude(angle=i*180) translate([(magDims.z-magWdth)/2,0]) 
+        rndRect([magWdth,magDims.y],0.15,center=true);
+     translate([i*(magDims.z-magWdth)/2,0,0]) rotate([90,0,0]) linear_extrude(magDims.x-magDims.z,center=true) rndRect([magWdth,magDims.y],0.15,center=true);
+   }
+ }
+}
 
 *PJ398SM();
 module PJ398SM(){
@@ -1199,5 +1225,21 @@ module frustum(size=[1,1,1], flankAng=5, center=false, method="poly", col="darkS
             [6,7,3,2],  // back
             [7,4,0,3]]; // left
    color(col) polyhedron(polys,faces,convexity=2);
+  }
+}
+
+module rndRect(size=[10,10], rad=1, center=false){
+  /* square or cube with rounded corners
+ accepts 2 or 3 Dimensions 
+  */
+  if (len(size)==3){
+    cntrOffset= center ? [0,0,0] : size/2;    
+    hull() for(ix=[-1,1],iy=[-1,1])
+      translate([ix*(size.x/2-rad),iy*(size.y/2-rad),0]+cntrOffset) cylinder(r=rad,h=size.z,center=true);
+  }
+  else{
+    cntrOffset= center ? [0,0] : size/2;    
+    hull() for(ix=[-1,1],iy=[-1,1])
+      translate([ix*(size.x/2-rad),iy*(size.y/2-rad),0]+cntrOffset) circle(r=rad);
   }
 }
