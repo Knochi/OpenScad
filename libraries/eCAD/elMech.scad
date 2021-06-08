@@ -1,7 +1,7 @@
 $fn=20;
 fudge=0.1;
 
-translate([70,0,0]) color("darkSlateGrey") keyPad();
+translate([70,0,0]) keyPad();
 heatsink([9,9,5],5,3.5);
 translate([12,0,0]) pushButton(col="red");
 translate([12,15,0]) pushButton(col="green");
@@ -16,7 +16,7 @@ translate([-140,0,0]) SSR();
 
 
 *keyPad();
-module keyPad(bdyDims=[52,65,8.5],keyCnt=[3,4],cut=false){
+module keyPad(bdyDims=[52,65,8.5],keyCnt=[3,4],cutPCB=false, cutPanel=false){
 //https://www.adafruit.com/product/3845
 //Dimensions taken from picture!
   
@@ -28,15 +28,18 @@ module keyPad(bdyDims=[52,65,8.5],keyCnt=[3,4],cut=false){
   notchDims=[6.6,3];
   
   //cutOut
-  if (cut){
+  if (cutPCB){
     for (ix=[-1,1], iy=[-1,1])
       translate([ix*(bdyDims.x/2-rad),iy*(bdyDims.y/2-rad)]) circle(d=2.5);
-    hull() for (ix=[-1,1], iy=[-1,1])
+
+    *hull() for (ix=[-1,1], iy=[-1,1])
       translate([ix*(drillDist.x/2-rad),iy*(drillDist.y/2-rad)]) circle(rad);
+    for (ix=[0:8])
+        translate([-10.7+ix*2.54,-3.4]+[0,-bdyDims.y/2,-3.1]) circle(d=0.8);
   }
   
   color("darkslateGrey") body();
-  color("darkslateGrey") keys();
+  color("Grey") keys();
   color("darkGreen") translate([0,-bdyDims.y/2,-3.1]) linear_extrude(1.6) PCB();
   
   module body(){

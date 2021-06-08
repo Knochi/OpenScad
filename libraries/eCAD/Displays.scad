@@ -34,9 +34,10 @@ module raspBerry7Inch(cutOut=false,matThck=3){
 
 
 !Adafruit128x160TFT();
-module Adafruit128x160TFT(cut=false, centerAA=true){
+module Adafruit128x160TFT(cutPCB=false, centerAA=true){
   //https://www.adafruit.com/product/358
   PCBDims=[2.2*25.4,1.35*25.4,1.6];
+  drillDist=[PCBDims.x-2.5*2,PCBDims.y-2.5*2];
   rad=2.54;
   frameDims=[45.83,34];
   activeArea=[35.04,28.03];
@@ -45,10 +46,12 @@ module Adafruit128x160TFT(cut=false, centerAA=true){
   cntrOffset= centerAA ? AAOffset : [0,0];
   
   translate(cntrOffset){
-    if (cut){
+    if (cutPCB){
       for (ix=[-1,1],iy=[-1,1])
           translate([ix*drillDist.x/2,iy*drillDist.y/2]) circle(d=2.5);
-      translate(frmOffset) square([frmDims.x,frmDims.y],true);
+      for (i=[-9/2:9/2])
+        translate([PCBDims.x/2-2.54,i*2.54]) circle(d=1);
+      *translate(frmOffset) square([frmDims.x,frmDims.y],true);
     }
       
     else{
@@ -58,9 +61,9 @@ module Adafruit128x160TFT(cut=false, centerAA=true){
           translate([PCBDims.x/2-2.54,i*2.54]) circle(d=1);
       }
         rotate(180) displayTFT(frameDims,activeArea,AAOffset,frameThick);
-      
+      translate([-PCBDims.x/2+15.5/2,0,-1.6]) rotate([180,0,90]) uSDCard();  
     }
-    translate([-PCBDims.x/2+15.5/2,0,-1.6]) rotate([180,0,90]) uSDCard();
+    
   }
   
 

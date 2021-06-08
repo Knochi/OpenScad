@@ -34,35 +34,99 @@ translate([200,0,0]) tubeSocket9pinFlange();
 translate([230,0,0]) PJ398SM();
 
 *rotate([0,0,-90]) femHeaderSMD(20,2,center=true);
-!M411P();
-module M411P(){
- magDims=[14.2,8.8-5.75,4.7];
- magWdth=1.3;
+
+!M411P(false);
+module M411P(isMale=true){
+ //https://www.hyte.pro/product/m411p-en.html
+ ovDims=isMale ? [14.5,8.8,4.7] : [14.5,6.66,4.7] ;
+ magDims= isMale ? [14.2,8.8-5.75,4.7] : [14.2,5.81-4.31,4.7];
+ magSecWdth=1.3; //section width of magnet
+ bdyDims= isMale ? [ovDims.x,5.75,ovDims.z] : [ovDims.x,4.31,ovDims.z];
+ pinOffset= isMale ? 0.9 : 1.0;
+ bdyRad=[2,0.5];
  pitch=2.2;
   
- color("silver") translate([0,-magDims.y/2,magDims.z/2]) magnet();
+ color("silver") translate([0,-magDims.y/2-0.05,magDims.z/2]) magnet();
  
  color("gold") for (ix=[-1.5:1.5]){
-  translate([ix*pitch,-magDims.y+0.65/2+0.15,magDims.z/2]) pin();
-   
+  translate([ix*pitch,bdyDims.y-pinOffset,0]) color("gold") pin();
  }
  
- module pin(){
-   sphere(d=0.65);
-   rotate([-90,0,0]) cylinder(d=0.65,h=magDims.y);
+ color("darkSlateGrey") translate([0,bdyDims.y/2,0]) body();
+ 
+  module pin(){
+    pinDia=0.65;
+    pinRad=0.25; //inner Radius
+    pinLngth=isMale ? ovDims.y-0.15-pinDia-pinRad-0.9 : ovDims.y-3.1+2.1-pinDia/2-pinRad;
+
+    translate([0,-pinLngth-pinDia/2-pinRad,ovDims.z/2]){
+      if (isMale) sphere(d=0.65);
+      else rotate([-90,0,0]) cylinder(d=1.45,h=1);
+      rotate([-90,0,0]) cylinder(d=0.65,h=pinLngth);
+    }
+
+    translate([0,-pinDia/2-pinRad,-pinDia/2-pinRad+ovDims.z/2]) rotate([0,-90,0])
+      rotate_extrude(angle=90) 
+        translate([pinRad+pinDia/2,0]) circle(d=pinDia);
+    translate([0,0,-0.05]) cylinder(d=pinDia,h=ovDims.z/2-pinRad-pinDia/2+0.05);
+    translate([0,0,-0.15]) cylinder(d1=pinDia-0.2,d2=pinDia,h=0.1);
  }
+
+  module body(){
+    bdyMid=(bdyDims.z-bdyRad[1]-bdyRad[0]);
+    cutOutWdth= isMale ? 3 : 3.1; //cutouts for PCB
+    difference(){
+      union(){
+        translate([0,0,bdyDims.z-bdyRad[0]]) slap([bdyDims.x,bdyDims.y,bdyRad[0]]);
+        translate([0,0,bdyRad[1]]) rotate([0,180,0]) slap([bdyDims.x,bdyDims.y,bdyRad[1]]);
+        translate([0,0,bdyRad[1]+bdyMid/2]) cube([bdyDims.x,bdyDims.y,bdyMid],true);
+      }
+      //cutaway
+      translate([0,(bdyDims.y-cutOutWdth+fudge)/2,0]){
+        translate([0,0,(1.5-fudge)/2]) cube([bdyDims.x+fudge,3+fudge,1.5+fudge],true);
+        translate([0,0,bdyDims.z/2]) cube([9,cutOutWdth+fudge,bdyDims.z+fudge],true);
+      }
+   }
+   //mag inlay
+   magInnerDia=magDims.z-magSecWdth*2;
+   magInnerLngth= isMale ? magDims.y-0.15-0.9 : ovDims.y-bdyDims.y-0.01 ;
+    hull()for (ix=[-1,1]) 
+      translate([ix*(magDims.x/2-magInnerDia/2-magSecWdth),-bdyDims.y/2,magDims.z/2]) 
+        rotate([90,0,0]) cylinder(d=magInnerDia-fudge,h=magInnerLngth); //<-- check
+   
+   //pegs
+   for (ix=[-1,1])
+    translate([ix*10/2,bdyDims.y/2-pinOffset+0.2,1.5-0.8+0.15]){
+      cylinder(d=1,h=0.8-0.15);
+      translate([0,0,-0.15]) cylinder(d1=1-0.3,d2=1,h=0.15);
+    }
+ }
+ module slap(size=[15,5,5]){
+  for (im=[0,1])
+    mirror([im,0,0]) 
+      translate([(size.x/2-size.z),size.y/2,0]) 
+        rotate([90,0,0]) 
+          rotate_extrude(angle=90) square([size.z,size.y]);
+  translate([0,0,size.z/2]) 
+    cube([size.x-2*size.z,size.y,size.z],true);
+ }
+
  module magnet(){
-   rotate([90,90,0]) for (i=[-1,1]){
-     translate([0,i*(magDims.x-magDims.z)/2]) 
-      rotate_extrude(angle=i*180) translate([(magDims.z-magWdth)/2,0]) 
-        rndRect([magWdth,magDims.y],0.15,center=true);
-     translate([i*(magDims.z-magWdth)/2,0,0]) rotate([90,0,0]) linear_extrude(magDims.x-magDims.z,center=true) rndRect([magWdth,magDims.y],0.15,center=true);
+  rotate([90,90,0]) for (i=[-1,1]){
+    translate([0,i*(magDims.x-magDims.z)/2]) 
+      rotate_extrude(angle=i*180) translate([(magDims.z-magSecWdth)/2,0]) 
+        square([magSecWdth,magDims.y],true);
+        //rndRect([magSecWdth,magDims.y],0.15,center=true);
+     translate([i*(magDims.z-magSecWdth)/2,0,0]) rotate([90,0,0]) 
+      linear_extrude(magDims.x-magDims.z,center=true) 
+        square([magSecWdth,magDims.y],true);
+        //rndRect([magSecWdth,magDims.y],0.15,center=true);
    }
  }
 }
 
 
-!uSDCard();
+*uSDCard();
 module uSDCard(showCard=true){
   //push-push by Wuerth 
   //https://www.we-online.de/katalog/datasheet/693071010811.pdf
@@ -448,6 +512,54 @@ module ETH(){
 
 }
 
+*usbC();
+module usbC(){
+  //https://usb.org/document-library/usb-type-cr-cable-and-connector-specification-revision-21
+  //rev 2.1 may 2021
+  //receptacle dims
+  shellOpng=[8.34,2.56];
+  shellLngth=6.2; //reference Length of shell to datum A
+  shellThck=0.2;
+
+  //tongue
+  tngDims=[6.69,4.45,0.6];
+
+  //body
+  bdyLngth=3;
+
+  //contacts
+  //          pinA1          ...                        pinA12
+  cntcLngths=[4,3.5,3.5,4,3.5,3.5,3.5,3.5,4,3.5,3.5,4]; //8x short, 4x long per side
+  cntcDims=[0.25,0.05];
+  pitch=0.5;
+
+  translate([0,0,shellOpng.y/2+shellThck]) rotate([90,0,0]){
+    color("silver") translate([0,0,-bdyLngth]) shell(shellLngth+bdyLngth);
+    tongue();
+    color("darkSlateGrey") translate([0,0,-bdyLngth]) linear_extrude(bdyLngth) shellShape();
+  }
+
+  module tongue(){
+    tngPoly=[[0,0.6],[1.37,0.6],[1.62,tngDims.z/2],[tngDims.y-0.1,tngDims.z/2],[tngDims.y,tngDims.z/2-0.1],
+    [tngDims.y,-(tngDims.z/2-0.1)],[tngDims.y-0.1,-tngDims.z/2],[1.62,-tngDims.z/2],[1.37,-0.6],[0,-0.6]];
+
+    color("darkSlateGrey") rotate([0,-90,0]) linear_extrude(tngDims.x,center=true) polygon(tngPoly);
+    for (ix=[0:11],iy=[-1,1])
+      color("gold") translate([ix*pitch-11/2*pitch,iy*(tngDims.z+cntcDims.y)/2,cntcLngths[ix]/2]) 
+        cube([cntcDims.x,cntcDims.y,cntcLngths[ix]],true);
+  }
+
+  module shell(length=shellLngth){
+    linear_extrude(length) difference(){
+      offset(shellThck) shellShape();
+      shellShape();
+    }
+  }
+  module shellShape(size=[shellOpng.x,shellOpng.y]){
+    hull() for (ix=[-1,1])
+        translate([ix*(size.x/2),0]) circle(d=size.y);
+  }
+}
 
 module usbA(){
   outerDims=[13.3,14,5.8]; //from Assmann/Wuerth
@@ -1251,7 +1363,8 @@ module rndRect(size=[10,10], rad=1, center=false){
   if (len(size)==3){
     cntrOffset= center ? [0,0,0] : size/2;    
     hull() for(ix=[-1,1],iy=[-1,1])
-      translate([ix*(size.x/2-rad),iy*(size.y/2-rad),0]+cntrOffset) cylinder(r=rad,h=size.z,center=true);
+      translate([ix*(size.x/2-rad),iy*(size.y/2-rad),0]+cntrOffset) 
+        cylinder(r=rad,h=size.z,center=true);
   }
   else{
     cntrOffset= center ? [0,0] : size/2;    
