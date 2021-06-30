@@ -3,7 +3,7 @@ fudge=0.1;
 
 
 
-translate([-10,0,0]) TRACO();
+translate([-10,0,0]) !TRACO();
 SMDpassive("1210",label="000");
 translate([4,0,0]) SOT23(22,label="SOT23");
 translate([10,0,0]) QFN(label="QFN");

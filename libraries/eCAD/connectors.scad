@@ -35,7 +35,7 @@ translate([230,0,0]) PJ398SM();
 
 *rotate([0,0,-90]) femHeaderSMD(20,2,center=true);
 
-!M411P(false);
+*M411P(false);
 module M411P(isMale=true){
  //https://www.hyte.pro/product/m411p-en.html
  ovDims=isMale ? [14.5,8.8,4.7] : [14.5,6.66,4.7] ;
@@ -744,7 +744,7 @@ module duraClikRA(pos=2,diff="none"){
   }
 }
 
-//!duraClik(2);
+*duraClik(2,true);
 module duraClik(pos=2,givePoly=false){
   A= (pos>2) ? 6.6+2*pos : 10.9;
   B= (pos>2) ? 3.7+pos*2 : 8;

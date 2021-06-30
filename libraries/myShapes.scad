@@ -113,6 +113,7 @@ module arc(r=1,angle=60){
 }
 
 
+
 module star(N=5, ri=15, re=30) {
     polygon([
         for (n = [0 : N-1], in = [true, false])
@@ -237,6 +238,7 @@ function radiusFrom3P(points)=
 function angleFrom2P(points,radius=1)=
   2*asin(norm(points[0]-points[1])/(2*radius));
 
+//arc with constant radius
 function arcPoints(r=1,angle=60,steps=10,poly=[[0,0]],iter)=
   let(
     iter = (iter == undef) ? steps-1 : iter,
@@ -245,6 +247,22 @@ function arcPoints(r=1,angle=60,steps=10,poly=[[0,0]],iter)=
     y= r*sin(angInc*iter)
   )(iter>=0) ? arcPoints(r,angle,steps,concat(poly,[[x,y]]),iter-1) : poly;
 
+*offset(3) union(){
+  polygon(arcPointsLinear(3,6,180,30));
+  rotate(180) polygon(arcPointsLinear(6,3,180,30));
+}
+
+//arc with linear radius change
+function arcPointsLinear(r1=1, r2=2,angle=60,steps=10,poly=[[0,0]],iter)=
+  let(
+    iter = (iter == undef) ? steps-1 : iter,
+    r=r1+((r2-r1)/(steps-1))*iter,
+    angInc=angle/(steps-1), //increment per step
+    x= r*cos(angInc*iter),
+    y= r*sin(angInc*iter)
+  )(iter>=0) ? arcPointsLinear(r1,r2,angle,steps,concat(poly,[[x,y]]),iter-1) : poly;
+
+//calculate fragments from radius and angle and $fn,$fs etc.
 function arcFragments(r,angle)=
   let(
     cirFrac=360/angle, //fraction of angle
@@ -259,7 +277,7 @@ function translatePoints(points=[[0,0],[1,1]],vector=[2,2],output=[],iter)=
   )
   (iter<=len(points)-1) ? translatePoints(points,vector,concat(output,[points[iter]+vector]),iter=iter+1) : output;
 
-echo(rotatePoints());
+*echo(rotatePoints());
 function rotatePoints(points=[[0,0],[1,1],[5,5]],angle=90,output=[],iter)=
   let(
     iter=(iter == undef) ? 0 : iter,
@@ -268,5 +286,5 @@ function rotatePoints(points=[[0,0],[1,1],[5,5]],angle=90,output=[],iter)=
   )
   (iter<len(points)-1) ? rotatePoints(points,angle,concat(output,[[x2,y2]]),iter=iter+1) : concat(output,[[x2,y2]]);
 
-echo(str("fact: ",fact(5)));
+*echo(str("fact: ",fact(5)));
 function fact(n,result=1)= n ? fact((n-1),n*result)  : result;
