@@ -34,7 +34,7 @@ module raspBerry7Inch(cutOut=false,matThck=3){
 
 
 *Adafruit128x160TFT();
-module Adafruit128x160TFT(cutPCB=false, centerAA=true){
+module Adafruit128x160TFT(cutPCB=false, centerAA=true, cutPanel=false){
   //https://www.adafruit.com/product/358
   PCBDims=[2.2*25.4,1.35*25.4,1.6];
   drillDist=[PCBDims.x-2.5*2,PCBDims.y-2.5*2];
@@ -52,6 +52,13 @@ module Adafruit128x160TFT(cutPCB=false, centerAA=true){
       for (i=[-9/2:9/2])
         translate([PCBDims.x/2-2.54,i*2.54]) circle(d=1);
       *translate(frmOffset) square([frmDims.x,frmDims.y],true);
+    }
+    
+    if (cutPanel){
+      square(frameDims,true);
+      for (ix=[-1,1],iy=[-1,1])
+          translate([ix*drillDist.x/2,iy*drillDist.y/2]) circle(d=2);
+      translate([PCBDims.x/2-2.54,0]) rndRect([2.54,10*2.54],2.54/2,0,true);
     }
       
     else{

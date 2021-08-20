@@ -37,6 +37,13 @@ module keyPad(bdyDims=[52,65,8.5],keyCnt=[3,4],cutPCB=false, cutPanel=false){
     for (ix=[0:8])
         translate([-10.7+ix*2.54,-3.4]+[0,-bdyDims.y/2,-3.1]) circle(d=0.8);
   }
+
+  if (cutPanel){
+    hull() for (ix=[-1,1], iy=[-1,1])
+        translate([ix*(drillDist.x/2-rad),iy*(58/2-rad)]) circle(rad);
+    for (ix=[-1,1], iy=[-1,1])
+        translate([ix*(bdyDims.x/2-rad),iy*(bdyDims.y/2-rad)]) circle(d=2);
+  }
   
   color("darkslateGrey") body();
   color("Grey") keys();

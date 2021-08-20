@@ -1,42 +1,51 @@
 $fn=20;
-include <myShapes.scad>
+use <myShapes.scad>
+
+
 
 /* -- [Dimensions] -- */
 extrusionWidth=0.4;
 wallCount=8;
 screwDia=3.5;
 counterSinkDia=8.5; 
-bookDims=[117*2,326,17.8];
-feetDims=[9,21.5,2.2];
-feetDist=[190,236,212.5]; //x, y1, y2
-feetxOffset=(25.5-17.5)/2;
+bookDims=[215,323,22]; //G5:[117*2,326,17.8]
+bookDimsG7=[215,323,22];
+feetDims=[9,21.5,2.2]; //G5:[9,21.5,2.2]
+feetDist=[175,236,212.5]; //x, y1, y2 //G5:[190,236,212.5]
+wedgeDims=[[5,276,1.5],[5,290,2.6]]; //left, right
+feetxOffset=(24.5-14)/2; //center offset G5:(25.5-17.5)/2
 tblThck=19.4;
 magnetDia=5;
 spcng=1;
 fudge=0.1;
 
+/* -- [Options] -- */
+footStyle="pill"; //["pill","wedge"]
+
 /* --[hidden] -- */
 clampMinWallThck=extrusionWidth*wallCount;
 
 
-HPEliteBook840G5();
+HPEliteBook840G7();
 
 //left back
 translate([-(bookDims.x+clampMinWallThck)/2-spcng/2,(feetDist[1])/2,(bookDims.z+spcng)/2-feetDims.z/2-spcng/2]) 
-  clamp(stopper=true,isLeft=true);
+  clampG5(stopper=true,isLeft=true);
 mirror([1,0,0]) translate([-(bookDims.x+clampMinWallThck)/2-spcng/2,(feetDist[2])/2,(bookDims.z+spcng)/2-feetDims.z/2-spcng/2])  
-  clamp(stopper=true,isLeft=false);
+  clampG5(stopper=true,isLeft=false);
 //left front
 translate([-(bookDims.x+clampMinWallThck)/2-spcng/2,-(feetDist[1])/2,(bookDims.z+spcng)/2-feetDims.z/2-spcng/2]) 
-  clamp(stopper=false,isLeft=true,nudge=true);
+  clampG5(stopper=false,isLeft=true,nudge=true);
 mirror([1,0,0]) translate([-(bookDims.x+clampMinWallThck)/2-spcng/2,-(feetDist[2])/2,(bookDims.z+spcng)/2-feetDims.z/2-spcng/2])  
-  !clamp(stopper=false,isLeft=false);
+  clampG5(stopper=false,isLeft=false);
 
 
 //USBHub
 translate([0,-bookDims.y/2,bookDims.z+clampMinWallThck+spcng-fudge]) rotate(0) USBHub();
-*clamp(stopper=true,nudge=true);
-module clamp(stopper=true,isLeft=true,nudge=false){
+
+*clampG5(stopper=true,nudge=false);
+
+module clampG5(stopper=true,isLeft=true,nudge=false){
   topWdth=20;
   footxOffset= isLeft ? feetxOffset : -feetxOffset;
   bottomWdth=(bookDims.x-feetDist.x+clampMinWallThck+spcng+feetDims.x)/2+feetDims.x+footxOffset;
@@ -111,6 +120,7 @@ module clamp(stopper=true,isLeft=true,nudge=false){
           //connect to base
           translate([0,clampWdth/2-clampMinWallThck/4,-clampMinWallThck/4]) cube([feetDims.x*2,clampMinWallThck/2,clampMinWallThck/2],true);
       }
+
   *plate(true);
   module plate(top=false){
     ndgDims=[10,1.6];
@@ -147,6 +157,14 @@ module clamp(stopper=true,isLeft=true,nudge=false){
           cylinder(d=screwDia*2+spcng,h=clampMinWallThck+fudge,center=true);
     }    
   }  
+}
+!HPEliteBook840G7();
+module HPEliteBook840G7(){
+  color("silver") translate([-bookDims.x/2,0,0]) rotate([90,0,0]) linear_extrude(bookDimsG7.y,center=true) import("EliteBook840G7_side.svg");
+  //wedge feet
+  for(ix=[0,1]) 
+    translate([ix*feetDist.x-feetDist.x/2+feetxOffset,0,wedgeDims[ix].z]) mirror([0,0,1]) linear_extrude(height=wedgeDims[ix].z,scale=[0.1,0.98]) 
+      square([wedgeDims[ix].x,wedgeDims[ix].y],true);
 }
 
 module HPEliteBook840G5(){
