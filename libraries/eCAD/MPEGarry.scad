@@ -14,8 +14,10 @@ translate([20,-30,0]) MPE_098(pins=6,variant=4);
 translate([20,-40,0]) MPE_098(pins=6,variant=5);
 translate([20,-50,0]) MPE_098(pins=12,variant=6);
 
-*MPE_087(rows=2,pins=10,markPin1=false, center=true);
-module MPE_087(rows=2, pins=6, A=24, markPin1=true, center=false){
+
+
+*MPE_087(rows=1,pins=17,center=true);
+module MPE_087(rows=2, pins=6, A=19.8,markPin1=true, center=false){
   //       A   ,  B  ,   C , L // overall Length, 
   Ldict=[[10.20, 5.20, 2.50, 2.50],
         [11.30, 5.50, 3.30, 2.50],
