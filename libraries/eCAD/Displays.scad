@@ -1,17 +1,20 @@
+
 $fn=20;
 /* [Dimensions]  */
 fudge=0.1;
 
-Midas69x16();
+Midas96x16();
 translate([0,100,0]) EA_W128032(true);
 translate([100,0,0]) LCD_20x4();
 translate([100,60,0]) LCD_16x2();
 translate([100,120,0]) FutabaVFD();
 translate([200,0,0]) Adafruit128x128TFT();
-translate([400,0,0]) raspBerry7Inch();
+translate([300,0,0]) AdafruitOLED23();
+translate([500,0,0]) raspBerry7Inch();
 
 
-translate([400,0,-95/2-10]) cube([240,190,95],true);
+
+
 
 module raspBerry7Inch(cutOut=false,matThck=3){
   ovDims=[192.96,110.76,5.96+2.5];
@@ -31,17 +34,90 @@ module raspBerry7Inch(cutOut=false,matThck=3){
 }
 
 
+
+*Adafruit128x160TFT(cutPanel=false);
+module Adafruit128x160TFT(cutPCB=false, centerAA=true, cutPanel=false, cutGlass=false, drillDia=1.6){
+  //https://www.adafruit.com/product/358
+  PCBDims=[2.2*25.4,1.35*25.4,1.6];
+  //drillDist=[PCBDims.x-2.5*2,PCBDims.y-2.5*2];
+  drillDist=[25.4*2,25.4*1.15];
+  echo(drillDist);
+  rad=2.54;
+  frameDims=[46.83,34.6];
+  activeArea=[35.04,28.03];
+  AAOffset=[-(45.83-35.04)/2+2.79,0];
+  frameThick=3;
+  spcng=0.2;
+  cntrOffset= centerAA ? AAOffset : [0,0];
+  
+  translate(cntrOffset){
+    if (cutPCB){
+      for (ix=[-1,1],iy=[-1,1])
+          translate([ix*drillDist.x/2,iy*drillDist.y/2]) circle(d=drillDia);
+      for (i=[-9/2:9/2]) //pins
+        translate([PCBDims.x/2-2.54,i*2.54]) circle(d=1);
+      *translate(frmOffset) square([frmDims.x+spcng*2,frmDims.y+spcng*2],true);
+    }
+    
+    else if (cutPanel){
+      square(frameDims,true);
+      for (ix=[-1,1],iy=[-1,1]) //drill
+          translate([ix*drillDist.x/2,iy*drillDist.y/2]) circle(d=drillDia);
+
+      translate([PCBDims.x/2-2.54-5,0]) rndRect([2.54+10,10*2.54],2.54/2,0,true);
+    }
+
+    else if (cutGlass){
+      translate(-AAOffset) square(activeArea,true);
+      for (ix=[-1,1],iy=[-1,1]) //drill
+          translate([ix*drillDist.x/2,iy*drillDist.y/2]) circle(d=drillDia);
+    }
+      
+    else{
+      color("SteelBlue") translate([0,0,-1.6]) linear_extrude(PCBDims.z) difference(){
+        PCB();
+        for (i=[-9/2:9/2])
+          translate([PCBDims.x/2-2.54,i*2.54]) circle(d=1);
+      }
+        rotate(0) displayTFT(frameDims,activeArea,AAOffset,frameThick);
+      translate([-PCBDims.x/2+15.5/2,0,-1.6]) rotate([180,0,90]) uSDCard();  
+    }
+    
+  }
+  
+
+  module PCB(){
+    difference(){
+      rndRect([PCBDims.x,PCBDims.y],rad,0,center=true);
+      for (ix=[-1,1],iy=[-1,1])
+        translate([ix*drillDist.x/2,iy*drillDist.y/2]) circle(d=2.1);
+    }
+  }
+}
+
 *Adafruit128x128TFT();
-module Adafruit128x128TFT(){
+module Adafruit128x128TFT(cut=false){
+  //top: https://learn.adafruit.com/assets/19549 
+  //bottom: https://learn.adafruit.com/assets/19550
   drillDist=[1.55*25.4,1.5*25.4];
   PCBDims=[1.75*25.4,1.3*25.4,1.6];
+  frmDims=[38.2,32.2,3]; //display frame
+  frmOffset=[(frmDims.x-PCBDims.x)/2+1,0,1.5];
   
-  translate([0,0,-1.6]) linear_extrude(PCBDims.z) difference(){
-    PCB();
+  if (cut){
     for (ix=[-1,1],iy=[-1,1])
-      translate([ix*drillDist.x/2,iy*drillDist.y/2]) circle(d=2.5);
+        translate([ix*drillDist.x/2,iy*drillDist.y/2]) circle(d=2.5);
+    translate(frmOffset) square([frmDims.x,frmDims.y],true);
   }
+    
+  else{
+    translate([0,0,-1.6]) linear_extrude(PCBDims.z) difference(){
+      PCB();
+      for (ix=[-1,1],iy=[-1,1])
+        translate([ix*drillDist.x/2,iy*drillDist.y/2]) circle(d=2.5);
+    }
     display();
+  }
   
   module PCB(){
     for (ix=[-1,1])
@@ -52,8 +128,7 @@ module Adafruit128x128TFT(){
   }
  
  module display(){
-   frmDims=[38.2,32.2,3]; //display frame
-   color("white") translate([(frmDims.x-PCBDims.x)/2+1,0,1.5]) difference(){
+   color("white") translate(frmOffset) difference(){
       cube(frmDims,true);
       translate([-(33.5-38.2)/2-2,0,0]) cube([33.5,28.9,3+fudge],true);
    }
@@ -61,7 +136,19 @@ module Adafruit128x128TFT(){
  } 
 }
 
-module Midas69x16(orientation="flat",center=true){
+*displayTFT();
+module displayTFT(frameDims=[45.83,34],activeArea=[35.04,28.03],AAOffset=[-(45.83-35.04)/2+2.79,0],thick=3){
+  //display with Backlight and Frame
+  spcng=0.2; //spacing between frame and AA
+     color("ivory") linear_extrude(thick) difference(){
+        square(frameDims,true);
+        translate(AAOffset) offset(spcng) square(activeArea,true);
+     }
+     color("darkslategrey") translate([AAOffset.x,AAOffset.y,thick/2]) 
+      cube([activeArea.x,activeArea.y,thick],true);
+  }
+  
+module Midas96x16(orientation="flat",center=true){
   glassThck=0.55;
   flxRad=0.25; //edge rad of Panel
   flxPnl=1.2; //width of Flex on Panel
@@ -158,7 +245,106 @@ module Midas69x16(orientation="flat",center=true){
      }
    } //module Flex    
 }
-
+*EastRising128x32();
+module EastRising128x32(orientation="flat",center=true){
+  glassThck=0.55;
+  flxRad=0.25; //edge rad of Panel
+  flxPnl=1.2; //width of Flex on Panel
+  flxDimTap=[[10.5,6.8,4],[7.5,9],0.1];
+  bend=1.6;
+  panelDim=[30,11.5,1.3]; //Glass Panel
+  polDim=[25.9,8.8,0.2]; //Polarizer
+  
+  polPos=[0.35,panelDim.y-0.5-polDim.y,0]; //offset from bottom left edge
+  AADim=[22.384,5.584,0.01]; //active Area
+  AAPos=[2.1,panelDim.y-2.1-AADim.y,polDim.z]; //offset from bottom left edge
+  capSize=22.7;
+  pitch=0.62;
+  padDim=[2,0.32,0.01];
+  pads=14;
+  
+  cntrOffset= (center) ? -(AAPos + [AADim.x/2,AADim.y/2,-panelDim.z-flxDimTap.z]) : [0,0,0];
+  
+  flxPoly=//[[-flxDimTap.x[0]-flxPnl+flxRad,flxDimTap.y[0]/2],
+           [[-flxDimTap.x[1],flxDimTap.y[0]/2],
+           [-flxDimTap.x[2],flxDimTap.y[1]/2],
+           [-flxRad,flxDimTap.y[1]/2],
+           [-flxRad,-flxDimTap.y[1]/2],
+           [-flxDimTap.x[2],-flxDimTap.y[1]/2],
+           [-flxDimTap.x[1],-flxDimTap.y[0]/2]];
+           //[-flxDimTap.x[0]-flxPnl+flxRad,-flxDimTap.y[0]/2]];
+  
+  translate(cntrOffset){
+  //Active Area
+  color("SlateGrey") translate(AAPos+[0,0,0]) cube(AADim);
+  //Polarizer
+  color("grey",0.5)
+    translate(polPos) cube(polDim);
+  //topGlass
+  color("lightgrey",0.5) 
+    translate([0,0,-glassThck]) cube([panelDim.x,panelDim.y,glassThck]);
+  //btmGlass
+  color("lightgrey",0.5)
+    translate([0,0,-glassThck*2]) cube([capSize,panelDim.y,glassThck]);
+  //IC
+  color("darkSlateGrey")
+    translate([23.6,(8-6.8)/2,-glassThck-0.3]) cube([0.8,6.8,0.3]);
+  flex();
+  }
+  
+  module flex(){
+    //flex straight
+    if (orientation=="straight") color("orange"){
+      flxBrdg=[flxDimTap.x[0]+flxPnl-flxRad-flxDimTap.x[1],flxDimTap.y[0],flxDimTap.z];
+      translate([36.8,panelDim.y/2,-flxDimTap.z-glassThck]){
+        difference(){
+          union(){
+            linear_extrude(flxDimTap.z)
+              polygon(flxPoly);
+            translate([-flxDimTap.x[0]+flxBrdg.x/2-flxPnl+flxRad,0,0])
+              cube(flxBrdg,true);
+            hull() for (iy=[-1,1])
+              translate([-flxDimTap.x[0]+flxRad-flxPnl,iy*(flxDimTap.y[0]/2-flxRad),0]) cylinder(r=flxRad,h=flxDimTap.z);
+            hull() for (iy=[-1,1])
+              translate([-flxRad,iy*(flxDimTap.y[1]/2-flxRad),0]) cylinder(r=flxRad,h=flxDimTap.z);
+          }
+          for (iy=[-1,1])
+            translate([-6.1,iy*6.2/2,-fudge/2]) cylinder(d=0.8,h=flxDimTap.z+fudge);
+        }
+      }
+    }
+     if (orientation=="flat"){
+       flxBrdg=[1.6-glassThck/2+flxPnl-flxRad,flxDimTap.y[0],flxDimTap.z];
+       translate([0,panelDim.y/2,-glassThck]){
+         translate([19.271,0,-glassThck]) rotate([0,180,0]) {
+          color("orange"){
+            linear_extrude(flxDimTap.z) polygon(flxPoly);
+          hull() for (iy=[-1,1])
+          translate([-flxRad,iy*(flxDimTap.y[1]/2-flxRad),0]) cylinder(r=flxRad,h=flxDimTap.z);       
+         }
+          //pads
+          color("silver")
+          for (iy=[-(pads-1)*pitch/2:pitch:(pads-1)*pitch/2],iz=[flxDimTap.z,0])
+            translate([-padDim.x/2,iy,iz]) 
+              cube(padDim,true);
+         }
+         color ("orange") {
+         translate([panelDim.x+flxDimTap.x[0],0,-flxDimTap.z])
+          hull() for (iy=[-1,1])
+            translate([-flxDimTap.x[0]+flxRad-flxPnl,iy*(flxDimTap.y[0]/2-flxRad),0]) cylinder(r=flxRad,h=flxDimTap.z);
+         //bend flex
+         translate([panelDim.x+1.6-glassThck/2,0,-(glassThck+flxDimTap.z)/2]) rotate([90,90,0]) 
+            rotate_extrude(angle=180) translate([glassThck/2,0]) square([flxDimTap.z,flxDimTap.y[0]],true);
+         //bridges
+         translate([panelDim.x+flxBrdg.x/2-flxPnl+flxRad,0,-flxDimTap.z/2])
+              cube(flxBrdg,true);
+         translate([panelDim.x+flxBrdg.x/2-flxPnl+flxRad,0,-flxDimTap.z/2-glassThck])
+              cube(flxBrdg,true);
+        }
+       }
+     }
+   } //module Flex    
+}
 
 
 module LCD_16x2(){
@@ -288,8 +474,48 @@ module EA_W128032(center=false){
     }
   }
 }
+*AdafruitOLED23(true);
+module AdafruitOLED23(cut=false){
+  //2.3" 128x32px OLED from Adafruit 
+  //https://www.adafruit.com/product/2675
+  //aka LM230B-128032
 
+  drillDist=[62.6,31.2];
+  drillDia=2.6;
+  pcbDims=[66.5,35,1];
+  displayDims=[63.5,26.1,4.5]; //Dimensions of the metal frame
+  AADims=[55.02,13.1];//Active Area
+  VADims=[57,15.1];//Viewable area
+  AACntrOffset=[0,-(pcbDims.y-AADims.y)/2+13.95];
+  
+  if (cut){
+    offset(0.2) metalFrame();
+    for (ix=[-1,1],iy=[-1,1])
+      translate([ix*drillDist.x/2,iy*drillDist.y/2]) circle(d=2);
+  }
+  else{
 
+    //PCB
+    color("green") translate([0,0,-pcbDims.z]) linear_extrude(pcbDims.z) difference(){
+      square([pcbDims.x,pcbDims.y],true);
+      for (ix=[-1,1],iy=[-1,1])
+        translate([ix*drillDist.x/2,iy*drillDist.y/2]) circle(d=drillDia);
+    }
+    //display
+    
+      difference(){
+        color("darkslategrey") linear_extrude(displayDims.z,convexity=2) metalFrame();
+        color("#222222") translate([AACntrOffset.x,AACntrOffset.y,displayDims.z]) rndRect([VADims.x,VADims.y,0.2],1,0,center=true);
+      }
+      color("cyan") translate([AACntrOffset.x,AACntrOffset.y,displayDims.z-0.1]) linear_extrude(0.1)
+        pixels(count=[128,32]);
+  }
+
+  module metalFrame(){
+    square([displayDims.x,displayDims.y],true);
+    translate([0,-displayDims.y/2-0.75]) square([16.22,1.5],true);
+  }
+}
 
 module rndRect(size, rad, drill=0, center=true){  
   if (len(size)==2) //2D shape
@@ -310,6 +536,25 @@ module rndRect(size, rad, drill=0, center=true){
     }
 }
 
-
+*pixels();
+module pixels(count=[16,8],size=[0.41,0.39],pitch=[0.43,0.41]){
+  for (ix=[-(count.x-1)/2:(count.x-1)/2],iy=[-(count.y-1)/2:(count.y-1)/2])
+    translate([ix*pitch.x,iy*pitch.y]) square(size,true);
+}
 
 function xTilt(dist,ang)=[tan(ang)*dist,dist]; 
+
+module uSDCard(showCard=true){
+  //push-push by Wuerth 
+  //https://www.we-online.de/katalog/datasheet/693071010811.pdf
+    translate([0,0,1.98/2]){
+      color("silver") difference(){
+        cube([14,15.2,1.98],true);
+        translate([-(14-11.2+fudge)/2,-(15.2-1.3+fudge)/2,0]) cube([11.2+fudge,1.3+fudge,1.98+fudge],true);
+      }
+      if(showCard){
+        color("darkslateGrey") translate([-(14-11)/2+0.1,-0.6,0.35]) cube([11,15,0.7],true);
+        color("darkslateGrey",0.5) translate([-(14-11)/2+0.1,-5,0.35]) cube([11,15,0.7],true);
+      }
+    }
+}

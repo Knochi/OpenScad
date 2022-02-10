@@ -26,9 +26,9 @@ shape4=[[0,0],[56,0],[7.5,-28]];
 
 
 
-*difference(){
+difference(){
   polygon(shape4);
-  fillet2D(shape4[0],shape4[1],shape4[2],7);
+  #fillet2D(shape4[0],shape4[1],shape4[2],7);
 }
 
 //round off one corner with defined radius

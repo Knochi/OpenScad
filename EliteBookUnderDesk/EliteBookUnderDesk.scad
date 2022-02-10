@@ -1,74 +1,79 @@
 $fn=20;
-include <myShapes.scad>
+use <myShapes.scad>
+
+
 
 /* -- [Dimensions] -- */
 extrusionWidth=0.4;
 wallCount=8;
 screwDia=3.5;
 counterSinkDia=8.5; 
-bookDims=[117*2,326,17.8];
-feetDims=[9,21.5,2.2];
-feetDist=[190,236,212.5]; //x, y1, y2
-feetxOffset=(25.5-17.5)/2;
+bookDims=[215.7,323,19.2]; //G5:[117*2,326,17.8] //without feed
+bookDimsG7=[215,323,20];
+feetDims=[9,21.5,2.6]; //G5:[9,21.5,2.2]
+feetDist=[175,276-25,290.5-25]; //x, y1, y2 //G5:[190,236,212.5]
+wedgeDims=[[5,276,1.5],[5,290,2.6]]; //left, right
+feetxOffset=(24.5-14)/2; //center offset G5:(25.5-17.5)/2
 tblThck=19.4;
 magnetDia=5;
 spcng=1;
 fudge=0.1;
 
+/* -- [Options] -- */
+footStyle="wedge"; //["pill","wedge"]
+magnets=false;
+
 /* --[hidden] -- */
 clampMinWallThck=extrusionWidth*wallCount;
 
 
-HPEliteBook840G5();
+translate([0,0,-feetDims.z]) HPEliteBook840G7();
 
 //left back
 translate([-(bookDims.x+clampMinWallThck)/2-spcng/2,(feetDist[1])/2,(bookDims.z+spcng)/2-feetDims.z/2-spcng/2]) 
-  clamp(stopper=true,isLeft=true);
+  clampG5(stopper=true,isLeft=true);
 mirror([1,0,0]) translate([-(bookDims.x+clampMinWallThck)/2-spcng/2,(feetDist[2])/2,(bookDims.z+spcng)/2-feetDims.z/2-spcng/2])  
-  clamp(stopper=true,isLeft=false);
+  clampG5(stopper=true,isLeft=false);
 //left front
 translate([-(bookDims.x+clampMinWallThck)/2-spcng/2,-(feetDist[1])/2,(bookDims.z+spcng)/2-feetDims.z/2-spcng/2]) 
-  clamp(stopper=false,isLeft=true,nudge=true);
+  clampG5(stopper=false,isLeft=true,nudge=true);
 mirror([1,0,0]) translate([-(bookDims.x+clampMinWallThck)/2-spcng/2,-(feetDist[2])/2,(bookDims.z+spcng)/2-feetDims.z/2-spcng/2])  
-  !clamp(stopper=false,isLeft=false);
+  clampG5(stopper=false,isLeft=false);
 
 
 //USBHub
 translate([0,-bookDims.y/2,bookDims.z+clampMinWallThck+spcng-fudge]) rotate(0) USBHub();
-*clamp(stopper=true,nudge=true);
-module clamp(stopper=true,isLeft=true,nudge=false){
-  topWdth=20;
+
+*clampG5(stopper=true,nudge=false);
+
+module clampG5(stopper=true,isLeft=true,nudge=false){
+  topWdth=20; //table interface
   footxOffset= isLeft ? feetxOffset : -feetxOffset;
-  bottomWdth=(bookDims.x-feetDist.x+clampMinWallThck+spcng+feetDims.x)/2+feetDims.x+footxOffset;
-  clampWdth=50;
+  bottomWdth=(bookDims.x-feetDist.x+clampMinWallThck+spcng+feetDims.x)/2+feetDims.x+footxOffset; //centered on feet
+  clampLngth=50; 
   rad=4; //edge radii (median line)
   radOffset=rad-clampMinWallThck/2;
-  stprPos=[bottomWdth-feetDims.x*1.5,0,-(bookDims.z+feetDims.z+spcng)/2];
-  plateZOffset=(bookDims.z+clampMinWallThck+feetDims.z+spcng)/2;
+  stprPos=[bottomWdth-feetDims.x*1.5,0,-(bookDims.z+feetDims.z+spcng)/2]; //position of the stopper (feet)
+  plateZOffset=(bookDims.z+clampMinWallThck+feetDims.z+spcng)/2; 
   vertPlateHght=bookDims.z+feetDims.z-radOffset*2+spcng; //hight of the vertical part
   stpRad= min(feetDims.x/4,feetDims.z); //edge radius to apply to stopper part
 
+  //vertical plate
   hull() for (iy=[-1,1])
-    translate([0,iy*(clampWdth-clampMinWallThck)/2,0]) 
+    translate([0,iy*(clampLngth-clampMinWallThck)/2,0]) 
       cylinder(d=clampMinWallThck,h=vertPlateHght,center=true);
-  rotate([90,0,0]){
-    
-    *linear_extrude(clampWdth,center=true) hull()
-      for (iy=[-1,1])
-        translate([0,iy*(bookDims.z+feetDims.z-radOffset*2+spcng)/2])
-          circle(d=clampMinWallThck);
-      //square([clampMinWallThck,bookDims.z+feetDims.z-radOffset*2+spcng],true);
   
+  rotate([90,0,0]){  
     //bottom radius
     translate([rad,-((bookDims.z+feetDims.z+spcng)/2-radOffset),0])
       rotate([0,0,180]) rotate_extrude(angle=90) 
         translate([rad,0]) hull() for(iy=[-1,1])
-          translate([0,iy*(clampWdth-clampMinWallThck)/2]) circle(d=clampMinWallThck); //square([clampMinWallThck,clampWdth],true);
+          translate([0,iy*(clampLngth-clampMinWallThck)/2]) circle(d=clampMinWallThck); //square([clampMinWallThck,clampLngth],true);
     //top radius
     translate([rad,((bookDims.z+feetDims.z+spcng)/2-radOffset),0])
       rotate([0,0,90]) rotate_extrude(angle=90) 
         translate([rad,0]) hull() for(iy=[-1,1])
-          translate([0,iy*(clampWdth-clampMinWallThck)/2]) circle(d=clampMinWallThck);
+          translate([0,iy*(clampLngth-clampMinWallThck)/2]) circle(d=clampMinWallThck);
   }
     //top screwplate
     translate([0,0,plateZOffset]) plate(top=true);
@@ -77,14 +82,15 @@ module clamp(stopper=true,isLeft=true,nudge=false){
     translate([0,0,-plateZOffset]) plate(top=false);
   
     //stopper
-    if (stopper)
+  if (stopper){
+    if (footStyle=="pill")
       translate(stprPos){
         difference(){
-          translate([0,clampWdth/4,feetDims.z/2]){
-            cube([feetDims.x*2-stpRad*2,clampWdth/2,feetDims.z],true);
+          translate([0,clampLngth/4,feetDims.z/2]){
+            cube([feetDims.x*2-stpRad*2,clampLngth/2,feetDims.z],true);
               for (mx=[0,1])
                 mirror([mx,0,0]) translate([(feetDims.x-stpRad),0,-stpRad/2]) 
-                  translate([0,clampWdth/4,0]) rotate([90,0,0]) rotate_extrude(angle=90) square([stpRad,clampWdth/2]);
+                  translate([0,clampLngth/4,0]) rotate([90,0,0]) rotate_extrude(angle=90) square([stpRad,clampLngth/2]);
           }
           //cutout for foot
           hull() for (iy=[-1,1])
@@ -92,7 +98,7 @@ module clamp(stopper=true,isLeft=true,nudge=false){
               cylinder(d=feetDims.x+stpRad*2,h=feetDims.z+fudge,center=true);
           //repeat drill hole
           for(iy=[-1,1]) 
-            translate([topWdth/2,iy*clampWdth/4,-plateZOffset+(clampMinWallThck-fudge)/2]-stprPos) 
+            translate([topWdth/2,iy*clampLngth/4,-plateZOffset+(clampMinWallThck-fudge)/2]-stprPos) 
               cylinder(d=screwDia*2+spcng,h=feetDims.z+fudge);
          }
          for (ix=[-1,1])
@@ -109,8 +115,14 @@ module clamp(stopper=true,isLeft=true,nudge=false){
             translate([0,(feetDims.y-feetDims.x)/2,0]) rotate_extrude(angle=180) 
               translate([feetDims.x*0.75-(feetDims.x/4-stpRad),0]) mirror([1,0]) arc(stpRad,90);
           //connect to base
-          translate([0,clampWdth/2-clampMinWallThck/4,-clampMinWallThck/4]) cube([feetDims.x*2,clampMinWallThck/2,clampMinWallThck/2],true);
-      }
+          translate([0,clampLngth/2-clampMinWallThck/4,-clampMinWallThck/4]) cube([feetDims.x*2,clampMinWallThck/2,clampMinWallThck/2],true);
+      } //pill stopper
+    else if (footStyle=="wedge")
+      #translate(stprPos+[0,25/2,0]) cylinder(d=5,h=2);
+  }//stopper
+
+
+
   *plate(true);
   module plate(top=false){
     ndgDims=[10,1.6];
@@ -120,15 +132,15 @@ module clamp(stopper=true,isLeft=true,nudge=false){
     difference(){
       union(){ //body
         hull() for (iy=[-1,1])
-          translate([rad,iy*(clampWdth-clampMinWallThck)/2,0]) 
+          translate([rad,iy*(clampLngth-clampMinWallThck)/2,0]) 
             rotate([0,90,0]) cylinder(d=clampMinWallThck,h=width-rad*2);
         hull() for(iy=[-1,1])
-          translate([width-rad,iy*(clampWdth/2-rad),0]) 
+          translate([width-rad,iy*(clampLngth/2-rad),0]) 
             rotate_extrude() translate([rad-clampMinWallThck/2,0]) circle(d=clampMinWallThck);
       }
       if (top){
         for(iy=[-1,1]){
-          translate([topWdth/2,iy*clampWdth/4,0]){
+          translate([topWdth/2,iy*clampLngth/4,0]){
             cylinder(d=screwDia+fudge,h=clampMinWallThck+fudge,center=true);
           translate([0,0,-(clampMinWallThck+fudge)/2]) 
             cylinder(d1=counterSinkDia,d2=0.05,h=counterSinkDia/2);
@@ -137,16 +149,27 @@ module clamp(stopper=true,isLeft=true,nudge=false){
         if (nudge) 
           translate([width-ndgDims.x/2-ndgSpcng-rad,0,0]){ 
             translate([0,0,(clampMinWallThck+fudge)/2-(ndgDims.y+ndgSpcng)/2]) 
-              cube([ndgDims.x+ndgSpcng*2,clampWdth+fudge,ndgDims.y+ndgSpcng+fudge],true);
-            translate([0,0,-fudge-clampMinWallThck/2]) cylinder(d=magnetDia+spcng,h=1+fudge); //possible magnet
+              cube([ndgDims.x+ndgSpcng*2,clampLngth+fudge,ndgDims.y+ndgSpcng+fudge],true);
+            if (magnets) translate([0,0,-fudge-clampMinWallThck/2]) cylinder(d=magnetDia+spcng,h=1+fudge); //possible magnet
           }
       }
       else
         for(iy=[-1,1]) 
-        translate([topWdth/2,iy*clampWdth/4,0]) 
+        translate([topWdth/2,iy*clampLngth/4,0]) 
           cylinder(d=screwDia*2+spcng,h=clampMinWallThck+fudge,center=true);
     }    
   }  
+}
+
+
+*HPEliteBook840G7();
+module HPEliteBook840G7(){
+  color("silver") translate([-bookDims.x/2,0,0]) rotate([90,0,0]) linear_extrude(bookDimsG7.y,center=true) import("EliteBook840G7_side_noFeed.svg");
+  //wedge feet
+  color("darkred") for(ix=[0,1]) 
+    translate([ix*feetDist.x-feetDist.x/2+feetxOffset,0,wedgeDims[ix].z]) 
+      mirror([0,0,1]) linear_extrude(height=wedgeDims[ix].z,scale=[0.1,0.98]) 
+        square([wedgeDims[ix].x,wedgeDims[ix].y],true);
 }
 
 module HPEliteBook840G5(){

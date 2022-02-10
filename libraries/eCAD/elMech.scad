@@ -1,5 +1,7 @@
 $fn=20;
 fudge=0.1;
+
+translate([70,0,0]) keyPad();
 heatsink([9,9,5],5,3.5);
 translate([12,0,0]) pushButton(col="red");
 translate([12,15,0]) pushButton(col="green");
@@ -10,6 +12,127 @@ translate([30,0,0]) SMDSwitch();
 translate([-40,0,0]) AirValve();
 translate([-80,0,0]) AirPump();
 translate([-140,0,0]) SSR();
+translate([120,0,0]) roundRocker20();
+#translate([120,0,0]) roundRocker20(true);
+translate([140,0,0]) slideSwitch();
+translate([180,0,0]) arcadeButton();
+
+
+
+*keyPad(cutPanel=false);
+module keyPad(cutPCB=false, cutPanel=false, drillDia=1.6){
+//https://www.adafruit.com/product/3845
+//Dimensions taken from picture!
+  
+  rad=2.5;
+  drill=2.1;
+  keyDist=[14,13];
+  drillDist=[46,59];
+  keyDims=[8.5,7.5,2.5];
+  bdyDims=[51,63,3.3]; //dimensions of the lower frame
+  padDims=[46,56.8,3.5];
+  padRad=4;
+  keyCnt=[3,4];
+  notchDims=[6.1,3];
+  PCBDims=[36.7,5.6,1.6];
+  pinsOffset=[17.9-PCBDims.x/2,2.54-PCBDims.y];//Offset of pinscenter to PCBcenter
+  spcng=0.2;
+  
+  //cutOut
+  if (cutPCB){
+    for (ix=[-1,1], iy=[-1,1])
+      translate([ix*(drillDist.x/2),iy*(drillDist.y/2)]) circle(d=drillDia);
+
+    *hull() for (ix=[-1,1], iy=[-1,1])
+      translate([ix*(drillDist.x/2-rad),iy*(drillDist.y/2-rad)]) circle(rad);
+    for (ix=[0:8])
+        translate([-10.7+ix*2.54,-3.4]+[0,-bdyDims.y/2,-3.1]) circle(d=0.8);
+  }
+
+  else if (cutPanel){
+      hull() for (ix=[-1,1], iy=[-1,1])
+        translate([ix*(padDims.x/2-padRad),iy*(padDims.y/2-padRad)]) circle(padRad+spcng);
+      for (ix=[-1,1], iy=[-1,1])
+        translate([ix*(drillDist.x/2),iy*(drillDist.y/2)]) circle(d=drillDia);
+  }
+  
+  else{
+    color("darkslateGrey") body();
+    color("Grey") keys();
+    color("darkGreen") translate([0,-bdyDims.y/2,-3.1])  PCB();
+  }
+
+  module body(){
+    //lower part with screw holes
+    translate([0,0,-bdyDims.z]) linear_extrude(bdyDims.z) difference(){
+      hull() for (ix=[-1,1], iy=[-1,1])
+        translate([ix*(bdyDims.x/2-rad),iy*(bdyDims.y/2-rad)]) circle(rad);
+        for (ix=[-1,1], iy=[-1,1])
+          translate([ix*(drillDist.x/2),iy*(drillDist.y/2)]) circle(d=drill);
+        translate([0,(bdyDims.y-notchDims.y)/2]) square(notchDims,true);
+    }
+    //upper part "the pad" with keys
+    linear_extrude(5.4) hull() for (ix=[-1,1], iy=[-1,1])
+        translate([ix*(padDims.x/2-padRad),iy*(padDims.y/2-padRad)]) circle(padRad);
+  }
+  
+  module keys(){
+    for (ix=[-(keyCnt.x-1)/2:(keyCnt.x-1)/2],iy=[-(keyCnt.y-1)/2:(keyCnt.y-1)/2]){
+      translate([ix*keyDist.x,iy*keyDist.y,8.6-3.1+keyDims.z/2]) cube(keyDims,true);
+    }
+  }
+  
+  module PCB(){
+    echo(pinsOffset);
+    linear_extrude(PCBDims.z) difference(){
+      translate([0,-PCBDims.y/2]) square([PCBDims.x,PCBDims.y],true);
+      for (ix=[-8/2:8/2]) //holes for pinheader
+      //translate([-10.7+ix*2.54,-3.4]) circle(d=0.8); //0:8
+        translate([ix*2.54,0]+pinsOffset) circle(d=0.8);
+    }
+  }
+}
+
+
+module keyPadPhone(bdyDims=[51,64,8.5],keyCnt=[3,4],cut=false){
+
+  rad=2.5;
+  drill=2.5;
+  keyDist=[14,13];
+  drillDist=[46,57];
+  keyDims=[8.5,7.5,2.5];
+  notchDims=[6.5,2.6];
+  
+  if (cut){
+    for (ix=[-1,1], iy=[-1,1])
+      translate([ix*(bdyDims.x/2-rad),iy*(bdyDims.y/2-rad)]) circle(d=2.5);
+    hull() for (ix=[-1,1], iy=[-1,1])
+      translate([ix*(drillDist.x/2-rad),iy*(drillDist.y/2-rad)]) circle(rad);
+  }
+  
+  
+  body();
+  keys();
+  
+  
+  module body(){
+    translate([0,0,-3.1]) linear_extrude(3.1) difference(){
+      hull() for (ix=[-1,1], iy=[-1,1])
+        translate([ix*(bdyDims.x/2-rad),iy*(bdyDims.y/2-rad)]) circle(rad);
+        for (ix=[-1,1], iy=[-1,1])
+          translate([ix*(bdyDims.x/2-rad),iy*(bdyDims.y/2-rad)]) circle(d=drill);
+        translate([0,-(bdyDims.y-notchDims.y)/2]) square(notchDims,true);
+    }
+    linear_extrude(5.4) hull() for (ix=[-1,1], iy=[-1,1])
+        translate([ix*(46/2-rad),iy*(57/2-rad)]) circle(rad);
+  }
+  
+  module keys(){
+    for (ix=[-(keyCnt.x-1)/2:(keyCnt.x-1)/2],iy=[-(keyCnt.y-1)/2:(keyCnt.y-1)/2]){
+      translate([ix*keyDist.x,iy*keyDist.y,8.6-3.1+keyDims.z/2]) cube(keyDims,true);
+    }
+  }
+}
 
 !CUI_TS02();
 module CUI_TS02(height=11, longTerminals=false){
@@ -516,11 +639,91 @@ module leverSwitch(){
   }
 }
 
+*roundRocker20();
+module roundRocker20(cut=false){
+  //https://cdn-reichelt.de/documents/datenblatt/C200/R13_ENG.pdf
+  rockerRadius=41; //radius to substract from rocker
 
+  if (cut){
+    circle(d=20.2);
+    translate([20.2/2,0]) square([1.8,2.2],true);
+  }
+  else{
+     color("darkSlateGrey"){
+        difference(){
+          cylinder(d=17,h=5.5); //rocker
+          translate([0,17/2,2+rockerRadius]) rotate([0,90,0]) cylinder(r=rockerRadius,h=17,center=true,$fn=100);
+        }    
+        translate([0,0,-14.5]) cylinder(d=20,h=14.5); //body
+        cylinder(d=23,h=1); //ring
+        translate([0,0,1]) cylinder(d1=23,d2=21,h=1);
 
-module arcadeButton(){
-  
+     }
+      //terminals
+      color("silver") for (ix=[-1:1])
+         translate([ix*7.1,0,-14.5-8.1/2]) cube([0.8,4.8,8.1],true);
+  }
+    
 }
+
+*slideSwitch();
+// APEM 25136 https://www.reichelt.de/index.html?ACTION=7&LA=3&OPEN=0&INDEX=0&FILENAME=C200%2F05-SERIE_25000N-D.pdf
+module slideSwitch(){
+  bdyDims=[14.1,7.5,8.1];
+  pitch=2.54;
+  pinDims=[0.5,0.6,3.8];
+  actrDims=[3,3,2.8];
+  actrTrvl=4;
+  //body
+  color("ivory") translate([0,0,5/2]) cube([bdyDims.x,bdyDims.y,5],true);
+  color("darkSlateGrey") translate([0,0,5+(8.1-5)/2]) cube([bdyDims.x,bdyDims.y,8.1-5],true);
+  //actuator
+  color("darkSlateGrey") translate([actrTrvl/2,0,bdyDims.z+actrDims.z/2]) cube(actrDims,true);
+  //pins
+  color("gold") for(ix=[-1:1]) translate([ix*pitch,0,-pinDims.z/2]) cube(pinDims,true);
+}
+
+//Subminiature Slide Switch e.g. Apem NK 
+module subMinSlideSwitch(){
+
+}
+
+
+
+!arcadeButton();
+module arcadeButton(panelThck=3,col="red"){
+  //https://www.adafruit.com/product/3433
+
+  //base
+  color(col) difference(){
+    rotate_extrude(){ 
+      translate([27.6/2-3,0]) circle(3);
+      translate([0,-3]) square([27.6/2-3,6]);
+    }
+    translate([0,0,-3-fudge]) cylinder(d=27.6+fudge,h=3+fudge);
+  }
+  //button
+  color(col) cylinder(d=19.6,h=7.2);
+  //body
+  color(col) translate([0,0,-26]) cylinder(d=24,h=26);
+  //fixation ring
+  color("ivory"){
+    translate([0,0,-2-panelThck]) cylinder(d=33.6,h=2);
+    translate([0,0,-10-panelThck]) cylinder(d=30.6,h=8);
+  }
+
+}
+
+module snapActionSwitch(){
+  //https://www.marquardt-switches.com/snap-action-switches.html?&no_cache=1&L=0&tx_produktkatalog2_pi1%5Bmode%5D=detail3&tx_produktkatalog2_pi1%5Bmodifier%5D=0&tx_produktkatalog2_pi1%5Bvalue%5D=1005&tx_produktkatalog2_pi1%5Bpointer%5D=12&cHash=d16795b95db5f77666d619cde051b6b3
+
+  linear_extrude(10.3) difference(){
+    rndRect([28,16],2.5,0,center=true);
+  }
+}
+
+
+// --- Helpers ---
 
 module bend(size=[50,20,2],angle=45,radius=10,center=false, flatten=false){
   alpha=angle*PI/180; //convert in RAD
@@ -558,4 +761,24 @@ module bend(size=[50,20,2],angle=45,radius=10,center=false, flatten=false){
         rotate_extrude(angle=angle)
           translate([radius,0,0]+bendOffset1) square([size.z,size.x]);
   }
+}
+
+
+module rndRect(size, rad, drill=0, center=true){  
+  if (len(size)==2) //2D shape
+    difference(){
+      hull() for (ix=[-1,1],iy=[-1,1])
+        translate([ix*(size.x/2-rad),iy*(size.y/2-rad)]) circle(rad);
+      for (ix=[-1,1],iy=[-1,1])
+        translate([ix*(size.x/2-rad),iy*(size.y/2-rad)]) circle(d=drill);
+    }
+  else
+    
+    linear_extrude(size.z,center=center) 
+    difference(){
+      hull() for (ix=[-1,1],iy=[-1,1])
+      translate([ix*(size.x/2-rad),iy*(size.y/2-rad)]) circle(rad);
+      for (ix=[-1,1],iy=[-1,1])
+        translate([ix*(size.x/2-rad),iy*(size.y/2-rad)]) circle(d=drill);
+    }
 }

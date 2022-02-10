@@ -1,5 +1,6 @@
 
 
+
 translate([0,20,0]) linear_extrude(1) star(N=36,ri=5,re=6);
 translate([15,0,0]) skewedCube([10,10,4],[45,0],center=true);
 translate([30,0,0]) linear_extrude(1)  arc(r=10, angle=50);
@@ -30,6 +31,30 @@ int get_fragments_from_r(double r, double fn, double fs, double fa)
       }
       defaults: $fn=0; $fa=12, $fs=2
 */
+$fn=20;
+*rndCube();
+module rndCube(size=[1,1,1],rad=0.1,center=false){
+  //"for (ix,iy,iz) hull() - sphere()" is very unefficient
+  cntrOffset= center ? [0,0,0] : size/2;
+  prtRad= (min(size)<=rad*2) ? min(size)/2 : rad; //limit radius to half of shortest side
+
+  translate(cntrOffset) 
+   hull() for (ix=[0,1],iy=[0,1],iz=[0,1]){ 
+    mirror ([ix,0,0]) mirror([0,iy,0]) mirror([0,0,iz]) 
+      translate([(size.x/2-prtRad),(size.y/2-prtRad),(size.z/2-prtRad)]) 
+        rotate_extrude(angle=90) arc(prtRad,90);
+  }
+}
+
+
+module rndCubeSlow(size=[1,3,3], rad=1.5, center=false){
+  //rounded cube
+  cntrOffset= center ? [0,0,0] : size/2;
+  prtRad= (min(size)<rad) ? min(size)/2 : rad; //limit radius to half of shortest side
+
+  translate(cntrOffset) hull() for (ix=[-1,1], iy=[-1,1], iz=[-1,1])
+    translate([ix*(size.x/2-prtRad),iy*(size.y/2-prtRad),iz*(size.z/2-prtRad)]) sphere(prtRad);
+}
 
 *rndRect(center=true);
 module rndRect(size=[10,10], rad=1, center=false){
@@ -44,7 +69,7 @@ module rndRect(size=[10,10], rad=1, center=false){
   else{
     cntrOffset= center ? [0,0] : size/2;    
     hull() for(ix=[-1,1],iy=[-1,1])
-      translate([ix*(size.x/2-rad),iy*(size.y/2-rad),0]+cntrOffset) circle(r=rad);
+      translate([ix*(size.x/2-rad),iy*(size.y/2-rad)]+cntrOffset) circle(r=rad);
   }
 }
 
@@ -87,6 +112,7 @@ module arc(r=1,angle=60){
   n= arcFragments(r,angle);
   polygon(arcPoints(r,angle,n));
 }
+
 
 
 module star(N=5, ri=15, re=30) {
@@ -162,6 +188,8 @@ module circFromPoints(points=[],debug=false){
 }
 
 
+
+
 // --- functions ---
 
 function centerFrom3P(points=[])=
@@ -205,12 +233,15 @@ function centerFrom3P(points=[])=
     M1M=[sin(alpha2)*c,cos(alpha2)*c]//Offset between M1 and M
   ) [M1.x+M1M.x,M1.y-M1M.y]; //M
 
+echo(radiusFrom3P([[-48.08,-19.65],[-50.38, -20.86],[ -52.50, -25.43]]));
+
 function radiusFrom3P(points)=
   norm(points[0]-centerFrom3P(points));
 
 function angleFrom2P(points,radius=1)=
   2*asin(norm(points[0]-points[1])/(2*radius));
 
+//arc with constant radius
 function arcPoints(r=1,angle=60,steps=10,poly=[[0,0]],iter)=
   let(
     iter = (iter == undef) ? steps-1 : iter,
@@ -219,6 +250,22 @@ function arcPoints(r=1,angle=60,steps=10,poly=[[0,0]],iter)=
     y= r*sin(angInc*iter)
   )(iter>=0) ? arcPoints(r,angle,steps,concat(poly,[[x,y]]),iter-1) : poly;
 
+*offset(3) union(){
+  polygon(arcPointsLinear(3,6,180,30));
+  rotate(180) polygon(arcPointsLinear(6,3,180,30));
+}
+
+//arc with linear radius change
+function arcPointsLinear(r1=1, r2=2,angle=60,steps=10,poly=[[0,0]],iter)=
+  let(
+    iter = (iter == undef) ? steps-1 : iter,
+    r=r1+((r2-r1)/(steps-1))*iter,
+    angInc=angle/(steps-1), //increment per step
+    x= r*cos(angInc*iter),
+    y= r*sin(angInc*iter)
+  )(iter>=0) ? arcPointsLinear(r1,r2,angle,steps,concat(poly,[[x,y]]),iter-1) : poly;
+
+//calculate fragments from radius and angle and $fn,$fs etc.
 function arcFragments(r,angle)=
   let(
     cirFrac=360/angle, //fraction of angle
@@ -233,7 +280,7 @@ function translatePoints(points=[[0,0],[1,1]],vector=[2,2],output=[],iter)=
   )
   (iter<=len(points)-1) ? translatePoints(points,vector,concat(output,[points[iter]+vector]),iter=iter+1) : output;
 
-echo(rotatePoints());
+*echo(rotatePoints());
 function rotatePoints(points=[[0,0],[1,1],[5,5]],angle=90,output=[],iter)=
   let(
     iter=(iter == undef) ? 0 : iter,
@@ -241,3 +288,6 @@ function rotatePoints(points=[[0,0],[1,1],[5,5]],angle=90,output=[],iter)=
     y2= sin(angle)*points[iter].x+cos(angle)*points[iter].y
   )
   (iter<len(points)-1) ? rotatePoints(points,angle,concat(output,[[x2,y2]]),iter=iter+1) : concat(output,[[x2,y2]]);
+
+*echo(str("fact: ",fact(5)));
+function fact(n,result=1)= n ? fact((n-1),n*result)  : result;
