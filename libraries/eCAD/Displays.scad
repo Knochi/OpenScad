@@ -9,10 +9,12 @@ translate([100,0,0]) LCD_20x4();
 translate([100,60,0]) LCD_16x2();
 translate([100,120,0]) FutabaVFD();
 translate([200,0,0]) Adafruit128x128TFT();
-translate([400,0,0]) raspBerry7Inch();
+translate([300,0,0]) AdafruitOLED23();
+translate([500,0,0]) raspBerry7Inch();
 
 
-translate([400,0,-95/2-10]) cube([240,190,95],true);
+
+
 
 module raspBerry7Inch(cutOut=false,matThck=3){
   ovDims=[192.96,110.76,5.96+2.5];
@@ -33,32 +35,42 @@ module raspBerry7Inch(cutOut=false,matThck=3){
 
 
 
-*Adafruit128x160TFT();
-module Adafruit128x160TFT(cutPCB=false, centerAA=true, cutPanel=false){
+*Adafruit128x160TFT(cutPanel=false);
+module Adafruit128x160TFT(cutPCB=false, centerAA=true, cutPanel=false, cutGlass=false, drillDia=1.6){
   //https://www.adafruit.com/product/358
   PCBDims=[2.2*25.4,1.35*25.4,1.6];
-  drillDist=[PCBDims.x-2.5*2,PCBDims.y-2.5*2];
+  //drillDist=[PCBDims.x-2.5*2,PCBDims.y-2.5*2];
+  drillDist=[25.4*2,25.4*1.15];
+  echo(drillDist);
   rad=2.54;
-  frameDims=[45.83,34];
+  frameDims=[46.83,34.6];
   activeArea=[35.04,28.03];
   AAOffset=[-(45.83-35.04)/2+2.79,0];
   frameThick=3;
+  spcng=0.2;
   cntrOffset= centerAA ? AAOffset : [0,0];
   
   translate(cntrOffset){
     if (cutPCB){
       for (ix=[-1,1],iy=[-1,1])
-          translate([ix*drillDist.x/2,iy*drillDist.y/2]) circle(d=2.5);
-      for (i=[-9/2:9/2])
+          translate([ix*drillDist.x/2,iy*drillDist.y/2]) circle(d=drillDia);
+      for (i=[-9/2:9/2]) //pins
         translate([PCBDims.x/2-2.54,i*2.54]) circle(d=1);
-      *translate(frmOffset) square([frmDims.x,frmDims.y],true);
+      *translate(frmOffset) square([frmDims.x+spcng*2,frmDims.y+spcng*2],true);
     }
     
-    if (cutPanel){
+    else if (cutPanel){
       square(frameDims,true);
-      for (ix=[-1,1],iy=[-1,1])
-          translate([ix*drillDist.x/2,iy*drillDist.y/2]) circle(d=2);
-      translate([PCBDims.x/2-2.54,0]) rndRect([2.54,10*2.54],2.54/2,0,true);
+      for (ix=[-1,1],iy=[-1,1]) //drill
+          translate([ix*drillDist.x/2,iy*drillDist.y/2]) circle(d=drillDia);
+
+      translate([PCBDims.x/2-2.54-5,0]) rndRect([2.54+10,10*2.54],2.54/2,0,true);
+    }
+
+    else if (cutGlass){
+      translate(-AAOffset) square(activeArea,true);
+      for (ix=[-1,1],iy=[-1,1]) //drill
+          translate([ix*drillDist.x/2,iy*drillDist.y/2]) circle(d=drillDia);
     }
       
     else{
@@ -67,7 +79,7 @@ module Adafruit128x160TFT(cutPCB=false, centerAA=true, cutPanel=false){
         for (i=[-9/2:9/2])
           translate([PCBDims.x/2-2.54,i*2.54]) circle(d=1);
       }
-        rotate(180) displayTFT(frameDims,activeArea,AAOffset,frameThick);
+        rotate(0) displayTFT(frameDims,activeArea,AAOffset,frameThick);
       translate([-PCBDims.x/2+15.5/2,0,-1.6]) rotate([180,0,90]) uSDCard();  
     }
     
@@ -75,7 +87,11 @@ module Adafruit128x160TFT(cutPCB=false, centerAA=true, cutPanel=false){
   
 
   module PCB(){
-    rndRect([PCBDims.x,PCBDims.y],rad,2.5,center=true);
+    difference(){
+      rndRect([PCBDims.x,PCBDims.y],rad,0,center=true);
+      for (ix=[-1,1],iy=[-1,1])
+        translate([ix*drillDist.x/2,iy*drillDist.y/2]) circle(d=2.1);
+    }
   }
 }
 
@@ -229,7 +245,7 @@ module Midas96x16(orientation="flat",center=true){
      }
    } //module Flex    
 }
-!EastRising128x32();
+*EastRising128x32();
 module EastRising128x32(orientation="flat",center=true){
   glassThck=0.55;
   flxRad=0.25; //edge rad of Panel
@@ -458,8 +474,48 @@ module EA_W128032(center=false){
     }
   }
 }
+*AdafruitOLED23(true);
+module AdafruitOLED23(cut=false){
+  //2.3" 128x32px OLED from Adafruit 
+  //https://www.adafruit.com/product/2675
+  //aka LM230B-128032
 
+  drillDist=[62.6,31.2];
+  drillDia=2.6;
+  pcbDims=[66.5,35,1];
+  displayDims=[63.5,26.1,4.5]; //Dimensions of the metal frame
+  AADims=[55.02,13.1];//Active Area
+  VADims=[57,15.1];//Viewable area
+  AACntrOffset=[0,-(pcbDims.y-AADims.y)/2+13.95];
+  
+  if (cut){
+    offset(0.2) metalFrame();
+    for (ix=[-1,1],iy=[-1,1])
+      translate([ix*drillDist.x/2,iy*drillDist.y/2]) circle(d=2);
+  }
+  else{
 
+    //PCB
+    color("green") translate([0,0,-pcbDims.z]) linear_extrude(pcbDims.z) difference(){
+      square([pcbDims.x,pcbDims.y],true);
+      for (ix=[-1,1],iy=[-1,1])
+        translate([ix*drillDist.x/2,iy*drillDist.y/2]) circle(d=drillDia);
+    }
+    //display
+    
+      difference(){
+        color("darkslategrey") linear_extrude(displayDims.z,convexity=2) metalFrame();
+        color("#222222") translate([AACntrOffset.x,AACntrOffset.y,displayDims.z]) rndRect([VADims.x,VADims.y,0.2],1,0,center=true);
+      }
+      color("cyan") translate([AACntrOffset.x,AACntrOffset.y,displayDims.z-0.1]) linear_extrude(0.1)
+        pixels(count=[128,32]);
+  }
+
+  module metalFrame(){
+    square([displayDims.x,displayDims.y],true);
+    translate([0,-displayDims.y/2-0.75]) square([16.22,1.5],true);
+  }
+}
 
 module rndRect(size, rad, drill=0, center=true){  
   if (len(size)==2) //2D shape
@@ -480,21 +536,25 @@ module rndRect(size, rad, drill=0, center=true){
     }
 }
 
-
+*pixels();
+module pixels(count=[16,8],size=[0.41,0.39],pitch=[0.43,0.41]){
+  for (ix=[-(count.x-1)/2:(count.x-1)/2],iy=[-(count.y-1)/2:(count.y-1)/2])
+    translate([ix*pitch.x,iy*pitch.y]) square(size,true);
+}
 
 function xTilt(dist,ang)=[tan(ang)*dist,dist]; 
 
 module uSDCard(showCard=true){
   //push-push by Wuerth 
   //https://www.we-online.de/katalog/datasheet/693071010811.pdf
-  translate([0,0,1.98/2]){
-    color("silver") difference(){
-      cube([14,15.2,1.98],true);
-      translate([-(14-11.2+fudge)/2,-(15.2-1.3+fudge)/2,0]) cube([11.2+fudge,1.3+fudge,1.98+fudge],true);
+    translate([0,0,1.98/2]){
+      color("silver") difference(){
+        cube([14,15.2,1.98],true);
+        translate([-(14-11.2+fudge)/2,-(15.2-1.3+fudge)/2,0]) cube([11.2+fudge,1.3+fudge,1.98+fudge],true);
+      }
+      if(showCard){
+        color("darkslateGrey") translate([-(14-11)/2+0.1,-0.6,0.35]) cube([11,15,0.7],true);
+        color("darkslateGrey",0.5) translate([-(14-11)/2+0.1,-5,0.35]) cube([11,15,0.7],true);
+      }
     }
-    if(showCard){
-      color("darkslateGrey") translate([-(14-11)/2+0.1,-0.6,0]) cube([11,15,0.7],true);
-      color("darkslateGrey",0.5) translate([-(14-11)/2+0.1,-5,0]) cube([11,15,0.7],true);
-    }
-  }
 }

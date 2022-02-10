@@ -1,5 +1,6 @@
 
 
+
 translate([0,20,0]) linear_extrude(1) star(N=36,ri=5,re=6);
 translate([15,0,0]) skewedCube([10,10,4],[45,0],center=true);
 translate([30,0,0]) linear_extrude(1)  arc(r=10, angle=50);
@@ -231,6 +232,8 @@ function centerFrom3P(points=[])=
     alpha2=90-(beta-W2),
     M1M=[sin(alpha2)*c,cos(alpha2)*c]//Offset between M1 and M
   ) [M1.x+M1M.x,M1.y-M1M.y]; //M
+
+echo(radiusFrom3P([[-48.08,-19.65],[-50.38, -20.86],[ -52.50, -25.43]]));
 
 function radiusFrom3P(points)=
   norm(points[0]-centerFrom3P(points));

@@ -14,8 +14,8 @@ translate([20,-30,0]) MPE_098(pins=6,variant=4);
 translate([20,-40,0]) MPE_098(pins=6,variant=5);
 translate([20,-50,0]) MPE_098(pins=12,variant=6);
 
-!MPE_087(rows=1,pins=17,center=true);
-module MPE_087(rows=2, pins=6, A=19.8,markPin1=true, center=false){
+*MPE_087(rows=2,pins=10,markPin1=false, center=true);
+module MPE_087(rows=2, pins=6, A=24, markPin1=true, center=false){
   //       A   ,  B  ,   C , L // overall Length, 
   Ldict=[[10.20, 5.20, 2.50, 2.50],
         [11.30, 5.50, 3.30, 2.50],
@@ -46,6 +46,7 @@ module MPE_087(rows=2, pins=6, A=19.8,markPin1=true, center=false){
   L= (pick) ? Ldict[pick[0]][3] : 2.5;
   B= (pick) ? Ldict[pick[0]][1] : 5.2;
   C= (pick) ? Ldict[pick[0]][2] : 2.5;
+  
   pitch=2.54;
   cntrOffset= center ? [-(pins/rows-1)/2*pitch,(rows-1)*-pitch/2,0] : [0,0,0];  
   //pins
@@ -60,7 +61,7 @@ module MPE_087(rows=2, pins=6, A=19.8,markPin1=true, center=false){
       for (ix=[0:pins/rows-1],iy=[0:rows-1])
         translate([ix*pitch,iy*pitch,0]+cntrOffset) octagon();
       if (rows>1)//fill the gaps
-        square([(pins/rows-1)*pitch,(rows-1)*pitch]);
+        square([(pins/rows-1)*pitch,(rows-1)*pitch],center);
     }
 }
 

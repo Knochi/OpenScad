@@ -130,13 +130,15 @@ module M411P(isMale=true){
 module uSDCard(showCard=true){
   //push-push by Wuerth 
   //https://www.we-online.de/katalog/datasheet/693071010811.pdf
-    color("silver") difference(){
-      cube([14,15.2,1.98],true);
-      translate([-(14-11.2+fudge)/2,-(15.2-1.3+fudge)/2,0]) cube([11.2+fudge,1.3+fudge,1.98+fudge],true);
-    }
-    if(showCard){
-      color("darkslateGrey") translate([-(14-11)/2+0.1,-0.6,0]) cube([11,15,0.7],true);
-      color("darkslateGrey",0.5) translate([-(14-11)/2+0.1,-5,0]) cube([11,15,0.7],true);
+    translate([0,0,1.98/2]){
+      color("silver") difference(){
+        cube([14,15.2,1.98],true);
+        translate([-(14-11.2+fudge)/2,-(15.2-1.3+fudge)/2,0]) cube([11.2+fudge,1.3+fudge,1.98+fudge],true);
+      }
+      if(showCard){
+        color("darkslateGrey") translate([-(14-11)/2+0.1,-0.6,0.35]) cube([11,15,0.7],true);
+        color("darkslateGrey",0.5) translate([-(14-11)/2+0.1,-5,0.35]) cube([11,15,0.7],true);
+      }
     }
 }
 
@@ -230,15 +232,15 @@ module femHeaderSMD(pins=10,rows=1,height=3.7,pPeg=true,center=false){
   }//cntrOffset
 }
 
-*BIL30(panel=3,cutOut=false);
-module BIL30(col="red",panel=2,cutOut=false){
+*BIL30(panel=6, notch=false, cutOut=false);
+module BIL30(col="red",panel=2, notch=false, cutOut=false){
   //4mm Jack
   //Hirschmann BIL30 (SKS-kontakt.de)
 
   if (cutOut)
     translate([0,0,-panel-fudge/2]) linear_extrude(panel+fudge) intersection(){
       circle(d=8.2);
-      square([8.2+fudge,7.2],true);
+      if (notch) square([8.2+fudge,7.2],true);
     }
   else translate([0,0,5])
     mirror([0,0,1]){
@@ -247,9 +249,9 @@ module BIL30(col="red",panel=2,cutOut=false){
         cylinder(d=10,h=5);
         linear_extrude(7.5) intersection(){
           circle(d=8);
-          square([8+fudge,7],true);
+          if (notch) square([8+fudge,7],true);
         }
-        translate([0,0,5+panel]) cylinder(d=10,h=4.2);
+        if (panel<5) translate([0,0,5+panel]) cylinder(d=10,h=4.2);
       }
       translate([0,0,-fudge/2]) cylinder(d=4.5,h=18);
     }
@@ -266,7 +268,7 @@ module BIL30(col="red",panel=2,cutOut=false){
   }
 }
 
-module screwTerminal(pins=2,center=false){
+module screwTerminal(pins=2,col="darkSlateGrey",center=false){
   *translate([-(RM)/2,4.2,0]) rotate([90,0,0]) import("screwTerm.stl");
 
   RM=5.08;
@@ -276,7 +278,7 @@ module screwTerminal(pins=2,center=false){
   poly=[[-3.8,0],[-3.8,baseHght],[-3.1,baseHght],[-2.5,10],[2.5,10],[4.2,baseHght],[4.2,0]];
   //body
   translate(cntrOffset) {
-    color("DarkSlateGrey")  difference(){
+    color(col)  difference(){
       translate([-(RM+1)/2,0,0]) rotate([90,0,90]) linear_extrude(ovDims.x,convexity=2) polygon(poly);
       for (i=[0:pins-1]){
         translate([i*RM,0,ovDims.z-2]) cylinder(r=2,h=2+fudge);
@@ -290,13 +292,9 @@ module screwTerminal(pins=2,center=false){
 }
 
 
-module DSubTHT(pins=9){
-  
-}
+*DSub(pins=9,isFemale=false,mountBehind=false,THT=true,cutOut=true,drillDia=5);
 
-
-*DSub(pins=15,isFemale=true,mountBehind=false,cutOut=true);
-module DSub(pins=9, isFemale=true, mountBehind=true, cutOut=false){
+module DSub(pins=9, isFemale=true, mountBehind=true, THT=false, cutOut=false, drillDia=3.1){
   // DIN 41652-1
   // http://www.interfacebus.com/Connector_D-Sub_Mechanical_Dimensions.html
 
@@ -320,14 +318,14 @@ module DSub(pins=9, isFemale=true, mountBehind=true, cutOut=false){
 
   // -- Break Down the Dims --
   A=DSubDims[1]; //Sheet width
-  E=DSubDims[5]; //Sheet Height
-  C=DSubDims[3]; //drillDist
-  
   B=DSubDims[2]; //plug width (inner for male, outer for female)
+  C=DSubDims[3]; //drillDist
+  D=DSubDims[4]; //plug height
+  E=DSubDims[5]; //Sheet Height
+  
   Bm=16.79; //male inner
   Bf=16.46; //female outer
-  
-  D=DSubDims[4]; //plug height
+    
   G=6.12; // thick
   
 
@@ -348,70 +346,86 @@ module DSub(pins=9, isFemale=true, mountBehind=true, cutOut=false){
   pitch= (pins<=15) ? [2.74,2.84] : [2.77,2.84];
   pinDia=1;
 
+  //THT //ref: https://www.we-online.com/katalog/datasheet/618009233721.pdf
+  THTOffset= THT ? [0,0,E/2] : (mountBehind) ? [0,0,0] : [0,0,sheetThck]; //y= -11.64 if centerd on mount
+  THTrot= THT ? [90,0,0] : [0,0,0];
+  baseDims=[A,14.2,2.85]; //basePlate
   
   if (cutOut){
     if (mountBehind) { //CutOut for Back Mounted
     cutOutDims=[B+sheetThck*2+spcng,D+sheetThck*2+spcng];
       for (ix=[-1,1])
-        translate([ix*C/2,0]) circle(d=3.1);
+        translate([ix*C/2,0]) circle(d=drillDia);
       rndTrapez(cutOutDims,rPlug);
       }
   
 
     else{ //CutOut for Front Mounted
       for (ix=[-1,1])
-        translate([ix*C/2,0]) circle(d=3.1);
+        translate([ix*C/2,0]) circle(d=drillDia);
       rndTrapez([H,J],rTerm);
       }
   }//cutout
 
   else {
-    //sheet
-    color("silver") difference(){
-      hull(){
-        for (i=[-1,1],j=[-1,1])
-          translate([i*(A/2-rSheet),j*(E/2-rSheet),-sheetThck]) 
-            cylinder(r=rSheet,h=sheetThck);
+    translate(THTOffset) rotate(THTrot){
+      //sheet
+      color("silver") difference(){
+        hull(){
+          for (i=[-1,1],j=[-1,1])
+            translate([i*(A/2-rSheet),j*(E/2-rSheet),-sheetThck]) 
+              cylinder(r=rSheet,h=sheetThck);
+        }
+        for (i=[-1,1])
+          translate([i*C/2,0,-sheetThck-fudge/2]) 
+            cylinder(d=3.05,h=sheetThck+fudge);
       }
-      for (i=[-1,1])
-        translate([i*C/2,0,-sheetThck-fudge/2]) 
-          cylinder(d=3.05,h=sheetThck+fudge);
+      //body behind sheet
+    if (THT) color("darkSlateGrey"){
+      translate([0,0,-1-sheetThck]) difference(){
+        rndRect([A,E,2],rSheet,true);
+        for (i=[-1,1])
+          translate([i*C/2,0,0]) cylinder(d=3.05,h=2+fudge,center=true);
+      }
+      translate([0,0,-baseDims.y/2-sheetThck]) rndRect([B,E-baseDims.z*2+3,baseDims.y],1.5,true);
     }
 
-    //plug
-    
-    if (isFemale)
-      difference(){
-        rndTrapez([B,D,6],rFem);
-      for (ix=[-(pins-1)/4:(pins-1)/4])
-        translate([ix*pitch.x,pitch.y/2,0])
-           cylinder(d=pinDia,h=6+fudge);
-      for (ix=[-(floor(pins/2-1)/2):(floor(pins/2-1)/2)])
-        translate([ix*pitch.x,-pitch.y/2,0])
-           cylinder(d=pinDia,h=6+fudge);
+      //plug
+      
+      if (isFemale)
+        difference(){
+          rndTrapez([B,D,6],rFem);
+        for (ix=[-(pins-1)/4:(pins-1)/4])
+          translate([ix*pitch.x,pitch.y/2,0])
+            cylinder(d=pinDia,h=6+fudge);
+        for (ix=[-(floor(pins/2-1)/2):(floor(pins/2-1)/2)])
+          translate([ix*pitch.x,-pitch.y/2,0])
+            cylinder(d=pinDia,h=6+fudge);
+
+        }
+      else{ //male
+        color("silver") difference(){
+          rndTrapez([B+sheetThck*2,D+sheetThck*2,6],rMale+sheetThck);
+          translate([0,0,fudge]) rndTrapez([B,D,6+fudge],rMale);
+        } 
+        //pins
+        for (ix=[-(pins-1)/4:(pins-1)/4])
+          color("gold") translate([ix*pitch.x,pitch.y/2,0]){
+            cylinder(d=pinDia,h=5.1-pinDia/2);
+            translate([0,0,5.1-pinDia/2]) sphere(d=pinDia);
+        }
+        for (ix=[-(floor(pins/2-1)/2):(floor(pins/2-1)/2)])
+          color("gold") translate([ix*pitch.x,-pitch.y/2,0]){
+            cylinder(d=pinDia,h=5.1-pinDia/2);
+            translate([0,0,5.1-pinDia/2]) sphere(d=pinDia);
+        }
 
       }
-    else{ //male
-      difference(){
-        rndTrapez([B+sheetThck*2,D+sheetThck*2,6],rMale+sheetThck);
-        translate([0,0,fudge]) rndTrapez([B,D,6+fudge],rMale);
-      } 
-      //pins
-      for (ix=[-(pins-1)/4:(pins-1)/4])
-        color("gold") translate([ix*pitch.x,pitch.y/2,0]){
-           cylinder(d=pinDia,h=5.1-pinDia/2);
-           translate([0,0,5.1-pinDia/2]) sphere(d=pinDia);
-      }
-      for (ix=[-(floor(pins/2-1)/2):(floor(pins/2-1)/2)])
-        color("gold") translate([ix*pitch.x,-pitch.y/2,0]){
-           cylinder(d=pinDia,h=5.1-pinDia/2);
-           translate([0,0,5.1-pinDia/2]) sphere(d=pinDia);
-      }
 
-    }
-
-    //body
-    color("silver") translate([0,0,-bodyDims.z-sheetThck]) rndTrapez(bodyDims,rFem);
+      //body
+      if (!THT) color("silver") translate([0,0,-bodyDims.z-sheetThck]) rndTrapez(bodyDims,rFem);
+      }//translate THTOffset/rotation
+    if (THT) color("darkSlateGrey") translate([0,baseDims.y/2+THTOffset.y+sheetThck,baseDims.z/2]) cube(baseDims,true);
     } //else give2D
 
   //submodule
@@ -1371,4 +1385,54 @@ module rndRect(size=[10,10], rad=1, center=false){
     hull() for(ix=[-1,1],iy=[-1,1])
       translate([ix*(size.x/2-rad),iy*(size.y/2-rad),0]+cntrOffset) circle(r=rad);
   }
+}
+
+
+//keyStone  PlayGround
+*translate([70,20,0]){
+   keyStoneModule();
+   translate([0,30,0]) rotate(90) H_MTD();
+   mateNet();
+}
+
+module keyStoneModule(){
+    springDims=[11.3,10,2];
+    latchHght=19.8;
+    latchDeep=8.5;
+    keyStoneOpening=[14.5,16.1];
+    translate([0,8.5/2,16.1/2]) cube([14.5,8.5,16.1],true);
+    translate([0,latchDeep+springDims.y/2,latchHght-1]) 
+        cube(springDims,true);
+}
+
+module H_MTD(){
+  color("silver")translate([0,0,8.2/2]) cube([10,9,8.2],true);
+  color("teal") translate([-(14.1+10)/2,0,9.6/2-0.15]) cube([14.1,11,9.6],true);
+}
+
+module mateNet(){
+  import("/sources/MateNetInliner.stl");
+}
+
+*BKLPwrCable();
+module BKLPwrCable(angled=true,length=20){
+  //https://cdn-reichelt.de/documents/datenblatt/C160/075104_DB-DE.pdf
+
+  //body
+  color("darkSlateGrey"){
+    translate([0,0,4.8]){ 
+     cylinder(r=6.1,h=11.6);
+      translate([14.9/2,0,11.6/2]) cube([14.9,6.1*2,11.6],true);
+    }
+    cylinder(d=10.5,h=4.8);
+    translate([14.9,0,4.8+11.6/2]) rotate([0,90,0]) cylinder(d=8,h=26.9-14.9);
+  }
+  //contact
+  color("silver"){
+    translate([0,0,-9.5]) cylinder(d=5.5,h=9.5);
+  }
+
+  //wires
+  color("red") translate([14.9+26.9-14.9,-2.35/2,4.8+11.6/2]) rotate([0,90,0]) cylinder(d=2.35,h=length);
+  color("black") translate([14.9+26.9-14.9,2.35/2,4.8+11.6/2]) rotate([0,90,0]) cylinder(d=2.35,h=length);
 }
