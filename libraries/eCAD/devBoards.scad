@@ -1,4 +1,5 @@
 use <connectors.scad>
+use <MPEGarry.scad>
 use <packages.scad>
 use <elMech.scad>
 
@@ -12,6 +13,28 @@ goldPinsCol=[0.859,0.738,0.496];
 FR4Col=[0.43,0.46,0.295];
 
 piPico();
+
+!piZero();
+module piZero(){
+  //just pinheader and edge
+  pcbDims=[65,30];
+  HDMIPos=[-pcbDims.x/2+12.4,-pcbDims.y/2];
+  
+  translate([2.54*9.5,-pcbDims.y/2+3.5+2.54/2,-2.54]){
+    color(boardGreenCol) translate([0,0,-1.6]) linear_extrude(1.6)
+    difference(){
+      rndRect(pcbDims,2.5,true);
+      for (ix=[-1,1],iy=[-1,1])
+        translate([ix*(pcbDims.x/2-3.5),iy*(pcbDims.y/2-3.5)]) circle(d=3.1);
+        translate([0,pcbDims.y/2-3.5]) pinHeader(40,2,diff="pcb",center=true);
+    }
+    translate([0,pcbDims.y/2-3.5,0]) MPE_087(rows=2,A=11.30, pins=40,center=true);
+    translate([-pcbDims.x/2+41.4,-pcbDims.y/2+2,0]) mUSB();
+    translate([-pcbDims.x/2+54,-pcbDims.y/2+2,0]) mUSB();
+    color("silver") translate([HDMIPos.x,HDMIPos.y+7.7/2,3.45/2]) 
+      cube([11.2,7.7,3.45],true); //mini HDMI (type C)
+  }
+}
 
 module piPico(){
   //dimension took from official STP model
@@ -97,10 +120,17 @@ module piPico(){
 }
 *rndRect();
 module rndRect(size=[10,5,1],rad=1,center=false){
-  cntrOffset= center ? [0,0,0] : [size.x/2,size.y/2,size.z/2];
   
-  translate(cntrOffset)
-    hull() for (ix=[-1,1],iy=[-1,1]){
-      translate([ix*(size.x/2-rad),iy*(size.y/2-rad),0]) cylinder(r=rad,h=size.z,center=true);
+  if (len(size)<3){
+    cntrOffset= center ? [0,0] : [size.x/2,size.y/2];
+    translate(cntrOffset)
+      hull() for (ix=[-1,1],iy=[-1,1])
+        translate([ix*(size.x/2-rad),iy*(size.y/2-rad),0]) circle(r=rad);
     }
+  else{
+  cntrOffset= center ? [0,0,0] : [size.x/2,size.y/2,size.z/2];
+  translate(cntrOffset)
+    hull() for (ix=[-1,1],iy=[-1,1])
+      translate([ix*(size.x/2-rad),iy*(size.y/2-rad),0]) cylinder(r=rad,h=size.z,center=true);
+  }
   }

@@ -487,6 +487,10 @@ module pinHeader(pins=10, rows=2,center=false, markPin1=false, diff="none", thic
     else if (diff=="housing"){
       translate([(pins-1)*2.54/2-fudge/2,-fudge/2,(thick)/2]) cube([pins*2.54+fudge,2.54+fudge,thick+fudge],true);
     }
+    else if (diff=="pcb"){ //holes in PCB
+      for (i=[0:pins/rows-1],j=[0:rows-1])
+        translate ([i*2.54,j*2.54,2.54/2]) circle(d=1.1);
+    }
     else {
       for (i=[0:pins/rows-1],j=[0:rows-1]){
         pinNo=(i*rows+1)+j;

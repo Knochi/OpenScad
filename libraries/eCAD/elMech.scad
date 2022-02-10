@@ -11,6 +11,93 @@ translate([-40,0,0]) AirValve();
 translate([-80,0,0]) AirPump();
 translate([-140,0,0]) SSR();
 
+!CUI_TS02();
+module CUI_TS02(height=11, longTerminals=false){
+  /*https://www.cuidevices.com/product/resource/ts02.pdf
+  available heights (SCR and LCR): 
+    4.3, 5.0, 6.0, 7.0, 7.3, 8.0
+    9.0, 9.5, 10.0, 11.0, 12.0, 13.0, 15.0, 15.3, 17.0
+  LCR only: 
+    5.5, 14.0, 16.0
+  */
+  
+  bdyDims=[6,6,3.5];
+  tThck=0.2; //terminal thickness
+  tWdth=0.7;
+  tHght=0.75; //height of bend (centerline)
+  tLngth=(10-5)/2-0.75;
+  
+  //body
+  translate([0,0,(bdyDims.z-tThck)/2]) color("darkSlateGrey") cube(bdyDims+[0,0,-tThck],true);
+  translate([0,0,bdyDims.z-tThck/2]) color("silver") difference(){
+    cube([bdyDims.x,bdyDims.y,tThck],true);
+    cylinder(d=3.6,h=tThck+fudge,center=true);
+  }
+  
+ //actuator
+  translate([0,0,bdyDims.z-tThck]) color("darkSlateGrey") 
+    cylinder(d=3.5,h=height-bdyDims.z+tThck);
+  
+  module terminal(){
+    cube();
+  }
+  
+}
+
+module CUI_TS04(height=9.5){
+  bdyDims=[6,6,3.5];
+  tThck=0.2; //terminal thickness
+  tWdth=0.7;
+  tHght=0.75; //height of bend (centerline)
+  tLngth=(10-5)/2-0.75;
+  
+  //body
+  translate([0,0,(bdyDims.z-tThck)/2]) color("darkSlateGrey") cube(bdyDims+[0,0,-tThck],true);
+  translate([0,0,bdyDims.z-tThck/2]) color("silver") difference(){
+    cube([bdyDims.x,bdyDims.y,tThck],true);
+    cylinder(d=3.6,h=tThck+fudge,center=true);
+  }
+  
+ //actuator
+  translate([0,0,bdyDims.z-tThck]) color("darkSlateGrey") 
+    cylinder(d=3.5,h=height-bdyDims.z+tThck);
+  
+  //terminals
+  for (ix=[-1,1],iy=[-1,1]){
+    translate([ix*(10-0.75)/2,iy*4.5/2,tThck/2])
+      color("silver") cube([0.75,tWdth,tThck],true);
+    translate([ix*(10/2-0.75),iy*4.5/2,tThck/2]){
+      rotate([90,0,0]) color("silver") cylinder(d=tThck,h=tWdth,center=true);
+      translate([0,0,tHght/2]) color("silver") cube([tThck,tWdth,tHght],true);
+      translate([0,0,tHght]) rotate([90,0,0]) color("silver") cylinder(d=tThck,h=tWdth,center=true);
+    }
+    translate([ix*((10-tLngth)/2-0.75),iy*4.5/2,tHght+tThck/2]) 
+      color("silver") cube([tLngth,tWdth,tThck],true);
+  }
+}
+
+
+*rotarySwitchAlpha();
+module rotarySwitchAlpha(){
+  
+  //body
+  color("ivory") translate([0,0,2]) cylinder(d=26,h=10.5/2);
+  color("darkSlateGrey"){
+    translate([0,0,2+10.5/2]) cylinder(d=26,h=10.5/2);
+    translate([0,0,14.2-2]) cylinder(d=17.3,h=2);
+    translate([0,0,14.2]) cylinder(d=10,h=8);
+    translate([-9.5,0,12.5]) cylinder(d=3,h=4);
+    translate([0,0,14.2+8]) linear_extrude(30)
+      difference(){
+        circle(d=6);
+        translate([0,3]) square([6,3],true);
+      }
+    }
+  //pins
+  for(ir=[90-15:90:375])
+    color("silver") rotate(ir) translate([11,0,5.4/2-3.4]) cube([0.2,1,5.4],true);
+  color("silver") rotate(90+45) translate([4,0,5.4/2-3.4]) cube([0.2,1,5.4],true);
+}
 
 *PT15();
 module PT15(rotor="R",center=true){
@@ -351,7 +438,7 @@ module pushButton(panelThck=2,col="darkSlateGrey"){
   }
 }
 
-!KMR2();
+*KMR2();
 module KMR2(){
   // C and K Switches Series KMR 2
   // https://www.ckswitches.com/media/1479/kmr2.pdf

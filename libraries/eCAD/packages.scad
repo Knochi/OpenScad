@@ -18,7 +18,23 @@ translate([45,0,0]) SMF();
 translate([50,0,0]) sumidaCR43();
 translate([57,0,0]) TY_6028();
 
-
+!LGA8();
+module LGA8(){
+  //XTX LGA-8 package
+  //https://www.lcsc.com/product-detail/FLASH_XTX-XTSD01GLGEAG_C558837.html
+  ovDims=[8,6,0.9];
+  padDims=[0.8,0.6,0.2];
+  standOff=0.02;
+  pitch=1.27;
+  
+  difference(){
+    color("darkSlateGrey") translate([0,0,ovDims.z/2+standOff]) cube(ovDims,true);
+    color("grey") translate([-ovDims.x/2+0.5,ovDims.y/2-0.5,ovDims.z-fudge]) cylinder(d=0.5,h=fudge*2);
+  }
+  for (ix=[-1,1], iy=[-1.5:1.5])
+    color("silver") translate([ix*(ovDims.x-padDims.x)/2,iy*pitch,padDims.z/2]) cube(padDims,true);
+  
+}
 
 
 *ACT1210();
