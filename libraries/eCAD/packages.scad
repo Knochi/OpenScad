@@ -1,9 +1,11 @@
+include <KiCadColors.scad>
+
 $fn=50;
 fudge=0.1;
 
 
 
-translate([-10,0,0]) !TRACO();
+translate([-10,0,0]) TRACO();
 SMDpassive("1210",label="000");
 translate([4,0,0]) SOT23(22,label="SOT23");
 translate([10,0,0]) QFN(label="QFN");
@@ -18,179 +20,8 @@ translate([45,0,0]) SMF();
 translate([50,0,0]) sumidaCR43();
 translate([57,0,0]) TY_6028();
 
-!LGA8();
-module LGA8(){
-  //XTX LGA-8 package
-  //https://www.lcsc.com/product-detail/FLASH_XTX-XTSD01GLGEAG_C558837.html
-  ovDims=[8,6,0.9];
-  padDims=[0.8,0.6,0.2];
-  standOff=0.02;
-  pitch=1.27;
-  
-  difference(){
-    color("darkSlateGrey") translate([0,0,ovDims.z/2+standOff]) cube(ovDims,true);
-    color("grey") translate([-ovDims.x/2+0.5,ovDims.y/2-0.5,ovDims.z-fudge]) cylinder(d=0.5,h=fudge*2);
-  }
-  for (ix=[-1,1], iy=[-1.5:1.5])
-    color("silver") translate([ix*(ovDims.x-padDims.x)/2,iy*pitch,padDims.z/2]) cube(padDims,true);
-  
-}
 
-
-*ACT1210();
-module ACT1210(rad=0.06){
-  
-  spcng=0.25;
-  ovDim=[3.2,2.5,2.35]; //overall dimensions without solder bubbles
-  topDim=[3.2,2.5,0.7];
-  radDim=[-rad*2,-rad*2,-rad*2]; //reduce dim by radius
-  
-  
-  difference(){
-    translate([0,0,1.65+0.7/2]) 
-      color("darkSlateGrey") if (rad)  minkowski($fn=20){
-         cube(topDim+[-rad*2,-rad*2,-rad*2],true);
-         sphere(rad);
-      }
-      else
-        color("darkSlateGrey") cube(topDim,true);
-      translate([0,0,ovDim.z-0.05]) 
-      color("white") linear_extrude(0.1)  text("ACT1210",valign="center",halign="center",size=0.5);
-    }    
-    
-    body();
-
-  
-  coil();
-  translate([-1*(ovDim.x/2-0.1),1.2,0.75]) rotate([90,0,-90]) contact();                    // -1,+1,0,-1
-  translate([-1*(ovDim.x/2-0.1),-1*1.2,0.75]) mirror([0,1,0]) rotate([90,0,-90]) contact(); // -1,-1,1,-1
-  translate([1*(ovDim.x/2-0.1),-1*1.2,0.75]) mirror([0,0,0]) rotate([90,0,90]) contact();   // +1,-1,0,+1
-  translate([1*(ovDim.x/2-0.1),1*1.2,0.75]) mirror([0,1,0]) rotate([90,0,90]) contact();    // +1,+1,1,+1
-    
-  
-    
-  module contact(){
-    thck=0.1;
-    rad=0.05;
-    color("silver") rndRectInt([0.9,0.35,thck],rad);
-    translate([0.9-0.35,-0.6,0]) 
-      color("silver") cube([0.35,0.6+rad,thck]);
-    translate([0.9-0.35,-0.6,0]) 
-      mirror([0,1,0]) 
-        color("silver") bend(size=[0.35,0.46,thck],angle=-90,radius=0.15,center=false, flatten=false)
-          cube([0.35,0.46,thck]);
-    translate([0.9-0.35,-0.6-0.1/2,-0.46-0.1/2]) rotate([0,-90,90]) 
-      color("silver") bend([0.46,0.3,thck],-90,0.2) cube([0.46,0.3,thck]);
-  }  
-    
-  module coil(){
-    translate([0,0,0.7*1.5]) rotate([90,0,90]) color("salmon")rndRectInt([2.3,1.6-0.5,1.7],0.3,true);
-  }
-    
-  module body(){
-    bdDim=[0.7,2.5,1.4];
-    for (m=[0,1])
-    color("darkSlateGrey") mirror([m,0,0]) translate([(ovDim.x-bdDim.x)/2,0,bdDim.z/2+spcng]) 
-      difference(){
-        cube(bdDim,true);
-        for (iy=[-1,1]){
-          color("darkSlateGrey") 
-            translate([0,iy*(bdDim.y-0.5+fudge)/2,-(bdDim.z-0.4+fudge)/2]) 
-              cube([bdDim.x+fudge,0.5+fudge,0.4+fudge],true);
-          color("darkSlateGrey")
-            translate([(bdDim.x+fudge)/2,iy*(bdDim.y-1.1+fudge)/2,-(bdDim.z-1+fudge)/2])
-              cube([0.2+fudge,1.1+fudge,1+fudge],true);
-        }
-      }
-    //bar
-      color("darkSlateGrey") translate([0,0,0.7*1.5]) cube([ovDim.x-2*bdDim.x,bdDim.y-0.5,0.7],true);
-  }
-}
-
-
-*sumidaCR43();
-module sumidaCR43(){
-  ovDia=4.3;
-  ovHght=3.2;
-  coilDia=3.1;
-  
-  difference(){
-    coil();
-    color("white") translate([0,0,3.15]) linear_extrude(0.1) text("CR43",valign="center",halign="center",size=0.8);
-  }
-  
-  base();
-  for (m=[0,1]) mirror([m,0,0])
-  translate([1.7-0.3,0,0]) 
-    contact();
-  
-  
-  module contact(){
-    thck=0.15;
-    sgmnts=[[0.6,0.7,thck],[1.2-thck,0.5,thck],[thck,0.5,0.6-thck]]; //segment dims from center outward
-    
-    for (m=[0,1]) mirror([0,m,0]){
-      color("silver") translate([0,sgmnts[0].y/2,0.34-thck/2]) cube(sgmnts[0],true);
-      color("silver") translate([(sgmnts[1].x-sgmnts[0].x)/2,1.2+sgmnts[1].y/2,thck/2]) cube(sgmnts[1],true);
-      color("silver") translate([-sgmnts[0].x/2+sgmnts[1].x,1.2+sgmnts[1].y/2,thck/2]) 
-        rotate([90,0,0]) cylinder(d=thck,h=sgmnts[1].y,center=true);
-      color("silver") translate([-sgmnts[0].x/2+sgmnts[1].x,1.2+sgmnts[1].y/2,sgmnts[2].z/2+thck/2]) cube(sgmnts[2],true);
-      color("silver") translate([0,1.2,thck/2]) 
-        rotate([0,90,0]) cylinder(d=thck,h=sgmnts[0].x,center=true);
-      
-    }
-  }
-  
-  module coil(){
-    difference(){
-      intersection(){
-        union(){
-          color("darkslategrey") translate([0,0,0.5]) cylinder(d=ovDia,h=0.6);
-          color("salmon") translate([0,0,0.5+0.6]) cylinder(d=coilDia,h=1.5);
-          color("darkslategrey") translate([0,0,0.5+0.6+1.5]) cylinder(d=ovDia,h=0.6);
-        }
-         color("darkSlateGrey") translate([0,0,(ovHght+fudge)/2]) cube([ovDia+fudge,3.8,ovHght+fudge],true);
-      }
-      for (ix=[-1,1]){
-      color("darkslategrey") translate([ix*3.8/2,0,-fudge/2]) cylinder(d=0.6,h=ovHght+fudge);
-      color("darkslategrey") translate([ix*(3.8+0.6)/2,0,(ovHght)/2]) cube([0.6,0.6,ovHght+fudge],true);
-      }
-    }
-  }
-  
-  module base(){
-    ovDims=[4.5,3.9,0.45];
-    crnrRad=0.2;
-    
-    
-    translate([0,0,0.05]){
-    difference(){
-      union(){
-        difference(){
-          color("darkslategrey") translate([0,0,ovDims.z/2]) rndRectInt(ovDims+[-0.4,0,0],crnrRad,true);
-          for (ix=[-1,1])
-            color("darkslategrey") translate([ix*(ovDims.x-1)/2,0,ovDims.z/2]) cube([1+fudge,2,ovDims.z+fudge],true);
-        }
-      
-        for (iy=[0,1]) mirror([0,iy,0])
-          translate([0,-1,0]) difference(){
-            color("darkslategrey") translate([0,0,ovDims.z/2]) 
-              rndRectInt([ovDims.x,0.7*2,ovDims.z],crnrRad,true);
-            color("darkslategrey") translate([0,-0.7/2-fudge/2,ovDims.z/2]) 
-              cube([ovDims.x+fudge,0.7+fudge,ovDims.z+fudge],true);
-          }       
-      }
-    
-    for (i=[-1,1])
-      color("darkslategrey") translate([i*(ovDims.x+fudge)/2,0,-0.01]) 
-        rotate([90,0,-i*90]) linear_extrude(1.5) 
-          polygon([[-0.7,0],[-0.45,0.3],[0.45,0.3],[0.7,0]]);
-    }
-  }
-  }
-}
-
-
+// -- passives --
 *resRadial(power=5);
 module resRadial(type="SQM", power=5){
   pitch=5;
@@ -213,309 +44,48 @@ module resRadial(type="SQM", power=5){
     translate([ix*pitch/2,0,-3.5]) cylinder(d=0.8,h=3.5+gapOffset);
 }
 
-*LED3030();
-module LED3030(){
-  //e.g. Osram Duris S5
-  ovDims=[3,3,0.6];
+*boxCapacitor();
+module boxCapacitor(center=false){
+  //e.g. https://www.alfatec.de/fileadmin/Webdata/Datenblaetter/Faratronic/C3D_Specification_alfatec.pdf
+  // C3D3A406KM0AC00, 4 pin DC, lead length 5.5mm, 
+  pitch=52.5;
+  W=57;
+  H=50;
+  T=35;
+  P=52.5;
+  b=20.3;
+  d=1.2;
+  l=5.5; //lead length
+  cntrOffset = (center) ? [0,0,0] : [pitch/2,-b/2,0];
+
+  translate(cntrOffset){
+    color(greyBodyCol) translate([0,0,H/2]) cube([W,T,H],true);
+    for (ix=[-1,1],iy=[-1,1])
+      color(metalGreyPinCol) translate([ix*P/2,iy*b/2,-l]) cylinder(d=d,h=l);
+  }
+
+}
+
+// -- IC packages --
+
+*LGA8();
+module LGA8(){
+  //XTX LGA-8 package
+  //https://www.lcsc.com/product-detail/FLASH_XTX-XTSD01GLGEAG_C558837.html
+  ovDims=[8,6,0.9];
+  padDims=[0.8,0.6,0.2];
+  standOff=0.02;
+  pitch=1.27;
+  
   difference(){
-    color("ivory") translate([0,0,ovDims.z/2]) cube(ovDims,true);
-    color("orange") difference(){
-      translate([0,0,ovDims.z]) rndRectInt([2.55,2.55,0.1],0.5,true);
-      translate([-2.55/2,2.55/2,ovDims.z]) cylinder(d=1,$fn=4,center=true);
-    }
-    translate([0,0,-0.05]) pads(0.2);
+    color("darkSlateGrey") translate([0,0,ovDims.z/2+standOff]) cube(ovDims,true);
+    color("grey") translate([-ovDims.x/2+0.5,ovDims.y/2-0.5,ovDims.z-fudge]) cylinder(d=0.5,h=fudge*2);
   }
-  
-  pads();
-  module pads(thick=0.1){
-    color("silver") translate([(1.55-2.68)/2,0,thick/2]) 
-      rndRectInt([1.55,2.4,thick],0.1,true);
-    color("silver") translate([-(0.58-2.68)/2,0,thick/2]) 
-      rndRectInt([0.58,2,thick],0.1,true);
-  }
-}
-
-
-*LED_3mm();
-module LED_3mm(){
-  bdDia= 2.9;
-  bdHght= 4.6;
-  rngDia= 3.2;
-  ovHght= 5.1;
-  pitch= 2.54;
-  legLngth=[27,27-1.5];
-  
-  //body
-  color("white",0.7){
-    translate([0,0,ovHght-bdDia/2]) sphere(d=bdDia);
-    translate([0,0,ovHght-bdHght]){
-      cylinder(d=bdDia,h=bdHght-bdDia/2);
-      cylinder(d=rngDia,h=1);
-    }
-  }
-  
-  //legs
-  for (leg=[[-1,0],[1,1]]){
-    color("silver") translate([leg.x*pitch/2,0,-legLngth[leg[1]]/2+ovHght-bdHght]) 
-      cube([0.5,0.5,legLngth[leg[1]]],true); 
-    echo(leg);
-  }
-}
-
-*LED_5mm();
-module LED_5mm(lightConeAng=15,lightConeHght=50){
-  bdDia= 5;
-  bdHght= 7.6;
-  rngDia= 5.8;
-  ovHght= 8.6;
-  pitch= 2.54;
-  legLngth=[25.4+1,25.4];
-  
-  //body
-  color("white",0.7){
-    translate([0,0,ovHght-bdDia/2]) sphere(d=bdDia);
-    translate([0,0,ovHght-bdHght-1]){
-      cylinder(d=bdDia,h=bdHght-bdDia/2+1);
-      cylinder(d=rngDia,h=1);
-    }
-  }
-  
-  //legs
-  for (leg=[[-1,0],[1,1]]){
-    color("silver") translate([leg.x*pitch/2,0,-legLngth[leg[1]]/2+ovHght-bdHght]) 
-      cube([0.5,0.5,legLngth[leg[1]]],true); 
-    echo(leg);
-  }
-  //lightcone
-  if (lightConeAng){
-    hc=lightConeHght;
-    alpha=(180-lightConeAng)/2;
-    a=hc/sin(alpha);
-    c=2*a*sin(lightConeAng/2);
-    %translate([0,0,ovHght-bdDia/2]) cylinder(d1=0.1,d2=c,h=lightConeHght);
-  }
-}
-
-module LED5050(pins=6){
-  // e.g. WS2812(B)
-  dims=[5,5,1.5];
-  pitch= (pins==6) ? 0.9 : 1.8;
-  grvHght=1;
-  marking=[0.7,0.2]; //width,height
-  
-  //body
-  color("ivory")
-    difference(){
-      translate([0,0,(dims.z+0.1)/2]) cube(dims-[0,0,0.1],true);
-      translate([0,0,dims.z-grvHght]) cylinder(d1=3.2,d2=4,h=grvHght+0.01);
-      //marking
-      translate([dims.x/2,dims.y/2,dims.z-marking[1]]) linear_extrude(marking[1]+fudge)      
-        polygon([[-marking.x-fudge,fudge],[fudge,fudge],[fudge,-marking.x-fudge]]);
-    }
-  color("grey",0.6)
-    translate([0,0,dims.z-grvHght]) cylinder(d1=3.2,d2=4,h=grvHght);
-  //leads
-  color("silver")
-    for (i=[-pins/2+1:2:pins/2],r=[-90,90])
-      rotate([0,0,r]) translate([dims.x/2,i*pitch,0]){
-        translate([-1.1/2+0.2,0,0.1]) cube([1.1,1.0,0.2],true);
-        translate([0.1,0,0.45]) cube([0.2,1.0,0.9],true);
-      }
-}
-*PLCC2();
-module PLCC2(){
-  // e.g. WS2812(B)
-  dims=[3,3.4,1.8];
-  pinDims= [2.3,1.1,1];
-  pinThck= 0.1;
-  grvHght=0.8; //height of groove
-  grvDia=2.4;
-  grvDiaBtm=grvDia-2*tan(30)*grvHght;
-  
-  marking=[0.7,0.2]; //width,height
-  
-  //body
-  color("ivory")
-    difference(){
-      union(){
-        translate([0,0,dims.z-grvHght/2]) 
-          frustum([dims.x,dims.y,grvHght],4,true);
-        mirror([0,0,1]) translate([0,0,-0.1-(grvHght+0.1)/2]) 
-          frustum([dims.x,dims.y,dims.z-grvHght-0.1],4,true);
-      }
-        //cube(dims-[0,0,0.1],true);
-      //groove
-      translate([0,0,dims.z-grvHght]) 
-        cylinder(d2=grvDia,d1=grvDiaBtm,h=grvHght+0.01);
-      //marking
-       translate([dims.x/2,dims.y/2,dims.z-marking[1]]) linear_extrude(marking[1]+fudge)      
-        polygon([[-marking.x-fudge,fudge],[fudge,fudge],[fudge,-marking.x-fudge]]);
-    }
-    
-  //glass
-  color("grey",0.6) 
-    translate([0,0,dims.z-grvHght]) cylinder(d1=grvDiaBtm,d2=grvDia,h=grvHght);
-    
-  //leads
-  *color("silver")
-    for (i=[-pins/2+1:2:pins/2],r=[-90,90])
-      rotate([0,0,r]) translate([dims.x/2,i*pitch,0]){
-        translate([-1.1/2+0.2,0,0.1]) cube([1.1,1.0,0.2],true);
-        translate([0.1,0,0.45]) cube([0.2,1.0,0.9],true);
-      }
-   color("silver"){
-     translate([0,dims.y/2,0]) uContact();   
-     mirror([0,1,0]) translate([0,dims.y/2,0]) uContact();  
-   } 
-   module uContact(){
-     translate([0,-pinDims.y/2,pinThck/2]) cube([pinDims.x,pinDims.y,pinThck],true);
-     translate([0,0,pinThck/2]) 
-      bend([pinDims.x,pinDims.z-pinThck*2,pinThck],90,pinThck/2,center=true) 
-        cube([pinDims.x,pinDims.z-pinThck*2,pinThck],true);
-     translate([0,pinThck/2,pinDims.z-pinThck]) rotate([90,0,0]) 
-      bend([pinDims.x,pinThck,pinThck],90,pinThck/2,true);
-   }
-}
-
-
-module sk6812mini(pins=4){
-  // e.g. SK6812Mini aka NeoPixel mini
-  dims=[3.5,3.5,0.95];
-  pitch= (pins==6) ? 0.9 : 1.75;
-  
-  marking=[0.7,0.2]; //width,height
-  lensDim=[2.6,2.9,0.7]; //lens d1,d2,thick
-  
-  padDim=0.85;
-  
-  //body
-  color("ivory")
-    difference(){
-      union(){
-        translate([0,0,(dims.z/3+0.01)/2]) cube(dims-[0,0,dims.z*(2/3)],true);
-        translate([0,0,(dims.z*(2/3))/2+dims.z/3]) frustum([dims.x,dims.y,dims.z*(2/3)],flankAng=12,center=true);
-      }
-      translate([0,0,dims.z-lensDim.z]) cylinder(d1=lensDim[0],d2=lensDim[1],h=lensDim.z+0.01);
-      //marking
-      translate([dims.x/2,dims.y/2,dims.z-marking[1]]) linear_extrude(marking[1]+fudge)      
-        polygon([[-marking.x-fudge,fudge],[fudge,fudge],[fudge,-marking.x-fudge]]);
-    }
-  color("grey",0.6)
-    translate([0,0,dims.z-lensDim.z+0.01]) cylinder(d1=lensDim[0],d2=lensDim[1],h=lensDim.z);
-  //leads
-  color("silver")
-    for (i=[-pins/2+1:2:pins/2],r=[-90,90])
-      rotate([0,0,r]) translate([dims.x/2,i*pitch/2,0]){
-        translate([-0.85/2+0.01,0,0.1]) cube([0.85,0.85,0.2],true);
-       
-      }
-}
-
-
-*SMF();
-module SMF(){
-  //aka DO-219AB
-  //http://www.vishay.com/docs/95572/smf_do-219ab.pdf
-  padDim=[0.85,1.2,0.25];
-  bodyDim=[2.9,1.9,1.08-padDim.z]; //bodyDim at widest
-  
-  bodyAng=5;
-  bodyRed=tan(bodyAng)/bodyDim.z; //reduction in width by angle
-  padRed=tan(bodyAng)/padDim.z;
-  
-  bodyScale=[(bodyDim.x-bodyRed*2)/bodyDim.x,(bodyDim.y-bodyRed*2)/bodyDim.y];
-  padScale=[(padDim.x-padRed*2)/padDim.x,(padDim.y-padRed*2)/padDim.y];
-  
-  mfudge=0.01;
-  //pads
-  for (i=[-1,1])
-    color("silver") translate([i*(3.9-padDim.x)/2,0,padDim.z/2]) cube(padDim,true);
-  
- //body top
-  difference(){
-    color("darkSlateGrey") translate([0,0,padDim.z+bodyDim.z/2+mfudge]) 
-      frustum(bodyDim,flankAng=bodyAng,center=true,method="Poly");
-    color("grey") translate([-bodyDim.x/3,0,bodyDim.z+padDim.z]) cube([0.3,bodyDim.y-bodyRed*2-0.2,0.05],true);
-  }
-  //body bottom
-  color("darkSlateGrey") translate([0,0,padDim.z/2+mfudge]) 
-  mirror([0,0,1])
-    frustum([bodyDim.x,bodyDim.y,padDim.z],flankAng=bodyAng,center=true,method="Poly");
-      //linear_extrude(padDim.z,scale=bodyScale) square([bodyDim.x,bodyDim.y],true);
+  for (ix=[-1,1], iy=[-1.5:1.5])
+    color("silver") translate([ix*(ovDims.x-padDims.x)/2,iy*pitch,padDims.z/2]) cube(padDims,true);
   
 }
 
-
-*APA102();
-module APA102(){
-  //APA102-2020
-  //http://www.normandled.com/upload/201807/APA102-2020%20LED%20Datasheet.pdf
-  
-  //alias Dotstar
-  ovDims=[2,2,0.9];
-  padDims=[0.6,0.4,0.1];
-  mfudge=0.02;
-  
-  //PCB
-  color("darkgreen") translate([0,0,ovDims.z/6+mfudge/2]) cube([ovDims.x,ovDims.y,ovDims.z/3-mfudge],true);
-  //Resin
-  %color("gold",0.5) translate([0,0,ovDims.z*0.66/2+ovDims.z/3]) cube([ovDims.x,ovDims.y,ovDims.z*0.66],true);
-  //pads
-  for (i=[1,-1],j=[-1,0,1])
-    color("silver") translate([i*(1-padDims.x/2),j*(1-padDims.y/2),padDims.z/2]) cube(padDims+[mfudge,mfudge,0],true);
-  for (j=[1,-1])
-    color("silver") translate([0,j*(1-0.5/2),padDims.z/2]) cube([0.3+mfudge,0.5+mfudge,padDims.z],true);
-  //IC
-  color("darkslategrey") translate([0,0.5,0.3]) cube([1,0.8,0.1],true);
-}
-
-*miniTOPLED();
-module miniTOPLED(){
-  
-  color("ivory") difference(){
-    translate([0,0,1.3/2+0.1]) cube([1.5,2.1,1.3],true);
-    translate([0,0,1.4-0.8]) linear_extrude(0.8+0.01,scale=[1.2,1.2]) square([0.8,1.2],true);
-    translate([-1.5/2,-2.1/2,1.4-0.8+0.01]) cylinder(r1=0.01,r2=0.35,h=0.8,$fn=4);
-    translate([-1.5/2,-2.1/2,-0.01]) cylinder(r2=0.01,r1=0.3,h=0.6,$fn=4);
-  }
-    color("darkSlateGrey") translate([0,-0.3,0.6]) cube(0.3,true);
-    color("silver") for (i=[-1,1]) translate([0,i*(2.3-0.5)/2,0.3]) cube([1,0.5,0.6],true);
-}
-module SMDpassive(size="0805", thick=0, label=""){
-  // SMD chip resistors, capacitors and other passives by EIA standard
-  // e.g. 0805 means 0.08" by 0.05"
-  // Dimensions (height, metallization) from Vishay CHP resistors
-  // [size,body,capsWdth]
-  dimsLUT=[
-       ["0201",[0.6,0.3,0.25],0.1],
-       ["0402",[1.02,0.5,0.38],0.25],
-       ["0603",[1.6,0.8,0.45],0.3],
-       ["0805",[2,1.25,0.55],0.4],
-       ["1206",[3.2,1.6,0.55],0.45],
-       ["1210",[3.2,2.6,0.55],0.5],
-       ["1812",[4.6,3.2,0.55],0.5],
-       ["2010",[5.0,2.5,0.55],0.6],
-       ["2512",[6.35,3.2,0.55],0.6]
-       ];
-  
-  testLUT=[ ["abc",3],["def",5],["gh",6] ];
-  
-  mtlLngth=dimsLUT[search([size],dimsLUT)[0]][2];//length of metallization
-  bdDims=dimsLUT[search([size],dimsLUT)[0]][1]-[mtlLngth,0,0];
-  ovThick= thick ? thick : bdDims.z;
-  
-  txtSize=bdDims.x/(0.8*len(label));
-  if (label)
-    color("white") translate([0,0,ovThick]) linear_extrude(0.1) 
-      text(text=label,size=txtSize,halign="center",valign="center", font="consolas");
-  
-  
-  //body
-  color("darkSlateGrey") translate([0,0,ovThick/2]) cube([bdDims.x,bdDims.y,ovThick],true);
-  //caps
-  for (i=[-1,1]) color("silver")
-    translate([i*(bdDims.x+mtlLngth)/2,0,ovThick/2]) cube([mtlLngth,bdDims.y,ovThick],true);
-}
 
 *QFN(54,[7,7,1],0.4);
 module QFN(pos=28,size=[5,5,1], pitch=0.5,label="QFN"){
@@ -714,6 +284,543 @@ module SOT23(pins=3, label=""){
     
 }
 
+
+// --- Inductors ---
+!PDUU(false);
+module PDUU(center=true){
+  //https://datasheet.lcsc.com/lcsc/2201121530_PROD-Tech-PDUUAT16-503MLN_C2932169.pdf
+  //Series UU16
+  
+
+  D=0.7;
+  D1=10.5; //pin distance y
+  D2=13.5; //pin distance x
+  L=4;
+  A=22; //total width (incl. metal clamp)
+  B=20; //total body deep
+  C=28.5; //total Height
+  sprtWdth=1.5; //thickness of separators
+  coilFillFact=0.8; //
+
+  //pin1 or center
+  cntrOffset = (center) ? [0,0,0] : [D2/2,-D1/2,0];
+
+  //core/coil
+  coreThck=((A-1)-D2)/2; //thickness from overall width and pin distance
+  coreDims=[A-1,coreThck,(C+coreThck)/2]; //iron core 
+  coreInnerDims=[coreDims.x-coreThck*2,coreDims.y,coreDims.z-coreThck*2]; //innerDims from coreDims and thick
+  coreChmf=0.3; //chamfering of the core
+  corezOffset=(C-coreThck)/2;
+  sprtrDims=[sprtWdth,B,coreInnerDims.z*2+coreThck*2]; //separator Dimensions
+  sprtrRad=3; //radius of separator plates
+  coilDims=[(coreInnerDims.x-3*sprtrDims.x)/2,9];
+  
+  translate(cntrOffset){
+    // pins
+    for (ix=[-1,1],iy=[-1,1])
+      color(metalGreyPinCol) translate([ix*D2/2,iy*D1/2,-L]) cylinder(d=D,h=L);
+
+    // core
+    translate([0,coreDims.y/2,corezOffset+coreDims.z/2]) rotate([90,0,0]){
+      color(greyBodyCol) linear_extrude(coreDims.y)
+        difference(){
+          square([coreDims.x,coreDims.z],true);
+          square([coreInnerDims.x,coreInnerDims.z],true);
+        }
+    }
+    //separators
+    for (ix=[-1,0,1]){
+        translate([ix*(coreInnerDims.x-sprtrDims.x)/2,0,corezOffset+coreThck/2]) 
+          rotate([0,90,0]) difference(){
+            union(){
+              color(blackBodyCol) translate([coreThck/2,0,0]) rndRectInt([sprtrDims.z,sprtrDims.y,sprtrDims.x],sprtrRad,true);
+              if (ix)
+                color(blackBodyCol) translate([corezOffset-coreThck/2,0,ix*sprtrDims.x/2])
+                  rndRectInt([coreThck*2,sprtrDims.y,sprtrDims.x*2],1,true);
+            }
+            color(blackBodyCol) cube([coreThck+fudge,coreDims.y+fudge,sprtrDims.x+fudge],true);
+          } 
+    }
+    
+    //coils
+    for (ix=[-1,1])
+      color(metalCopperCol) translate([ix*(sprtrDims.x+coilDims.x)/2,0,corezOffset+coreThck/2])
+        rotate([0,90,0]) coilShape([coreThck,coreDims.y],coreInnerDims.z*coilFillFact,coilDims.x);
+  }
+
+  module coilShape(innerDims, thick, width){
+    translate([0,0,-width/2]) linear_extrude(width) difference(){
+      offset(thick) square(innerDims,true);
+      square(innerDims,true);
+    }
+  }
+
+}
+
+*ACT1210();
+module ACT1210(rad=0.06){
+  
+  spcng=0.25;
+  ovDim=[3.2,2.5,2.35]; //overall dimensions without solder bubbles
+  topDim=[3.2,2.5,0.7];
+  radDim=[-rad*2,-rad*2,-rad*2]; //reduce dim by radius
+  
+  
+  difference(){
+    translate([0,0,1.65+0.7/2]) 
+      color("darkSlateGrey") if (rad)  minkowski($fn=20){
+         cube(topDim+[-rad*2,-rad*2,-rad*2],true);
+         sphere(rad);
+      }
+      else
+        color("darkSlateGrey") cube(topDim,true);
+      translate([0,0,ovDim.z-0.05]) 
+      color("white") linear_extrude(0.1)  text("ACT1210",valign="center",halign="center",size=0.5);
+    }    
+    
+    body();
+
+  
+  coil();
+  translate([-1*(ovDim.x/2-0.1),1.2,0.75]) rotate([90,0,-90]) contact();                    // -1,+1,0,-1
+  translate([-1*(ovDim.x/2-0.1),-1*1.2,0.75]) mirror([0,1,0]) rotate([90,0,-90]) contact(); // -1,-1,1,-1
+  translate([1*(ovDim.x/2-0.1),-1*1.2,0.75]) mirror([0,0,0]) rotate([90,0,90]) contact();   // +1,-1,0,+1
+  translate([1*(ovDim.x/2-0.1),1*1.2,0.75]) mirror([0,1,0]) rotate([90,0,90]) contact();    // +1,+1,1,+1
+    
+  
+    
+  module contact(){
+    thck=0.1;
+    rad=0.05;
+    color("silver") rndRectInt([0.9,0.35,thck],rad);
+    translate([0.9-0.35,-0.6,0]) 
+      color("silver") cube([0.35,0.6+rad,thck]);
+    translate([0.9-0.35,-0.6,0]) 
+      mirror([0,1,0]) 
+        color("silver") bend(size=[0.35,0.46,thck],angle=-90,radius=0.15,center=false, flatten=false)
+          cube([0.35,0.46,thck]);
+    translate([0.9-0.35,-0.6-0.1/2,-0.46-0.1/2]) rotate([0,-90,90]) 
+      color("silver") bend([0.46,0.3,thck],-90,0.2) cube([0.46,0.3,thck]);
+  }  
+    
+  module coil(){
+    translate([0,0,0.7*1.5]) rotate([90,0,90]) color("salmon")rndRectInt([2.3,1.6-0.5,1.7],0.3,true);
+  }
+    
+  module body(){
+    bdDim=[0.7,2.5,1.4];
+    for (m=[0,1])
+    color("darkSlateGrey") mirror([m,0,0]) translate([(ovDim.x-bdDim.x)/2,0,bdDim.z/2+spcng]) 
+      difference(){
+        cube(bdDim,true);
+        for (iy=[-1,1]){
+          color("darkSlateGrey") 
+            translate([0,iy*(bdDim.y-0.5+fudge)/2,-(bdDim.z-0.4+fudge)/2]) 
+              cube([bdDim.x+fudge,0.5+fudge,0.4+fudge],true);
+          color("darkSlateGrey")
+            translate([(bdDim.x+fudge)/2,iy*(bdDim.y-1.1+fudge)/2,-(bdDim.z-1+fudge)/2])
+              cube([0.2+fudge,1.1+fudge,1+fudge],true);
+        }
+      }
+    //bar
+      color("darkSlateGrey") translate([0,0,0.7*1.5]) cube([ovDim.x-2*bdDim.x,bdDim.y-0.5,0.7],true);
+  }
+}
+
+
+*sumidaCR43();
+module sumidaCR43(){
+  ovDia=4.3;
+  ovHght=3.2;
+  coilDia=3.1;
+  
+  difference(){
+    coil();
+    color("white") translate([0,0,3.15]) linear_extrude(0.1) text("CR43",valign="center",halign="center",size=0.8);
+  }
+  
+  base();
+  for (m=[0,1]) mirror([m,0,0])
+  translate([1.7-0.3,0,0]) 
+    contact();
+  
+  
+  module contact(){
+    thck=0.15;
+    sgmnts=[[0.6,0.7,thck],[1.2-thck,0.5,thck],[thck,0.5,0.6-thck]]; //segment dims from center outward
+    
+    for (m=[0,1]) mirror([0,m,0]){
+      color("silver") translate([0,sgmnts[0].y/2,0.34-thck/2]) cube(sgmnts[0],true);
+      color("silver") translate([(sgmnts[1].x-sgmnts[0].x)/2,1.2+sgmnts[1].y/2,thck/2]) cube(sgmnts[1],true);
+      color("silver") translate([-sgmnts[0].x/2+sgmnts[1].x,1.2+sgmnts[1].y/2,thck/2]) 
+        rotate([90,0,0]) cylinder(d=thck,h=sgmnts[1].y,center=true);
+      color("silver") translate([-sgmnts[0].x/2+sgmnts[1].x,1.2+sgmnts[1].y/2,sgmnts[2].z/2+thck/2]) cube(sgmnts[2],true);
+      color("silver") translate([0,1.2,thck/2]) 
+        rotate([0,90,0]) cylinder(d=thck,h=sgmnts[0].x,center=true);
+      
+    }
+  }
+  
+  module coil(){
+    difference(){
+      intersection(){
+        union(){
+          color("darkslategrey") translate([0,0,0.5]) cylinder(d=ovDia,h=0.6);
+          color("salmon") translate([0,0,0.5+0.6]) cylinder(d=coilDia,h=1.5);
+          color("darkslategrey") translate([0,0,0.5+0.6+1.5]) cylinder(d=ovDia,h=0.6);
+        }
+         color("darkSlateGrey") translate([0,0,(ovHght+fudge)/2]) cube([ovDia+fudge,3.8,ovHght+fudge],true);
+      }
+      for (ix=[-1,1]){
+      color("darkslategrey") translate([ix*3.8/2,0,-fudge/2]) cylinder(d=0.6,h=ovHght+fudge);
+      color("darkslategrey") translate([ix*(3.8+0.6)/2,0,(ovHght)/2]) cube([0.6,0.6,ovHght+fudge],true);
+      }
+    }
+  }
+  
+  module base(){
+    ovDims=[4.5,3.9,0.45];
+    crnrRad=0.2;
+    
+    
+    translate([0,0,0.05]){
+    difference(){
+      union(){
+        difference(){
+          color("darkslategrey") translate([0,0,ovDims.z/2]) rndRectInt(ovDims+[-0.4,0,0],crnrRad,true);
+          for (ix=[-1,1])
+            color("darkslategrey") translate([ix*(ovDims.x-1)/2,0,ovDims.z/2]) cube([1+fudge,2,ovDims.z+fudge],true);
+        }
+      
+        for (iy=[0,1]) mirror([0,iy,0])
+          translate([0,-1,0]) difference(){
+            color("darkslategrey") translate([0,0,ovDims.z/2]) 
+              rndRectInt([ovDims.x,0.7*2,ovDims.z],crnrRad,true);
+            color("darkslategrey") translate([0,-0.7/2-fudge/2,ovDims.z/2]) 
+              cube([ovDims.x+fudge,0.7+fudge,ovDims.z+fudge],true);
+          }       
+      }
+    
+    for (i=[-1,1])
+      color("darkslategrey") translate([i*(ovDims.x+fudge)/2,0,-0.01]) 
+        rotate([90,0,-i*90]) linear_extrude(1.5) 
+          polygon([[-0.7,0],[-0.45,0.3],[0.45,0.3],[0.7,0]]);
+    }
+  }
+  }
+}
+
+
+
+
+
+// -- LEDs --
+*LED3030();
+module LED3030(){
+  //e.g. Osram Duris S5
+  ovDims=[3,3,0.6];
+  difference(){
+    color("ivory") translate([0,0,ovDims.z/2]) cube(ovDims,true);
+    color("orange") difference(){
+      translate([0,0,ovDims.z]) rndRectInt([2.55,2.55,0.1],0.5,true);
+      translate([-2.55/2,2.55/2,ovDims.z]) cylinder(d=1,$fn=4,center=true);
+    }
+    translate([0,0,-0.05]) pads(0.2);
+  }
+  
+  pads();
+  module pads(thick=0.1){
+    color("silver") translate([(1.55-2.68)/2,0,thick/2]) 
+      rndRectInt([1.55,2.4,thick],0.1,true);
+    color("silver") translate([-(0.58-2.68)/2,0,thick/2]) 
+      rndRectInt([0.58,2,thick],0.1,true);
+  }
+}
+
+
+*LED_3mm();
+module LED_3mm(){
+  bdDia= 2.9;
+  bdHght= 4.6;
+  rngDia= 3.2;
+  ovHght= 5.1;
+  pitch= 2.54;
+  legLngth=[27,27-1.5];
+  
+  //body
+  color("white",0.7){
+    translate([0,0,ovHght-bdDia/2]) sphere(d=bdDia);
+    translate([0,0,ovHght-bdHght]){
+      cylinder(d=bdDia,h=bdHght-bdDia/2);
+      cylinder(d=rngDia,h=1);
+    }
+  }
+  
+  //legs
+  for (leg=[[-1,0],[1,1]]){
+    color("silver") translate([leg.x*pitch/2,0,-legLngth[leg[1]]/2+ovHght-bdHght]) 
+      cube([0.5,0.5,legLngth[leg[1]]],true); 
+    echo(leg);
+  }
+}
+
+*LED_5mm();
+module LED_5mm(lightConeAng=15,lightConeHght=50){
+  bdDia= 5;
+  bdHght= 7.6;
+  rngDia= 5.8;
+  ovHght= 8.6;
+  pitch= 2.54;
+  legLngth=[25.4+1,25.4];
+  
+  //body
+  color("white",0.7){
+    translate([0,0,ovHght-bdDia/2]) sphere(d=bdDia);
+    translate([0,0,ovHght-bdHght-1]){
+      cylinder(d=bdDia,h=bdHght-bdDia/2+1);
+      cylinder(d=rngDia,h=1);
+    }
+  }
+  
+  //legs
+  for (leg=[[-1,0],[1,1]]){
+    color("silver") translate([leg.x*pitch/2,0,-legLngth[leg[1]]/2+ovHght-bdHght]) 
+      cube([0.5,0.5,legLngth[leg[1]]],true); 
+    echo(leg);
+  }
+  //lightcone
+  if (lightConeAng){
+    hc=lightConeHght;
+    alpha=(180-lightConeAng)/2;
+    a=hc/sin(alpha);
+    c=2*a*sin(lightConeAng/2);
+    %translate([0,0,ovHght-bdDia/2]) cylinder(d1=0.1,d2=c,h=lightConeHght);
+  }
+}
+
+module LED5050(pins=6){
+  // e.g. WS2812(B)
+  dims=[5,5,1.5];
+  pitch= (pins==6) ? 0.9 : 1.8;
+  grvHght=1;
+  marking=[0.7,0.2]; //width,height
+  
+  //body
+  color("ivory")
+    difference(){
+      translate([0,0,(dims.z+0.1)/2]) cube(dims-[0,0,0.1],true);
+      translate([0,0,dims.z-grvHght]) cylinder(d1=3.2,d2=4,h=grvHght+0.01);
+      //marking
+      translate([dims.x/2,dims.y/2,dims.z-marking[1]]) linear_extrude(marking[1]+fudge)      
+        polygon([[-marking.x-fudge,fudge],[fudge,fudge],[fudge,-marking.x-fudge]]);
+    }
+  color("grey",0.6)
+    translate([0,0,dims.z-grvHght]) cylinder(d1=3.2,d2=4,h=grvHght);
+  //leads
+  color("silver")
+    for (i=[-pins/2+1:2:pins/2],r=[-90,90])
+      rotate([0,0,r]) translate([dims.x/2,i*pitch,0]){
+        translate([-1.1/2+0.2,0,0.1]) cube([1.1,1.0,0.2],true);
+        translate([0.1,0,0.45]) cube([0.2,1.0,0.9],true);
+      }
+}
+
+
+*PLCC2();
+module PLCC2(){
+  // e.g. WS2812(B)
+  dims=[3,3.4,1.8];
+  pinDims= [2.3,1.1,1];
+  pinThck= 0.1;
+  grvHght=0.8; //height of groove
+  grvDia=2.4;
+  grvDiaBtm=grvDia-2*tan(30)*grvHght;
+  
+  marking=[0.7,0.2]; //width,height
+  
+  //body
+  color("ivory")
+    difference(){
+      union(){
+        translate([0,0,dims.z-grvHght/2]) 
+          frustum([dims.x,dims.y,grvHght],4,true);
+        mirror([0,0,1]) translate([0,0,-0.1-(grvHght+0.1)/2]) 
+          frustum([dims.x,dims.y,dims.z-grvHght-0.1],4,true);
+      }
+        //cube(dims-[0,0,0.1],true);
+      //groove
+      translate([0,0,dims.z-grvHght]) 
+        cylinder(d2=grvDia,d1=grvDiaBtm,h=grvHght+0.01);
+      //marking
+       translate([dims.x/2,dims.y/2,dims.z-marking[1]]) linear_extrude(marking[1]+fudge)      
+        polygon([[-marking.x-fudge,fudge],[fudge,fudge],[fudge,-marking.x-fudge]]);
+    }
+    
+  //glass
+  color("grey",0.6) 
+    translate([0,0,dims.z-grvHght]) cylinder(d1=grvDiaBtm,d2=grvDia,h=grvHght);
+    
+  //leads
+  *color("silver")
+    for (i=[-pins/2+1:2:pins/2],r=[-90,90])
+      rotate([0,0,r]) translate([dims.x/2,i*pitch,0]){
+        translate([-1.1/2+0.2,0,0.1]) cube([1.1,1.0,0.2],true);
+        translate([0.1,0,0.45]) cube([0.2,1.0,0.9],true);
+      }
+   color("silver"){
+     translate([0,dims.y/2,0]) uContact();   
+     mirror([0,1,0]) translate([0,dims.y/2,0]) uContact();  
+   } 
+   module uContact(){
+     translate([0,-pinDims.y/2,pinThck/2]) cube([pinDims.x,pinDims.y,pinThck],true);
+     translate([0,0,pinThck/2]) 
+      bend([pinDims.x,pinDims.z-pinThck*2,pinThck],90,pinThck/2,center=true) 
+        cube([pinDims.x,pinDims.z-pinThck*2,pinThck],true);
+     translate([0,pinThck/2,pinDims.z-pinThck]) rotate([90,0,0]) 
+      bend([pinDims.x,pinThck,pinThck],90,pinThck/2,true);
+   }
+}
+
+
+module sk6812mini(pins=4){
+  // e.g. SK6812Mini aka NeoPixel mini
+  dims=[3.5,3.5,0.95];
+  pitch= (pins==6) ? 0.9 : 1.75;
+  
+  marking=[0.7,0.2]; //width,height
+  lensDim=[2.6,2.9,0.7]; //lens d1,d2,thick
+  
+  padDim=0.85;
+  
+  //body
+  color("ivory")
+    difference(){
+      union(){
+        translate([0,0,(dims.z/3+0.01)/2]) cube(dims-[0,0,dims.z*(2/3)],true);
+        translate([0,0,(dims.z*(2/3))/2+dims.z/3]) frustum([dims.x,dims.y,dims.z*(2/3)],flankAng=12,center=true);
+      }
+      translate([0,0,dims.z-lensDim.z]) cylinder(d1=lensDim[0],d2=lensDim[1],h=lensDim.z+0.01);
+      //marking
+      translate([dims.x/2,dims.y/2,dims.z-marking[1]]) linear_extrude(marking[1]+fudge)      
+        polygon([[-marking.x-fudge,fudge],[fudge,fudge],[fudge,-marking.x-fudge]]);
+    }
+  color("grey",0.6)
+    translate([0,0,dims.z-lensDim.z+0.01]) cylinder(d1=lensDim[0],d2=lensDim[1],h=lensDim.z);
+  //leads
+  color("silver")
+    for (i=[-pins/2+1:2:pins/2],r=[-90,90])
+      rotate([0,0,r]) translate([dims.x/2,i*pitch/2,0]){
+        translate([-0.85/2+0.01,0,0.1]) cube([0.85,0.85,0.2],true);
+       
+      }
+}
+
+
+*SMF();
+module SMF(){
+  //aka DO-219AB
+  //http://www.vishay.com/docs/95572/smf_do-219ab.pdf
+  padDim=[0.85,1.2,0.25];
+  bodyDim=[2.9,1.9,1.08-padDim.z]; //bodyDim at widest
+  
+  bodyAng=5;
+  bodyRed=tan(bodyAng)/bodyDim.z; //reduction in width by angle
+  padRed=tan(bodyAng)/padDim.z;
+  
+  bodyScale=[(bodyDim.x-bodyRed*2)/bodyDim.x,(bodyDim.y-bodyRed*2)/bodyDim.y];
+  padScale=[(padDim.x-padRed*2)/padDim.x,(padDim.y-padRed*2)/padDim.y];
+  
+  mfudge=0.01;
+  //pads
+  for (i=[-1,1])
+    color("silver") translate([i*(3.9-padDim.x)/2,0,padDim.z/2]) cube(padDim,true);
+  
+ //body top
+  difference(){
+    color("darkSlateGrey") translate([0,0,padDim.z+bodyDim.z/2+mfudge]) 
+      frustum(bodyDim,flankAng=bodyAng,center=true,method="Poly");
+    color("grey") translate([-bodyDim.x/3,0,bodyDim.z+padDim.z]) cube([0.3,bodyDim.y-bodyRed*2-0.2,0.05],true);
+  }
+  //body bottom
+  color("darkSlateGrey") translate([0,0,padDim.z/2+mfudge]) 
+  mirror([0,0,1])
+    frustum([bodyDim.x,bodyDim.y,padDim.z],flankAng=bodyAng,center=true,method="Poly");
+      //linear_extrude(padDim.z,scale=bodyScale) square([bodyDim.x,bodyDim.y],true);
+  
+}
+
+
+*APA102();
+module APA102(){
+  //APA102-2020
+  //http://www.normandled.com/upload/201807/APA102-2020%20LED%20Datasheet.pdf
+  
+  //alias Dotstar
+  ovDims=[2,2,0.9];
+  padDims=[0.6,0.4,0.1];
+  mfudge=0.02;
+  
+  //PCB
+  color("darkgreen") translate([0,0,ovDims.z/6+mfudge/2]) cube([ovDims.x,ovDims.y,ovDims.z/3-mfudge],true);
+  //Resin
+  %color("gold",0.5) translate([0,0,ovDims.z*0.66/2+ovDims.z/3]) cube([ovDims.x,ovDims.y,ovDims.z*0.66],true);
+  //pads
+  for (i=[1,-1],j=[-1,0,1])
+    color("silver") translate([i*(1-padDims.x/2),j*(1-padDims.y/2),padDims.z/2]) cube(padDims+[mfudge,mfudge,0],true);
+  for (j=[1,-1])
+    color("silver") translate([0,j*(1-0.5/2),padDims.z/2]) cube([0.3+mfudge,0.5+mfudge,padDims.z],true);
+  //IC
+  color("darkslategrey") translate([0,0.5,0.3]) cube([1,0.8,0.1],true);
+}
+
+*miniTOPLED();
+module miniTOPLED(){
+  
+  color("ivory") difference(){
+    translate([0,0,1.3/2+0.1]) cube([1.5,2.1,1.3],true);
+    translate([0,0,1.4-0.8]) linear_extrude(0.8+0.01,scale=[1.2,1.2]) square([0.8,1.2],true);
+    translate([-1.5/2,-2.1/2,1.4-0.8+0.01]) cylinder(r1=0.01,r2=0.35,h=0.8,$fn=4);
+    translate([-1.5/2,-2.1/2,-0.01]) cylinder(r2=0.01,r1=0.3,h=0.6,$fn=4);
+  }
+    color("darkSlateGrey") translate([0,-0.3,0.6]) cube(0.3,true);
+    color("silver") for (i=[-1,1]) translate([0,i*(2.3-0.5)/2,0.3]) cube([1,0.5,0.6],true);
+}
+module SMDpassive(size="0805", thick=0, label=""){
+  // SMD chip resistors, capacitors and other passives by EIA standard
+  // e.g. 0805 means 0.08" by 0.05"
+  // Dimensions (height, metallization) from Vishay CHP resistors
+  // [size,body,capsWdth]
+  dimsLUT=[
+       ["0201",[0.6,0.3,0.25],0.1],
+       ["0402",[1.02,0.5,0.38],0.25],
+       ["0603",[1.6,0.8,0.45],0.3],
+       ["0805",[2,1.25,0.55],0.4],
+       ["1206",[3.2,1.6,0.55],0.45],
+       ["1210",[3.2,2.6,0.55],0.5],
+       ["1812",[4.6,3.2,0.55],0.5],
+       ["2010",[5.0,2.5,0.55],0.6],
+       ["2512",[6.35,3.2,0.55],0.6]
+       ];
+  
+  testLUT=[ ["abc",3],["def",5],["gh",6] ];
+  
+  mtlLngth=dimsLUT[search([size],dimsLUT)[0]][2];//length of metallization
+  bdDims=dimsLUT[search([size],dimsLUT)[0]][1]-[mtlLngth,0,0];
+  ovThick= thick ? thick : bdDims.z;
+  
+  txtSize=bdDims.x/(0.8*len(label));
+  if (label)
+    color("white") translate([0,0,ovThick]) linear_extrude(0.1) 
+      text(text=label,size=txtSize,halign="center",valign="center", font="consolas");
+  
+  
+  //body
+  color("darkSlateGrey") translate([0,0,ovThick/2]) cube([bdDims.x,bdDims.y,ovThick],true);
+  //caps
+  for (i=[-1,1]) color("silver")
+    translate([i*(bdDims.x+mtlLngth)/2,0,ovThick/2]) cube([mtlLngth,bdDims.y,ovThick],true);
+}
+
 *potentiometer();
 module potentiometer(){
   // taiwan alpha RV24AF
@@ -768,6 +875,7 @@ module potentiometer(){
     }
   }
 }
+
 module TRACO(givePoly=false){
   if (givePoly) translate([-11.7/2,-2]) square([11.7,7.6]);
   else{
@@ -904,10 +1012,15 @@ module frustum(size=[1,1,1], flankAng=5, center=false, method="poly"){
   }
 }
 
-module rndRectInt(size=[5,5,2],rad=1,center=false){
+module rndRectInt(size=[5,5,2],rad=1,center=false, method="offset"){
+  
   cntrOffset= (center) ? [0,0,0] : [size.x/2,size.y/2,size.z/2];
-  translate(cntrOffset) hull() for (ix=[-1,1],iy=[-1,1])
-    translate([ix*(size.x/2-rad),iy*(size.y/2-rad),0]) cylinder(r=rad,h=size.z,center=true);
+
+  if (method=="offset")
+    translate(cntrOffset+[0,0,-size.z/2]) linear_extrude(size.z) offset(rad) square([size.x-rad*2,size.y-rad*2],true);
+  else
+    translate(cntrOffset) hull() for (ix=[-1,1],iy=[-1,1])
+      translate([ix*(size.x/2-rad),iy*(size.y/2-rad),0]) cylinder(r=rad,h=size.z,center=true);
 }
 
 

@@ -1,13 +1,15 @@
 metalGreyPinCol=[0.824,0.820,0.781];
+metalCopperCol=[0.7038,0.27048,0.0828];
 goldPinCol=[0.859,0.738,0.496];
 blackBodyCol=[0.148,0.145,0.145];
+greyBodyCol=[0.250,0.262,0.281];
 greenBoardCol=[0.07,0.3,0.12];
 blackBoardCol=[0.16,0.16,0.16];
 FR4darkCol=[0.2,0.17,0.087];
 FR4Col=[0.43,0.46,0.295];
 
 //testcube
-*color(FR4Col) cube();
+*color(blackBodyCol) cube(10,true);
 
 /* From KiCAD wrl file
 Shape {

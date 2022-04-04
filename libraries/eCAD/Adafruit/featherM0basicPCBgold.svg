@@ -1,0 +1,815 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="50.056728mm"
+   height="21.99633mm"
+   viewBox="0 0 50.056728 21.99633"
+   version="1.1"
+   id="svg2312"
+   inkscape:version="1.1.1 (3bf5ae0d25, 2021-09-20)"
+   sodipodi:docname="featherM0basicPCBgold.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview2314"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:document-units="mm"
+     showgrid="false"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0"
+     inkscape:zoom="5.1241863"
+     inkscape:cx="105.87047"
+     inkscape:cy="57.277387"
+     inkscape:window-width="1920"
+     inkscape:window-height="1137"
+     inkscape:window-x="1912"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs2309" />
+  <g
+     inkscape:label="Ebene 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-30.323514,-55.919779)">
+    <path
+       gorn="0.54.1.1.1"
+       style="fill:none;stroke:#ffffff;stroke-width:0.152399;stroke-linecap:round"
+       id="path376"
+       d="m 32.552107,72.759922 -0.507998,0.380999 v -0.761997 l 0.507998,0.380998 m -0.406398,-0.304799 v 0.609598 -0.609598 m 0.152399,0.1143 v 0.380999 -0.380999" />
+    <path
+       gorn="0.55.1.6.1"
+       style="fill:none;stroke:#ffffff;stroke-width:0.203199;stroke-linecap:round"
+       id="path400"
+       d="m 47.765055,59.678966 -0.300001,0.199989 v -0.399978 l 0.300001,0.199989 h -0.300001 0.300001" />
+    <path
+       gorn="0.58.1.1.1"
+       style="fill:none;stroke:#ffffff;stroke-width:0.152399;stroke-linecap:round"
+       id="path430"
+       d="m 32.276109,60.988967 0.507998,-0.380999 v 0.761997 l -0.507998,-0.380998 m 0.406399,0.304799 v -0.609598 0.609598 m -0.1524,-0.1143 v -0.380999 0.380999" />
+    <path
+       gorn="0.65.1.5"
+       style="fill:none;stroke:#ffffff;stroke-width:0.127"
+       id="path496"
+       d="M 40.383063,71.670936 A 0.59999539,0.59999539 0 0 0 39.783096,71.070934" />
+    <path
+       gorn="0.65.1.7"
+       style="fill:none;stroke:#ffffff;stroke-width:0.127"
+       id="path500"
+       d="m 39.783096,72.670917 a 0.59999539,0.59999539 0 0 0 0.599967,-0.600003" />
+    <path
+       gorn="0.65.1.9"
+       style="fill:none;stroke:#ffffff;stroke-width:0.127"
+       id="path504"
+       d="m 38.183078,72.070914 a 0.59999539,0.59999539 0 0 0 0.600002,0.600003" />
+    <path
+       gorn="0.65.1.11"
+       style="fill:none;stroke:#ffffff;stroke-width:0.127"
+       id="path508"
+       d="m 38.78308,71.070934 a 0.59999539,0.59999539 0 0 0 -0.600002,0.600002" />
+    <circle
+       r="0.12699959"
+       cy="72.627914"
+       gorn="0.68.1.9"
+       cx="50.137054"
+       style="fill:none;stroke:#ffffff;stroke-width:0.406399"
+       id="circle552" />
+    <circle
+       r="1.9999928"
+       cy="58.027973"
+       gorn="0.73.1.1"
+       cx="32.425106"
+       style="fill:none;stroke:#ffffff;stroke-width:0.203199"
+       id="circle594" />
+    <circle
+       r="1.9999928"
+       cy="75.807915"
+       gorn="0.74.1.1"
+       cx="32.425106"
+       style="fill:none;stroke:#ffffff;stroke-width:0.203199"
+       id="circle604" />
+    <path
+       gorn="0.80.1.1"
+       style="fill:none;stroke:#ffffff;stroke-width:0.127"
+       id="path684"
+       d="m 48.982275,74.221899 a 0.28280019,0.28280019 0 0 0 0.282786,-0.282786" />
+    <path
+       gorn="0.80.1.3"
+       style="fill:none;stroke:#ffffff;stroke-width:0.127"
+       id="path688"
+       d="m 46.06506,73.939113 a 0.28280019,0.28280019 0 0 0 0.282821,0.282786" />
+    <path
+       gorn="0.80.1.5"
+       style="fill:none;stroke:#ffffff;stroke-width:0.127"
+       id="path692"
+       d="M 46.288649,72.82194 A 0.22359933,0.22359933 0 0 0 46.06506,73.04553" />
+    <path
+       gorn="0.80.1.7"
+       style="fill:none;stroke:#ffffff;stroke-width:0.127"
+       id="path696"
+       d="M 49.265061,73.138134 A 0.31619861,0.31619861 0 0 0 48.948867,72.82194" />
+    <path
+       gorn="0.80.1.10"
+       style="fill:none;stroke:#ffffff;stroke-width:0.127"
+       id="path702"
+       d="M 48.96506,73.421908 A 0.3001,0.3001 0 0 0 48.665058,73.121906" />
+    <path
+       gorn="0.80.1.12"
+       style="fill:none;stroke:#ffffff;stroke-width:0.127"
+       id="path706"
+       d="M 48.665058,73.921933 A 0.2999984,0.2999984 0 0 0 48.96506,73.621932" />
+    <path
+       gorn="0.80.1.14"
+       style="fill:none;stroke:#ffffff;stroke-width:0.127"
+       id="path710"
+       d="m 46.365061,73.721909 a 0.25494918,0.25494918 0 0 0 0.300001,0.200024" />
+    <path
+       gorn="0.80.1.16"
+       style="fill:none;stroke:#ffffff;stroke-width:0.127"
+       id="path714"
+       d="m 46.56505,73.121906 a 0.25486522,0.25486522 0 0 0 -0.199989,0.300002" />
+    <circle
+       connectorname="GND"
+       r="0.66909724"
+       cy="77.077911"
+       gorn="0.104"
+       cx="74.33506"
+       style="fill:none;stroke:#9a916c;stroke-width:0.3382"
+       id="connector22pin" />
+    <circle
+       connectorname="D1"
+       r="0.66909724"
+       cy="77.077911"
+       gorn="0.105"
+       cx="71.795067"
+       style="fill:none;stroke:#9a916c;stroke-width:0.3382"
+       id="connector23pin" />
+    <circle
+       connectorname="D0"
+       r="0.66909724"
+       cy="77.077911"
+       gorn="0.106"
+       cx="69.255074"
+       style="fill:none;stroke:#9a916c;stroke-width:0.3382"
+       id="connector24pin" />
+    <circle
+       connectorname="MISO"
+       r="0.66909724"
+       cy="77.077911"
+       gorn="0.107"
+       cx="66.715088"
+       style="fill:none;stroke:#9a916c;stroke-width:0.3382"
+       id="connector25pin" />
+    <circle
+       connectorname="MOSI"
+       r="0.66909724"
+       cy="77.077911"
+       gorn="0.108"
+       cx="64.174919"
+       style="fill:none;stroke:#9a916c;stroke-width:0.3382"
+       id="connector26pin" />
+    <circle
+       connectorname="SCK"
+       r="0.66909724"
+       cy="77.077911"
+       gorn="0.109"
+       cx="61.634926"
+       style="fill:none;stroke:#9a916c;stroke-width:0.3382"
+       id="connector27pin" />
+    <circle
+       connectorname="A5"
+       r="0.66909724"
+       cy="77.077911"
+       gorn="0.110"
+       cx="59.094933"
+       style="fill:none;stroke:#9a916c;stroke-width:0.3382"
+       id="connector28pin" />
+    <circle
+       connectorname="A4"
+       r="0.66909724"
+       cy="77.077911"
+       gorn="0.111"
+       cx="56.554943"
+       style="fill:none;stroke:#9a916c;stroke-width:0.3382"
+       id="connector29pin" />
+    <circle
+       connectorname="A3"
+       r="0.66909724"
+       cy="77.077911"
+       gorn="0.112"
+       cx="54.015022"
+       style="fill:none;stroke:#9a916c;stroke-width:0.3382"
+       id="connector30pin" />
+    <circle
+       connectorname="A2"
+       r="0.66909724"
+       cy="77.077911"
+       gorn="0.113"
+       cx="51.475029"
+       style="fill:none;stroke:#9a916c;stroke-width:0.3382"
+       id="connector31pin" />
+    <circle
+       connectorname="A1"
+       r="0.66909724"
+       cy="77.077911"
+       gorn="0.114"
+       cx="48.93504"
+       style="fill:none;stroke:#9a916c;stroke-width:0.3382"
+       id="connector32pin" />
+    <circle
+       connectorname="A0"
+       r="0.66909724"
+       cy="77.077911"
+       gorn="0.115"
+       cx="46.395046"
+       style="fill:none;stroke:#9a916c;stroke-width:0.3382"
+       id="connector33pin" />
+    <circle
+       connectorname="GND"
+       r="0.66909724"
+       cy="77.077911"
+       gorn="0.116"
+       cx="43.855057"
+       style="fill:none;stroke:#9a916c;stroke-width:0.3382"
+       id="connector34pin" />
+    <circle
+       connectorname="AREF"
+       r="0.66909724"
+       cy="77.077911"
+       gorn="0.117"
+       cx="41.315063"
+       style="fill:none;stroke:#9a916c;stroke-width:0.3382"
+       id="connector35pin" />
+    <circle
+       connectorname="+3V3"
+       r="0.66909724"
+       cy="77.077911"
+       gorn="0.118"
+       cx="38.775074"
+       style="fill:none;stroke:#9a916c;stroke-width:0.3382"
+       id="connector36pin" />
+    <circle
+       connectorname="!RESET"
+       r="0.66909724"
+       cy="77.077911"
+       gorn="0.119"
+       cx="36.235081"
+       style="fill:none;stroke:#9a916c;stroke-width:0.3382"
+       id="connector37pin" />
+    <circle
+       connectorname="VBAT"
+       r="0.66909724"
+       cy="56.757977"
+       gorn="0.120"
+       cx="46.395046"
+       style="fill:none;stroke:#9a916c;stroke-width:0.3382"
+       id="connector38pin" />
+    <circle
+       connectorname="EN"
+       r="0.66909724"
+       cy="56.757977"
+       gorn="0.121"
+       cx="48.93504"
+       style="fill:none;stroke:#9a916c;stroke-width:0.3382"
+       id="connector39pin" />
+    <circle
+       connectorname="VBUS"
+       r="0.66909724"
+       cy="56.757977"
+       gorn="0.122"
+       cx="51.475029"
+       style="fill:none;stroke:#9a916c;stroke-width:0.3382"
+       id="connector40pin" />
+    <circle
+       connectorname="D13"
+       r="0.66909724"
+       cy="56.757977"
+       gorn="0.123"
+       cx="54.015022"
+       style="fill:none;stroke:#9a916c;stroke-width:0.3382"
+       id="connector41pin" />
+    <circle
+       connectorname="D12"
+       r="0.66909724"
+       cy="56.757977"
+       gorn="0.124"
+       cx="56.554943"
+       style="fill:none;stroke:#9a916c;stroke-width:0.3382"
+       id="connector42pin" />
+    <circle
+       connectorname="D11"
+       r="0.66909724"
+       cy="56.757977"
+       gorn="0.125"
+       cx="59.094933"
+       style="fill:none;stroke:#9a916c;stroke-width:0.3382"
+       id="connector43pin" />
+    <circle
+       connectorname="D10"
+       r="0.66909724"
+       cy="56.757977"
+       gorn="0.126"
+       cx="61.634926"
+       style="fill:none;stroke:#9a916c;stroke-width:0.3382"
+       id="connector44pin" />
+    <circle
+       connectorname="D9"
+       r="0.66909724"
+       cy="56.757977"
+       gorn="0.127"
+       cx="64.174919"
+       style="fill:none;stroke:#9a916c;stroke-width:0.3382"
+       id="connector45pin" />
+    <circle
+       connectorname="D6"
+       r="0.66909724"
+       cy="56.757977"
+       gorn="0.128"
+       cx="66.715088"
+       style="fill:none;stroke:#9a916c;stroke-width:0.3382"
+       id="connector46pin" />
+    <circle
+       connectorname="D5"
+       r="0.66909724"
+       cy="56.757977"
+       gorn="0.129"
+       cx="69.255074"
+       style="fill:none;stroke:#9a916c;stroke-width:0.3382"
+       id="connector47pin" />
+    <circle
+       connectorname="SCL"
+       r="0.66909724"
+       cy="56.757977"
+       gorn="0.130"
+       cx="71.795067"
+       style="fill:none;stroke:#9a916c;stroke-width:0.3382"
+       id="connector48pin" />
+    <circle
+       connectorname="SDA"
+       r="0.66909724"
+       cy="56.757977"
+       gorn="0.131"
+       cx="74.33506"
+       style="fill:none;stroke:#9a916c;stroke-width:0.3382"
+       id="connector49pin" />
+    <circle
+       connectorname="P$1"
+       r="1.503996"
+       cy="58.027973"
+       gorn="0.199"
+       cx="32.425106"
+       style="fill:none;stroke:#9a916c;stroke-width:0.507998"
+       id="connector117pin" />
+    <circle
+       connectorname="P$1"
+       r="1.503996"
+       cy="75.807915"
+       gorn="0.200"
+       cx="32.425106"
+       style="fill:none;stroke:#9a916c;stroke-width:0.507998"
+       id="connector118pin" />
+    <circle
+       connectorname="GND"
+       r="0.52699888"
+       cy="63.617962"
+       gorn="0.225"
+       cx="35.230091"
+       style="fill:none;stroke:#9a916c;stroke-width:0.253999"
+       id="connector143pin" />
+    <circle
+       connectorname="GND"
+       r="0.52699888"
+       cy="70.217918"
+       gorn="0.227"
+       cx="35.230091"
+       style="fill:none;stroke:#9a916c;stroke-width:0.253999"
+       id="connector144pin" />
+    <circle
+       connectorname="GND"
+       r="0.84999758"
+       cy="63.317963"
+       gorn="0.229"
+       cx="32.430111"
+       style="fill:none;stroke:#9a916c;stroke-width:0.799999"
+       id="connector145pin" />
+    <rect
+       y="62.467949"
+       height="1.6999952"
+       gorn="0.230"
+       x="31.58012"
+       style="fill:none;stroke:#9a916c;stroke-width:0.799999"
+       width="1.6999952"
+       id="rect1062" />
+    <circle
+       connectorname="GND"
+       r="0.84999758"
+       cy="70.517921"
+       gorn="0.231"
+       cx="32.430111"
+       style="fill:none;stroke:#9a916c;stroke-width:0.799999"
+       id="connector146pin" />
+    <rect
+       y="69.667938"
+       height="1.6999952"
+       gorn="0.232"
+       x="31.58012"
+       style="fill:none;stroke:#9a916c;stroke-width:0.799999"
+       width="1.6999952"
+       id="rect1065" />
+    <circle
+       connectorname="+3V3"
+       r="0.75759834"
+       cy="59.932964"
+       gorn="0.234"
+       cx="67.985085"
+       style="fill:none;stroke:#9a916c;stroke-width:0.4152"
+       id="connector148pin" />
+    <circle
+       connectorname="+3V3"
+       r="0.75759834"
+       cy="59.932964"
+       gorn="0.235"
+       cx="70.52507"
+       style="fill:none;stroke:#9a916c;stroke-width:0.4152"
+       id="connector149pin" />
+    <circle
+       connectorname="+3V3"
+       r="0.75759834"
+       cy="59.932964"
+       gorn="0.236"
+       cx="73.065063"
+       style="fill:none;stroke:#9a916c;stroke-width:0.4152"
+       id="connector150pin" />
+    <circle
+       connectorname="+3V3"
+       r="0.75759834"
+       cy="59.932964"
+       gorn="0.237"
+       cx="75.605057"
+       style="fill:none;stroke:#9a916c;stroke-width:0.4152"
+       id="connector151pin" />
+    <circle
+       connectorname="GND"
+       r="0.75759834"
+       cy="73.902916"
+       gorn="0.238"
+       cx="67.985085"
+       style="fill:none;stroke:#9a916c;stroke-width:0.4152"
+       id="connector152pin" />
+    <circle
+       connectorname="GND"
+       r="0.75759834"
+       cy="73.902916"
+       gorn="0.239"
+       cx="70.52507"
+       style="fill:none;stroke:#9a916c;stroke-width:0.4152"
+       id="connector153pin" />
+    <circle
+       connectorname="GND"
+       r="0.75759834"
+       cy="73.902916"
+       gorn="0.240"
+       cx="73.065063"
+       style="fill:none;stroke:#9a916c;stroke-width:0.4152"
+       id="connector154pin" />
+    <circle
+       connectorname="GND"
+       r="0.75759834"
+       cy="73.902916"
+       gorn="0.241"
+       cx="75.605057"
+       style="fill:none;stroke:#9a916c;stroke-width:0.4152"
+       id="connector155pin" />
+    <circle
+       connectorname="N$6"
+       r="0.78259605"
+       cy="69.457932"
+       gorn="0.242"
+       cx="61.634926"
+       style="fill:none;stroke:#9a916c;stroke-width:0.365201"
+       id="connector156pin" />
+    <circle
+       connectorname="N$8"
+       r="0.78259605"
+       cy="61.837959"
+       gorn="0.243"
+       cx="74.33506"
+       style="fill:none;stroke:#9a916c;stroke-width:0.365201"
+       id="connector157pin" />
+    <circle
+       connectorname="N$9"
+       r="0.78259605"
+       cy="64.377953"
+       gorn="0.244"
+       cx="74.33506"
+       style="fill:none;stroke:#9a916c;stroke-width:0.365201"
+       id="connector158pin" />
+    <circle
+       connectorname="N$10"
+       r="0.78259605"
+       cy="64.377953"
+       gorn="0.245"
+       cx="76.875053"
+       style="fill:none;stroke:#9a916c;stroke-width:0.365201"
+       id="connector159pin" />
+    <circle
+       connectorname="N$11"
+       r="0.78259605"
+       cy="61.837959"
+       gorn="0.246"
+       cx="76.875053"
+       style="fill:none;stroke:#9a916c;stroke-width:0.365201"
+       id="connector160pin" />
+    <circle
+       connectorname="N$12"
+       r="0.78259605"
+       cy="61.837959"
+       gorn="0.247"
+       cx="79.415047"
+       style="fill:none;stroke:#9a916c;stroke-width:0.365201"
+       id="connector161pin" />
+    <circle
+       connectorname="N$13"
+       r="0.78259605"
+       cy="64.377953"
+       gorn="0.248"
+       cx="79.415047"
+       style="fill:none;stroke:#9a916c;stroke-width:0.365201"
+       id="connector162pin" />
+    <circle
+       connectorname="N$14"
+       r="0.78259605"
+       cy="66.917946"
+       gorn="0.249"
+       cx="79.415047"
+       style="fill:none;stroke:#9a916c;stroke-width:0.365201"
+       id="connector163pin" />
+    <circle
+       connectorname="N$15"
+       r="0.78259605"
+       cy="69.457932"
+       gorn="0.250"
+       cx="79.415047"
+       style="fill:none;stroke:#9a916c;stroke-width:0.365201"
+       id="connector164pin" />
+    <circle
+       connectorname="N$16"
+       r="0.78259605"
+       cy="69.457932"
+       gorn="0.251"
+       cx="76.875053"
+       style="fill:none;stroke:#9a916c;stroke-width:0.365201"
+       id="connector165pin" />
+    <circle
+       connectorname="N$17"
+       r="0.78259605"
+       cy="66.917946"
+       gorn="0.252"
+       cx="76.875053"
+       style="fill:none;stroke:#9a916c;stroke-width:0.365201"
+       id="connector166pin" />
+    <circle
+       connectorname="N$18"
+       r="0.78259605"
+       cy="66.917946"
+       gorn="0.253"
+       cx="74.33506"
+       style="fill:none;stroke:#9a916c;stroke-width:0.365201"
+       id="connector167pin" />
+    <circle
+       connectorname="N$19"
+       r="0.78259605"
+       cy="69.457932"
+       gorn="0.254"
+       cx="74.33506"
+       style="fill:none;stroke:#9a916c;stroke-width:0.365201"
+       id="connector168pin" />
+    <circle
+       connectorname="N$20"
+       r="0.78259605"
+       cy="71.997925"
+       gorn="0.255"
+       cx="74.33506"
+       style="fill:none;stroke:#9a916c;stroke-width:0.365201"
+       id="connector169pin" />
+    <circle
+       connectorname="N$21"
+       r="0.78259605"
+       cy="71.997925"
+       gorn="0.256"
+       cx="76.875053"
+       style="fill:none;stroke:#9a916c;stroke-width:0.365201"
+       id="connector170pin" />
+    <circle
+       connectorname="N$22"
+       r="0.78259605"
+       cy="71.997925"
+       gorn="0.257"
+       cx="61.634926"
+       style="fill:none;stroke:#9a916c;stroke-width:0.365201"
+       id="connector171pin" />
+    <circle
+       connectorname="N$24"
+       r="0.78259605"
+       cy="71.997925"
+       gorn="0.258"
+       cx="71.795067"
+       style="fill:none;stroke:#9a916c;stroke-width:0.365201"
+       id="connector172pin" />
+    <circle
+       connectorname="N$25"
+       r="0.78259605"
+       cy="69.457932"
+       gorn="0.259"
+       cx="71.795067"
+       style="fill:none;stroke:#9a916c;stroke-width:0.365201"
+       id="connector173pin" />
+    <circle
+       connectorname="N$26"
+       r="0.78259605"
+       cy="66.917946"
+       gorn="0.260"
+       cx="71.795067"
+       style="fill:none;stroke:#9a916c;stroke-width:0.365201"
+       id="connector174pin" />
+    <circle
+       connectorname="N$27"
+       r="0.78259605"
+       cy="64.377953"
+       gorn="0.261"
+       cx="71.795067"
+       style="fill:none;stroke:#9a916c;stroke-width:0.365201"
+       id="connector175pin" />
+    <circle
+       connectorname="N$28"
+       r="0.78259605"
+       cy="61.837959"
+       gorn="0.262"
+       cx="71.795067"
+       style="fill:none;stroke:#9a916c;stroke-width:0.365201"
+       id="connector176pin" />
+    <circle
+       connectorname="N$30"
+       r="0.78259605"
+       cy="61.837959"
+       gorn="0.263"
+       cx="69.255074"
+       style="fill:none;stroke:#9a916c;stroke-width:0.365201"
+       id="connector177pin" />
+    <circle
+       connectorname="N$31"
+       r="0.78259605"
+       cy="64.377953"
+       gorn="0.264"
+       cx="69.255074"
+       style="fill:none;stroke:#9a916c;stroke-width:0.365201"
+       id="connector178pin" />
+    <circle
+       connectorname="N$32"
+       r="0.78259605"
+       cy="66.917946"
+       gorn="0.265"
+       cx="69.255074"
+       style="fill:none;stroke:#9a916c;stroke-width:0.365201"
+       id="connector179pin" />
+    <circle
+       connectorname="N$33"
+       r="0.78259605"
+       cy="69.457932"
+       gorn="0.266"
+       cx="69.255074"
+       style="fill:none;stroke:#9a916c;stroke-width:0.365201"
+       id="connector180pin" />
+    <circle
+       connectorname="N$34"
+       r="0.78259605"
+       cy="71.997925"
+       gorn="0.267"
+       cx="69.255074"
+       style="fill:none;stroke:#9a916c;stroke-width:0.365201"
+       id="connector181pin" />
+    <circle
+       connectorname="N$35"
+       r="0.78259605"
+       cy="71.997925"
+       gorn="0.268"
+       cx="66.715088"
+       style="fill:none;stroke:#9a916c;stroke-width:0.365201"
+       id="connector182pin" />
+    <circle
+       connectorname="N$36"
+       r="0.78259605"
+       cy="69.457932"
+       gorn="0.269"
+       cx="66.715088"
+       style="fill:none;stroke:#9a916c;stroke-width:0.365201"
+       id="connector183pin" />
+    <circle
+       connectorname="N$37"
+       r="0.78259605"
+       cy="66.917946"
+       gorn="0.270"
+       cx="66.715088"
+       style="fill:none;stroke:#9a916c;stroke-width:0.365201"
+       id="connector184pin" />
+    <circle
+       connectorname="N$38"
+       r="0.78259605"
+       cy="64.377953"
+       gorn="0.271"
+       cx="66.715088"
+       style="fill:none;stroke:#9a916c;stroke-width:0.365201"
+       id="connector185pin" />
+    <circle
+       connectorname="N$39"
+       r="0.78259605"
+       cy="61.837959"
+       gorn="0.272"
+       cx="66.715088"
+       style="fill:none;stroke:#9a916c;stroke-width:0.365201"
+       id="connector186pin" />
+    <circle
+       connectorname="N$40"
+       r="0.78259605"
+       cy="61.837959"
+       gorn="0.273"
+       cx="64.174919"
+       style="fill:none;stroke:#9a916c;stroke-width:0.365201"
+       id="connector187pin" />
+    <circle
+       connectorname="N$41"
+       r="0.78259605"
+       cy="64.377953"
+       gorn="0.274"
+       cx="64.174919"
+       style="fill:none;stroke:#9a916c;stroke-width:0.365201"
+       id="connector188pin" />
+    <circle
+       connectorname="N$42"
+       r="0.78259605"
+       cy="66.917946"
+       gorn="0.275"
+       cx="64.174919"
+       style="fill:none;stroke:#9a916c;stroke-width:0.365201"
+       id="connector189pin" />
+    <circle
+       connectorname="N$43"
+       r="0.78259605"
+       cy="69.457932"
+       gorn="0.276"
+       cx="64.174919"
+       style="fill:none;stroke:#9a916c;stroke-width:0.365201"
+       id="connector190pin" />
+    <circle
+       connectorname="N$44"
+       r="0.78259605"
+       cy="71.997925"
+       gorn="0.277"
+       cx="64.174919"
+       style="fill:none;stroke:#9a916c;stroke-width:0.365201"
+       id="connector191pin" />
+    <circle
+       connectorname="N$45"
+       r="0.78259605"
+       cy="71.997925"
+       gorn="0.278"
+       cx="79.415047"
+       style="fill:none;stroke:#9a916c;stroke-width:0.365201"
+       id="connector192pin" />
+    <circle
+       connectorname="N$46"
+       r="0.78259605"
+       cy="64.377953"
+       gorn="0.279"
+       cx="61.634926"
+       style="fill:none;stroke:#9a916c;stroke-width:0.365201"
+       id="connector193pin" />
+    <circle
+       connectorname="N$47"
+       r="0.78259605"
+       cy="66.917946"
+       gorn="0.280"
+       cx="61.634926"
+       style="fill:none;stroke:#9a916c;stroke-width:0.365201"
+       id="connector194pin" />
+    <circle
+       connectorname="N$48"
+       r="0.78259605"
+       cy="61.837959"
+       gorn="0.281"
+       cx="61.634926"
+       style="fill:none;stroke:#9a916c;stroke-width:0.365201"
+       id="connector195pin" />
+  </g>
+</svg>
