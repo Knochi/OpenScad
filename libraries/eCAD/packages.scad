@@ -1,8 +1,6 @@
 $fn=50;
 fudge=0.1;
 
-
-
 translate([-10,0,0]) !TRACO();
 SMDpassive("1210",label="000");
 translate([4,0,0]) SOT23(22,label="SOT23");
@@ -18,7 +16,7 @@ translate([45,0,0]) SMF();
 translate([50,0,0]) sumidaCR43();
 translate([57,0,0]) TY_6028();
 
-!LGA8();
+*LGA8();
 module LGA8(){
   //XTX LGA-8 package
   //https://www.lcsc.com/product-detail/FLASH_XTX-XTSD01GLGEAG_C558837.html
