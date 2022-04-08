@@ -9,7 +9,11 @@ fudge=0.1;
 
 
 /* [Select] */
-export= "PDUUAT16"; //["PDUUAT16","ACT1210","SumidaCR43","TY6028"]
+export= "none"; //["PDUUAT","ACT1210","SumidaCR43","TY6028","none"]
+
+/* [configure] */
+PDUUATseries= "UU16"; //["UU9.8","UU10.5","UU16"]
+
 
 /* [Hidden] */
 // -- Kicad diffuse colors --
@@ -54,8 +58,8 @@ pcbBlue=            [0.07,  0.12,   0.3];
 FR4darkCol=         [0.2,   0.17,   0.087]; //?
 FR4Col=             [0.43,  0.46,   0.295]; //?
 
-if (export == "PDUUAT16")
-    !PDUU(false);
+if (export == "PDUUAT")
+    !PDUU(PDUUATseries, false);
 else if (export == "ACT1210")
     !ACT1210();
 else if (export == "SumidaCR43")
@@ -66,32 +70,45 @@ else
     echo("Nothing to render!")
 
 // --- Inductors ---
-*PDUU(false);
-module PDUU(center=true){
+*PDUU("UU9.8",center=false);
+module PDUU(series="UU16", center=true){
   //https://datasheet.lcsc.com/lcsc/2201121530_PROD-Tech-PDUUAT16-503MLN_C2932169.pdf
-  //Series UU16
-  
 
-  D=0.7;
-  D1=10.5; //pin distance y
-  D2=13.5; //pin distance x
-  L=4;
-  A=22; //total width (incl. metal clamp)
-  B=20; //total body deep
-  C=28.5; //total Height
+  //Series
+  //         0    1    2    3   4    5    6
+  //         A,   B,   C,   D,  D1,  D2,  L 
+  UU98 =    [17.0,12.0,17.0,0.6, 7.0, 8.0,4.0];
+  UU105 =   [19.5,18.0,23.0,0.7,10.5,13.5,4.0];
+  UU16 =    [22.0,20.0,28.5,0.7,10.5,13.5,4.0];
+  /*
+  * A: total width (incl. metal clamp)
+  * B: total body deep
+  * C: total Height
+  * D: pin Diameter
+  * D1: pin distance y
+  * D2: pin distance x
+  * L: pin Length
+  */
+
+  dims= (series=="UU16")    ? UU16 :
+        (series=="UU10.5")  ? UU105 :
+        (series=="UU9.8")   ? UU98 :
+        UU16; //default
+
+
   sprtWdth=1.5; //thickness of separators
   coilFillFact=0.8; //
 
   //pin1 or center
-  cntrOffset = (center) ? [0,0,0] : [D2/2,-D1/2,0];
+  cntrOffset = (center) ? [0,0,0] : [dims[5]/2,-dims[4]/2,0];
 
   //core/coil
-  coreThck=((A-1)-D2)/2; //thickness from overall width and pin distance
-  coreDims=[A-1,coreThck,(C+coreThck)/2]; //iron core 
+  coreThck=((dims[0]-1)-dims[5])/2; //thickness from overall width and pin distance
+  coreDims=[dims[0]-1,coreThck,(dims[2]+coreThck)/2]; //iron core 
   coreInnerDims=[coreDims.x-coreThck*2,coreDims.y,coreDims.z-coreThck*2]; //innerDims from coreDims and thick
   coreChmf=0.3; //chamfering of the core
-  corezOffset=(C-coreThck)/2;
-  sprtrDims=[sprtWdth,B,coreInnerDims.z*2+coreThck*2]; //separator Dimensions
+  corezOffset=(dims[2]-coreThck)/2;
+  sprtrDims=[sprtWdth,dims[1],coreInnerDims.z*2+coreThck*2]; //separator Dimensions
   sprtrRad=3; //radius of separator plates
   coilDims=[(coreInnerDims.x-3*sprtrDims.x)/2,9];
   
@@ -99,7 +116,7 @@ module PDUU(center=true){
   // pins
   translate(cntrOffset){
     for (ix=[-1,1],iy=[-1,1])
-        color(metalGreyPinCol) translate([ix*D2/2,iy*D1/2,-L]) cylinder(d=D,h=L);
+        color(metalGreyPinCol) translate([ix*dims[5]/2,iy*dims[4]/2,-dims[6]]) cylinder(d=dims[3],h=dims[6]);
   
     // core
       translate([0,coreDims.y/2,corezOffset+coreDims.z/2]) rotate([90,0,0]){
