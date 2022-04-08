@@ -1,7 +1,7 @@
 $fn=60;
 jarDia=80;
 jarHght=80;
-beamDia=17;
+beamDia=15;
 wallThck=2;
 zSpcng=0.4; //z-spacing
 ltSpcng=0.5; //lateral spacing
@@ -12,7 +12,12 @@ screwLngth=40;
 fudge=0.1;
 
 *mirror([0,0,1]) translate([0,0,-80])jar();
-holder();
+
+//intersection(){
+  holder();
+/*  translate([0,beamDia/2-fudge,0]) rotate(-beamAng) translate([(jarDia+beamDia)/2,0,100-35/2]) rotate(beamAng)  
+    cube([beamDia+fudge,beamDia*2,35],true);
+}*/
 
 /* [Hidden] */
 // QR code data for "https://www.thingiverse.com/thing:4376943" (29 x 29)

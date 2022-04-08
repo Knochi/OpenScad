@@ -1,8 +1,18 @@
 $fn=50;
 fudge=0.1;
 
+// -- KiCAD Colors --
+metalGreyPinCol=[0.824,0.820,0.781];
+metalCopperCol=[0.7038,0.27048,0.0828];
+goldPinCol=[0.859,0.738,0.496];
+blackBodyCol=[0.148,0.145,0.145];
+greyBodyCol=[0.250,0.262,0.281];
+greenBoardCol=[0.07,0.3,0.12];
+blackBoardCol=[0.16,0.16,0.16];
+FR4darkCol=[0.2,0.17,0.087];
+FR4Col=[0.43,0.46,0.295];
 
-
+translate([-20,40,0]) boxCapacitor();
 translate([-10,0,0]) TRACO();
 SMDpassive("1210",label="000");
 translate([4,0,0]) SOT23(22,label="SOT23");
@@ -17,6 +27,7 @@ translate([40,0,0]) APA102();
 translate([45,0,0]) SMF();
 translate([50,0,0]) sumidaCR43();
 translate([57,0,0]) TY_6028();
+translate([50,20,0]) PDUU();
 
 
 // -- Kicad diffuse colors --
