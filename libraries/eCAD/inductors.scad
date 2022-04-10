@@ -9,7 +9,7 @@ fudge=0.1;
 
 
 /* [Select] */
-export= "none"; //["PDUUAT","ACT1210","SumidaCR43","TY6028","none"]
+export= "none"; //["PDUUAT","ACT1210","SumidaCR43","TY6028","none","TMPC"]
 
 /* [configure] */
 PDUUATseries= "UU16"; //["UU9.8","UU10.5","UU16"]
@@ -63,13 +63,45 @@ if (export == "PDUUAT")
 else if (export == "ACT1210")
     !ACT1210();
 else if (export == "SumidaCR43")
-    !sumidaCR43();
+  !sumidaCR43();
 else if (export == "TY6028")
-    !TY_6028();
+  !TY_6028();
+else if (export == "TMPC")
+  !boxInductor();
 else
-    echo("Nothing to render!")
+    echo("Nothing to render!");
 
 // --- Inductors ---
+boxInductor();
+module boxInductor(dims=[13.5,12.5,6.2],pads=[2.3,4.7]){
+  //e.g. https://datasheet.lcsc.com/lcsc/2009171439_TAI-TECH-TMPC1265HP-100MG-D_C305223.pdf
+  //dims=[A,B,C], pads=[D,E]
+  rad=1;
+  padOffset=(dims.x-dims.y)/2; //assuming square body
+  padThck=0.15;
+  for (mx=[0,1]){
+    mirror([mx,0,0]) translate([dims.y/2,0,0]) pad();
+  }
+  //body
+  difference(){
+    color(metalGreyCol) translate([0,0,(dims.z+padThck/2)/2]) rndRectInt([dims.y,dims.y,dims.z-padThck/2],rad,center=true);
+    for (ix=[-1,1])
+      color(metalGreyCol) translate([ix*((dims.y-pads.x)/2+padOffset),0,padThck/2]) 
+        cube([pads.x+fudge,pads.y+fudge,padThck+fudge],true);
+  } 
+
+  *pad();
+  module pad(){
+    color(metalGreyPinCol) translate([(-pads.x-padThck/2)/2+padOffset,0,padThck/2]) 
+      cube([pads.x-padThck/2,pads.y,padThck],true);
+    color(metalGreyPinCol) translate([padOffset-padThck/2,0,padThck/2]) 
+      rotate([90,0,0]) cylinder(d=padThck,h=pads.y,center=true);
+    color(metalGreyPinCol) translate([padOffset/2,0,(dims.z+padThck)/4]) 
+      cube([padOffset,pads.y,(dims.z-padThck)/2],true);
+
+  }
+}
+
 *PDUU("UU9.8",center=false);
 module PDUU(series="UU16", center=true){
   //https://datasheet.lcsc.com/lcsc/2201121530_PROD-Tech-PDUUAT16-503MLN_C2932169.pdf
