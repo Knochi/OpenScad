@@ -9,10 +9,11 @@ fudge=0.1;
 
 
 /* [Select] */
-export= "none"; //["PDUUAT","ACT1210","SumidaCR43","TY6028","none"]
+export= "CKCS"; //["PDUUAT","ACT1210","SumidaCR43","TY6028","TMPC","CKCS","none"]
 
 /* [configure] */
 PDUUATseries= "UU16"; //["UU9.8","UU10.5","UU16"]
+//CKCStype="5040"; //["3010","5040"]
 
 
 /* [Hidden] */
@@ -63,13 +64,47 @@ if (export == "PDUUAT")
 else if (export == "ACT1210")
     !ACT1210();
 else if (export == "SumidaCR43")
-    !sumidaCR43();
+  !sumidaCR43();
 else if (export == "TY6028")
-    !TY_6028();
+  !TY_6028();
+else if (export == "TMPC")
+  !boxInductor();
+else if (export == "CKCS")
+  !wwCoil();
 else
-    echo("Nothing to render!")
+    echo("Nothing to render!");
 
 // --- Inductors ---
+*boxInductor();
+module boxInductor(dims=[13.5,12.5,6.2],pads=[2.3,4.7]){
+  //e.g. TaiTech TMPC https://datasheet.lcsc.com/lcsc/2009171439_TAI-TECH-TMPC1265HP-100MG-D_C305223.pdf
+  //dims=[A,B,C], pads=[D,E]
+  rad=1;
+  padOffset=(dims.x-dims.y)/2; //assuming square body
+  padThck=0.15;
+  for (mx=[0,1]){
+    mirror([mx,0,0]) translate([dims.y/2,0,0]) pad();
+  }
+  //body
+  difference(){
+    color(metalGreyCol) translate([0,0,(dims.z+padThck/2)/2]) rndRectInt([dims.y,dims.y,dims.z-padThck/2],rad,center=true);
+    for (ix=[-1,1])
+      color(metalGreyCol) translate([ix*((dims.y-pads.x)/2+padOffset),0,padThck/2]) 
+        cube([pads.x+fudge,pads.y+fudge,padThck+fudge],true);
+  } 
+
+  *pad();
+  module pad(){
+    color(metalGreyPinCol) translate([(-pads.x-padThck/2)/2+padOffset,0,padThck/2]) 
+      cube([pads.x-padThck/2,pads.y,padThck],true);
+    color(metalGreyPinCol) translate([padOffset-padThck/2,0,padThck/2]) 
+      rotate([90,0,0]) cylinder(d=padThck,h=pads.y,center=true);
+    color(metalGreyPinCol) translate([padOffset/2,0,(dims.z+padThck)/4]) 
+      cube([padOffset,pads.y,(dims.z-padThck)/2],true);
+
+  }
+}
+
 *PDUU("UU9.8",center=false);
 module PDUU(series="UU16", center=true){
   //https://datasheet.lcsc.com/lcsc/2201121530_PROD-Tech-PDUUAT16-503MLN_C2932169.pdf
@@ -230,15 +265,75 @@ module ACT1210(rad=0.06){
 }
 
 
+wwCoil();
+module wwCoil(dims=[5,5,4],padWdth=1.7){
+  //wirewound coil with tinned contacts and octagon cap
+  //e.g. Shenzen Cenker Enterprise Series CKCS 5040 (fig.3)
+  //https://datasheet.lcsc.com/lcsc/1912111437_CENKER-CKCS5040-4-7uH-M_C354606.pdf
+  //dims=[A,B,C], padWdth=E
+
+  W=dims.x; //A
+  L=dims.y; //B
+  H=dims.z; //C
+  e=padWdth; //E
+
+  //other Dims
+  rad=0.35; //corner radius
+  chamfer=dims.y*0.25; //chamfer of octagon
+  ferrThck=1; //ferrite Thickness
+  solder=0.05; //thickness of solder
+
+  coilDia=1;
+  
+  translate([0,0,solder]){
+    //base
+    color(metalGreyCol) base();
+    //cap octagon  
+    color(metalGreyCol) translate([0,0,dims.z-ferrThck-solder]) cap();  
+  }
+  
+  //coil
+  color(metalCopperCol) translate([0,0,ferrThck+solder]) cylinder(d=dims.y*0.9,h=dims.z-ferrThck*2-solder);
+
+  //pads
+  color(metalGreyPinCol) for(ix=[-1,1]){
+    intersection(){
+      base();
+      translate([ix*(dims.x-padWdth)/2,0,solder/2]) cube([padWdth,dims.y+fudge,solder+fudge],true);
+    }
+  }
+
+  module base(offset=0){
+    hull() for (ix=[-1,1],iy=[-1,1])
+      translate([ix*(dims.x/2-rad),iy*((dims.y*0.85)/2-rad)]) 
+        cylinder(r=rad+offset,h=ferrThck);
+    cap();
+  }
+
+  *cap();
+  module cap(){
+    hull(){ 
+      for (ix=[-1,1],iy=[-1,1])
+        translate([ix*(dims.y/2-rad),iy*((dims.y-chamfer)/2-rad)])
+          cylinder(r=rad,h=ferrThck);
+      for (ix=[-1,1],iy=[-1,1])
+        translate([ix*((dims.y-chamfer)/2-rad),iy*(dims.y/2-rad)])
+          cylinder(r=rad,h=ferrThck);
+    }
+  }
+
+}
+
 *sumidaCR43();
 module sumidaCR43(){
+  
   ovDia=4.3;
   ovHght=3.2;
   coilDia=3.1;
   
   difference(){
     coil();
-    color("white") translate([0,0,3.15]) linear_extrude(0.1) text("CR43",valign="center",halign="center",size=0.8);
+    color(lightBrownLabelCol) translate([0,0,3.15]) linear_extrude(0.1) text("CR43",valign="center",halign="center",size=0.8);
   }
   
   base();
@@ -325,7 +420,7 @@ module TY_6028(){
   //base
   rad=0.35;
   baseDims=[4.35,W,0.5];
-  capDims=[[L, 5.65,0.5],[3.5,3.1,0.5]]; //outer, corners
+  capDims=[[L, 5.65,0.5],[3.5,3.1,0.5]]; //outer dims, corners
   solder=0.15;
   
   translate([0,0,solder])

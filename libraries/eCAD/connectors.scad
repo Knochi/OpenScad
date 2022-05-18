@@ -14,6 +14,48 @@
 $fn=50;
 fudge=0.1;
 
+// -- Kicad diffuse colors --
+ledAlpha=0.1;
+glassAlpha=0.39;
+metalGreyPinCol=    [0.824, 0.820,  0.781];
+metalGreyCol=       [0.298, 0.298,  0.298]; //metal Grey
+metalCopperCol=     [0.7038,0.27048,0.0828]; //metal Copper
+metalAluminiumCol=  [0.372322, 0.371574, 0.373173];
+metalBronzeCol=     [0.714, 0.4284, 0.18144];
+metalSilverCol=     [0.50754, 0.50754, 0.50754];
+resblackBodyCol=    [0.082, 0.086,  0.094]; //resistor black body
+darkGreyBodyCol=    [0.273, 0.273,  0.273]; //dark grey body
+brownBodyCol=       [0.379, 0.270,  0.215]; //brown Body
+lightBrownBodyCol=  [0.883, 0.711,  0.492]; //light brown body
+pinkBodyCol=        [0.578, 0.336,  0.352]; //pink body
+blueBodyCol=        [0.137, 0.402,  0.727]; //blue body
+greenBodyCol=       [0.340, 0.680,  0.445]; //green body
+orangeBodyCol=      [0.809, 0.426,  0.148]; //orange body
+redBodyCol=         [0.700, 0.100,  0.050]; 
+yellowBodyCol=      [0.832, 0.680,  0.066];
+whiteBodyCol=       [0.895, 0.891,  0.813];
+metalGoldPinCol=    [0.859, 0.738,  0.496];
+blackBodyCol=       [0.148, 0.145,  0.145];
+greyBodyCol=        [0.250, 0.262,  0.281];
+lightBrownLabelCol= [0.691, 0.664,  0.598];
+ledBlueCol=         [0.700, 0.100,  0.050, ledAlpha];
+ledYellowCol=       [0.100, 0.250,  0.700, ledAlpha];
+ledGreyCol=         [0.98,  0.840,  0.066, ledAlpha];
+ledWhiteCol=        [0.895, 0.891, 0.813, ledAlpha];
+ledgreyCol=         [0.27, 0.25, 0.27, ledAlpha];
+ledBlackCol=        [0.1, 0.05, 0.1];
+ledGreenCol=        [0.400, 0.700,  0.150, ledAlpha];
+glassGreyCol=       [0.400769, 0.441922, 0.459091, glassAlpha];
+glassGoldCol=       [0.566681, 0.580872, 0.580874, glassAlpha];
+glassBlueCol=       [0.000000, 0.631244, 0.748016, glassAlpha];
+glassGreenCol=      [0.000000, 0.75, 0.44, glassAlpha];
+glassOrangeCol=     [0.75, 0.44, 0.000000, glassAlpha];
+pcbGreenCol=        [0.07,  0.3,    0.12]; //pcb green
+pcbBlackCol=        [0.16,  0.16,   0.16]; //pcb black
+pcbBlue=            [0.07,  0.12,   0.3];
+FR4darkCol=         [0.2,   0.17,   0.087]; //?
+FR4Col=             [0.43,  0.46,   0.295]; //?
+
 
 translate([-30,0,0]) XH(2);
 translate([-15,0,0]) mUSB(false);
@@ -125,6 +167,55 @@ module M411P(isMale=true){
  }
 }
 
+*uSDCardOpen();
+module uSDCardOpen(){
+//molex 151129-0001 (obsolete)
+  gap=0.08; // gap unde
+  bdyDims=[11.5,5.7,1.4];
+  termDims=[0.3,2.86,0.65+bdyDims.z-gap]; //terminal
+  pin1Offset=[-2.45,3.55,gap]; //pin1 offset from bottom right
+  padDims=[0.24,0.6,0.15];
+  pitch=1.1;
+  slotDims=[0.42,3.55,bdyDims.z];
+  //right pads
+  rPadDims=[0.25,0.6,0.15];
+  rPadDist=0.6;
+  rPadPos=[6.1-rPadDims.x/2,bdyDims.y/2-2.15,0]; //from center
+  //fitting nail
+  ftPadDims=[0.15,0.5,1];
+  ftPadPos=[-5.33,bdyDims.y/2-1.32,0]; //from center
+  //switch
+  swPadDims=[0.6,0.5,0.15];
+  swPadPos=[3.25+swPadDims.x/2,bdyDims.y/2-0.45,0];
+
+  poly=[[-bdyDims.y/2,0],[bdyDims.y/2,0],[bdyDims.y/2,bdyDims.z],
+        [-bdyDims.y/2+0.5,bdyDims.z],[-bdyDims.y/2,bdyDims.z-0.3]];
+
+  //translate([0,0,bdyDims.z/2]) cube(bdyDims,true);
+  difference(){
+  color(blackBodyCol) translate([0,0,gap]) rotate([90,0,90]) linear_extrude(bdyDims.x, center=true) polygon(poly);
+  for (ix=[0:7]){
+    color(blackBodyCol) 
+      translate([bdyDims.x/2+pin1Offset.x+(termDims.x-slotDims.x)/2,-bdyDims.y/2,0]+[-ix*pitch,0,0]+[0,-fudge,-fudge]) cube(slotDims+[0,fudge,fudge*2]);
+  }
+  }
+  //terminals and pads
+  for (ix=[0:7])
+    color(metalGoldPinCol) translate([-ix*pitch,0,0]+[bdyDims.x/2,-bdyDims.y/2,0]){
+      translate(pin1Offset+[0,-termDims.y,0]) cube(termDims);
+      translate([(termDims.x-padDims.x)/2+pin1Offset.x,0.5,0]) cube(padDims);
+  }
+  //right pads
+  for (iy=[-1,1])
+    color(metalGoldPinCol) 
+      translate(rPadPos+[0,iy*(rPadDims.y+rPadDist)/2,rPadDims.z/2]) cube(rPadDims,true);
+
+  //fitting nail
+  color(metalGoldPinCol) translate(ftPadPos+[0,0,ftPadDims.z/2]) cube(ftPadDims,true);
+
+  //switch
+  color(metalGoldPinCol) translate(swPadPos+[0,0,swPadDims.z/2]) cube(swPadDims,true);
+}
 
 *uSDCard();
 module uSDCard(showCard=true){

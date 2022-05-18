@@ -7,7 +7,13 @@
 $fn=50;
 
 /* [Select] */
-export= "PDUUAT16"; //["PDUUAT16","ACT1210","SumidaCR43","TY6028"]
+export= "C32"; //["PDUUAT16","ACT1210","SumidaCR43","TY6028","C32","none"]
+
+/* [Variants] */
+capSize=[26.5,14.5,29.5];
+capPitch=[22.5,0];
+capLeadDia=0.8;
+capLeadLngth=4.5;
 
 /* [Hidden] */
 fudge=0.1;
@@ -54,34 +60,43 @@ FR4darkCol=         [0.2,   0.17,   0.087]; //?
 FR4Col=             [0.43,  0.46,   0.295]; //?
 
 if (export == "PDUUAT16")
-    !PDUU(false);
+  !PDUU(false);
 else if (export == "ACT1210")
-    !ACT1210();
+  !ACT1210();
 else if (export == "SumidaCR43")
-    !sumidaCR43();
+  !sumidaCR43();
 else if (export == "TY6028")
-    !TY_6028();
+  !TY_6028();
+else if (export == "C32")
+  !boxCapacitor(size=capSize, leads=[capLeadDia,capLeadLngth], pitch=capPitch);
 else
-    echo("Nothing to render!")
+  echo("Nothing to render!")
 
 *boxCapacitor();
-module boxCapacitor(center=false){
+module boxCapacitor(size=[57,35,50], leads=[1.2,5.5], pitch=[52.5,20.3], center=false){
   //e.g. https://www.alfatec.de/fileadmin/Webdata/Datenblaetter/Faratronic/C3D_Specification_alfatec.pdf
   // C3D3A406KM0AC00, 4 pin DC, lead length 5.5mm, 
-  pitch=52.5;
-  W=57;
-  H=50;
-  T=35;
-  P=52.5;
-  b=20.3;
-  d=1.2;
-  l=5.5; //lead length
-  cntrOffset = (center) ? [0,0,0] : [pitch/2,-b/2,0];
+  // size=[W,T,H], leads=[d,C], pitch=[P,b] (set b to zero for 2pin)
 
+  //pitch=52.5;
+  rad=1;
+  cntrOffset = (center) ? [0,0,0] : [pitch.x/2,-pitch.y/2,0];
+  iyPins= pitch[1] ? [-1,1] : [0]; //if pitch[1] not zero --> four pin
   translate(cntrOffset){
-    color(greyBodyCol) translate([0,0,H/2]) cube([W,T,H],true);
-    for (ix=[-1,1],iy=[-1,1])
-      color(metalGreyPinCol) translate([ix*P/2,iy*b/2,-l]) cylinder(d=d,h=l);
+    /* rounded corners, problems with import into freecad
+    color(greyBodyCol) linear_extrude(size.z-rad) hull()
+      for (ix=[-1,1],iy=[-1,1]) translate([ix*(size.x/2-rad),iy*(size.y/2-rad),0]) circle(rad); 
+    color(greyBodyCol) for (ix=[-1,1],iy=[-1,1]){
+      translate([ix*(size.x/2-rad),iy*(size.y/2-rad),size.z-rad]) sphere(rad);
+      if (iy==1) translate([ix*(size.x/2-rad),0,size.z-rad]) rotate([90,0,0]) cylinder(r=rad,h=size.y-rad*2,center=true);
+      if (ix==1) translate([0,iy*(size.y/2-rad),size.z-rad]) rotate([0,90,0]) cylinder(r=rad,h=size.x-rad*2,center=true);
+    }
+    color(greyBodyCol) translate([0,0,size.z-rad]) cube([size.x-rad*2,size.y-rad*2,rad*2],true);
+    */
+    color(greyBodyCol) translate([0,0,size.z/2]) cube(size,true);
+    for (ix=[-1,1],iy=iyPins)
+      color(metalGreyPinCol) translate([ix*pitch.x/2,iy*pitch.y/2,-leads[1]]) 
+        cylinder(d=leads[0],h=leads[1]);
   }
 
 }
