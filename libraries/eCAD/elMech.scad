@@ -1,3 +1,48 @@
+
+// KiCAD Colors
+ledAlpha=0.1;
+glassAlpha=0.39;
+
+metalGreyPinCol=    [0.824, 0.820,  0.781];
+metalGreyCol=       [0.298, 0.298,  0.298]; //metal Grey
+metalCopperCol=     [0.7038,0.27048,0.0828]; //metal Copper
+metalAluminiumCol=  [0.372322, 0.371574, 0.373173];
+metalBronzeCol=     [0.714, 0.4284, 0.18144];
+metalSilverCol=     [0.50754, 0.50754, 0.50754];
+resblackBodyCol=    [0.082, 0.086,  0.094]; //resistor black body
+darkGreyBodyCol=    [0.273, 0.273,  0.273]; //dark grey body
+brownBodyCol=       [0.379, 0.270,  0.215]; //brown Body
+lightBrownBodyCol=  [0.883, 0.711,  0.492]; //light brown body
+pinkBodyCol=        [0.578, 0.336,  0.352]; //pink body
+blueBodyCol=        [0.137, 0.402,  0.727]; //blue body
+greenBodyCol=       [0.340, 0.680,  0.445]; //green body
+orangeBodyCol=      [0.809, 0.426,  0.148]; //orange body
+redBodyCol=         [0.700, 0.100,  0.050]; 
+yellowBodyCol=      [0.832, 0.680,  0.066];
+whiteBodyCol=       [0.895, 0.891,  0.813];
+metalGoldPinCol=    [0.859, 0.738,  0.496];
+blackBodyCol=       [0.148, 0.145,  0.145];
+greyBodyCol=        [0.250, 0.262,  0.281];
+lightBrownLabelCol= [0.691, 0.664,  0.598];
+ledBlueCol=         [0.700, 0.100,  0.050, ledAlpha];
+ledYellowCol=       [0.100, 0.250,  0.700, ledAlpha];
+ledGreyCol=         [0.98,  0.840,  0.066, ledAlpha];
+ledWhiteCol=        [0.895, 0.891, 0.813, ledAlpha];
+ledgreyCol=         [0.27, 0.25, 0.27, ledAlpha];
+ledBlackCol=        [0.1, 0.05, 0.1];
+ledGreenCol=        [0.400, 0.700,  0.150, ledAlpha];
+glassGreyCol=       [0.400769, 0.441922, 0.459091, glassAlpha];
+glassGoldCol=       [0.566681, 0.580872, 0.580874, glassAlpha];
+glassBlueCol=       [0.000000, 0.631244, 0.748016, glassAlpha];
+glassGreenCol=      [0.000000, 0.75, 0.44, glassAlpha];
+glassOrangeCol=     [0.75, 0.44, 0.000000, glassAlpha];
+pcbGreenCol=        [0.07,  0.3,    0.12]; //pcb green
+pcbBlackCol=        [0.16,  0.16,   0.16]; //pcb black
+pcbBlue=            [0.07,  0.12,   0.3];
+FR4darkCol=         [0.2,   0.17,   0.087]; //?
+FR4Col=             [0.43,  0.46,   0.295]; //?
+
+
 $fn=20;
 fudge=0.1;
 
@@ -13,9 +58,10 @@ translate([-40,0,0]) AirValve();
 translate([-80,0,0]) AirPump();
 translate([-140,0,0]) SSR();
 translate([120,0,0]) roundRocker20();
-#translate([120,0,0]) roundRocker20(true);
+translate([120,0,0]) roundRocker20(true);
 translate([140,0,0]) slideSwitch();
 translate([180,0,0]) arcadeButton();
+translate([200,0,0]) CUI_TS02();
 
 
 
@@ -134,7 +180,7 @@ module keyPadPhone(bdyDims=[51,64,8.5],keyCnt=[3,4],cut=false){
   }
 }
 
-!CUI_TS02();
+*CUI_TS02();
 module CUI_TS02(height=11, longTerminals=false){
   /*https://www.cuidevices.com/product/resource/ts02.pdf
   available heights (SCR and LCR): 
@@ -666,6 +712,48 @@ module roundRocker20(cut=false){
     
 }
 
+!toggleSwitch();
+module toggleSwitch(){
+  //e.g. TAIWAY Series 100
+  //https://www.taiway.com/resource/annexes/product_items/25/6fdf503e5e83543e58a637ede7a46d6b.pdf
+
+  /*100-DP1-T200B1M6QE --> 
+      DP1: On-None-On (DPDT)
+      T2: 5.4mm Actuator, actDims=[2.7,8,1.85], actAng=12.5, pivot=3.75
+      0: no Cap, 
+      0: no Color, 
+      B1: 9mm keyway bushing,
+      M6: Right angle orientation,
+      Q: Silver contacts
+      E: Epoxy seal
+  */ 
+
+  // T1: 10.4mm Actuator, actDims=[3,12.95,1.85], actAng=14.5, pivot=3.75
+
+  cPinCS=[1.26,0.75]; //square pin cross-section
+  cPitch=[4.7,3.81]; //contact pins pitch
+  fPitch=5.08; //fixation pins pitch
+  bodyDims=[12.7,10.2,11.4];
+  bodyOffset=12.7;
+  bshDims=[6.1,9]; //bushing Dia, length
+  keyWay=[1,0.6]; //keyway dims
+  actDims=[2.7,8,1.85]; //actuator top dia, total length, bottom dia (measured from pdf)
+  actAng=12.5; //actuator angle
+  actPivot=3.75; //actuator pivot point relative to bushing 
+
+  //body
+  color(redBodyCol) translate([0,bodyOffset-bodyDims.y/2,bodyDims.z/2]) 
+    cube(bodyDims,true);
+  //bushing
+  color(metalSilverCol) translate([0,bodyOffset,bodyDims.z/2]) 
+    rotate([-90,0,0]) cylinder(d=bshDims[0],h=bshDims[1]);
+  //Actuator
+  color(metalSilverCol) translate([0,bodyOffset+bshDims[1]-actPivot,bodyDims.z/2]) rotate([-90,0,-actAng]) hull(){
+    sphere(d=actDims[2]);
+    translate([0,0,actDims[1]]) sphere(d=actDims[0]);
+  }
+}
+
 *slideSwitch();
 // APEM 25136 https://www.reichelt.de/index.html?ACTION=7&LA=3&OPEN=0&INDEX=0&FILENAME=C200%2F05-SERIE_25000N-D.pdf
 module slideSwitch(){
@@ -690,7 +778,7 @@ module subMinSlideSwitch(){
 
 
 
-!arcadeButton();
+*arcadeButton();
 module arcadeButton(panelThck=3,col="red"){
   //https://www.adafruit.com/product/3433
 
