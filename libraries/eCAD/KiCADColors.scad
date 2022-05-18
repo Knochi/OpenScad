@@ -83,7 +83,7 @@ FR4darkCol,
 FR4Col
 ];
 
-testColors();
+*testColors();
 module testColors(){
     cubeSize=10;
     cubeDist=5;

@@ -17,7 +17,17 @@ translate([120,0,0]) roundRocker20();
 translate([140,0,0]) slideSwitch();
 translate([180,0,0]) arcadeButton();
 
+!pushLever();
+module pushLever(){
+  //nav Style switch
+  //LY-K3-01
+  //there are variants with larger Keystoke (LY-K3-01A,B)
+  //body
+  translate([0,-4.1/2,2.5/2]) cube([11.8,4.1,2.5],true);
 
+  //poles
+  for (ix=[-1,1]) translate([ix*(5/2),0,-0.5]) cylinder(d=1,h=0.5);
+}
 
 *keyPad(cutPanel=false);
 module keyPad(cutPCB=false, cutPanel=false, drillDia=1.6){
@@ -134,7 +144,7 @@ module keyPadPhone(bdyDims=[51,64,8.5],keyCnt=[3,4],cut=false){
   }
 }
 
-!CUI_TS02();
+*CUI_TS02();
 module CUI_TS02(height=11, longTerminals=false){
   /*https://www.cuidevices.com/product/resource/ts02.pdf
   available heights (SCR and LCR): 
@@ -690,7 +700,7 @@ module subMinSlideSwitch(){
 
 
 
-!arcadeButton();
+*arcadeButton();
 module arcadeButton(panelThck=3,col="red"){
   //https://www.adafruit.com/product/3433
 

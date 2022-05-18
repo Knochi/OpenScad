@@ -26,7 +26,7 @@ module featherM0basic(cut=false){
       circle(d=drillDia);
   else{
     translate([-PCBDims.x/2,-PCBDims.y/2,0]){
-      color(blackBoardCol)  linear_extrude(PCBThck) import("FeatherM0basicPCBedge.svg");
+      color(pcbBlackCol)  linear_extrude(PCBThck) import("FeatherM0basicPCBedge.svg");
       translate(mUSBPos) rotate(-90) mUSB();
       translate(QFNPos) QFN(48);
     }
