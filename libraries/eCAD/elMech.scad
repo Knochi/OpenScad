@@ -722,7 +722,7 @@ module roundRocker20(cut=false){
     
 }
 
-*toggleSwitch();
+!toggleSwitch();
 module toggleSwitch(){
   //e.g. TAIWAY Series 100
   //https://www.taiway.com/resource/annexes/product_items/25/6fdf503e5e83543e58a637ede7a46d6b.pdf
@@ -739,32 +739,66 @@ module toggleSwitch(){
   */ 
 
   // T1: 10.4mm Actuator, actDims=[3,12.95,1.85], actAng=14.5, pivot=3.75
-  //terminals
-  termPinCS=[1.26,0.75]; //square pin cross-section
-  termPitch=[4.7,3.81]; //contact pins pitch
 
+  //terminals
+  termPinCS=[0.75,1.26]; //terminal pin crosssection
+  termPitch=[4.7,3.81,4.83]; //contact pins pitch
+  termPinLen=3.4; //terminal pin length (from PCB surface)
+  //mountin pins
+  mntPinPitch=5.8;
+  mntPinCS=[1.3,0.5];
+  mntPinLen=2.6;
+  mntSheetDims=[8.9,mntPinCS.y,11];
   fPitch=5.08; //fixation pins pitch
   bodyDims=[12.7,10.2,11.4];
-  bodyOffset=12.7;
+  mntOffset=12.7;
+  termOffset=mntOffset-bodyDims.y;
   bshDims=[6.1,9]; //bushing Dia, length
   keyWay=[1,0.6]; //keyway dims
   actDims=[2.7,8,1.85]; //actuator top dia, total length, bottom dia (measured from pdf)
+  actZOffset=5.8;
   actAng=12.5; //actuator angle
   actPivot=3.75; //actuator pivot point relative to bushing 
-
+  
 
   //body
-  color(redBodyCol) translate([0,bodyOffset-bodyDims.y/2,bodyDims.z/2]) 
+  color(redBodyCol) translate([0,mntOffset-bodyDims.y/2,bodyDims.z/2]) 
     cube(bodyDims,true);
   //bushing
-  color(metalSilverCol) translate([0,bodyOffset,bodyDims.z/2]) 
-    rotate([-90,0,0]) cylinder(d=bshDims[0],h=bshDims[1]);
+  color(metalSilverCol) translate([0,mntOffset,actZOffset]) 
+    rotate([-90,0,0]) linear_extrude(bshDims[1]) 
+      difference(){
+        circle(d=bshDims[0]);
+        
+      }
   //Actuator
-  color(metalSilverCol) translate([0,bodyOffset+bshDims[1]-actPivot,bodyDims.z/2]) rotate([-90,0,-actAng]) hull(){
+  color(metalSilverCol) translate([0,mntOffset+bshDims[1]-actPivot,actZOffset]) rotate([-90,0,-actAng]) hull(){
     sphere(d=actDims[2]);
     translate([0,0,actDims[1]]) sphere(d=actDims[0]);
   }
+  
   //terminals
+  color(metalGoldPinCol) for (ix=[-1,0,1],iy=[0,1]){
+    translate([ix*termPitch.x,0,0]){
+      translate([0,termOffset-(termOffset-termPinCS.y/2)/2-iy*termPitch.y/2,(bodyDims.z-termPitch.z)/2+iy*termPitch.z]) 
+        cube([termPinCS.x,termOffset-termPinCS.y/2+iy*termPitch.y,termPinCS.y],true);
+      translate([0,termPinCS.y/2-iy*termPitch.y,(bodyDims.z-termPitch.z-termPinCS.y)/2+iy*termPitch.z]) rotate([90,0,-90]) 
+        rotate_extrude(angle=90) translate([termPinCS.y/2,0]) square([termPinCS.y,termPinCS.x],true);
+      translate([0,-iy*termPitch.y,-termPinLen]) 
+        linear_extrude((bodyDims.z-termPitch.z-termPinCS.y)/2+termPinLen+iy*termPitch.z) 
+          square(termPinCS,true);
+    }
+  }
+  //mount pins
+  color(metalGreyPinCol){
+    //´mount sheet metal
+    translate([0,mntOffset,mntSheetDims.z/2]) cube(mntSheetDims,true);
+    for (ix=[-1,1])
+      translate([ix*mntPinPitch/2,mntOffset,0]){
+        translate([0,0,-mntPinLen+mntPinCS.x/2]) rotate([90,0,0]) cylinder(d=mntPinCS.x,h=mntPinCS.y,center=true);
+        translate([0,0,-(mntPinLen-mntPinCS.x)/2]) cube([mntPinCS.x,mntPinCS.y,mntPinLen],true);
+      }
+  }
 
 }
 
@@ -796,7 +830,7 @@ module subMinSlideSwitch(){
 module arcadeButton(size=24,panelThck=3,col="red"){
   //size 24: https://www.adafruit.com/product/3433 "Mini LED Arcade Button 24mm"
   //size 30: https://www.berrybase.de/bauelemente/schalter-taster/drucktaster/arcade-button-30mm-beleuchtet-40-led-5v-dc-41-transparent
-  
+
   topDia= (size==24) ? 27.6 : 33.3;
   topThck= (size==24) ? 3 : 4.7;
   btnDia= (size==24) ? 19.6 : 22.65;
@@ -833,6 +867,28 @@ module snapActionSwitch(){
 
 
 // --- Helpers ---
+*bendTerminal();
+module bendTerminal(size=[5,7,0.5],width=2,rad=1){
+/*
+ *           size.x
+ *       ◄───────────►
+ *                      rad
+ *         ┌──────────┐◄───
+ *       ▲ │ t=size.z │
+ *       │ └─────┐    │
+ *       │       │    │
+ * size.y│       │    │
+ *       │       │    │
+ *       │       │    │
+ *       ▼       │    │
+ *               └────┘
+ *               width
+ */
+
+  cube([width,size.y-width,size.z,]);
+
+}
+
 
 module bend(size=[50,20,2],angle=45,radius=10,center=false, flatten=false){
   alpha=angle*PI/180; //convert in RAD
