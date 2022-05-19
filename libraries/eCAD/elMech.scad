@@ -63,7 +63,7 @@ translate([140,0,0]) slideSwitch();
 translate([180,0,0]) arcadeButton();
 translate([200,0,0]) CUI_TS02();
 
-!pushLever();
+*pushLever();
 module pushLever(){
   //nav Style switch
   //LY-K3-01
@@ -722,7 +722,7 @@ module roundRocker20(cut=false){
     
 }
 
-!toggleSwitch();
+*toggleSwitch();
 module toggleSwitch(){
   //e.g. TAIWAY Series 100
   //https://www.taiway.com/resource/annexes/product_items/25/6fdf503e5e83543e58a637ede7a46d6b.pdf
@@ -739,9 +739,10 @@ module toggleSwitch(){
   */ 
 
   // T1: 10.4mm Actuator, actDims=[3,12.95,1.85], actAng=14.5, pivot=3.75
+  //terminals
+  termPinCS=[1.26,0.75]; //square pin cross-section
+  termPitch=[4.7,3.81]; //contact pins pitch
 
-  cPinCS=[1.26,0.75]; //square pin cross-section
-  cPitch=[4.7,3.81]; //contact pins pitch
   fPitch=5.08; //fixation pins pitch
   bodyDims=[12.7,10.2,11.4];
   bodyOffset=12.7;
@@ -750,6 +751,7 @@ module toggleSwitch(){
   actDims=[2.7,8,1.85]; //actuator top dia, total length, bottom dia (measured from pdf)
   actAng=12.5; //actuator angle
   actPivot=3.75; //actuator pivot point relative to bushing 
+
 
   //body
   color(redBodyCol) translate([0,bodyOffset-bodyDims.y/2,bodyDims.z/2]) 
@@ -762,6 +764,8 @@ module toggleSwitch(){
     sphere(d=actDims[2]);
     translate([0,0,actDims[1]]) sphere(d=actDims[0]);
   }
+  //terminals
+
 }
 
 *slideSwitch();
@@ -789,25 +793,32 @@ module subMinSlideSwitch(){
 
 
 *arcadeButton();
-module arcadeButton(panelThck=3,col="red"){
-  //https://www.adafruit.com/product/3433
-
-  //base
+module arcadeButton(size=24,panelThck=3,col="red"){
+  //size 24: https://www.adafruit.com/product/3433 "Mini LED Arcade Button 24mm"
+  //size 30: https://www.berrybase.de/bauelemente/schalter-taster/drucktaster/arcade-button-30mm-beleuchtet-40-led-5v-dc-41-transparent
+  
+  topDia= (size==24) ? 27.6 : 33.3;
+  topThck= (size==24) ? 3 : 4.7;
+  btnDia= (size==24) ? 19.6 : 22.65;
+  btnThck= (size==24) ? 4.2 : 4.85;
+  bdyDims= (size==24) ? [24,26] : [28,28.6+4.7];
+  nutDims = (size==24) ? [30.6,8] : [35.7,9];
+  //top ring
   color(col) difference(){
     rotate_extrude(){ 
-      translate([27.6/2-3,0]) circle(3);
-      translate([0,-3]) square([27.6/2-3,6]);
+      translate([topDia/2-topThck,0]) circle(topThck);
+      translate([0,-topThck]) square([topDia/2-topThck,topThck*2]);
     }
-    translate([0,0,-3-fudge]) cylinder(d=27.6+fudge,h=3+fudge);
+    translate([0,0,-topThck-fudge]) cylinder(d=topDia+fudge,h=topThck+fudge);
   }
   //button
-  color(col) cylinder(d=19.6,h=7.2);
+  color(col) cylinder(d=btnDia,h=btnThck+topThck);
   //body
-  color(col) translate([0,0,-26]) cylinder(d=24,h=26);
+  color(col) translate([0,0,-bdyDims[1]]) cylinder(d=bdyDims[0],h=bdyDims[1]);
   //fixation ring
   color("ivory"){
-    translate([0,0,-2-panelThck]) cylinder(d=33.6,h=2);
-    translate([0,0,-10-panelThck]) cylinder(d=30.6,h=8);
+    if (size==24) translate([0,0,-2-panelThck]) cylinder(d=33.6,h=2);
+    translate([0,0,-nutDims[1]-panelThck]) cylinder(d=nutDims[0],h=nutDims[1]);
   }
 
 }
