@@ -54,6 +54,7 @@ translate([12,30,0]) pushButton(col="white");
 translate([-15,0,0]) rotEncoder();
 translate([-15,30,0]) microStepper();
 translate([30,0,0]) SMDSwitch();
+translate([30,10,0]) CUI_TS02();
 translate([-40,0,0]) AirValve();
 translate([-80,0,0]) AirPump();
 translate([-140,0,0]) SSR();
@@ -61,7 +62,7 @@ translate([120,0,0]) roundRocker20();
 translate([120,0,0]) roundRocker20(true);
 translate([140,0,0]) slideSwitch();
 translate([180,0,0]) arcadeButton();
-translate([200,0,0]) CUI_TS02();
+translate([220,0,0]) toggleSwitch();
 
 *pushLever();
 module pushLever(){
@@ -722,7 +723,7 @@ module roundRocker20(cut=false){
     
 }
 
-!toggleSwitch();
+*toggleSwitch();
 module toggleSwitch(){
   //e.g. TAIWAY Series 100
   //https://www.taiway.com/resource/annexes/product_items/25/6fdf503e5e83543e58a637ede7a46d6b.pdf
@@ -760,46 +761,48 @@ module toggleSwitch(){
   actAng=12.5; //actuator angle
   actPivot=3.75; //actuator pivot point relative to bushing 
   
+  //move pin1 to origin
+  translate([termPitch.x,0,0]){
+    //body
+    color(redBodyCol) translate([0,mntOffset-bodyDims.y/2,bodyDims.z/2]) 
+      cube(bodyDims,true);
+    //bushing
+    color(metalSilverCol) translate([0,mntOffset,actZOffset]) 
+      rotate([-90,0,0]) linear_extrude(bshDims[1]) 
+        difference(){
+          circle(d=bshDims[0]);
 
-  //body
-  color(redBodyCol) translate([0,mntOffset-bodyDims.y/2,bodyDims.z/2]) 
-    cube(bodyDims,true);
-  //bushing
-  color(metalSilverCol) translate([0,mntOffset,actZOffset]) 
-    rotate([-90,0,0]) linear_extrude(bshDims[1]) 
-      difference(){
-        circle(d=bshDims[0]);
-        
+        }
+    //Actuator
+    color(metalSilverCol) translate([0,mntOffset+bshDims[1]-actPivot,actZOffset]) rotate([-90,0,-actAng]) hull(){
+      sphere(d=actDims[2]);
+      translate([0,0,actDims[1]]) sphere(d=actDims[0]);
+    }
+    
+    //terminals
+    color(metalGoldPinCol) for (ix=[-1,0,1],iy=[0,1]){
+      translate([ix*termPitch.x,0,0]){
+        translate([0,termOffset-(termOffset-termPinCS.y/2)/2-iy*termPitch.y/2,(bodyDims.z-termPitch.z)/2+iy*termPitch.z]) 
+          cube([termPinCS.x,termOffset-termPinCS.y/2+iy*termPitch.y,termPinCS.y],true);
+        translate([0,termPinCS.y/2-iy*termPitch.y,(bodyDims.z-termPitch.z-termPinCS.y)/2+iy*termPitch.z]) rotate([90,0,-90]) 
+          rotate_extrude(angle=90) translate([termPinCS.y/2,0]) square([termPinCS.y,termPinCS.x],true);
+        translate([0,-iy*termPitch.y,-termPinLen]) 
+          linear_extrude((bodyDims.z-termPitch.z-termPinCS.y)/2+termPinLen+iy*termPitch.z) 
+            square(termPinCS,true);
       }
-  //Actuator
-  color(metalSilverCol) translate([0,mntOffset+bshDims[1]-actPivot,actZOffset]) rotate([-90,0,-actAng]) hull(){
-    sphere(d=actDims[2]);
-    translate([0,0,actDims[1]]) sphere(d=actDims[0]);
-  }
-  
-  //terminals
-  color(metalGoldPinCol) for (ix=[-1,0,1],iy=[0,1]){
-    translate([ix*termPitch.x,0,0]){
-      translate([0,termOffset-(termOffset-termPinCS.y/2)/2-iy*termPitch.y/2,(bodyDims.z-termPitch.z)/2+iy*termPitch.z]) 
-        cube([termPinCS.x,termOffset-termPinCS.y/2+iy*termPitch.y,termPinCS.y],true);
-      translate([0,termPinCS.y/2-iy*termPitch.y,(bodyDims.z-termPitch.z-termPinCS.y)/2+iy*termPitch.z]) rotate([90,0,-90]) 
-        rotate_extrude(angle=90) translate([termPinCS.y/2,0]) square([termPinCS.y,termPinCS.x],true);
-      translate([0,-iy*termPitch.y,-termPinLen]) 
-        linear_extrude((bodyDims.z-termPitch.z-termPinCS.y)/2+termPinLen+iy*termPitch.z) 
-          square(termPinCS,true);
+    }
+    
+    color(metalGreyPinCol){
+      //mount sheet metal
+      translate([0,mntOffset,mntSheetDims.z/2]) cube(mntSheetDims,true);
+      //mount pins
+      for (ix=[-1,1])
+        translate([ix*mntPinPitch/2,mntOffset,0]){
+          translate([0,0,-mntPinLen+mntPinCS.x/2]) rotate([90,0,0]) cylinder(d=mntPinCS.x,h=mntPinCS.y,center=true);
+          translate([0,0,-(mntPinLen-mntPinCS.x/2)/2]) cube([mntPinCS.x,mntPinCS.y,mntPinLen-mntPinCS.x/2],true);
+        }
     }
   }
-  //mount pins
-  color(metalGreyPinCol){
-    //´mount sheet metal
-    translate([0,mntOffset,mntSheetDims.z/2]) cube(mntSheetDims,true);
-    for (ix=[-1,1])
-      translate([ix*mntPinPitch/2,mntOffset,0]){
-        translate([0,0,-mntPinLen+mntPinCS.x/2]) rotate([90,0,0]) cylinder(d=mntPinCS.x,h=mntPinCS.y,center=true);
-        translate([0,0,-(mntPinLen-mntPinCS.x)/2]) cube([mntPinCS.x,mntPinCS.y,mntPinLen],true);
-      }
-  }
-
 }
 
 *slideSwitch();
