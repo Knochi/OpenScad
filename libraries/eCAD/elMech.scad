@@ -43,7 +43,7 @@ FR4darkCol=         [0.2,   0.17,   0.087]; //?
 FR4Col=             [0.43,  0.46,   0.295]; //?
 
 
-$fn=20;
+$fn=50;
 fudge=0.1;
 
 translate([70,0,0]) keyPad();
@@ -827,6 +827,46 @@ module subMinSlideSwitch(){
 
 }
 
+!jogSwitch(-1);
+module jogSwitch(pos=0){
+  //https://www.qyswitch.com/h-pd-270.html
+
+  actOutRad=8.25;
+  actInRad=6.75;
+  actDims=[2,7.05]; //thick, width
+  actRot= (pos>0) ? -24 : (pos<0) ? 24 : 0 ;// : -24 : 0;
+  cntrOffset=0.75; //rotation center to pegs
+
+  bdyDims=[11.8,4.1,2.5];
+  pegDist=5;
+  pegDims=[0.9,0.5]; //dia, height
+  
+  padDims=[[1.5,1.15,0.5],[1,1.2,0.5]];
+  padPitch=pegDist/2;
+  
+  //actuator
+  color(blackBodyCol) translate([0,cntrOffset,0]) rotate(3+actRot) 
+    rotate_extrude(angle=180-2*3,$fn=50) translate([actInRad+actDims.x/2,actDims.y/2-1.9]) square(actDims,true);
+  //body
+  difference(){
+    union(){
+      translate([0,-bdyDims.y/2,bdyDims.z/2]) cube(bdyDims,true);
+      for (i=[0,1]) rotate(i*(180-30)) rotate_extrude(angle=30) square([bdyDims.x/2,bdyDims.z]);
+      rotate(30) rotate_extrude(angle=180-60) square([4.9,bdyDims.z]);
+      for (ix=[-1,1]) translate([ix*pegDist/2,0,-pegDims[1]]) cylinder(d=pegDims[0],h=pegDims[1]);
+    }
+    //recesses for pads
+    for (ix=[-1:1]) translate([ix*padPitch,-4.25+padDims[0].y/2,(padDims[0].z-0.1)/2]) cube(padDims[0]+[0.4,0.4,0.1],true);  
+    for (ix=[-1,1]) translate([ix*(5.8-padDims[1].x/2),1,(padDims[1].z-0.1)/2]) cube(padDims[1]++[0.4,0.4,0.1],true);
+
+  }
+
+  //pads bottom/front
+  color(metalGreyPinCol) for (ix=[-1:1]) translate([ix*padPitch,-4.25+padDims[0].y/2,(padDims[0].z)/2]) cube(padDims[0],true);
+  //pads sites
+  color(metalGreyPinCol) for (ix=[-1,1]) translate([ix*(5.8-padDims[1].x/2),1,padDims[1].z/2]) cube(padDims[1],true);
+
+}
 
 
 *arcadeButton();
