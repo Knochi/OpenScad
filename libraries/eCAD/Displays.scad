@@ -536,6 +536,73 @@ module rndRect(size, rad, drill=0, center=true){
     }
 }
 
+*AdafruitOLED();
+module AdafruitOLED(size=2.42,cut=false){
+  //2.3" 128x32px OLED from Adafruit 
+  //https://www.adafruit.com/product/2675
+  //2.3" aka LM230B-128032
+  //2.42" aka TW2864(1230A03)
+  //                            2.3"              2.42"
+  drillDist=   (size==2.3) ? [62.6,31.2] :     [66.7,45.7];
+  pcbDims=     (size==2.3) ? [66.5,35,1] :     [70.5,49.5,1];
+  displayDims= (size==2.3) ? [63.5,26.1,4.5] : [62.5,38.9,3.8]; //Dimensions of the metal frame
+  AADims=      (size==2.3) ? [55.02,13.1] :    [55.01,27.49];//Active Area
+  VADims=      (size==2.3) ? [57,15.1]    :    [56.9,29.49];//Viewable area
+  pxCnt=       (size==2.3) ? [128,32]     :    [123,64]; //x-y pixel count
+  pxDims=      (size==2.3) ? [0.41,0.39]  :    [0.4,0.4]; //pixel dimensions
+  pxPitch=     (size==2.3) ? [0.43,0.41]  :    [0.43,0.43];
+  pxCol=       (size==2.3) ? "cyan"       : "lightgrey";
+  drillDia=2.6;
+  AACntrOffset=[0,-(pcbDims.y-AADims.y)/2+13.95];
+  
+  if (cut){
+    offset(0.2) metalFrame();
+    for (ix=[-1,1],iy=[-1,1])
+      translate([ix*drillDist.x/2,iy*drillDist.y/2]) circle(d=2);
+  }
+  else{
+
+    //PCB
+    color("green") translate([0,0,-pcbDims.z]) linear_extrude(pcbDims.z) difference(){
+      square([pcbDims.x,pcbDims.y],true);
+      for (ix=[-1,1],iy=[-1,1])
+        translate([ix*drillDist.x/2,iy*drillDist.y/2]) circle(d=drillDia);
+    }
+    //display
+    
+      difference(){
+        color("darkslategrey") linear_extrude(displayDims.z,convexity=2) metalFrame();
+        color("#222222") translate([AACntrOffset.x,AACntrOffset.y,displayDims.z]) rndRect([VADims.x,VADims.y,0.2],1,0,center=true);
+      }
+      color(pxCol) translate([AACntrOffset.x,AACntrOffset.y,displayDims.z-0.1]) linear_extrude(0.1)
+        pixels(count=pxCnt,size=pxDims,pitch=pxPitch);
+  }
+
+  module metalFrame(){
+    square([displayDims.x,displayDims.y],true);
+    translate([0,-displayDims.y/2-0.75]) square([16.22,1.5],true);
+  }
+}
+
+module rndRect(size, rad, drill=0, center=true){  
+  if (len(size)==2) //2D shape
+    difference(){
+      hull() for (ix=[-1,1],iy=[-1,1])
+        translate([ix*(size.x/2-rad),iy*(size.y/2-rad)]) circle(rad);
+      for (ix=[-1,1],iy=[-1,1])
+        translate([ix*(size.x/2-rad),iy*(size.y/2-rad)]) circle(d=drill);
+    }
+  else
+    
+    linear_extrude(size.z,center=center) 
+    difference(){
+      hull() for (ix=[-1,1],iy=[-1,1])
+      translate([ix*(size.x/2-rad),iy*(size.y/2-rad)]) circle(rad);
+      for (ix=[-1,1],iy=[-1,1])
+        translate([ix*(size.x/2-rad),iy*(size.y/2-rad)]) circle(d=drill);
+    }
+}
+
 *pixels();
 module pixels(count=[16,8],size=[0.41,0.39],pitch=[0.43,0.41]){
   for (ix=[-(count.x-1)/2:(count.x-1)/2],iy=[-(count.y-1)/2:(count.y-1)/2])
