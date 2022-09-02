@@ -7,3 +7,6 @@
 [submodule "libraries/BOSL"]
 	path = libraries/BOSL
 	url = https://github.com/revarbat/BOSL.git
+[submodule "libraries/MCAD"]
+	path = libraries/MCAD
+	url = https://github.com/openscad/MCAD.git
