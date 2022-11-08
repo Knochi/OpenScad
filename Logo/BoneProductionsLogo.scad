@@ -2,28 +2,30 @@ $fn=20;
 
 /* [Dimensions] */
 oDia=8;
-tiltAng=45;
-baseLineDist=10.5;//about 11.34
+tiltAng=58;
+baseLineDist=8.5;//about 11.34
 cptlHghtInput=13.5;
-boneThck=6;
+tiltBoneThck=5; //thickness of the "bone =="
+strBoneThck=5;
 ltrSpcInput=0.5;
 stroke=1.5;
-fillOffset= 0.1;
+fillOffset= 0.12; //gap between shapes
 inDia=oDia-stroke*2;
 fudge=0.1;
 
 /* [Calc] */
-input="baseLineDist"; //["ltrSpcInput","baseLineDist","all"]
+//calculate from baseline distance and tiltangle or letterspacing alone
+input="ltrSpcInput"; //["ltrSpcInput","baseLineDist","all"]
 
 /* [Options] */
-tiltB=true;
+tiltB=false;
 bridgeUN=true;
 bridgeTE=true;
 
 /* [show] */
 showFill=true;
 showStroke=true;
-showBone=true;
+showtiltBone=false;
 debug=false;
 
 /* [Colors] */
@@ -53,7 +55,7 @@ tan(tiltAng)*(oDia     + sin(tiltAng)*(cptlHght-oDia) + baseLineDist - cptlHght)
 cptlHght = bridgeTE ? baseLineDist+stroke*2 : cptlHghtInput;
 ascenders=cptlHght-oDia;
 descenders=ascenders; //not needed
-
+echo(str("Capital Height is ", cptlHght));
 // From BaselineDist and tiltAng, oDia, cptlHght
 ltrSpcInputFromBaseLineDist=(tan(tiltAng)*(oDia+sin(tiltAng)*(cptlHght-oDia)+baseLineDist-cptlHght)-oDia*1.5+ cos(tiltAng)*(cptlHght-oDia))/2;
 
@@ -73,13 +75,15 @@ B=[oDia/2-cos(tiltAng)*(cptlHght-oDia),
 
    
 //echo(str("PtoBAng: ",atan2(B.x-P.x,B.y-P.y)));
-if (showBone) color(boneColor) bone();
+if (showtiltBone) color(boneColor) tiltBone();
+color(boneColor) strBone();
+translate(prodOffset) ProductionsStr();
 BoneStr();
-translate(prodOffset)ProductionsStr();
+
+
 
 if (bridgeUN && showFill) color(fillColor) 
   translate([oDia/2+(oDia+ltrSpc)*2,-(baseLineDist-oDia)/2]) square([inDia-fillOffset*2,baseLineDist],true);
-
 
 if (debug)
   color("red"){
@@ -88,12 +92,32 @@ if (debug)
 }
 
 
-//bone
-module bone(){
-  BBOffset=[cos(tiltAng)*(cptlHght-oDia),sin(-tiltAng)*(cptlHght-oDia)];
+module strBone(){
+  //straight bone behind the bone string
   difference(){
     union(){
-      translate(P) rotate(tiltAng) translate([0,(-cptlHght+oDia-boneThck)/2]) square([norm(P-B),boneThck]);
+      translate([oDia/2,oDia-stroke-strBoneThck/2]) 
+        square([(oDia+ltrSpc)*3,strBoneThck]);
+      translate([oDia/2+(oDia+ltrSpc)*3+oDia*0.1/2,oDia]) 
+        circle(d=oDia*0.9);
+    }
+    translate([oDia/2,0]) offset(fillOffset) ltrB(cut=true);
+    for (i=[1:3]) 
+      translate([oDia/2+(oDia+ltrSpc)*i,oDia/2]) 
+        offset(fillOffset) circle(d=oDia);
+  }
+}
+
+//bone
+module tiltBone(){
+  //tilted bone behind "P" and "r" of Productions
+  BBOffset=[cos(tiltAng)*(cptlHght-oDia),sin(-tiltAng)*(cptlHght-oDia)];
+  
+  difference(){
+    union(){
+      translate(P) rotate(tiltAng) 
+        translate([0,(-cptlHght+oDia-tiltBoneThck)/2]) 
+          square([norm(P-B),tiltBoneThck]);
       translate(P+BBOffset) circle(d=oDia);
     }
     translate(P) offset(fillOffset) circle(d=oDia);
@@ -135,21 +159,24 @@ module ProductionsStr(){
   translate([stroke  +oDia/2+ltrSpc*2+(oDia+ltrSpc)*8,0]) ltrS(); //S
 }
 
+*ltrI();
 module ltrI(){
   if (showStroke) 
     color(strokeColor)difference(){
       intersection(){
-        hull(){
+        /*hull(){ //roundish shape
           translate([0,oDia/2]) circle(d=oDia);
           translate([0,cptlHght-oDia/2]) circle(d=oDia);
-        }
+        }*/
         translate([-stroke/2,0]) square([stroke,cptlHght]);
       }
-      translate([-(stroke+fudge)/2,cptlHght-stroke*2]) square([stroke+fudge,stroke]);
+      //gap
+      translate([-(stroke+fudge)/2,cptlHght-stroke*2-fillOffset]) 
+        square([stroke+fudge,stroke+fillOffset*2]);
     }
   
   if (showFill)
-  color(fillColor) translate([-(stroke)/2,cptlHght-stroke*2+fillOffset]) square([stroke,stroke-fillOffset*2]);
+  color(fillColor) translate([-(stroke)/2,cptlHght-stroke*2]) square([stroke,stroke]);
 }
 *ltrT();
 module ltrT(){
@@ -159,7 +186,8 @@ module ltrT(){
   color(strokeColor) translate([0,oDia/2]){
     translate([-oDia/2,0]) square([stroke,cptlHght-oDia/2]);
     difference(){
-      translate([-barDims.x,cptlHght-oDia/2-stroke*2]) square(barDims);
+      translate([-barDims.x,cptlHght-oDia/2-stroke*2]) 
+        square(barDims);
       if (bridgeTE) translate([-barDims.x,cptlHght-stroke*2]) offset(fillOffset) circle(d=oDia);
     }
     difference(){
@@ -174,9 +202,10 @@ module ltrT(){
   color(fillColor) offset(-fillOffset) translate([0,oDia/2]){
     intersection(){
       circle(d=inDia);
-      translate([-inDia/2,-inDia/2]) square(inDia/2);
+      translate([-inDia/2,-inDia/2]) square(inDia/2+fillOffset);
     }
-    translate([-inDia/2,0]) square([inDia/2,cptlHght-oDia/2-stroke*2]);
+    translate([-inDia/2,0]) 
+      square([inDia/2+fillOffset,cptlHght-oDia/2-stroke*2]);
   }
 }
 module ltrD(){
@@ -228,8 +257,8 @@ module ltrE(){
       translate([0,0]) square([inDia,stroke],true);
     }
     intersection(){
-      translate([0,-oDia/2+stroke]) square([oDia/2,(inDia-stroke)/2]);
-      circle(d=oDia);
+      translate([0,-oDia/2+stroke]) square([oDia/2+fillOffset,(inDia-stroke)/2]);
+      circle(d=oDia+fillOffset*2);
     }
   }
 }
@@ -252,7 +281,7 @@ module ltrS(){
       translate([0,0]) square([inDia,stroke],true);
     }
     intersection(){
-      circle(d=oDia);
+      circle(d=oDia+fillOffset*2);
       union(){
         translate([-oDia/2,-oDia/2+stroke]) square([oDia/2,(inDia-stroke)/2]);
         translate([0,stroke/2]) square([oDia/2,(inDia-stroke)/2]);
@@ -276,31 +305,47 @@ module ltrN(){
       color(fillColor) offset(-fillOffset) {
       circle(d=inDia);
       intersection(){
-        translate([0,-oDia/4]) square([inDia,oDia/2],true);
-        circle(d=oDia);
+        translate([0,-oDia/4-fillOffset/2])
+          square([inDia,oDia/2+fillOffset],true);
+        circle(d=oDia+fillOffset*2);
       }
     }
   }
 }
 
-*ltrB();
-module ltrB(cut=false){  
+*ltrB(true);
+module ltrB(cut=false, style="overlapping"){  
+    upperBScale=0.9;
     if (cut){
-      translate([0,cptlHght-oDia/2]) circle(d=oDia);
+      translate([-oDia*(1-upperBScale)/2,cptlHght-oDia*upperBScale/2]) 
+        circle(d=oDia*upperBScale);
       translate([0,oDia/2]) circle(d=oDia);
-      translate([-oDia/2,oDia/2]) square([stroke,ascenders]);
+      translate([-oDia/2,oDia/2]) 
+              square([stroke,ascenders+oDia*(1-upperBScale)/2]);
     }
-    else{
+    else if (style=="overlapping"){
       difference(){
         union(){
-          translate([0,cptlHght-oDia]) ltrO();
-          if (showStroke) color(strokeColor) translate([-oDia/2,oDia/2]) square([stroke,ascenders]);
+          translate([-oDia*(1-upperBScale)/2,cptlHght-oDia*upperBScale]) 
+            ltrO(upperBScale);
+          if (showStroke) color(strokeColor)  
+            translate([-oDia/2,oDia/2]) 
+              square([stroke,ascenders+oDia*(1-upperBScale)/2]);
         }
-        color(strokeColor) translate([0,oDia/2]) offset(fillOffset) circle(d=oDia);
+        color(strokeColor) translate([0,oDia/2]) 
+          offset(fillOffset) circle(d=oDia);
       }
       ltrO();
     }
-    
+    else{//"solid"
+      ltrU();
+      translate([0,cptlHght-oDia]) ltrN();
+      if (showStroke) color(strokeColor){
+        translate([-oDia/2,oDia/2]) square([stroke,ascenders]);
+        translate([-oDia/2+stroke,cptlHght/2-stroke/2]) square([inDia,stroke]);
+      }
+     
+    }
 }
 
 module ltrP(){
@@ -311,13 +356,14 @@ module ltrP(){
   }
 }
 
-*ltrO();
-module ltrO(){
+*ltrO(0.9);
+module ltrO(scle=1){
   // O
-  translate([0,oDia/2]){
+  inDia=oDia*scle-stroke*2;
+  translate([0,oDia*scle/2]){
     if (showStroke)
       color(strokeColor) difference(){
-        circle(d=oDia);
+        circle(d=oDia*scle);
         circle(d=inDia);
       }
   
