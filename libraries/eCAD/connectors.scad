@@ -11,6 +11,9 @@
 // 1. don't use linear_extrude(size). Use polyhedrons instead
 // 2. If you want to color sth. place the color before each primitive
 
+use <KnochisToolbox.scad>
+
+
 $fn=50;
 fudge=0.1;
 
@@ -76,6 +79,70 @@ translate([200,0,0]) tubeSocket9pinFlange();
 translate([230,0,0]) PJ398SM();
 
 *rotate([0,0,-90]) femHeaderSMD(20,2,center=true);
+
+!microMatch();
+module microMatch(pos=10){
+  // TE Micro-Match connector line (also available from other manufacturers)
+  // https://www.te.com/usa-en/products/connectors/pcb-connectors/wire-to-board-connectors/ffc-fpc-ribbon-connectors/intersection/micro-match.html
+  pitch=1.27;
+  ovHght=5.25;
+  
+  //pins
+  pinThck=0.25;
+  pinRad=0.15;
+  pinHght=0.85;
+  baseAng=0.65;
+
+  //the flanked part for female
+  tpFace=[pos*pitch+0.53,3.85]; //
+  tpFlankAngle=2.5; 
+  tpHght=3.5;
+  btFace=[tpFace.x,tan(tpFlankAngle)*tpHght*2+tpFace.y];
+
+  translate([0,0,-tpHght/2+ovHght]) difference(){
+    frustum(size=[btFace.x,btFace.y,tpHght], flankAng=[0,tpFlankAngle], center=true, method="poly", col=redBodyCol);
+    stagger(pitch=[2.54,0.85]) color(redBodyCol) translate([0,0,tpHght/2-0.5]) linear_extrude(0.5+fudge) cross2D();
+  }
+
+  
+  //collar
+  collarDims=[pos*pitch+1.93,5,1.6];
+  keying=[0.7,2.5];
+  cutOutDims=[1.7,collarDims.y/2,0.9];
+  translate([0,0,collarDims.z/2+ovHght-tpHght]) color(redBodyCol) difference(){
+     cube(collarDims,true);
+     translate([-(collarDims.x-keying.x+fudge)/2,0,0]) cube([keying.x+fudge,keying.y,collarDims.z+fudge],true);
+     //staggered cutouts
+     //TODO: add fillets (r~0.25mm)
+    translate([0,0,(collarDims.z-cutOutDims.z+fudge)/2]) 
+      stagger(pitch=[pitch*2,collarDims.y-cutOutDims.y],stagger=(pitch+0.1)) cube(cutOutDims+[0,fudge,fudge],true);
+  }
+
+  //base
+  //baseDims=[pos*pitch+1.23,3,1.5];
+  baseDims=[tpFace.x+(collarDims.x-tpFace.x)/2,3,1.5];
+  basePoly=[[baseDims.y/2,baseDims.z],[baseDims.y/2,0],[baseDims.y/2-0.43,0],[baseDims.y/2-0.43,0.1],[baseDims.y/2-0.95,1],
+            [-(baseDims.y/2-0.95),1],[-(baseDims.y/2-0.43),0.1],[-(baseDims.y/2-0.43),0],[-baseDims.y/2,0],[-baseDims.y/2,baseDims.z]];
+  color(redBodyCol) translate([collarDims.x/2-baseDims.x,0,ovHght-tpHght-baseDims.z]) rotate([90,0,90]) linear_extrude(baseDims.x) polygon(basePoly);
+
+  color(metalSilverCol) rotate([90,0,90]) pin();
+
+  module cross2D(){
+    ovDims=[0.85,1.5,0.5];
+    barWdth=[0.4,0.6];
+    square([ovDims.x,barWdth.y],true);
+    square([barWdth.x,ovDims.y],true);
+  }
+
+  module pin(){
+    poly=concat([[1.32,0.02]],
+                push_arc([3.26,0],[3.53,0.28],0.3,0),
+                push_arc([3.51,0.62],[3.36,0.76],0.15,0),
+                push_arc([2.88,0.76],[2.73,0.91],0.15,1)
+                );
+    linear_extrude(pinThck) polygon(poly);
+  }
+}
 
 *M411P(false);
 module M411P(isMale=true){
@@ -1383,6 +1450,55 @@ module PCBFuseMini(center=false){
  }
 }
 
+// ---- keyStone  PlayGround ---
+*translate([70,20,0]){
+   keyStoneModule();
+   translate([0,30,0]) rotate(90) H_MTD();
+   mateNet();
+}
+
+module keyStoneModule(){
+    springDims=[11.3,10,2];
+    latchHght=19.8;
+    latchDeep=8.5;
+    keyStoneOpening=[14.5,16.1];
+    translate([0,8.5/2,16.1/2]) cube([14.5,8.5,16.1],true);
+    translate([0,latchDeep+springDims.y/2,latchHght-1]) 
+        cube(springDims,true);
+}
+
+module H_MTD(){
+  color("silver")translate([0,0,8.2/2]) cube([10,9,8.2],true);
+  color("teal") translate([-(14.1+10)/2,0,9.6/2-0.15]) cube([14.1,11,9.6],true);
+}
+
+module mateNet(){
+  import("/sources/MateNetInliner.stl");
+}
+
+*BKLPwrCable();
+module BKLPwrCable(angled=true,length=20){
+  //https://cdn-reichelt.de/documents/datenblatt/C160/075104_DB-DE.pdf
+
+  //body
+  color("darkSlateGrey"){
+    translate([0,0,4.8]){ 
+     cylinder(r=6.1,h=11.6);
+      translate([14.9/2,0,11.6/2]) cube([14.9,6.1*2,11.6],true);
+    }
+    cylinder(d=10.5,h=4.8);
+    translate([14.9,0,4.8+11.6/2]) rotate([0,90,0]) cylinder(d=8,h=26.9-14.9);
+  }
+  //contact
+  color("silver"){
+    translate([0,0,-9.5]) cylinder(d=5.5,h=9.5);
+  }
+
+  //wires
+  color("red") translate([14.9+26.9-14.9,-2.35/2,4.8+11.6/2]) rotate([0,90,0]) cylinder(d=2.35,h=length);
+  color("black") translate([14.9+26.9-14.9,2.35/2,4.8+11.6/2]) rotate([0,90,0]) cylinder(d=2.35,h=length);
+}
+
 // ---- helpers ---
 
 // bend modifier
@@ -1434,13 +1550,14 @@ module bend(size=[50,20,2],angle=45,radius=10,center=false, flatten=false){
 }
 
 *frustum([3,2,0.9],method="poly");
-module frustum(size=[1,1,1], flankAng=5, center=false, method="poly", col="darkSlateGrey"){
+module frustum(size=[1,1,1], flankAng=[5,5], center=false, method="poly", col="darkSlateGrey"){
   //cube with a trapezoid crosssection
+  //size = base dimensions x height
   //https://en.wikibooks.org/wiki/OpenSCAD_User_Manual/Primitive_Solids#polyhedron
   cntrOffset= (center) ? [0,0,-size.z/2] : [size.x/2,size.y/2,0];
 
-  flankRed=tan(flankAng)*size.z; //reduction in width by angle
-  faceScale=[(size.x-flankRed*2)/size.x,(size.y-flankRed*2)/size.y]; //scale factor for linExt
+  flankRed=[tan(flankAng.x)*size.z,tan(flankAng.x)*size.z]; //reduction in width by angle
+  faceScale=[(size.x-flankRed.x*2)/size.x,(size.y-flankRed.y*2)/size.y]; //scale factor for linExt
 
   if (method=="linExt")
     translate(cntrOffset)
@@ -1451,10 +1568,10 @@ module frustum(size=[1,1,1], flankAng=5, center=false, method="poly", col="darkS
             [ size.x/2,-size.y/2,-size.z/2], //1
             [ size.x/2, size.y/2,-size.z/2], //2
             [-size.x/2, size.y/2,-size.z/2],//3
-            [-(size.x/2-flankRed),-(size.y/2-flankRed),size.z/2], //4
-            [  size.x/2-flankRed ,-(size.y/2-flankRed),size.z/2], //5
-            [  size.x/2-flankRed , (size.y/2-flankRed),size.z/2], //5
-            [-(size.x/2-flankRed), (size.y/2-flankRed),size.z/2]]; //5
+            [-(size.x/2-flankRed.x),-(size.y/2-flankRed.y),size.z/2],  //4
+            [  size.x/2-flankRed.x ,-(size.y/2-flankRed.y),size.z/2],  //5
+            [  size.x/2-flankRed.x , (size.y/2-flankRed.y),size.z/2],  //5
+            [-(size.x/2-flankRed.x), (size.y/2-flankRed.y),size.z/2]]; //5
     faces= [[0,1,2,3],  // bottom
             [4,5,1,0],  // front
             [7,6,5,4],  // top
@@ -1483,51 +1600,23 @@ module rndRect(size=[10,10], rad=1, center=false){
 }
 
 
-//keyStone  PlayGround
-*translate([70,20,0]){
-   keyStoneModule();
-   translate([0,30,0]) rotate(90) H_MTD();
-   mateNet();
+
+module stagger(pos=10, pitch=[1.27,1.27], stagger){
+  stagger = (stagger==undef) ? pitch.x/2 : stagger;
+ 
+  for (ix=[-(pos-1)/4:(pos-1)/4],iy=[-1,1])
+      translate([ix*pitch.x+iy*stagger/2+pitch.x/4,iy*pitch.y/2,0]) children();
 }
 
-module keyStoneModule(){
-    springDims=[11.3,10,2];
-    latchHght=19.8;
-    latchDeep=8.5;
-    keyStoneOpening=[14.5,16.1];
-    translate([0,8.5/2,16.1/2]) cube([14.5,8.5,16.1],true);
-    translate([0,latchDeep+springDims.y/2,latchHght-1]) 
-        cube(springDims,true);
-}
+function squarePoly(size=[1,1],height)= (height==undef) ? 
+[
+    [-size.x/2,size.y/2],[size.x/2,size.y/2],
+    [size.x/2,-size.y/2],[-size.x/2,-size.y/2]
+    ] :
+  [
+    [-size.x/2,size.y/2,height],[size.x/2,size.y/2,height],
+    [size.x/2,-size.y/2,height],[-size.x/2,-size.y/2,height]
+    ];
 
-module H_MTD(){
-  color("silver")translate([0,0,8.2/2]) cube([10,9,8.2],true);
-  color("teal") translate([-(14.1+10)/2,0,9.6/2-0.15]) cube([14.1,11,9.6],true);
-}
 
-module mateNet(){
-  import("/sources/MateNetInliner.stl");
-}
 
-*BKLPwrCable();
-module BKLPwrCable(angled=true,length=20){
-  //https://cdn-reichelt.de/documents/datenblatt/C160/075104_DB-DE.pdf
-
-  //body
-  color("darkSlateGrey"){
-    translate([0,0,4.8]){ 
-     cylinder(r=6.1,h=11.6);
-      translate([14.9/2,0,11.6/2]) cube([14.9,6.1*2,11.6],true);
-    }
-    cylinder(d=10.5,h=4.8);
-    translate([14.9,0,4.8+11.6/2]) rotate([0,90,0]) cylinder(d=8,h=26.9-14.9);
-  }
-  //contact
-  color("silver"){
-    translate([0,0,-9.5]) cylinder(d=5.5,h=9.5);
-  }
-
-  //wires
-  color("red") translate([14.9+26.9-14.9,-2.35/2,4.8+11.6/2]) rotate([0,90,0]) cylinder(d=2.35,h=length);
-  color("black") translate([14.9+26.9-14.9,2.35/2,4.8+11.6/2]) rotate([0,90,0]) cylinder(d=2.35,h=length);
-}
