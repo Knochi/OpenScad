@@ -291,3 +291,12 @@ function rotatePoints(points=[[0,0],[1,1],[5,5]],angle=90,output=[],iter)=
 
 *echo(str("fact: ",fact(5)));
 function fact(n,result=1)= n ? fact((n-1),n*result)  : result;
+
+//calculate two centers from two points and a radius
+function c_centers(P1, P2, r)= let(
+  q = sqrt(pow((P2.x-P1.x),2) + pow((P2.y-P1.y),2)),
+  x3 = (P1.x + P2.x) /2,
+  y3 = (P1.y + P2.y) /2,
+  xx = sqrt((pow(r,2) - pow(q/2,2))*(P1.y-P2.y)/q,
+  yy = sqrt((pow(r,2) - pow(q/2,2))*(P2.x-P1.x)/q
+) [[x3 + xx, y3+yy], [x3-xx,y3-yy]];

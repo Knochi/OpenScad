@@ -27,6 +27,7 @@ function framFromA()=360/$fa;
 function fragFromS()=r*2*PI/$fs;
 
 //arc function simlar to svg path command "A" (https://www.w3.org/TR/SVG11/paths.html#PathData)
+//arc function simlar to svg path command "a/A" (https://www.w3.org/TR/SVG11/paths.html#PathData)
 function push_arc(start, end, r, sweep=1, poly=[], iter=0)=let(
   chord = norm(start-end),
   r = (r<chord/2) ? chord/2 : r, //limit the radius to half the chord length, doesn't work
@@ -36,7 +37,9 @@ function push_arc(start, end, r, sweep=1, poly=[], iter=0)=let(
   //calulate start and end angle with atan2 to address all quadrants
   sa = atan2(start.y-center.y,start.x-center.x), //atan2(y/x) 
   ea = atan2(end.y-center.y,end.x-center.x), //atan2(y/x) 
-  angle = sweep ? ea+sa : ea-sa, //enclosed angle
+  u= center-start,
+  v= center-end,
+  angle = acos(u * v / (norm(u)*norm(v))),
   facets= arcFragments(r,abs(angle)), //total facets
   angInc=(dir*angle)/(facets-1),
   x = center.x+r*cos(sa+angInc*iter),

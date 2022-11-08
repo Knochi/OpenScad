@@ -6,19 +6,26 @@ $fn=50;
 
 push_arcTest();
 module push_arcTest(){
-  //push_arc([3.26,0],[3.53,0.29],0.02,1)
-  arcStart=[15,0];
-  arcEnd=[10,5];
+  //[-0.63,0.95],[-0.64,1.25],0.15,1
+  arcStart=[1,5];
+  arcEnd=[3,7];
   arcChord = norm(arcEnd-arcStart); //chord length
-  arcRadius=5;
-  arcSweep=1;
+  arcRadius=3;
+  arcSweep=0;
   center=c_centers(arcStart,arcEnd,arcRadius);
   dbgCircleRad=arcRadius/20;
   echo(arcChord,arcRadius);
-
+  
   //debug print
   echo("center, sa, ea, angle, facets");
   echo(push_arc(start=arcStart,end=arcEnd,r=arcRadius,sweep=arcSweep,debug=true));
+  normS = norm(arcStart);
+  normE = norm(arcEnd);
+  denom= normS*normE;
+  echo(str("normS: ",normS,"normE: ",normE));
+  
+  angle=acos(arcStart*arcEnd/(norm(arcStart)*norm(arcEnd)));
+  echo(str("angle: ",angle));
 
   //color("orange") translate(center[arcSweep]) circle(arcRadius+0.5);
 
@@ -33,8 +40,6 @@ module push_arcTest(){
   else 
     polygon(concat([center[arcSweep]],push_arc(start=arcStart,end=arcEnd,r=arcRadius,sweep=arcSweep)));
 
-  
-  
     color("red") linear_extrude(dbgCircleRad) translate(center[0]){
       circle(dbgCircleRad);
       translate([dbgCircleRad,dbgCircleRad]) text(str("C0:",roundVec(center[0],2)),size=dbgCircleRad*2);
@@ -66,7 +71,10 @@ function push_arc(start, end, r, sweep=1, poly=[], iter=0,debug=false)=let(
   //calulate start and end angle with atan2 to address all quadrants
   sa = atan2(start.y-center.y,start.x-center.x), //atan2(y/x) 
   ea = atan2(end.y-center.y,end.x-center.x), //atan2(y/x) 
-  angle = sweep ? ea+sa : ea-sa, //enclosed angle
+  //angle = sweep ? ea+sa : ea-sa, //enclosed angle
+  u= center - start,
+  v= center -end,
+  angle = acos(u * v / (norm(u)*norm(v))),
   facets= arcFragments(r,abs(angle)), //total facets
   angInc=(dir*angle)/(facets-1),
   x = center.x+r*cos(sa+angInc*iter),
