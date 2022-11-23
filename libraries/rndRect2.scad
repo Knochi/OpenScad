@@ -30,7 +30,9 @@ module rndRect(size=[10,10,1],radius=1,drill=1,diff="none",label="none",drillOff
             cylinder(h=dims.z+fudge, d=drill);
         }
       }
-    }//if screwheads
+    }
+    
+  //if screwheads
     
     /*else if (drill>=radius*2){//if drill bigger than radius make screw Head cover
       difference(){

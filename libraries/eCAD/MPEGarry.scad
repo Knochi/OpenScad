@@ -1,4 +1,4 @@
-include <eCad/KiCADColors.scad>
+include <KiCADColors.scad>
 
 /* Library for MPE-Garry Connectors */
 fudge=0.1;
