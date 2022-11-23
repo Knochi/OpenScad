@@ -1,28 +1,35 @@
+/* [Config] */
+nudgeCnt=3;
+drillHole=true;
+txtFont="Exo";
+txtStyle="Black";
 
-/* [Dimensions] */
+/* [Text] */
+txtLine1="HALO";
+txtLine2="Black Hole Sun";
+txtLine3="PLA";
+
+/* [Advanced] */
 //overall dimensions
 ovDims=[85,54,4.5]; 
 //corner Radius
 crnRad=8; 
+//Dimensions of the Insert
 insrtDims=[35.6,18.6,3];
+//Spacing of the cavity for the insert
 insrtSpcng=[0.2,0.2,0.25];
-//cavities square dimension
+//littl cavities square dimension
 cavSize=8;
 //cavities radius 
 cavRad=2; 
 //cavities depth
 cavZ=[[3,3.5,4],[1.5,2,2.5]]; //bottom left to top right
-nudgeCnt=3;
+//radius of each nudge
 nudgeRad=3.5;
+//how deep into the body
 nudgeDeep=1.5;
+//Offset for the first nudge
 nudgeOffset=12.5; 
-
-/* [Text] */
-txtFont="Exo";
-txtStyle="Black";
-txtLine1="HALO";
-txtLine2="Black Hole Sun";
-txtLine3="PLA";
 
 /* [Hidden] */
 fudge=0.1;
@@ -37,12 +44,25 @@ txt2Size=5.8;
 txt3Size=5.8;
 $fn=50;
 
-//the sample
+
 sample();
+translate([-insrtDims.z-3,0,0])  insert();
 
 //the insert
-translate([-insrtDims.z-3,0,0]) rotate([90,0,90]) cube(insrtDims);
+module insert(){
+  featuresPitch=insrtDims.x/8;
+  difference(){
+    linear_extrude(insrtDims.y) difference(){
+      square([insrtDims.z,insrtDims.x]);
+      translate([insrtDims.z,featuresPitch]) square(insrtDims.z,true);
+      translate([insrtDims.z,featuresPitch*2]) circle(insrtDims.z/2);
+    }
+    translate([insrtDims.z,featuresPitch*3,insrtDims.y/4]) sphere(insrtDims.z/2);
+    translate([insrtDims.z,featuresPitch*3,insrtDims.y/2]) sphere(insrtDims.z/2);
+  }
 
+}
+//the sample
 module sample(){
     difference(){
       //body
@@ -50,7 +70,7 @@ module sample(){
       //cavities
       for (ix=[0:2],iy=[0,1]){
         zOffset=ovDims.z-cavZ[iy][ix];
-        translate([ix*cavPitch.x,iy*cavPitch.y,zOffset]+cavOffset) linear_extrude(cavZ[iy][ix]+fudge) cavity();
+        translate([ix*cavPitch.x,iy*cavPitch.y,zOffset]+cavOffset) linear_extrude(cavZ[iy][ix]+fudge) cavity([cavSize,cavSize],cavRad);
       }
       //insert
       translate(insOffset) cube(insrtDims+insrtSpcng*2+[0,0,fudge]);
@@ -64,7 +84,7 @@ module sample(){
       for (ix=[0:nudgeCnt-1])
         translate([nudgeOffset+ix*nudgeRad*2,ovDims.y+nudgeRad-nudgeDeep,-fudge/2]) cylinder(r=nudgeRad,h=ovDims.z+fudge);
       //hole
-      translate([ovDims.x-crnRad,ovDims.y-crnRad,-fudge/2]) cylinder(d=crnRad,h=ovDims.z+fudge);
+      if (drillHole) translate([ovDims.x-crnRad,ovDims.y-crnRad,-fudge/2]) cylinder(d=crnRad,h=ovDims.z+fudge);
     }
 }
 
