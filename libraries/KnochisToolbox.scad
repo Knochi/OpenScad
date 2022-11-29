@@ -21,6 +21,24 @@ module arc(r=1,angle=45,poly=[],iter=0){
   }
 }
 
+// a lathe tool that accepts diameters and offsets
+module lathe(dimensions=[],zOffset=0,iter=0){
+ 
+  d1= dimensions[iter][1];
+  d2= dimensions[iter][2];
+  h= dimensions[iter][0];
+
+  // if one diameter make cylinder else make cone
+  if (dimensions[iter][2]==undef)
+    translate([0,0,zOffset]) cylinder(d=d1,h=h);
+  else
+    translate([0,0,zOffset]) cylinder(d1=d1,d2=d2,h=h);
+  
+  //cumulate offset and process next section
+  if (iter<len(dimensions)-1) lathe(dimensions,zOffset+h,iter+1);
+  else echo(str("[Lathe] Total Length: ",zOffset+h));
+}
+
 //from https://en.wikibooks.org/wiki/OpenSCAD_User_Manual/Other_Language_Features
 function fragFromR(r,ang=360)=$fn>0 ? ($fn>=3 ? $fn : 3) : ceil(max(min(360/$fa,r*2*PI*ang/(360*$fs)),5));
 function framFromA()=360/$fa;
@@ -46,6 +64,34 @@ function push_arc(start, end, r, sweep=1, poly=[], iter=0)=let(
   y = center.y+r*sin(sa+angInc*iter)
   ) (iter<facets) ? push_arc(start,end,r, sweep, poly=concat(poly,[[x,y]]),iter=iter+1) : 
     poly;
+
+//rounded 2D or 3D rectangle with optional drill holes 
+module rndRect(size=[10,10,2],radius=3,drillDia=1,center=false){
+  //set to cube if size.y not defined
+  dims = (size.y==undef) ? [size.x,size.x,size.x] : size;
+  comp = (size.x>size.y) ? size.y : size.x; //which value to compare to
+  radius = (radius>(comp/2)) ?  comp/2 : radius; //set and limit radius
+  cntrOffset = center ? len(size)<3 ? [0,0] : // center && len(size)<3
+                                      [0,0,-size.z/2] : //else if center
+                                      [size.x/2,size.y/2,0]; //else
+  echo(cntrOffset);
+  if (len(size)<3)
+    translate(cntrOffset) shape();
+  else
+    translate(cntrOffset) linear_extrude(size.z)  shape();
+
+  module shape(){
+    difference(){
+      hull() for (ix=[-1,1], iy=[-1,1])
+        translate([ix*(dims.x/2-radius),iy*(dims.y/2-radius)])
+          circle(r=radius);//cube
+
+      if (drillDia) for (ix=[-1,1],iy=[-1,1]) //drill holes
+          translate([ix*(dims.x/2-radius),iy*(dims.y/2-radius)]) 
+            circle(d=drillDia);
+    }
+  }
+}
 
 
 //Calculate fragments from r, angle and $fn, $fr or $fa 

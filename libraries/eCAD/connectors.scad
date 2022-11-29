@@ -12,53 +12,10 @@
 // 2. If you want to color sth. place the color before each primitive
 
 use <KnochisToolbox.scad>
-
+include <KiCADColors.scad>
 
 $fn=50;
 fudge=0.1;
-
-// -- Kicad diffuse colors --
-ledAlpha=0.1;
-glassAlpha=0.39;
-metalGreyPinCol=    [0.824, 0.820,  0.781];
-metalGreyCol=       [0.298, 0.298,  0.298]; //metal Grey
-metalCopperCol=     [0.7038,0.27048,0.0828]; //metal Copper
-metalAluminiumCol=  [0.372322, 0.371574, 0.373173];
-metalBronzeCol=     [0.714, 0.4284, 0.18144];
-metalSilverCol=     [0.50754, 0.50754, 0.50754];
-resblackBodyCol=    [0.082, 0.086,  0.094]; //resistor black body
-darkGreyBodyCol=    [0.273, 0.273,  0.273]; //dark grey body
-brownBodyCol=       [0.379, 0.270,  0.215]; //brown Body
-lightBrownBodyCol=  [0.883, 0.711,  0.492]; //light brown body
-pinkBodyCol=        [0.578, 0.336,  0.352]; //pink body
-blueBodyCol=        [0.137, 0.402,  0.727]; //blue body
-greenBodyCol=       [0.340, 0.680,  0.445]; //green body
-orangeBodyCol=      [0.809, 0.426,  0.148]; //orange body
-redBodyCol=         [0.700, 0.100,  0.050]; 
-yellowBodyCol=      [0.832, 0.680,  0.066];
-whiteBodyCol=       [0.895, 0.891,  0.813];
-metalGoldPinCol=    [0.859, 0.738,  0.496];
-blackBodyCol=       [0.148, 0.145,  0.145];
-greyBodyCol=        [0.250, 0.262,  0.281];
-lightBrownLabelCol= [0.691, 0.664,  0.598];
-ledBlueCol=         [0.700, 0.100,  0.050, ledAlpha];
-ledYellowCol=       [0.100, 0.250,  0.700, ledAlpha];
-ledGreyCol=         [0.98,  0.840,  0.066, ledAlpha];
-ledWhiteCol=        [0.895, 0.891, 0.813, ledAlpha];
-ledgreyCol=         [0.27, 0.25, 0.27, ledAlpha];
-ledBlackCol=        [0.1, 0.05, 0.1];
-ledGreenCol=        [0.400, 0.700,  0.150, ledAlpha];
-glassGreyCol=       [0.400769, 0.441922, 0.459091, glassAlpha];
-glassGoldCol=       [0.566681, 0.580872, 0.580874, glassAlpha];
-glassBlueCol=       [0.000000, 0.631244, 0.748016, glassAlpha];
-glassGreenCol=      [0.000000, 0.75, 0.44, glassAlpha];
-glassOrangeCol=     [0.75, 0.44, 0.000000, glassAlpha];
-pcbGreenCol=        [0.07,  0.3,    0.12]; //pcb green
-pcbBlackCol=        [0.16,  0.16,   0.16]; //pcb black
-pcbBlue=            [0.07,  0.12,   0.3];
-FR4darkCol=         [0.2,   0.17,   0.087]; //?
-FR4Col=             [0.43,  0.46,   0.295]; //?
-
 
 translate([-30,0,0]) XH(2);
 translate([-15,0,0]) mUSB(false);
@@ -80,7 +37,7 @@ translate([230,0,0]) PJ398SM();
 
 *rotate([0,0,-90]) femHeaderSMD(20,2,center=true);
 
-!microMatch();
+*microMatch();
 module microMatch(pos=10){
   // TE Micro-Match connector line (also available from other manufacturers)
   // https://www.te.com/usa-en/products/connectors/pcb-connectors/wire-to-board-connectors/ffc-fpc-ribbon-connectors/intersection/micro-match.html
@@ -89,9 +46,6 @@ module microMatch(pos=10){
   
   //pins
   pinThck=0.25;
-  pinRad=0.15;
-  pinHght=0.85;
-  baseAng=0.65;
 
   //the flanked part for female
   tpFace=[pos*pitch+0.53,3.85]; //
@@ -111,7 +65,7 @@ module microMatch(pos=10){
   cutOutDims=[1.7,collarDims.y/2,0.9];
   translate([0,0,collarDims.z/2+ovHght-tpHght]) color(redBodyCol) difference(){
      cube(collarDims,true);
-     translate([-(collarDims.x-keying.x+fudge)/2,0,0]) cube([keying.x+fudge,keying.y,collarDims.z+fudge],true);
+     translate([(collarDims.x-keying.x+fudge)/2,0,0]) cube([keying.x+fudge,keying.y,collarDims.z+fudge],true);
      //staggered cutouts
      //TODO: add fillets (r~0.25mm)
     translate([0,0,(collarDims.z-cutOutDims.z+fudge)/2]) 
@@ -123,9 +77,13 @@ module microMatch(pos=10){
   baseDims=[tpFace.x+(collarDims.x-tpFace.x)/2,3,1.5];
   basePoly=[[baseDims.y/2,baseDims.z],[baseDims.y/2,0],[baseDims.y/2-0.43,0],[baseDims.y/2-0.43,0.1],[baseDims.y/2-0.95,1],
             [-(baseDims.y/2-0.95),1],[-(baseDims.y/2-0.43),0.1],[-(baseDims.y/2-0.43),0],[-baseDims.y/2,0],[-baseDims.y/2,baseDims.z]];
-  color(redBodyCol) translate([collarDims.x/2-baseDims.x,0,ovHght-tpHght-baseDims.z]) rotate([90,0,90]) linear_extrude(baseDims.x) polygon(basePoly);
+  color(redBodyCol) translate([-collarDims.x/2,0,ovHght-tpHght-baseDims.z]) rotate([90,0,90]) linear_extrude(baseDims.x) polygon(basePoly);
 
-  color(metalSilverCol) rotate([90,0,90]) pin();
+  //pins
+  for (ix=[0:(pos-1)]){
+    pinRot= (ix%2) ? -1 : 1 ;
+    color(metalSilverCol) translate([ix*pitch-(pos-1)/2*pitch,0,0]) rotate([90,0,pinRot*90]) translate([0,0,-pinThck/2]) pin();
+  }
 
   module cross2D(){
     ovDims=[0.85,1.5,0.5];
@@ -135,12 +93,20 @@ module microMatch(pos=10){
   }
 
   module pin(){
-    poly=concat([[1.32,0.02]],
-                push_arc([3.26,0],[3.53,0.28],0.3,0),
+    poly=concat(push_arc([3.26,0],[3.53,0.28],0.3,0),
                 push_arc([3.51,0.62],[3.36,0.76],0.15,0),
                 push_arc([2.88,0.76],[2.73,0.91],0.15,1),
                 push_arc([-0.63,0.95],[-0.64,1.25],0.15,1),
-                [[0.23,1.36]]
+                push_arc([-1.82,1.92],[-1.96,1.56],0.5,1),
+                push_arc([-2.63,0.9],[-2.69,0.76],0.15,0),
+                [[-2.69,0.34],[-2.08,0.34]],
+                push_arc([-2.08,0.39],[-1.79,0.39],0.15,1),
+                push_arc([-1.77,0.31],[-1.62,0.2],0.15,0),
+                push_arc([-1.17,0.2],[-1.03,0.31],0.15,0),
+                push_arc([-1.0,0.39],[-0.72,0.4],0.15,1),
+                push_arc([-0.68,0.31],[-0.53,0.21],0.15,0),
+                push_arc([0.93,0.32],[1.04,0.29],0.15,1),
+                push_arc([1.3,0.06],[1.4,0.02],0.15,0)
                 );
     linear_extrude(pinThck) polygon(poly);
   }
@@ -1167,7 +1133,7 @@ module tubeSocket9pinFlange(flange=true){
 
 
 
-
+!mUSB();
 module mUSB(showPlug=false){
   //usb.org CabConn20.pdf
 
@@ -1214,7 +1180,7 @@ module mUSB(showPlug=false){
 
   translate([0,-THT_OZ,0]){
     //THT pins
-    color("silver"){
+    color(metalSilverCol){
       for (ix=[-1,1]){
         translate([ix*(6.45/2-r),THT_OZ,t/2])
           rotate(ix*-90)
@@ -1226,7 +1192,7 @@ module mUSB(showPlug=false){
 
     //SMD pads
     padDim=[1,1,t];
-    color("silver")
+    color(metalSilverCol)
       for (ix=[-1,1]){
         translate([ix*(M+t)/2,-(padDim.x/2),r+t]) rotate([-90,0,ix*-90])
           bend(padDim,angle=-90,radius=r+t/2,center=true)
@@ -1237,30 +1203,30 @@ module mUSB(showPlug=false){
 
     //SMD pins
       for (ix=[-H/2,-I/2,0,I/2,H/2]){
-        color("gold")
+        color(metalGoldPinCol)
         translate([ix,-0.7,r+conThck/2])
           rotate([-90,0,0])
             bend([conWdth,1-r,conThck],center=true,angle=90,radius=r)
               cube([conWdth,1-r,conThck],center=true);
-        color("gold")
+        color(metalGoldPinCol)
         translate([ix,-W/2-1-t,-X+t+N-(conThck)/2])
           cube([conWdth,W-fudge,conThck],true);
      }
 
 
     //plastics
-    color("darkSlateGrey")
+    color(blackBodyCol)
       translate([0,-t,N/2+t])
         rotate([90,0,0])
          hull()
             for (ix=[-1,1],iy=[-1,1])
               translate([ix*(M/2-r),iy*(N/2-r)]) cylinder(r=r-0.01, h=1);
-    color("darkSlateGrey")
+    color(blackBodyCol)
        translate([0,-W/2-1-t,-X/2+t+N-U]) plastic();
 
 
     //metal-body with cutouts
-    color("silver"){
+    color(metalSilverCol){
       difference(){
         shell();
         translate([0,THT_OZ,t+(t+1)/2]) cube([7.4+fudge,1,1+t],true);

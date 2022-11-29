@@ -827,7 +827,7 @@ module subMinSlideSwitch(){
 
 }
 
-!jogSwitch(-1);
+*jogSwitch(-1);
 module jogSwitch(pos=0){
   //https://www.qyswitch.com/h-pd-270.html
 
@@ -898,6 +898,46 @@ module arcadeButton(size=24,panelThck=3,col="red"){
     translate([0,0,-nutDims[1]-panelThck]) cylinder(d=nutDims[0],h=nutDims[1]);
   }
 
+}
+
+!joystick();
+module joystick(plateThck=3, cut=false){
+//Joystick: https://www.berrybase.de/arcade-joystick-8-wege-78-2mm-hoehe-rot
+  sheetThck=1.6;
+  topPlateDims=[95,66];
+  boxDims=[66,65,30];
+  axisLen=44;
+  ballDia=35;
+
+  if (cut){
+    for (ix=[-1,1],iy=[-1,1])
+      translate([ix*81.5/2,iy*43.5/2]) children();
+  }
+  else{
+    //plate
+    translate([0,0,-sheetThck]){
+      color(blackBodyCol) linear_extrude(sheetThck) difference(){
+        square(topPlateDims,true);
+        for (ix=[-1,1],iy=[-1,1])
+          translate([ix*81.5/2,iy*43.5/2])
+            rotate(ix*iy*-45) hull() for (ix=[-1,1]) translate([ix*2.5,0]) circle(d=5);
+        for (ix=[-1,1])
+          translate([ix*85/2,0]) circle(d=5);
+      }
+      //body
+      translate([0,0,-boxDims.z/2]) cube(boxDims,true);
+      //handle
+      color(metalSilverCol) cylinder(d=10,h=axisLen+ballDia/2);
+      color(redBodyCol) translate([0,0,axisLen+ballDia/2]) sphere(d=ballDia);
+    }
+    //coverplate
+    color(blackBodyCol) translate([0,0,plateThck]) linear_extrude(sheetThck)
+      difference(){
+        circle(d=52);
+        circle(d=11);
+      }
+  }
+  
 }
 
 module snapActionSwitch(){

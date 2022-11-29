@@ -26,18 +26,18 @@
      inkscape:deskcolor="#d1d1d1"
      showgrid="false"
      showguides="true"
-     inkscape:zoom="32"
-     inkscape:cx="682.29687"
-     inkscape:cy="167.0625"
+     inkscape:zoom="4"
+     inkscape:cx="625.875"
+     inkscape:cy="193.75"
      inkscape:window-width="1918"
-     inkscape:window-height="2054"
+     inkscape:window-height="1004"
      inkscape:window-x="1910"
-     inkscape:window-y="0"
+     inkscape:window-y="1050"
      inkscape:window-maximized="0"
      inkscape:current-layer="g138"
      inkscape:document-units="mm">
     <sodipodi:guide
-       position="668.68795,978.60354"
+       position="590.29156,949.03464"
        orientation="0,-1"
        id="guide38273"
        inkscape:locked="false" />
@@ -56,7 +56,7 @@
        inkscape:label=""
        inkscape:color="rgb(224,27,36)" />
     <sodipodi:guide
-       position="675.32916,959.68166"
+       position="625.38378,970.97288"
        orientation="0,-1"
        id="guide700"
        inkscape:locked="false" />
@@ -101,19 +101,24 @@
        id="guide1278"
        inkscape:locked="false" />
     <sodipodi:guide
-       position="672.50044,962.57553"
+       position="581.60264,952.63677"
        orientation="0,-1"
        id="guide1280"
        inkscape:locked="false" />
     <sodipodi:guide
-       position="672.50044,962.57553"
+       position="601.61998,951.1555"
        orientation="1,0"
        id="guide1282"
        inkscape:locked="false" />
     <sodipodi:guide
-       position="675.32916,959.68166"
+       position="602.01686,952.63677"
        orientation="1,0"
        id="guide1284"
+       inkscape:locked="false" />
+    <sodipodi:guide
+       position="587.52759,951.1555"
+       orientation="0,-1"
+       id="guide761"
        inkscape:locked="false" />
   </sodipodi:namedview>
   <g
@@ -1477,5 +1482,9 @@
        cx="465.7471"
        cy="-708.96741"
        r="1.1881496" />
+    <path
+       style="fill:none;stroke:#a21e4d;stroke-width:0.575999;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-variation-settings:normal;opacity:1;vector-effect:none;fill-opacity:1;stroke-miterlimit:2;stroke-dasharray:none;stroke-dashoffset:0;-inkscape-stroke:none;stop-color:#000000;stop-opacity:1"
+       d="m 439.9935,736.20046 16.62876,-9.45128"
+       id="path740" />
   </g>
 </svg>
