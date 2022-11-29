@@ -1,4 +1,4 @@
-$fn=20;
+$fn=100;
 
 /* [Dimensions] */
 oDia=8;
@@ -29,9 +29,9 @@ showtiltBone=false;
 debug=false;
 
 /* [Colors] */
-strokeColor="#b0a998";
-boneColor="#4c4c4c";
-fillColor="#dbbc7e";
+strokeColor=[0.07,  0.3,    0.12];//"#b0a998";
+boneColor=[0.2,   0.17,   0.087];//"#4c4c4c";
+fillColor=[0.859, 0.738,  0.496];//"#dbbc7e";
 
 /* [Hidden] */
 
