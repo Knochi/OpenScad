@@ -99,8 +99,8 @@ module LGA8(){
 }
 
 
-*QFN(54,[7,7,1],0.4);
-module QFN(pos=28,size=[5,5,1], pitch=0.5,label="QFN"){
+!QFN(20,[3,3,0.65],0.4, 0, label="");
+module QFN(pos=28,size=[5,5,1], pitch=0.5, pSize=undef, label="QFN"){
   // JEDEC MO-220
   // https://www.jedec.org/system/files/docs/MO-220K01.pdf
   /*
@@ -143,14 +143,16 @@ module QFN(pos=28,size=[5,5,1], pitch=0.5,label="QFN"){
   
   //28/32/64
   //length/width from pins or size
-  D= (len(size)<2) ? size.x ://auto size when nothing provided
+  D= (len(size)>2) ? size.x ://auto size when nothing provided
      (pos<28) ? 4.0 : 
      (pos<48) ? 5.0 : 
      (pos<64) ? 7.0 : 9.0 ;    //body size X
   
-  E= (len(size)<2) ? size.y :D;      //body size y
+  E= (len(size)>2) ? size.y :D;      //body size y
+  
   //thermal pad size.x
-  J=(pos<28) ? 2.6 : //28
+  J=(pSize!=undef) ? pSize.x :
+    (pos<28) ? 2.6 : //28
     (pos<48) ? 3.1 : //32
     (pos<64) ? 5.15 : 7.15;  //48/64 //pad size x 
   
@@ -178,9 +180,9 @@ module QFN(pos=28,size=[5,5,1], pitch=0.5,label="QFN"){
         translate([b/2,L-b/2-fudge,0]) cylinder(d=b,h=A3);
       }
     }
-  
-  color(metalGreyPinCol) //Exposed Pad
-    linear_extrude(A3) polygon([[-J/2+b,K/2],[J/2,K/2],[J/2,-K/2],[-J/2,-K/2],[-J/2,K/2-b]]);
+  if (pSize)
+    color(metalGreyPinCol) //Exposed Pad
+        linear_extrude(A3) polygon([[-J/2+b,K/2],[J/2,K/2],[J/2,-K/2],[-J/2,-K/2],[-J/2,K/2-b]]);
 }
 
 module SOIC(pins=8, label=""){
