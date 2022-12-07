@@ -43,13 +43,14 @@ FR4Col=             [0.43,  0.46,   0.295]; //?
 
 
 colorList=[
-metalGreyPinCol,
+metalGreyPinCol, //0 metals
 metalGreyCol,
 metalCopperCol,
 metalAluminiumCol,
 metalBronzeCol,
-metalSilverCol,
-resblackBodyCol,
+metalSilverCol, 
+metalGoldPinCol, //6
+resblackBodyCol, //7 bodies
 darkGreyBodyCol,
 brownBodyCol,
 lightBrownBodyCol,
@@ -59,42 +60,56 @@ greenBodyCol,
 orangeBodyCol,
 redBodyCol,
 yellowBodyCol,
-whiteBodyCol,
-metalGoldPinCol,
+whiteBodyCol, 
 blackBodyCol,
-greyBodyCol,
-lightBrownLabelCol,
-ledBlueCol,
+greyBodyCol, 
+lightBrownLabelCol, //20
+ledBlueCol, //21 leds
 ledYellowCol,
 ledGreyCol,
 ledWhiteCol,
 ledgreyCol,
 ledBlackCol,
-ledGreenCol,
-glassGreyCol,
+ledGreenCol, // 27
+glassGreyCol, //28 glass
 glassGoldCol,
 glassBlueCol,
 glassGreenCol,
-glassOrangeCol,
-pcbGreenCol,
+glassOrangeCol, //32
+pcbGreenCol, //33 pcb
 pcbBlackCol,
 pcbBlue,
 FR4darkCol,
-FR4Col
+FR4Col //37
 ];
 
-*testColors();
+testColors();
 module testColors(){
     cubeSize=10;
     cubeDist=5;
-    for (ix=[0:len(colorList)-1])
-      color(colorList[ix]) translate([ix*(cubeDist+cubeSize),0,0]) cube(cubeSize,true);
+    xOffset=cubeSize*4;
+    txtSize=cubeSize*0.8;
+    txtHght=1;
+    //groups [[indizes,label,row],[...],...]
+    groups=[[[0:6],"metals",0],
+            [[7:20],"bodies",1],
+            [[21:27],"LEDs",2],
+            [[28:32],"glass",3],
+            [[33:37],"PCB",4]];
+    echo(groups);
+
+    
+    for (group=groups, ix=group[0]){
+      color(whiteBodyCol) translate([0,group[2]*(cubeSize+cubeDist),(cubeSize-txtHght)/2]) 
+        linear_extrude(txtHght) text(group[1],size=txtSize);
+      color(colorList[ix]) translate([(ix-group[0][0])*(cubeDist+cubeSize)+xOffset,
+                                       group[2]*(cubeSize+cubeDist)+cubeSize/2,
+                                       cubeSize/2]) cube(cubeSize,true);
+    }
 
 }
 
 //testcube
-*color(blackBodyCol) cube(10,true);
-
 /* From KiCAD wrl file
 Shape { //metalGreyPin
     appearance Appearance {material DEF PIN-01 Material {
