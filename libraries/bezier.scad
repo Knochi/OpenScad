@@ -33,7 +33,6 @@ function BEZ33(u) = pow(u,3);
 function PointAlongBez4(p0, p1, p2, p3, u) = 
 	BEZ03(u)*p0+BEZ13(u)*p1+BEZ23(u)*p2+BEZ33(u)*p3;
 // End public domain Bezier stuff
-
 function d2BEZ03(u) = 6*(1-u);
 function d2BEZ13(u) = 18*u-12;
 function d2BEZ23(u) = -18*u+6;
@@ -58,16 +57,13 @@ function OFFSET(v) = ["o",v];
 function SHARP() = OFFSET([0,0,0]);
 function LINE() = ["l",0];
 function POLAR(r,angle) = OFFSET(r*[cos(angle),sin(angle)]);
-function POINT_IS_SPECIAL(v) = (v[0]=="r" || v[0]=="a" || v[0]=="o" || v[0]=="l");
+//function POINT_IS_SPECIAL(v) = (v[0]=="r" || v[0]=="a" || v[0]=="o" || v[0]=="l");
 
 // this does NOT handle offset type points; to handle those, use DecodeBezierOffsets()
-function getControlPoint(cp,node,otherCP,otherNode,nextNode) = 
-    let(v=node-otherCP) (          
-    cp[0]=="r" ? node+cp[1]*v:
+function getControlPoint(cp,node,otherCP,otherNode,nextNode) =     cp[0]=="r" ? node+cp[1]*(node-otherCP):
     cp[0]=="a" ? (
-        norm(v)<1e-9 ? node+cp[1]*(node-otherNode)/norm(node-otherNode) : node+cp[1]*v/norm(v) ) : 
-    cp[0]=="l" ? (2*node+nextNode)/3 :
-        cp );
+        let(v=node-otherCP) ( norm(v)<1e-9 ? node+cp[1]*(node-otherNode)/norm(node-otherNode) : node+cp[1]*v/norm(v) ) ) :
+        cp;
 
 function onLine2(a,b,c,eps=1e-4) =
     norm(c-a) <= eps ? true 
@@ -129,11 +125,22 @@ function DecodeBezierOffsets(p) = [for (i=[0:_correctLength(p)-1]) i%3==0?p[i]:(
 function _mirrorPaths(basePath, control, start) =
     control[start][0] == "m" ? _mirrorPaths(_stitchPaths(basePath,_reverseArray(_transformPath(_mirrorMatrix( control[start][1] ),basePath))), control, start+1) : basePath;
 
+function DecodeMirrored(path,start=0) =
+    start >= len(path) ? path :
+    path[start][0] == "m" ? _mirrorPaths([for(i=[0:1:start-1]) path[i]], path, start) : 
+        DecodeMirrored(path,start=start+1);
+
+function DecodeLines(p) = [for (i=[0:len(p)-1]) 
+    i%3==0 || p[i][0] != "l" ? p[i] :
+    i%3 == 1 ? (p[i-1]*2+p[i+2])/3 :
+    (p[i-2]+p[i+1]*2)/3 ];
+
 function DecodeSpecialBezierPoints(p0) = 
     let(
         l = _correctLength(p0),
         doMirror = len(p0)>l && p0[l][0] == "m",
-        p=DecodeBezierOffsets(p0),
+        p1=DecodeLines(p0),
+        p=DecodeBezierOffsets(p1),
         basePath = [for (i=[0:l-1]) i%3==0?p[i]:(i%3==1?getControlPoint(p[i],p[i-1],p[i-2],p[i-4],p[i+2]):getControlPoint(p[i],p[i+1],p[i+2],p[i+4],p[i-2]))])
         doMirror ? _mirrorPaths(basePath, p0, l) : basePath;
 
@@ -164,7 +171,42 @@ function SplineAroundPoint(a,b,c,tension=0.5,includeLeftCP=true,includeRightCP=t
     includeRightCP ?
         [b,POLAR(tension*norm(c-b),GetSplineAngle(a,b,c))] :
         [b];
+        
+function mod(n,m) = let(q=n%m) q>=0 ? q : m+q;
 
+function _unit(v) = norm(v)==0 ? [for(x=v) 0] : v/norm(v);
+
+function _extractCorner(p) = is_list(p[1]) ? p[1] : p;
+
+function _corner(p0,p1,p2,offset=2,tension=0.448084975506) =
+    p1[0] == "s" ?
+    [p1[1],LINE(),LINE()] :
+    let(
+        offset=is_list(p1[1]) ? p1[0] : offset,
+        p1=_extractCorner(p1),
+        p0=_extractCorner(p0),
+        p2=_extractCorner(p2))
+    [p1-_unit(p1-p0)*offset,    
+    p1-_unit(p1-p0)*offset*(1-tension),
+    p1-_unit(p1-p2)*offset*(1-tension),
+    p1-_unit(p1-p2)*offset,
+    LINE(),LINE()];
+
+function _roundPathRaw(path,start,end,offset=2,tension=0.551915024494) =
+    let(n=len(path),
+        p2=_mirrorPaths(path))
+        [for(p=[for(i=[start:1:end-1]) _corner(p2[mod(i-1,n)],p2[i],path[mod(i+1,n)],offset=offset,tension=tension)]) for(q=p) q];
+
+function PathToBezier(path,offset=2,tension=0.551915024494,closed=false) =
+    let(p1=DecodeMirrored(path),
+        n=len(p1))
+        offset==0 && tension==0 ?
+        p1 :
+        !closed ? concat([_extractCorner(p1[0]),LINE(),LINE()], _roundPathRaw(p1,1,n-1,offset=offset,tension=tension), [_extractCorner(p1[n-1])]) :
+        let(p2 = _roundPathRaw(p1,0,n,offset=offset,tension=tension),
+            n2 = len(p2))
+        [for(i=[0:1:n2-3]) p2[mod(i,n2)]];
+            
 function BezierSmoothPoints(points,tension=0.5,closed=false)
     = let (n=len(points))
         flatten(
@@ -178,19 +220,15 @@ function BezierSmoothPoints(points,tension=0.5,closed=false)
 module BezierVisualize(p,precision=0.05,eps=0.00001,lineThickness=0.25,controlLineThickness=0.125,nodeSize=1) {
     $fn = 16;
     dim = len(p[0]);
-    
     module point(size) {
         if (dim==2)
             circle(d=size);
         else
             sphere(d=size);
     }
-    
     p1 = DecodeSpecialBezierPoints(p);
     l = Bezier(p1,precision=precision,eps=eps);
-    
-    //handle lines
-    if (lineThickness) for (i=[0:len(l)-2]) {
+    for (i=[0:len(l)-2]) {
         hull() {
             translate(l[i]) point(lineThickness);
             translate(l[i+1]) point(lineThickness);
@@ -248,31 +286,22 @@ translate([-30,0,0])
 filletLine3D(start=[0,0,0], end=[0,0,5], direction1=[5,0,0],direction2=[0,5,0]);
 
 translate([-20,0,0])
-!BezierVisualize([[0,0,10],[10,5,3],[10,10,20],[20,20,20],SYMMETRIC(),[0,0,8],[0,0,0]], lineThickness=1,nodeSize=2);
+BezierVisualize([[0,0,10],[10,5,3],[10,10,20],[20,20,20],SYMMETRIC(),[0,0,8],[0,0,0]], lineThickness=1,nodeSize=2);
 
 translate([0,-15]) BezierVisualize([[0,0],/*C*/[5,0],/*C*/OFFSET([-5,0]),[10,10],REPEAT_MIRRORED([1,0]),REPEAT_MIRRORED([0,1]) ]);
-
 linear_extrude(height=5) {
-  polygon(Bezier([                    [ 0, 0],/*C*/[ 5,0],
-                  /*C*/SYMMETRIC()   ,[10,10],/*C*/[15,10],
-                  /*C*/OFFSET([-5,0]),[20, 0]]
-                  ,precision=0.05));
-
-translate([0,15])
-  polygon(Bezier([[0,0],/*C*/[5,0],/*C*/SMOOTH_REL(2),[10,10],/*C*/[15,10],/*C*/POLAR(5,180),[20,0]],precision=0.05));
-  
-translate([0,30])
-  polygon(Bezier([[0,0],/*C*/[5,0],/*C*/SMOOTH_ABS(1.5),[10,10],/*C*/[15,10],/*C*/OFFSET([-5,0]),[20,0]],precision=0.05));
-  
-translate([0,45])
-  polygon(Bezier([[0,0],/*C*/[5,0],/*C*/SMOOTH_REL(-1),[10,10],/*C*/[15,10],/*C*/OFFSET([-5,0]),[20,0]],precision=0.05));
-  
-translate([0,60])
-  polygon(Bezier([[0,0],/*C*/[5,0],/*C*/SMOOTH_ABS(-1),[10,10],/*C*/[15,10],/*C*/OFFSET([-5,0]),[20,0]],precision=0.05));
-  
-translate([0,75])
-  polygon(Bezier([[0,0],/*C*/LINE(),/*C*/LINE(),[10,10],/*C*/SHARP(),/*C*/OFFSET([-5,0]),[20,0]],precision=0.05));
+    polygon(Bezier([[0,0],/*C*/[5,0],/*C*/SYMMETRIC(),[10,10],/*C*/[15,10],/*C*/OFFSET([-5,0]),[20,0]],precision=0.05));
+    translate([0,15])
+     polygon(Bezier([[0,0],/*C*/[5,0],/*C*/SMOOTH_REL(2),[10,10],/*C*/[15,10],/*C*/POLAR(5,180),[20,0]],precision=0.05));
+    translate([0,30])
+      polygon(Bezier([[0,0],/*C*/[5,0],/*C*/SMOOTH_ABS(1.5),[10,10],/*C*/[15,10],/*C*/OFFSET([-5,0]),[20,0]],precision=0.05));
+    translate([0,45])
+      polygon(Bezier([[0,0],/*C*/[5,0],/*C*/SMOOTH_REL(-1),[10,10],/*C*/[15,10],/*C*/OFFSET([-5,0]),[20,0]],precision=0.05));
+    translate([0,60])
+      polygon(Bezier([[0,0],/*C*/[5,0],/*C*/SMOOTH_ABS(-1),[10,10],/*C*/[15,10],/*C*/OFFSET([-5,0]),[20,0]],precision=0.05));
+    translate([0,75])
+      polygon(Bezier([[0,0],/*C*/LINE(),/*C*/LINE(),[10,10],/*C*/SHARP(),/*C*/OFFSET([-5,0]),[20,0]],precision=0.05));
 }
 translate([0,-40])
-BezierVisualize(BezierSmoothPoints([[0,0],[10,10],[20,0]],closed=false,tension=0.25),precision=-.1);
+ BezierVisualize(BezierSmoothPoints([[0,0],[10,10],[20,0]],closed=true,tension=0.25),precision=-.1);
 //</skip>
