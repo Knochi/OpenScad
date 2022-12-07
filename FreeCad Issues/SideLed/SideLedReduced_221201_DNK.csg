@@ -1,0 +1,7 @@
+multmatrix([[1, 0, 0, -0.225], [0, 1, 0, 0], [0, 0, 1, 0.24], [0, 0, 0, 1]]) {
+	difference() {
+		cube(size = [0.45, 1, 0.48], center = true);
+		circle($fn = 0, $fa = 12, $fs = 2, r = 0.25);
+	}
+}
+
