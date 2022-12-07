@@ -1,0 +1,461 @@
+group() {
+	group() {
+		color([0.895, 0.891, 0.813, 1]) {
+			multmatrix([[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 4.5], [0, 0, 0, 1]]) {
+				linear_extrude(height = 1, center = false, convexity = 1, scale = [1, 1], $fn = 0, $fa = 12, $fs = 2) {
+					text(text = "metals", size = 8, spacing = 1, font = "", direction = "ltr", language = "en", script = "Latn", halign = "left", valign = "baseline", $fn = 0, $fa = 12, $fs = 2);
+				}
+			}
+		}
+		color([0.824, 0.82, 0.781, 1]) {
+			multmatrix([[1, 0, 0, 40], [0, 1, 0, 5], [0, 0, 1, 5], [0, 0, 0, 1]]) {
+				cube(size = [10, 10, 10], center = true);
+			}
+		}
+		color([0.895, 0.891, 0.813, 1]) {
+			multmatrix([[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 4.5], [0, 0, 0, 1]]) {
+				linear_extrude(height = 1, center = false, convexity = 1, scale = [1, 1], $fn = 0, $fa = 12, $fs = 2) {
+					text(text = "metals", size = 8, spacing = 1, font = "", direction = "ltr", language = "en", script = "Latn", halign = "left", valign = "baseline", $fn = 0, $fa = 12, $fs = 2);
+				}
+			}
+		}
+		color([0.298, 0.298, 0.298, 1]) {
+			multmatrix([[1, 0, 0, 55], [0, 1, 0, 5], [0, 0, 1, 5], [0, 0, 0, 1]]) {
+				cube(size = [10, 10, 10], center = true);
+			}
+		}
+		color([0.895, 0.891, 0.813, 1]) {
+			multmatrix([[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 4.5], [0, 0, 0, 1]]) {
+				linear_extrude(height = 1, center = false, convexity = 1, scale = [1, 1], $fn = 0, $fa = 12, $fs = 2) {
+					text(text = "metals", size = 8, spacing = 1, font = "", direction = "ltr", language = "en", script = "Latn", halign = "left", valign = "baseline", $fn = 0, $fa = 12, $fs = 2);
+				}
+			}
+		}
+		color([0.7038, 0.27048, 0.0828, 1]) {
+			multmatrix([[1, 0, 0, 70], [0, 1, 0, 5], [0, 0, 1, 5], [0, 0, 0, 1]]) {
+				cube(size = [10, 10, 10], center = true);
+			}
+		}
+		color([0.895, 0.891, 0.813, 1]) {
+			multmatrix([[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 4.5], [0, 0, 0, 1]]) {
+				linear_extrude(height = 1, center = false, convexity = 1, scale = [1, 1], $fn = 0, $fa = 12, $fs = 2) {
+					text(text = "metals", size = 8, spacing = 1, font = "", direction = "ltr", language = "en", script = "Latn", halign = "left", valign = "baseline", $fn = 0, $fa = 12, $fs = 2);
+				}
+			}
+		}
+		color([0.372322, 0.371574, 0.373173, 1]) {
+			multmatrix([[1, 0, 0, 85], [0, 1, 0, 5], [0, 0, 1, 5], [0, 0, 0, 1]]) {
+				cube(size = [10, 10, 10], center = true);
+			}
+		}
+		color([0.895, 0.891, 0.813, 1]) {
+			multmatrix([[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 4.5], [0, 0, 0, 1]]) {
+				linear_extrude(height = 1, center = false, convexity = 1, scale = [1, 1], $fn = 0, $fa = 12, $fs = 2) {
+					text(text = "metals", size = 8, spacing = 1, font = "", direction = "ltr", language = "en", script = "Latn", halign = "left", valign = "baseline", $fn = 0, $fa = 12, $fs = 2);
+				}
+			}
+		}
+		color([0.714, 0.4284, 0.18144, 1]) {
+			multmatrix([[1, 0, 0, 100], [0, 1, 0, 5], [0, 0, 1, 5], [0, 0, 0, 1]]) {
+				cube(size = [10, 10, 10], center = true);
+			}
+		}
+		color([0.895, 0.891, 0.813, 1]) {
+			multmatrix([[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 4.5], [0, 0, 0, 1]]) {
+				linear_extrude(height = 1, center = false, convexity = 1, scale = [1, 1], $fn = 0, $fa = 12, $fs = 2) {
+					text(text = "metals", size = 8, spacing = 1, font = "", direction = "ltr", language = "en", script = "Latn", halign = "left", valign = "baseline", $fn = 0, $fa = 12, $fs = 2);
+				}
+			}
+		}
+		color([0.50754, 0.50754, 0.50754, 1]) {
+			multmatrix([[1, 0, 0, 115], [0, 1, 0, 5], [0, 0, 1, 5], [0, 0, 0, 1]]) {
+				cube(size = [10, 10, 10], center = true);
+			}
+		}
+		color([0.895, 0.891, 0.813, 1]) {
+			multmatrix([[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 4.5], [0, 0, 0, 1]]) {
+				linear_extrude(height = 1, center = false, convexity = 1, scale = [1, 1], $fn = 0, $fa = 12, $fs = 2) {
+					text(text = "metals", size = 8, spacing = 1, font = "", direction = "ltr", language = "en", script = "Latn", halign = "left", valign = "baseline", $fn = 0, $fa = 12, $fs = 2);
+				}
+			}
+		}
+		color([0.859, 0.738, 0.496, 1]) {
+			multmatrix([[1, 0, 0, 130], [0, 1, 0, 5], [0, 0, 1, 5], [0, 0, 0, 1]]) {
+				cube(size = [10, 10, 10], center = true);
+			}
+		}
+		color([0.895, 0.891, 0.813, 1]) {
+			multmatrix([[1, 0, 0, 0], [0, 1, 0, 15], [0, 0, 1, 4.5], [0, 0, 0, 1]]) {
+				linear_extrude(height = 1, center = false, convexity = 1, scale = [1, 1], $fn = 0, $fa = 12, $fs = 2) {
+					text(text = "bodies", size = 8, spacing = 1, font = "", direction = "ltr", language = "en", script = "Latn", halign = "left", valign = "baseline", $fn = 0, $fa = 12, $fs = 2);
+				}
+			}
+		}
+		color([0.082, 0.086, 0.094, 1]) {
+			multmatrix([[1, 0, 0, 40], [0, 1, 0, 20], [0, 0, 1, 5], [0, 0, 0, 1]]) {
+				cube(size = [10, 10, 10], center = true);
+			}
+		}
+		color([0.895, 0.891, 0.813, 1]) {
+			multmatrix([[1, 0, 0, 0], [0, 1, 0, 15], [0, 0, 1, 4.5], [0, 0, 0, 1]]) {
+				linear_extrude(height = 1, center = false, convexity = 1, scale = [1, 1], $fn = 0, $fa = 12, $fs = 2) {
+					text(text = "bodies", size = 8, spacing = 1, font = "", direction = "ltr", language = "en", script = "Latn", halign = "left", valign = "baseline", $fn = 0, $fa = 12, $fs = 2);
+				}
+			}
+		}
+		color([0.273, 0.273, 0.273, 1]) {
+			multmatrix([[1, 0, 0, 55], [0, 1, 0, 20], [0, 0, 1, 5], [0, 0, 0, 1]]) {
+				cube(size = [10, 10, 10], center = true);
+			}
+		}
+		color([0.895, 0.891, 0.813, 1]) {
+			multmatrix([[1, 0, 0, 0], [0, 1, 0, 15], [0, 0, 1, 4.5], [0, 0, 0, 1]]) {
+				linear_extrude(height = 1, center = false, convexity = 1, scale = [1, 1], $fn = 0, $fa = 12, $fs = 2) {
+					text(text = "bodies", size = 8, spacing = 1, font = "", direction = "ltr", language = "en", script = "Latn", halign = "left", valign = "baseline", $fn = 0, $fa = 12, $fs = 2);
+				}
+			}
+		}
+		color([0.379, 0.27, 0.215, 1]) {
+			multmatrix([[1, 0, 0, 70], [0, 1, 0, 20], [0, 0, 1, 5], [0, 0, 0, 1]]) {
+				cube(size = [10, 10, 10], center = true);
+			}
+		}
+		color([0.895, 0.891, 0.813, 1]) {
+			multmatrix([[1, 0, 0, 0], [0, 1, 0, 15], [0, 0, 1, 4.5], [0, 0, 0, 1]]) {
+				linear_extrude(height = 1, center = false, convexity = 1, scale = [1, 1], $fn = 0, $fa = 12, $fs = 2) {
+					text(text = "bodies", size = 8, spacing = 1, font = "", direction = "ltr", language = "en", script = "Latn", halign = "left", valign = "baseline", $fn = 0, $fa = 12, $fs = 2);
+				}
+			}
+		}
+		color([0.883, 0.711, 0.492, 1]) {
+			multmatrix([[1, 0, 0, 85], [0, 1, 0, 20], [0, 0, 1, 5], [0, 0, 0, 1]]) {
+				cube(size = [10, 10, 10], center = true);
+			}
+		}
+		color([0.895, 0.891, 0.813, 1]) {
+			multmatrix([[1, 0, 0, 0], [0, 1, 0, 15], [0, 0, 1, 4.5], [0, 0, 0, 1]]) {
+				linear_extrude(height = 1, center = false, convexity = 1, scale = [1, 1], $fn = 0, $fa = 12, $fs = 2) {
+					text(text = "bodies", size = 8, spacing = 1, font = "", direction = "ltr", language = "en", script = "Latn", halign = "left", valign = "baseline", $fn = 0, $fa = 12, $fs = 2);
+				}
+			}
+		}
+		color([0.578, 0.336, 0.352, 1]) {
+			multmatrix([[1, 0, 0, 100], [0, 1, 0, 20], [0, 0, 1, 5], [0, 0, 0, 1]]) {
+				cube(size = [10, 10, 10], center = true);
+			}
+		}
+		color([0.895, 0.891, 0.813, 1]) {
+			multmatrix([[1, 0, 0, 0], [0, 1, 0, 15], [0, 0, 1, 4.5], [0, 0, 0, 1]]) {
+				linear_extrude(height = 1, center = false, convexity = 1, scale = [1, 1], $fn = 0, $fa = 12, $fs = 2) {
+					text(text = "bodies", size = 8, spacing = 1, font = "", direction = "ltr", language = "en", script = "Latn", halign = "left", valign = "baseline", $fn = 0, $fa = 12, $fs = 2);
+				}
+			}
+		}
+		color([0.137, 0.402, 0.727, 1]) {
+			multmatrix([[1, 0, 0, 115], [0, 1, 0, 20], [0, 0, 1, 5], [0, 0, 0, 1]]) {
+				cube(size = [10, 10, 10], center = true);
+			}
+		}
+		color([0.895, 0.891, 0.813, 1]) {
+			multmatrix([[1, 0, 0, 0], [0, 1, 0, 15], [0, 0, 1, 4.5], [0, 0, 0, 1]]) {
+				linear_extrude(height = 1, center = false, convexity = 1, scale = [1, 1], $fn = 0, $fa = 12, $fs = 2) {
+					text(text = "bodies", size = 8, spacing = 1, font = "", direction = "ltr", language = "en", script = "Latn", halign = "left", valign = "baseline", $fn = 0, $fa = 12, $fs = 2);
+				}
+			}
+		}
+		color([0.34, 0.68, 0.445, 1]) {
+			multmatrix([[1, 0, 0, 130], [0, 1, 0, 20], [0, 0, 1, 5], [0, 0, 0, 1]]) {
+				cube(size = [10, 10, 10], center = true);
+			}
+		}
+		color([0.895, 0.891, 0.813, 1]) {
+			multmatrix([[1, 0, 0, 0], [0, 1, 0, 15], [0, 0, 1, 4.5], [0, 0, 0, 1]]) {
+				linear_extrude(height = 1, center = false, convexity = 1, scale = [1, 1], $fn = 0, $fa = 12, $fs = 2) {
+					text(text = "bodies", size = 8, spacing = 1, font = "", direction = "ltr", language = "en", script = "Latn", halign = "left", valign = "baseline", $fn = 0, $fa = 12, $fs = 2);
+				}
+			}
+		}
+		color([0.809, 0.426, 0.148, 1]) {
+			multmatrix([[1, 0, 0, 145], [0, 1, 0, 20], [0, 0, 1, 5], [0, 0, 0, 1]]) {
+				cube(size = [10, 10, 10], center = true);
+			}
+		}
+		color([0.895, 0.891, 0.813, 1]) {
+			multmatrix([[1, 0, 0, 0], [0, 1, 0, 15], [0, 0, 1, 4.5], [0, 0, 0, 1]]) {
+				linear_extrude(height = 1, center = false, convexity = 1, scale = [1, 1], $fn = 0, $fa = 12, $fs = 2) {
+					text(text = "bodies", size = 8, spacing = 1, font = "", direction = "ltr", language = "en", script = "Latn", halign = "left", valign = "baseline", $fn = 0, $fa = 12, $fs = 2);
+				}
+			}
+		}
+		color([0.7, 0.1, 0.05, 1]) {
+			multmatrix([[1, 0, 0, 160], [0, 1, 0, 20], [0, 0, 1, 5], [0, 0, 0, 1]]) {
+				cube(size = [10, 10, 10], center = true);
+			}
+		}
+		color([0.895, 0.891, 0.813, 1]) {
+			multmatrix([[1, 0, 0, 0], [0, 1, 0, 15], [0, 0, 1, 4.5], [0, 0, 0, 1]]) {
+				linear_extrude(height = 1, center = false, convexity = 1, scale = [1, 1], $fn = 0, $fa = 12, $fs = 2) {
+					text(text = "bodies", size = 8, spacing = 1, font = "", direction = "ltr", language = "en", script = "Latn", halign = "left", valign = "baseline", $fn = 0, $fa = 12, $fs = 2);
+				}
+			}
+		}
+		color([0.832, 0.68, 0.066, 1]) {
+			multmatrix([[1, 0, 0, 175], [0, 1, 0, 20], [0, 0, 1, 5], [0, 0, 0, 1]]) {
+				cube(size = [10, 10, 10], center = true);
+			}
+		}
+		color([0.895, 0.891, 0.813, 1]) {
+			multmatrix([[1, 0, 0, 0], [0, 1, 0, 15], [0, 0, 1, 4.5], [0, 0, 0, 1]]) {
+				linear_extrude(height = 1, center = false, convexity = 1, scale = [1, 1], $fn = 0, $fa = 12, $fs = 2) {
+					text(text = "bodies", size = 8, spacing = 1, font = "", direction = "ltr", language = "en", script = "Latn", halign = "left", valign = "baseline", $fn = 0, $fa = 12, $fs = 2);
+				}
+			}
+		}
+		color([0.895, 0.891, 0.813, 1]) {
+			multmatrix([[1, 0, 0, 190], [0, 1, 0, 20], [0, 0, 1, 5], [0, 0, 0, 1]]) {
+				cube(size = [10, 10, 10], center = true);
+			}
+		}
+		color([0.895, 0.891, 0.813, 1]) {
+			multmatrix([[1, 0, 0, 0], [0, 1, 0, 15], [0, 0, 1, 4.5], [0, 0, 0, 1]]) {
+				linear_extrude(height = 1, center = false, convexity = 1, scale = [1, 1], $fn = 0, $fa = 12, $fs = 2) {
+					text(text = "bodies", size = 8, spacing = 1, font = "", direction = "ltr", language = "en", script = "Latn", halign = "left", valign = "baseline", $fn = 0, $fa = 12, $fs = 2);
+				}
+			}
+		}
+		color([0.148, 0.145, 0.145, 1]) {
+			multmatrix([[1, 0, 0, 205], [0, 1, 0, 20], [0, 0, 1, 5], [0, 0, 0, 1]]) {
+				cube(size = [10, 10, 10], center = true);
+			}
+		}
+		color([0.895, 0.891, 0.813, 1]) {
+			multmatrix([[1, 0, 0, 0], [0, 1, 0, 15], [0, 0, 1, 4.5], [0, 0, 0, 1]]) {
+				linear_extrude(height = 1, center = false, convexity = 1, scale = [1, 1], $fn = 0, $fa = 12, $fs = 2) {
+					text(text = "bodies", size = 8, spacing = 1, font = "", direction = "ltr", language = "en", script = "Latn", halign = "left", valign = "baseline", $fn = 0, $fa = 12, $fs = 2);
+				}
+			}
+		}
+		color([0.25, 0.262, 0.281, 1]) {
+			multmatrix([[1, 0, 0, 220], [0, 1, 0, 20], [0, 0, 1, 5], [0, 0, 0, 1]]) {
+				cube(size = [10, 10, 10], center = true);
+			}
+		}
+		color([0.895, 0.891, 0.813, 1]) {
+			multmatrix([[1, 0, 0, 0], [0, 1, 0, 15], [0, 0, 1, 4.5], [0, 0, 0, 1]]) {
+				linear_extrude(height = 1, center = false, convexity = 1, scale = [1, 1], $fn = 0, $fa = 12, $fs = 2) {
+					text(text = "bodies", size = 8, spacing = 1, font = "", direction = "ltr", language = "en", script = "Latn", halign = "left", valign = "baseline", $fn = 0, $fa = 12, $fs = 2);
+				}
+			}
+		}
+		color([0.691, 0.664, 0.598, 1]) {
+			multmatrix([[1, 0, 0, 235], [0, 1, 0, 20], [0, 0, 1, 5], [0, 0, 0, 1]]) {
+				cube(size = [10, 10, 10], center = true);
+			}
+		}
+		color([0.895, 0.891, 0.813, 1]) {
+			multmatrix([[1, 0, 0, 0], [0, 1, 0, 30], [0, 0, 1, 4.5], [0, 0, 0, 1]]) {
+				linear_extrude(height = 1, center = false, convexity = 1, scale = [1, 1], $fn = 0, $fa = 12, $fs = 2) {
+					text(text = "LEDs", size = 8, spacing = 1, font = "", direction = "ltr", language = "en", script = "Latn", halign = "left", valign = "baseline", $fn = 0, $fa = 12, $fs = 2);
+				}
+			}
+		}
+		color([0.7, 0.1, 0.05, 0.1]) {
+			multmatrix([[1, 0, 0, 40], [0, 1, 0, 35], [0, 0, 1, 5], [0, 0, 0, 1]]) {
+				cube(size = [10, 10, 10], center = true);
+			}
+		}
+		color([0.895, 0.891, 0.813, 1]) {
+			multmatrix([[1, 0, 0, 0], [0, 1, 0, 30], [0, 0, 1, 4.5], [0, 0, 0, 1]]) {
+				linear_extrude(height = 1, center = false, convexity = 1, scale = [1, 1], $fn = 0, $fa = 12, $fs = 2) {
+					text(text = "LEDs", size = 8, spacing = 1, font = "", direction = "ltr", language = "en", script = "Latn", halign = "left", valign = "baseline", $fn = 0, $fa = 12, $fs = 2);
+				}
+			}
+		}
+		color([0.1, 0.25, 0.7, 0.1]) {
+			multmatrix([[1, 0, 0, 55], [0, 1, 0, 35], [0, 0, 1, 5], [0, 0, 0, 1]]) {
+				cube(size = [10, 10, 10], center = true);
+			}
+		}
+		color([0.895, 0.891, 0.813, 1]) {
+			multmatrix([[1, 0, 0, 0], [0, 1, 0, 30], [0, 0, 1, 4.5], [0, 0, 0, 1]]) {
+				linear_extrude(height = 1, center = false, convexity = 1, scale = [1, 1], $fn = 0, $fa = 12, $fs = 2) {
+					text(text = "LEDs", size = 8, spacing = 1, font = "", direction = "ltr", language = "en", script = "Latn", halign = "left", valign = "baseline", $fn = 0, $fa = 12, $fs = 2);
+				}
+			}
+		}
+		color([0.98, 0.84, 0.066, 0.1]) {
+			multmatrix([[1, 0, 0, 70], [0, 1, 0, 35], [0, 0, 1, 5], [0, 0, 0, 1]]) {
+				cube(size = [10, 10, 10], center = true);
+			}
+		}
+		color([0.895, 0.891, 0.813, 1]) {
+			multmatrix([[1, 0, 0, 0], [0, 1, 0, 30], [0, 0, 1, 4.5], [0, 0, 0, 1]]) {
+				linear_extrude(height = 1, center = false, convexity = 1, scale = [1, 1], $fn = 0, $fa = 12, $fs = 2) {
+					text(text = "LEDs", size = 8, spacing = 1, font = "", direction = "ltr", language = "en", script = "Latn", halign = "left", valign = "baseline", $fn = 0, $fa = 12, $fs = 2);
+				}
+			}
+		}
+		color([0.895, 0.891, 0.813, 0.1]) {
+			multmatrix([[1, 0, 0, 85], [0, 1, 0, 35], [0, 0, 1, 5], [0, 0, 0, 1]]) {
+				cube(size = [10, 10, 10], center = true);
+			}
+		}
+		color([0.895, 0.891, 0.813, 1]) {
+			multmatrix([[1, 0, 0, 0], [0, 1, 0, 30], [0, 0, 1, 4.5], [0, 0, 0, 1]]) {
+				linear_extrude(height = 1, center = false, convexity = 1, scale = [1, 1], $fn = 0, $fa = 12, $fs = 2) {
+					text(text = "LEDs", size = 8, spacing = 1, font = "", direction = "ltr", language = "en", script = "Latn", halign = "left", valign = "baseline", $fn = 0, $fa = 12, $fs = 2);
+				}
+			}
+		}
+		color([0.27, 0.25, 0.27, 0.1]) {
+			multmatrix([[1, 0, 0, 100], [0, 1, 0, 35], [0, 0, 1, 5], [0, 0, 0, 1]]) {
+				cube(size = [10, 10, 10], center = true);
+			}
+		}
+		color([0.895, 0.891, 0.813, 1]) {
+			multmatrix([[1, 0, 0, 0], [0, 1, 0, 30], [0, 0, 1, 4.5], [0, 0, 0, 1]]) {
+				linear_extrude(height = 1, center = false, convexity = 1, scale = [1, 1], $fn = 0, $fa = 12, $fs = 2) {
+					text(text = "LEDs", size = 8, spacing = 1, font = "", direction = "ltr", language = "en", script = "Latn", halign = "left", valign = "baseline", $fn = 0, $fa = 12, $fs = 2);
+				}
+			}
+		}
+		color([0.1, 0.05, 0.1, 1]) {
+			multmatrix([[1, 0, 0, 115], [0, 1, 0, 35], [0, 0, 1, 5], [0, 0, 0, 1]]) {
+				cube(size = [10, 10, 10], center = true);
+			}
+		}
+		color([0.895, 0.891, 0.813, 1]) {
+			multmatrix([[1, 0, 0, 0], [0, 1, 0, 30], [0, 0, 1, 4.5], [0, 0, 0, 1]]) {
+				linear_extrude(height = 1, center = false, convexity = 1, scale = [1, 1], $fn = 0, $fa = 12, $fs = 2) {
+					text(text = "LEDs", size = 8, spacing = 1, font = "", direction = "ltr", language = "en", script = "Latn", halign = "left", valign = "baseline", $fn = 0, $fa = 12, $fs = 2);
+				}
+			}
+		}
+		color([0.4, 0.7, 0.15, 0.1]) {
+			multmatrix([[1, 0, 0, 130], [0, 1, 0, 35], [0, 0, 1, 5], [0, 0, 0, 1]]) {
+				cube(size = [10, 10, 10], center = true);
+			}
+		}
+		color([0.895, 0.891, 0.813, 1]) {
+			multmatrix([[1, 0, 0, 0], [0, 1, 0, 45], [0, 0, 1, 4.5], [0, 0, 0, 1]]) {
+				linear_extrude(height = 1, center = false, convexity = 1, scale = [1, 1], $fn = 0, $fa = 12, $fs = 2) {
+					text(text = "glass", size = 8, spacing = 1, font = "", direction = "ltr", language = "en", script = "Latn", halign = "left", valign = "baseline", $fn = 0, $fa = 12, $fs = 2);
+				}
+			}
+		}
+		color([0.400769, 0.441922, 0.459091, 0.39]) {
+			multmatrix([[1, 0, 0, 40], [0, 1, 0, 50], [0, 0, 1, 5], [0, 0, 0, 1]]) {
+				cube(size = [10, 10, 10], center = true);
+			}
+		}
+		color([0.895, 0.891, 0.813, 1]) {
+			multmatrix([[1, 0, 0, 0], [0, 1, 0, 45], [0, 0, 1, 4.5], [0, 0, 0, 1]]) {
+				linear_extrude(height = 1, center = false, convexity = 1, scale = [1, 1], $fn = 0, $fa = 12, $fs = 2) {
+					text(text = "glass", size = 8, spacing = 1, font = "", direction = "ltr", language = "en", script = "Latn", halign = "left", valign = "baseline", $fn = 0, $fa = 12, $fs = 2);
+				}
+			}
+		}
+		color([0.566681, 0.580872, 0.580874, 0.39]) {
+			multmatrix([[1, 0, 0, 55], [0, 1, 0, 50], [0, 0, 1, 5], [0, 0, 0, 1]]) {
+				cube(size = [10, 10, 10], center = true);
+			}
+		}
+		color([0.895, 0.891, 0.813, 1]) {
+			multmatrix([[1, 0, 0, 0], [0, 1, 0, 45], [0, 0, 1, 4.5], [0, 0, 0, 1]]) {
+				linear_extrude(height = 1, center = false, convexity = 1, scale = [1, 1], $fn = 0, $fa = 12, $fs = 2) {
+					text(text = "glass", size = 8, spacing = 1, font = "", direction = "ltr", language = "en", script = "Latn", halign = "left", valign = "baseline", $fn = 0, $fa = 12, $fs = 2);
+				}
+			}
+		}
+		color([0, 0.631244, 0.748016, 0.39]) {
+			multmatrix([[1, 0, 0, 70], [0, 1, 0, 50], [0, 0, 1, 5], [0, 0, 0, 1]]) {
+				cube(size = [10, 10, 10], center = true);
+			}
+		}
+		color([0.895, 0.891, 0.813, 1]) {
+			multmatrix([[1, 0, 0, 0], [0, 1, 0, 45], [0, 0, 1, 4.5], [0, 0, 0, 1]]) {
+				linear_extrude(height = 1, center = false, convexity = 1, scale = [1, 1], $fn = 0, $fa = 12, $fs = 2) {
+					text(text = "glass", size = 8, spacing = 1, font = "", direction = "ltr", language = "en", script = "Latn", halign = "left", valign = "baseline", $fn = 0, $fa = 12, $fs = 2);
+				}
+			}
+		}
+		color([0, 0.75, 0.44, 0.39]) {
+			multmatrix([[1, 0, 0, 85], [0, 1, 0, 50], [0, 0, 1, 5], [0, 0, 0, 1]]) {
+				cube(size = [10, 10, 10], center = true);
+			}
+		}
+		color([0.895, 0.891, 0.813, 1]) {
+			multmatrix([[1, 0, 0, 0], [0, 1, 0, 45], [0, 0, 1, 4.5], [0, 0, 0, 1]]) {
+				linear_extrude(height = 1, center = false, convexity = 1, scale = [1, 1], $fn = 0, $fa = 12, $fs = 2) {
+					text(text = "glass", size = 8, spacing = 1, font = "", direction = "ltr", language = "en", script = "Latn", halign = "left", valign = "baseline", $fn = 0, $fa = 12, $fs = 2);
+				}
+			}
+		}
+		color([0.75, 0.44, 0, 0.39]) {
+			multmatrix([[1, 0, 0, 100], [0, 1, 0, 50], [0, 0, 1, 5], [0, 0, 0, 1]]) {
+				cube(size = [10, 10, 10], center = true);
+			}
+		}
+		color([0.895, 0.891, 0.813, 1]) {
+			multmatrix([[1, 0, 0, 0], [0, 1, 0, 60], [0, 0, 1, 4.5], [0, 0, 0, 1]]) {
+				linear_extrude(height = 1, center = false, convexity = 1, scale = [1, 1], $fn = 0, $fa = 12, $fs = 2) {
+					text(text = "PCB", size = 8, spacing = 1, font = "", direction = "ltr", language = "en", script = "Latn", halign = "left", valign = "baseline", $fn = 0, $fa = 12, $fs = 2);
+				}
+			}
+		}
+		color([0.07, 0.3, 0.12, 1]) {
+			multmatrix([[1, 0, 0, 40], [0, 1, 0, 65], [0, 0, 1, 5], [0, 0, 0, 1]]) {
+				cube(size = [10, 10, 10], center = true);
+			}
+		}
+		color([0.895, 0.891, 0.813, 1]) {
+			multmatrix([[1, 0, 0, 0], [0, 1, 0, 60], [0, 0, 1, 4.5], [0, 0, 0, 1]]) {
+				linear_extrude(height = 1, center = false, convexity = 1, scale = [1, 1], $fn = 0, $fa = 12, $fs = 2) {
+					text(text = "PCB", size = 8, spacing = 1, font = "", direction = "ltr", language = "en", script = "Latn", halign = "left", valign = "baseline", $fn = 0, $fa = 12, $fs = 2);
+				}
+			}
+		}
+		color([0.16, 0.16, 0.16, 1]) {
+			multmatrix([[1, 0, 0, 55], [0, 1, 0, 65], [0, 0, 1, 5], [0, 0, 0, 1]]) {
+				cube(size = [10, 10, 10], center = true);
+			}
+		}
+		color([0.895, 0.891, 0.813, 1]) {
+			multmatrix([[1, 0, 0, 0], [0, 1, 0, 60], [0, 0, 1, 4.5], [0, 0, 0, 1]]) {
+				linear_extrude(height = 1, center = false, convexity = 1, scale = [1, 1], $fn = 0, $fa = 12, $fs = 2) {
+					text(text = "PCB", size = 8, spacing = 1, font = "", direction = "ltr", language = "en", script = "Latn", halign = "left", valign = "baseline", $fn = 0, $fa = 12, $fs = 2);
+				}
+			}
+		}
+		color([0.07, 0.12, 0.3, 1]) {
+			multmatrix([[1, 0, 0, 70], [0, 1, 0, 65], [0, 0, 1, 5], [0, 0, 0, 1]]) {
+				cube(size = [10, 10, 10], center = true);
+			}
+		}
+		color([0.895, 0.891, 0.813, 1]) {
+			multmatrix([[1, 0, 0, 0], [0, 1, 0, 60], [0, 0, 1, 4.5], [0, 0, 0, 1]]) {
+				linear_extrude(height = 1, center = false, convexity = 1, scale = [1, 1], $fn = 0, $fa = 12, $fs = 2) {
+					text(text = "PCB", size = 8, spacing = 1, font = "", direction = "ltr", language = "en", script = "Latn", halign = "left", valign = "baseline", $fn = 0, $fa = 12, $fs = 2);
+				}
+			}
+		}
+		color([0.2, 0.17, 0.087, 1]) {
+			multmatrix([[1, 0, 0, 85], [0, 1, 0, 65], [0, 0, 1, 5], [0, 0, 0, 1]]) {
+				cube(size = [10, 10, 10], center = true);
+			}
+		}
+		color([0.895, 0.891, 0.813, 1]) {
+			multmatrix([[1, 0, 0, 0], [0, 1, 0, 60], [0, 0, 1, 4.5], [0, 0, 0, 1]]) {
+				linear_extrude(height = 1, center = false, convexity = 1, scale = [1, 1], $fn = 0, $fa = 12, $fs = 2) {
+					text(text = "PCB", size = 8, spacing = 1, font = "", direction = "ltr", language = "en", script = "Latn", halign = "left", valign = "baseline", $fn = 0, $fa = 12, $fs = 2);
+				}
+			}
+		}
+		color([0.43, 0.46, 0.295, 1]) {
+			multmatrix([[1, 0, 0, 100], [0, 1, 0, 65], [0, 0, 1, 5], [0, 0, 0, 1]]) {
+				cube(size = [10, 10, 10], center = true);
+			}
+		}
+	}
+}
+
