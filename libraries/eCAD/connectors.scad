@@ -1133,7 +1133,7 @@ module tubeSocket9pinFlange(flange=true){
 
 
 
-!mUSB();
+*mUSB();
 module mUSB(showPlug=false){
   //usb.org CabConn20.pdf
 

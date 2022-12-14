@@ -4,15 +4,22 @@ include <KiCADColors.scad>
 fudge=0.1;
 
 $fn=20;
+col=[10,20,40];
+
 //demo
+
 MPE_192(6);
-translate([10,0,0]) MPE_196(6);
-translate([20,0,0]) MPE_098(pins=6,variant=1);
-translate([20,-10,0]) MPE_098(pins=6,variant=2);
-translate([20,-20,0]) MPE_098(pins=12,variant=3);
-translate([20,-30,0]) MPE_098(pins=6,variant=4);
-translate([20,-40,0]) MPE_098(pins=6,variant=5);
-translate([20,-50,0]) MPE_098(pins=12,variant=6);
+translate([col[0],0,0]) MPE_196(6);
+
+translate([col[1],5,0]) text("MPE_098",size=2);
+translate([col[1],0,0]) MPE_098(pins=6,variant=1);
+translate([col[1],-10,0]) MPE_098(pins=6,variant=2);
+translate([col[1],-20,0]) MPE_098(pins=12,variant=3);
+translate([col[1],-30,0]) MPE_098(pins=6,variant=4);
+translate([col[1],-40,0]) MPE_098(pins=6,variant=5);
+translate([col[1],-50,0]) MPE_098(pins=12,variant=6);
+
+translate([col[2],0,0]) MPE_087();
 
 
 
@@ -54,7 +61,7 @@ module MPE_087(rows=2, pins=6, A=19.8,markPin1=true, center=false){
   //pins
   for (ix=[0:pins/rows-1],iy=[0:rows-1]){
     pinNo=(ix*rows+1)+iy;
-    pinCol= ((pinNo==1)&&markPin1) ? "red" : goldPinCol;
+    pinCol= ((pinNo==1)&&markPin1) ? "red" : metalGoldPinCol;
     translate([ix*pitch,iy*pitch,-C]+cntrOffset) 
       color(pinCol) squarePin();
   }
@@ -94,14 +101,14 @@ module MPE_204(pins=6,variant=1,center=false){
     translate([0,iy*-1.27,0]) pin();
   
   module pin(){
-    color(goldPinCol) translate([0,0,-pinLngth+pinDia/2]){
+    color(metalGoldPinCol) translate([0,0,-pinLngth+pinDia/2]){
       sphere(d=pinDia);
       cylinder(d=pinDia,h=pinLngth+bdDims.z/2-rad-pinDia/2);
     }
-    color(goldPinCol) translate([rad,0,bdDims.z/2-rad]) 
+    color(metalGoldPinCol) translate([rad,0,bdDims.z/2-rad]) 
       rotate([90,0,180]) rotate_extrude(angle=90) translate([rad,0,0]) circle(d=pinDia);
-    color(goldPinCol) translate([rad,0,bdDims.z/2]) rotate([0,90,0]) cylinder(d=pinDia,h=bdOffset.x+0.3-rad);
-    color(goldPinCol) translate([bdOffset.x+0.3,0,bdDims.z/2]) rotate([0,-90,0]) cylinder(d2=pinDia,d1=1,h=(1-pinDia)/2);
+    color(metalGoldPinCol) translate([rad,0,bdDims.z/2]) rotate([0,90,0]) cylinder(d=pinDia,h=bdOffset.x+0.3-rad);
+    color(metalGoldPinCol) translate([bdOffset.x+0.3,0,bdDims.z/2]) rotate([0,-90,0]) cylinder(d2=pinDia,d1=1,h=(1-pinDia)/2);
   }
   
 }
@@ -122,7 +129,7 @@ module MPE_192(pins,cntrX=false,diff="none"){
    
       color(blackBodyCol) cube([bdyWdth,bdyDpth,bdyHght]);
       for (i=[(1.27+0.41)/2:1.27:pins*1.27]){//pins
-        color(goldPinCol) union(){
+        color(metalGoldPinCol) union(){
           translate([i,3.4,bdyHght/2]) rotate([90,0,0]) cylinder(h=6.4,d=pinDia);//horizontal
           translate([i,3.4,bdyHght/2]) rotate([180,0,0]) cylinder(h=3+bdyHght/2,d=pinDia); //vertical
           translate([i,3.4,bdyHght/2]) rotate([90,0,0]) sphere(d=pinDia);
@@ -156,7 +163,7 @@ module MPE_196(pins,cntrX=false,diff="none"){
    
       color(blackBodyCol) cube([bdyWdth,bdyDpth,bdyHght]);
       for (i=[(1.27+0.41)/2:1.27:pins*1.27]){//pins
-        color(goldPinCol) union(){
+        color(metalGoldPinCol) union(){
           translate([i,3.4-0.7,bdyHght/2]) rotate([90,0,0]) cylinder(h=6.4-0.7,d=pinDia);//horizontal
           translate([i,2.2+4.7-3.6,pinDia/2]) rotate([-90,0,0]) cylinder(h=3.6,d=pinDia); //solderpart
           
@@ -210,7 +217,7 @@ module MPE_094(pins, center=false, diff="none", thick=8.5){ //receptable housing
         }
       }
     
-      color(goldPinCol)
+      color(metalGoldPinCol)
         for (i=[0:2.54:(pins/2-1)*2.54],j=[1.27,1.27+2.54]){
           translate([i+1.27+0.25-holeX/2,j-0.2,-pinLen]) cube([pinWdth,0.4,pinLen]);
         }
@@ -272,13 +279,13 @@ module MPE_098(pins,variant=1,peg=false,diff="none",center=false){
         for (i=[0:2.54*2:(pins-1)*2.54]){
           translate([i-pinWdth/2+1.27,1.25+holeY/2,0]) pin();
         }
-        color(goldPinCol)
+        color(metalGoldPinCol)
         for (i=[2.54:2.54*2:(pins-1)*2.54]){
           translate([i-pinWdth/2+1.27,+1.25-holeY/2,0]) mirror([0,1,0]) pin();
         }
       }
       else{ //two rows
-        color(goldPinCol)
+        color(metalGoldPinCol)
         for (ix=[0:2.54:(pins-1)*2.54/2],iy=[-1,1]){
             translate([ix-pinWdth/2+1.27,2.5+iy*(+1.27+holeY/2),0]) mirror([0,1-iy,0]) pin(); //cube([pinWdth,pinLen,0.2]);
           }
@@ -302,7 +309,7 @@ module MPE_098(pins,variant=1,peg=false,diff="none",center=false){
   module pin(){
     rad=0.5;
     //cube([pinWdth,pinLen,0.2]);
-    color(goldPinCol) translate([0,0,rad]) rotate([-90,0,0]) bend([pinWdth,pinLen,0.2],90,rad) cube([pinWdth,pinLen-rad,0.2]);
+    color(metalGoldPinCol) translate([0,0,rad]) rotate([-90,0,0]) bend([pinWdth,pinLen,0.2],90,rad) cube([pinWdth,pinLen-rad,0.2]);
   }
 }
 
