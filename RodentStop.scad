@@ -1,7 +1,7 @@
 $fn=100;
 
 poleDia=30;
-wallThck=2;
+wallThck=1.2;
 maxDia=140;
 topHght=30;
 drillDia=5.5;

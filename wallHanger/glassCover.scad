@@ -38,7 +38,7 @@ module bowl(){
   ];
 
   //body
-  translate([0,0,zOffset])
+  translate([0,0,zOffset]){
     difference(){
       rotate_extrude() 
         polygon(Bezier(bezPoly,precision=0.05));
@@ -52,7 +52,7 @@ module bowl(){
     for (ir=[0,120,240])
       rotate(ir) translate([rimInnerDia*0.33,0,])
         rotate([90,0,0]) cylinder(d=opnDist-opnDims.x,h=opnDims.y,center=true);
-
+  }
   
 }
 
