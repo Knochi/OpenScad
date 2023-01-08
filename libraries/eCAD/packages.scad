@@ -99,7 +99,7 @@ module LGA8(){
 }
 
 
-!QFN(20,[3,3,0.65],0.4, 0, label="");
+*QFN(20,[3,3,0.65],0.4, 0, label="");
 module QFN(pos=28,size=[5,5,1], pitch=0.5, pSize=undef, label="QFN"){
   // JEDEC MO-220
   // https://www.jedec.org/system/files/docs/MO-220K01.pdf
@@ -638,7 +638,36 @@ module LED5050(pins=6){
         translate([0.1,0,0.45]) cube([0.2,1.0,0.9],true);
       }
 }
-
+!PLCC6();
+module PLCC6(){
+  // e.g. CREE CLP6C-FKB https://media.digikey.com/pdf/Data%20Sheets/CREE%20Power/CLP6C-FKB.pdf
+  
+  dims=[5,6,2.5];
+  pitch= 2.1;
+  grvHght=1; 
+  grvDia=4;
+  marking=[0.7,0.2]; //width,height
+  pins=6;
+  
+  //body
+  color("ivory")
+    difference(){
+      translate([0,0,(dims.z+0.1)/2]) cube(dims-[0,0,0.1],true);
+      translate([0,0,dims.z-grvHght]) cylinder(d1=3.2,d2=4,h=grvHght+0.01);
+      //marking
+      translate([-dims.x/2,dims.y/2,dims.z-marking[1]]) linear_extrude(marking[1]+fudge)      
+        polygon([[marking.x+fudge,fudge],[-fudge,fudge],[-fudge,-marking.x-fudge]]);
+    }
+  color("grey",0.6)
+    translate([0,0,dims.z-grvHght]) cylinder(d1=3.2,d2=grvDia,h=grvHght);
+  //leads
+  color("silver")
+    for (i=[-pins/2+1:2:pins/2],r=[90,-90])
+      rotate([0,0,r]) translate([i*pitch/2,dims.x/2,0]) rotate(90){
+        translate([-1.1/2+0.2,0,0.1]) cube([1.1,1.0,0.2],true);
+        translate([0.1,0,0.45]) cube([0.2,1.0,0.9],true);
+      }
+}
 
 *PLCC2();
 module PLCC2(){
