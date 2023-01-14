@@ -2,6 +2,7 @@
 barDims=[25,1000,2]; //Dimensions of the raw bar to engrave
 subStrokeDims=[10,0.3];
 mainStrokeDims=[20,0.6];
+firstStrokeOffset=7;
 textOffset=[0,1];
 textSize=8;
 kettleDia=280;
