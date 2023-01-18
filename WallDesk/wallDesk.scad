@@ -1,6 +1,9 @@
 // Inspired by "Franz" from buildify
 // https://cdn.hornbach.de/cmsm/de/e-de-buildify-anleitung-franz-wandsekretaer-0420.pdf
 
+echo([ -350.35, -125.88, 429.34 ]-[ 349.91, -129.57, 487.24 ]);
+
+
 /* [show] */
 tblAng=0; //[0:90]
 showSides=true;
@@ -103,12 +106,21 @@ module front(){ //Front: 650x700mm
   echo(ovDims);
   rotate([-90,0,0]) translate([0,-ovDims.y/2,-matThck/2]) rndRect(ovDims,cornerRad,0,true);
 }
+
 *sideTop();
 module sideTop(){ //obere Seitenwand: 118x440 (table-10)
 ovDims=[tblDpth,ovDpth+matThck];
+  
   translate([0,-ovDims.y/2,ovDims.x/2]) rotate([0,90,0]) 
     linear_extrude(matThck,center=true)
+    difference(){
       square(ovDims,true);
+      holes(7);
+    }
+}
+module holes(count=5){
+  for (ix=[0:count-1])
+  translate([50+ix*10,40]) circle(d=5);
 }
 
 module sideBottom(){//untere Seitenwand: 100x618

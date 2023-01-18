@@ -2,6 +2,7 @@
 /* [Config] */
 positions = 10; //[4,6,8,10,12,14,16,18,20,22,24,26]
 sideEntry = true;
+export = "none"; //["none","body","layer.prod"]
 
 /* [Hidden] */
 $fn=50;
@@ -51,17 +52,24 @@ FR4Col=             [0.43,  0.46,   0.295]; //?
 
 
 microMatch(positions, sideEntry);
-module microMatch(pos=10, sideEntry=true){
+module microMatch(pos=10, sideEntry=true, THT=true){
   // TE Micro-Match connector line (also available from other manufacturers)
   // https://www.te.com/usa-en/products/connectors/pcb-connectors/wire-to-board-connectors/ffc-fpc-ribbon-connectors/intersection/micro-match.html
   pitch=1.27;
   bdOffset = sideEntry ? [0,-2.63,5.8-2.5] : [0,0,5.25];
   bdRot = sideEntry ? [90,0,0] : [0,0,0];
+  pin1Offset = (sideEntry || THT) ? [-(pos-1)/2*pitch,-pitch,0] : [0,0,0];
+  pin1Rot = (sideEntry || THT) ? [0,0,90] : [0,0,0];
+  // KLC footprint Layer specification https://klc.kicad.org/footprint/f5/
+  silkLineWdth=0.12;
+  prodLineWdth=0.1;
+  courtLineWdth=0.05;
+  courtClearance=0.5;
   //pins
   pinThck=0.25;
 
   //the flanked part for female
-  tpFace=[pos*pitch+0.53,3.85]; //
+  tpFace=[pos*pitch+0.53,3.85]; 
   tpFlankAngle=2.5; 
 
   //collar
@@ -69,28 +77,54 @@ module microMatch(pos=10, sideEntry=true){
   keying=[0.7,2.5];
   cutOutDims=[1.7,(collarDims.y-tpFace.y)/2+fudge,0.9];
 
-  translate(bdOffset) rotate(bdRot) body();
-  
-  //pins
-  if (sideEntry) for (ix=[0:(pos-1)]){
-    if (ix%2) color(metalSilverCol) 
-      translate([ix*pitch-(pos-1)/2*pitch,0,0]){
-        rotate([90,0,90]){
-          translate([0,0,-pinThck/2]) pinTHTlow();
-          translate([pitch,-0.15,0]) pinKink();
-        }
-      }
-    else color(metalSilverCol) 
-      translate([ix*pitch-(pos-1)/2*pitch,0,0]) 
-        rotate([90,0,90]){
-          translate([0,0,-pinThck/2]) pinTHThigh();
-          translate([-pitch,-0.15,0]) pinKink();
-        }
-  }
+
+  if (export=="layer.prod")
+    !rotate(pin1Rot) translate(pin1Offset) prdLayer();
+  if (export=="layer.silk")
+    !rotate(pin1Rot) translate(pin1Offset) offset(delta=(prodLineWdth+silkLineWdth)/2) prdLayer();
+  if (export=="layer.courtyard")
+    !rotate(pin1Rot) translate(pin1Offset) offset(delta=courtClearance) prdLayer(false);
+
+  rotate(pin1Rot) translate(pin1Offset){
+    //exports for layers, if "none" show them all
+    if (export=="none"){
+      color("grey") linear_extrude(0.1) 
+        strokeOffset(prodLineWdth) prdLayer();
+      color("cyan") linear_extrude(0.1) 
+        strokeOffset(silkLineWdth,(prodLineWdth+silkLineWdth)/2) prdLayer();
+      color("pink") linear_extrude(0.1)
+        strokeOffset(courtLineWdth,courtClearance) prdLayer(false);
+    }
+
+    translate(bdOffset) rotate(bdRot) body();
     
-  else for (ix=[0:(pos-1)]){
-    pinRot= (ix%2) ? -1 : 1 ;
-    color(metalSilverCol) translate([ix*pitch-(pos-1)/2*pitch,0,0]) rotate([90,0,pinRot*90]) translate([0,0,-pinThck/2]) pinSMD();
+    //pins
+    if (sideEntry) for (ix=[0:(pos-1)]){
+      if (ix%2) color(metalSilverCol) //back row
+        translate([ix*pitch-(pos-1)/2*pitch,0,0]){
+          rotate([90,0,90]){
+            translate([0,0,-pinThck/2]) pinTHTlow();
+            if ((ix+1)%4) //sequential contacts have opposite kink directions
+              translate([pitch,-0.15,0]) pinKink();
+            else
+              translate([pitch,-0.15,0]) rotate([0,180,0]) pinKink();
+          }
+        }
+      else color(metalSilverCol) //fron row
+        translate([ix*pitch-(pos-1)/2*pitch,0,0]) 
+          rotate([90,0,90]){
+            translate([0,0,-pinThck/2]) pinTHThigh();
+          if ((ix)%4) //sequential contacts have opposite kink directions
+              translate([-pitch,-0.15,0]) pinKink();
+            else
+              translate([-pitch,-0.15,0]) rotate([0,180,0]) pinKink();
+          }
+    }
+      
+    else for (ix=[0:(pos-1)]){
+      pinRot= (ix%2) ? -1 : 1 ;
+      color(metalSilverCol) translate([ix*pitch-(pos-1)/2*pitch,0,0]) rotate([90,0,pinRot*90]) translate([0,0,-pinThck/2]) pinSMD();
+    }
   }
   
 
@@ -216,9 +250,23 @@ module microMatch(pos=10, sideEntry=true){
         }
     }
   }
+
+  //submodule for layers
+  module prdLayer(marker=true){
+    projection() translate(bdOffset) rotate(bdRot) body();
+    if (marker) translate(-pin1Offset+[0,pitch+0.8]) rotate(-90) circle(d=1.27,$fn=3);
+  }
 }
 
 // --- Helpers ---
+
+//create offset stroke from shapt
+module strokeOffset(strkWdth=0.1, offset=0){
+   difference(){
+          offset(strkWdth/2) offset(delta=offset) children();
+          offset(-strkWdth/2) offset(delta=offset) children();
+        }
+}
 
 //arc function simlar to svg path command "a/A" (https://www.w3.org/TR/SVG11/paths.html#PathData)
 function push_arc(start, end, r, sweep=1, poly=[], iter=0)=let(

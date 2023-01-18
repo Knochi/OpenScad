@@ -229,7 +229,10 @@ module SSOP(pins=8,label=""){
   A= (pins>8) ? 1.72 : 1.75; // total height //JEDEC A: 
   A1=0.25; //space below package //JEDEC A1: 0.1-0.25
   c= (pins>8) ? 0.25 : 0.19; //lead tAickness //JEDEC: 0.1-0.25
-  D= (pins>16) ? (pins > 24) ? 9.9 : 8.66 : 4.9;
+  D= (pins > 24) ? 9.9 :
+     (pins > 20) ? 8.66 : 
+     (pins > 16) ? 6.8 :
+     (pins > 14) ? 4.9 : 4.9;
   E1=3.9; //body width
   E=6.0; //total width
   h=0.5; //chamfer width h=0.25-0.5
