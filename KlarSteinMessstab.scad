@@ -2,11 +2,12 @@
 barDims=[25,1000,2]; //Dimensions of the raw bar to engrave
 subStrokeDims=[10,0.3];
 mainStrokeDims=[20,0.6];
+firstStrokeOffset=7; //2 litres at39mm
 textOffset=[0,1];
 textSize=8;
 kettleDia=280;
-litresPerDiv=1; //litres per division
-litresPerSubdiv=0.2; //litres per sub-division
+litresPerDiv=2; //litres per division
+litresPerSubdiv=1; //litres per sub-division
 maxLitres=30; //maximum litres
 
 /* [Hidden] */
