@@ -35,7 +35,7 @@ module PCB(){
   
   //line driver Toshiba TBD62786 (SSOP18)
   for (ix=[-1,1])
-    translate([ix*(pcbDims.x/2-4),-0.2,-pcbDims.z]) rotate([180,0,90]) SSOP(18);
+    translate([ix*(pcbDims.x/2-4),-0.2,-pcbDims.z]) rotate([180,0,90]) SSOP(18,0.65,"TBD62786");
   
   
   translate([10,0,0]) QFN(32);

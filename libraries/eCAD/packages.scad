@@ -220,31 +220,31 @@ module SOIC(pins=8, label=""){
   
 }
 
-module SSOP(pins=8,label=""){
+module SSOP(pins=8, pitch=0.635,  label=""){
   //Plastic shrink small outline package (14,16,18,20,24,26,28 pins)
   //https://www.jedec.org/system/files/docs/MO-137E.pdf (max. values where possible)
   
   b= 0.254; //lead width //JEDEC b: 0.2-0.3
-  pitch=0.635;
+  //pitch=0.635; make overide
   A= (pins>8) ? 1.72 : 1.75; // total height //JEDEC A: 
   A1=0.25; //space below package //JEDEC A1: 0.1-0.25
   c= (pins>8) ? 0.25 : 0.19; //lead tAickness //JEDEC: 0.1-0.25
-  D= (pins > 24) ? 9.9 :
-     (pins > 20) ? 8.66 : 
-     (pins > 16) ? 6.8 :
-     (pins > 14) ? 4.9 : 4.9;
+  D= (pins==28) ? 9.9 :   //28pin
+     (pins > 18) ? 8.66 : //20..24pin
+     (pins==18) ? 6.8 :   //e.g. Toshiba SSOP18
+     4.9; // 14..16pin
   E1=3.9; //body width
   E=6.0; //total width
   h=0.5; //chamfer width h=0.25-0.5
   
   txtSize=D/(0.8*len(label));
   if (label)
-    color("white") translate([0,0,A]) linear_extrude(0.1) 
+    color(lightBrownLabelCol) translate([0,0,A]) linear_extrude(0.1) 
       text(text=label,size=txtSize,halign="center",valign="center", font="consolas");
   
   
   //body
-  color("darkSlateGrey")
+  color(blackBodyCol)
     difference(){
       translate([-D/2,-E1/2,A1]) cube([D,E1,(A-A1)]);
       translate([0,E1/2+fudge,A+fudge]) 
@@ -253,7 +253,7 @@ module SSOP(pins=8,label=""){
             polygon([[0,0],[h+fudge,0],[0,h+fudge]]);
     }    
   //leads
-  color("silver")
+  color(metalGreyPinCol)
     for (i=[-pins/2+1:2:pins/2],r=[-90,90])
     rotate([0,0,r]) translate([E1/2,i*pitch/2,0]) lead([(E-E1)/2,b,A*0.5]);
   

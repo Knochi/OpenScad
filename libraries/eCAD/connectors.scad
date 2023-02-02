@@ -671,6 +671,7 @@ module usbC(){
   //contacts
   //          pinA1          ...                        pinA12
   cntcLngths=[4,3.5,3.5,4,3.5,3.5,3.5,3.5,4,3.5,3.5,4]; //8x short, 4x long per side
+  
   cntcDims=[0.25,0.05];
   pitch=0.5;
 
