@@ -3,7 +3,7 @@
  use <MPEGarry.scad>
  include <KiCADColors.scad>
 
-!cameraBoard();
+cameraBoard();
 module cameraBoard(type="OV5640"){
   // Waveshare OV5640(A,B,C), OV2640 and OV9655 camera boards
   // OV9655 & OV2640 has no holes and sharp corners
@@ -22,7 +22,7 @@ module cameraBoard(type="OV5640"){
   translate(pin1Offset){
     color(pcbBlackCol) 
       linear_extrude(brdDims.z) 
-        difference(){
+        !difference(){
           union(){
             square(pcbDims);
             //if (type=="OV5640") 
