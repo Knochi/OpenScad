@@ -58,7 +58,7 @@ module piPico(showLabels=true){
     pads();
   }
   translate([0,pcbDims.y/2-1,0]) rotate(180) mUSB();
-  translate(MCUPos) QFN(54,[7,7,1],0.4,"RP2040");
+  translate(MCUPos) QFN(pos=54,size=[7,7,1],pitch=0.4,label="RP2040");
   translate(btnPos) rotate(90) KMR2();
   
   module pads(){

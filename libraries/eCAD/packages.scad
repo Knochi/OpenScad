@@ -10,7 +10,7 @@ SMDpassive("1210",label="000");
 translate([4,0,0]) SOT23(22,label="SOT23");
 translate([10,0,0]) QFN(label="QFN");
 translate([16,0,0]) SOIC(8,"SOIC");
-translate([22,0,0]) SSOP(14,"SSOP");
+translate([22,0,0]) SSOP(14,label="SSOP");
 translate([28,0,0]) LED5050(6);
 translate([33,4,0]) LED3030();
 translate([33,0,0]) sk6812mini();
@@ -220,7 +220,8 @@ module SOIC(pins=8, label=""){
   
 }
 
-module SSOP(pins=8, pitch=0.635,  label=""){
+*SSOP();
+module SSOP(pins=8, pitch=0.635,  label="test"){
   //Plastic shrink small outline package (14,16,18,20,24,26,28 pins)
   //https://www.jedec.org/system/files/docs/MO-137E.pdf (max. values where possible)
   
@@ -255,8 +256,8 @@ module SSOP(pins=8, pitch=0.635,  label=""){
   //leads
   color(metalGreyPinCol)
     for (i=[-pins/2+1:2:pins/2],r=[-90,90])
-    rotate([0,0,r]) translate([E1/2,i*pitch/2,0]) lead([(E-E1)/2,b,A*0.5]);
-  
+      rotate([0,0,r]) translate([E1/2,i*pitch/2,0]) lead([(E-E1)/2,b,A*0.5]);
+  echo(pitch);
 }
 
 module SOT23(pins=3, label=""){
@@ -641,7 +642,7 @@ module LED5050(pins=6){
         translate([0.1,0,0.45]) cube([0.2,1.0,0.9],true);
       }
 }
-!PLCC6();
+PLCC6();
 module PLCC6(){
   // e.g. CREE CLP6C-FKB https://media.digikey.com/pdf/Data%20Sheets/CREE%20Power/CLP6C-FKB.pdf
   
@@ -1091,7 +1092,7 @@ module bend(size=[50,20,2],angle=45,radius=10,center=false, flatten=false){
   bendOffset3= (center) ? [0,0,0] : [size.x/2,0,size.z/2];
   
   childOffset1= (center) ? [0,size.y/2,0] : [0,0,size.z/2*i-size.z/2];
-  childOffset2= (angle<0 && !center) ? [0,0,size.z] : [0,0,0]; //check
+  childOffset2= (angle<0 && center) ? [0,0,size.z] : [0,0,0]; //check
   
   flatOffsetChld= (center) ? [0,size.y/2+strLngth,0] : [0,strLngth,0];  
   flatOffsetCb= (center) ? [0,strLngth/2,0] : [0,0,0];  
