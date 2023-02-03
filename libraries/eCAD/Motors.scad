@@ -2,10 +2,103 @@ $fn=50;
 fudge=0.1;
 
 use <bend.scad>
+include <KiCADColors.scad>
 
 translate([20,0,0]) SE0802();
 solenoid();
 
+*N20();
+module N20(){
+  bdDims=[12,10,15];
+  gbDims=[12,10,9];
+  gbRad=1;
+
+  cntcDist=7.3; //contact distance
+  cntcDims=[0.3,1.5,2.5];
+
+  shftDims=[3,2.5,10];
+
+  //body
+  color(metalSilverCol) intersection(){
+    cylinder(d=bdDims.x,h=bdDims.z);
+    translate([0,0,(bdDims.z)/2]) cube([bdDims.x+fudge,bdDims.y,bdDims.z+fudge],true);
+  }
+
+  //cap bottom
+  color(blackBodyCol) translate([0,0,-1.2]) cylinder(d=5,h=1.2);
+  
+  //top
+  translate([0,0,bdDims.z+gbDims.z]){
+    //top cap
+    color(metalGoldPinCol) cylinder(d=4,h=0.7);
+    //shaft top
+    color(metalSilverCol) difference(){
+      cylinder(d=shftDims.x,h=shftDims.z);
+      translate([0,shftDims.y,shftDims.z/2]) cube([shftDims.x,shftDims.x,shftDims.z+fudge],true);
+    }
+  }
+
+  //contacts
+  color(metalGreyPinCol) for (ix=[-1,1]) translate([ix*cntcDist/2,0,-cntcDims.z/2]) cube(cntcDims,true);
+
+  //gearbox
+  color(metalGoldPinCol) translate([0,0,bdDims.z])
+    linear_extrude(gbDims.z)
+      hull() for(ix=[-1,1],iy=[-1,1])
+        translate([ix*(gbDims.x/2-gbRad),iy*(gbDims.y/2-gbRad)])
+          circle(gbRad);
+}
+
+!N20leadScrew();
+module N20leadScrew(screwDia=3, screwLength=57.6, nutPos=5.5){
+  bdDims=[12,10,15];
+  gbDims=[12,10,9];
+  gbRad=1;
+
+  cntcDist=7.3; //contact distance
+  cntcDims=[0.3,1.5,2.5];
+  
+  //nut //ri=sqrt(3)/2*ra
+  hexNutDims=[7,2*7/sqrt(3),2];//width inner, width outer, height of the hexagonal part
+  nutZero=5.5; //zeroPos from gbTop
+  nutOffset=bdDims.z+gbDims.z+nutZero;
+
+  //body
+  color(metalSilverCol) intersection(){
+    cylinder(d=bdDims.x,h=bdDims.z);
+    translate([0,0,(bdDims.z)/2]) cube([bdDims.x+fudge,bdDims.y,bdDims.z+fudge],true);
+  }
+  
+  //nut
+  color(metalGoldPinCol) translate([0,0,nutOffset+nutPos]){
+    cylinder(d=hexNutDims.y,h=2,$fn=6);
+    cylinder(d=6,h=6);
+  }
+
+  //cap bottom
+  color(blackBodyCol) translate([0,0,-1.2]) cylinder(d=5,h=1.2);
+  
+  //top
+  translate([0,0,bdDims.z+gbDims.z]){
+    //top cap
+    color(metalGoldPinCol) cylinder(d=4,h=1.5);
+    //shaft top
+    color(metalSilverCol) 
+      cylinder(d=screwDia,h=screwLength);
+      
+    
+  }
+
+  //contacts
+  color(metalGreyPinCol) for (ix=[-1,1]) translate([ix*cntcDist/2,0,-cntcDims.z/2]) cube(cntcDims,true);
+
+  //gearbox
+  color(metalGoldPinCol) translate([0,0,bdDims.z])
+    linear_extrude(gbDims.z)
+      hull() for(ix=[-1,1],iy=[-1,1])
+        translate([ix*(gbDims.x/2-gbRad),iy*(gbDims.y/2-gbRad)])
+          circle(gbRad);
+}
 
 module solenoid(engaged=false){
   //https://www.sparkfun.com/products/11015

@@ -19,6 +19,7 @@ fudge=0.1;
 
 translate([-30,0,0]) XH(2);
 translate([-15,0,0]) mUSB(false);
+translate([-15,15,0]) usbC();
 usbA();
 translate([10,-4,0]) pinHeader(10,2,markPin1=true);
 translate([10,4,0]) pinHeader(5,1);
@@ -670,6 +671,7 @@ module usbC(){
   //contacts
   //          pinA1          ...                        pinA12
   cntcLngths=[4,3.5,3.5,4,3.5,3.5,3.5,3.5,4,3.5,3.5,4]; //8x short, 4x long per side
+  
   cntcDims=[0.25,0.05];
   pitch=0.5;
 

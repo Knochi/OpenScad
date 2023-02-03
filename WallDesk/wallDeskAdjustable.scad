@@ -1,5 +1,5 @@
 use <myShapes.scad>
-use <wallDesk.scad>
+//use <wallDesk.scad>
 
 /*  Specs
     min:800
@@ -180,7 +180,7 @@ module VSlotProfile(size=10,thick=1,cut=false){
     rotate(ir) translate([(size-thick)/2,0]) square([size,thick],true);
 }
 
-!wheelBox();
+*wheelBox();
 module wheelBox(thick=21,ZOffset=1.5,cutOut=false){
   $fn=20;
   sheetThck=1;

@@ -3,7 +3,12 @@
  use <MPEGarry.scad>
  include <KiCADColors.scad>
 
-cameraBoard();
+rotate(90) cameraBoard();
+translate([40,0,0]) RYB080I();
+
+
+
+*cameraBoard();
 module cameraBoard(type="OV5640"){
   // Waveshare OV5640(A,B,C), OV2640 and OV9655 camera boards
   // OV9655 & OV2640 has no holes and sharp corners
@@ -53,7 +58,7 @@ module RYB080I(){
 
   difference(){
     union(){
-      color("darkSlateGrey") linear_extrude(0.8) polygon(poly);
+      color() linear_extrude(0.8) polygon(poly);
       color("silver") translate([-4.6,-4.6,0.8]) cube([11-1.8,6.6,1.4]);
       color("ivory") translate([-1,2+1.8,0.8]) cube([3,1.6,0.8]);
       for (ix=[-1,1], iy=[0:6])

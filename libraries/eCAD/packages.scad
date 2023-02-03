@@ -10,7 +10,7 @@ SMDpassive("1210",label="000");
 translate([4,0,0]) SOT23(22,label="SOT23");
 translate([10,0,0]) QFN(label="QFN");
 translate([16,0,0]) SOIC(8,"SOIC");
-translate([22,0,0]) SSOP(14,"SSOP");
+translate([22,0,0]) SSOP(14,label="SSOP");
 translate([28,0,0]) LED5050(6);
 translate([33,4,0]) LED3030();
 translate([33,0,0]) sk6812mini();
@@ -220,28 +220,32 @@ module SOIC(pins=8, label=""){
   
 }
 
-module SSOP(pins=8,label=""){
+*SSOP();
+module SSOP(pins=8, pitch=0.635,  label="test"){
   //Plastic shrink small outline package (14,16,18,20,24,26,28 pins)
   //https://www.jedec.org/system/files/docs/MO-137E.pdf (max. values where possible)
   
   b= 0.254; //lead width //JEDEC b: 0.2-0.3
-  pitch=0.635;
+  //pitch=0.635; make overide
   A= (pins>8) ? 1.72 : 1.75; // total height //JEDEC A: 
   A1=0.25; //space below package //JEDEC A1: 0.1-0.25
   c= (pins>8) ? 0.25 : 0.19; //lead tAickness //JEDEC: 0.1-0.25
-  D= (pins>16) ? (pins > 24) ? 9.9 : 8.66 : 4.9;
+  D= (pins==28) ? 9.9 :   //28pin
+     (pins > 18) ? 8.66 : //20..24pin
+     (pins==18) ? 6.8 :   //e.g. Toshiba SSOP18
+     4.9; // 14..16pin
   E1=3.9; //body width
   E=6.0; //total width
   h=0.5; //chamfer width h=0.25-0.5
   
   txtSize=D/(0.8*len(label));
   if (label)
-    color("white") translate([0,0,A]) linear_extrude(0.1) 
+    color(lightBrownLabelCol) translate([0,0,A]) linear_extrude(0.1) 
       text(text=label,size=txtSize,halign="center",valign="center", font="consolas");
   
   
   //body
-  color("darkSlateGrey")
+  color(blackBodyCol)
     difference(){
       translate([-D/2,-E1/2,A1]) cube([D,E1,(A-A1)]);
       translate([0,E1/2+fudge,A+fudge]) 
@@ -250,10 +254,10 @@ module SSOP(pins=8,label=""){
             polygon([[0,0],[h+fudge,0],[0,h+fudge]]);
     }    
   //leads
-  color("silver")
+  color(metalGreyPinCol)
     for (i=[-pins/2+1:2:pins/2],r=[-90,90])
-    rotate([0,0,r]) translate([E1/2,i*pitch/2,0]) lead([(E-E1)/2,b,A*0.5]);
-  
+      rotate([0,0,r]) translate([E1/2,i*pitch/2,0]) lead([(E-E1)/2,b,A*0.5]);
+  echo(pitch);
 }
 
 module SOT23(pins=3, label=""){
@@ -638,7 +642,7 @@ module LED5050(pins=6){
         translate([0.1,0,0.45]) cube([0.2,1.0,0.9],true);
       }
 }
-!PLCC6();
+PLCC6();
 module PLCC6(){
   // e.g. CREE CLP6C-FKB https://media.digikey.com/pdf/Data%20Sheets/CREE%20Power/CLP6C-FKB.pdf
   
@@ -1088,7 +1092,7 @@ module bend(size=[50,20,2],angle=45,radius=10,center=false, flatten=false){
   bendOffset3= (center) ? [0,0,0] : [size.x/2,0,size.z/2];
   
   childOffset1= (center) ? [0,size.y/2,0] : [0,0,size.z/2*i-size.z/2];
-  childOffset2= (angle<0 && !center) ? [0,0,size.z] : [0,0,0]; //check
+  childOffset2= (angle<0 && center) ? [0,0,size.z] : [0,0,0]; //check
   
   flatOffsetChld= (center) ? [0,size.y/2+strLngth,0] : [0,strLngth,0];  
   flatOffsetCb= (center) ? [0,strLngth/2,0] : [0,0,0];  

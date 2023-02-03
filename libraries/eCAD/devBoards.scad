@@ -43,8 +43,8 @@ module piPico(showLabels=true){
   //these pads will be square, others rounded
   sqrPads=[3,8,13,18,23,28,33,38];
   //signal labels
-  labels=["zero","VBUS","VSYS","GND","3V3_EN","3V3","ADC_VREF","GP28_A2","AGND","GP27_A1","GP26_A0","RUN","GP22","GND","GP21","GP20","GP19","GP18","GND","GP17","GP16",
-          "GP15","GP14","GND","GP13","GP12","GP11","GP10","GND","GP9","GP8","GP7","GP6","GND","GP5","GP4","GP3","GP2","GND","GP1","GP0"];
+  labels=["zero","VBUS","VSYS","GND","3V3_EN","3V3","ADC_VREF","GP28_A2","AGND","GP27_A1","GP26_A0","RUN","GP22","GND","GP21","GP20","GP19","GP18","GND","GP17","GP16", //1-20
+          "GP15","GP14","GND","GP13","GP12","GP11","GP10","GND","GP9","GP8","GP7","GP6","GND","GP5","GP4","GP3","GP2","GND","GP1","GP0"]; //21-40
 
   pcbDims=[21,51,1];
   holeDist=[11.4,pcbDims.y-4];
@@ -58,7 +58,7 @@ module piPico(showLabels=true){
     pads();
   }
   translate([0,pcbDims.y/2-1,0]) rotate(180) mUSB();
-  translate(MCUPos) QFN(54,[7,7,1],0.4,"RP2040");
+  translate(MCUPos) QFN(pos=54,size=[7,7,1],pitch=0.4,label="RP2040");
   translate(btnPos) rotate(90) KMR2();
   
   module pads(){

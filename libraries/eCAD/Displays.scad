@@ -12,8 +12,15 @@ translate([200,0,0]) Adafruit128x128TFT();
 translate([300,0,0]) AdafruitOLED23();
 translate([500,0,0]) raspBerry7Inch();
 
-
-
+!LD8133();
+module LD8133(){
+  //NEC 9 digit VFD tube
+  tbDia=10;
+  color("grey",0.6){
+    rotate([0,90,0]) cylinder(d=tbDia,h=48,center=true);
+    rotate([90,0,0]) cylinder(d=3,h=7+tbDia/2);
+  }
+}
 
 
 module raspBerry7Inch(cutOut=false,matThck=3){
@@ -395,7 +402,7 @@ module LCD_20x4(){
       translate([ix*chrPitch.x,iy*chrPitch.y]) color("lightblue") square(chrDim,true);
 }
 
-
+*FutabaVFD();
 module FutabaVFD(){
   // Type M162MD07AA-000 
   chars=[16,2];
@@ -421,7 +428,7 @@ module FutabaVFD(){
     for (ix=[-(chars.x-1)/2:(chars.x-1)/2],iy=[-(chars.y-1)/2:(chars.y-1)/2])
       translate([ix*chrPitch.x,iy*chrPitch.y]) color("lightblue") square(chrDim,true);
 }
-
+*HCS12SS();
 module HCS12SS(){
   ovDim=[100,20.5,6.3];
   //Samsung VFD module 
