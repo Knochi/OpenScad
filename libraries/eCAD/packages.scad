@@ -185,6 +185,79 @@ module QFN(pos=28,size=[5,5,1], pitch=0.5, pSize=undef, label="QFN"){
         linear_extrude(A3) polygon([[-J/2+b,K/2],[J/2,K/2],[J/2,-K/2],[-J/2,-K/2],[-J/2,K/2-b]]);
 }
 
+!DHVQFN();
+module DHVQFN(pos=20){
+  // Nexperia DHVQFN14,16,20,24
+  // https://www.nexperia.com/support/packages/
+  // https://www.nexperia.com/packages/SOT762-1.html
+  
+  // --- LEAD WIDTH ---
+  bnom= 0.25;
+  bmin= 0.18;
+  size = (pos==14) ? [2.5,3.0,1] :
+         (pos==16) ? [2.5,3.5,1] :
+         (pos==20) ? [2.5,4.5,1] :
+         (pos==24) ? [3.5,5.5,1] :
+          [0,0,0];
+  pSize = (pos==14) ? [1  ,1.5] :
+            (pos==16) ? [1  ,2.0] :
+            (pos==20) ? [1  ,3.0] :
+            (pos==24) ? [2.1,4.1] :
+              [0,0];
+  pitch=0.5;
+  
+  // --- COMMON DIMENSIONS ---
+  A=size.z;   //max thickness V=1.0, W=0.8
+  A1=0.02;    //nominal standoff        
+  //A2= (size.z<1) ? 0.6 : 0.8 //nominal body Hght
+  A3=0.2;   //lead Frame Thick incl. standoff
+  //theta=10; //flank angle 0..14° 
+  //K= 0.2    //minimum spacing lead corner
+  //R= bmin/2 //radius of leads
+  b=0.25;   //lead width
+  
+  //28/32/64
+  //length/width from pins or size
+  D= size.x;  //auto size when nothing provided
+  E= size.y;  //body size y
+  
+  //thermal pad size.x
+  J= pSize.x;
+  
+  K= pSize.y;      //pad size Y
+  e= pitch;    //pitch
+  L= 0.4;   //lead Length /0.4
+  
+  fudge=0.01; //very small fudge
+  
+  //body
+  color(blackBodyCol)
+    translate([0,0,A/2]) cube([D,E,A-A1],true);
+  //pins
+  color(metalGreyPinCol) 
+    for (i=[-(pos/2-3)/2:(pos/2-3)/2],rot=[90,270]){
+      //rotate(rot) translate([i*e-b/2-pos/16,-D/2-fudge,0]){
+      rotate(rot) translate([i*e-b/2,-D/2-fudge,0]){
+        cube([b,L-b/2,A3]);
+        translate([b/2,L-b/2-fudge,0]) cylinder(d=b,h=A3);
+      }
+    }
+  color(metalGreyPinCol) 
+    for (i=[-1/2,1/2],rot=[0,180]){
+      e = (pos==24) ? 1.5 : pitch; 
+      //rotate(rot) translate([i*e-b/2-pos/16,-D/2-fudge,0]){
+      rotate(rot) translate([i*e-b/2,-E/2-fudge,0]){
+        cube([b,L-b/2,A3]);
+        translate([b/2,L-b/2-fudge,0]) cylinder(d=b,h=A3);
+      }
+    }
+  //ePad
+  if (pSize)
+    color(metalGreyPinCol) //Exposed Pad
+      linear_extrude(A3) square(pSize,true);
+}
+
+
 module SOIC(pins=8, label=""){
   //https://www.jedec.org/system/files/docs/MS-012G.pdf (max. values)
   
