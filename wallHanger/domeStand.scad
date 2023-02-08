@@ -6,39 +6,51 @@ showThreads=false;
 showPico=false;
 showBaseTop=true;
 showBaseBottom=true;
+showDome=true;
+showCut=false;
 
 /* [DomeDimensions] */
-domeDia=90;
+domeOuterDia=90;
 domeHeight=170;
 domeWallThck=2.5;
 
 /* [ModelDimensions] */
 minWallThck=2;
-
 spacing=0.5;
+topHght=15;
+botHght=30;
+baseHght=topHght+botHght;
 
 /* [Hidden] */
+baseDia=domeOuterDia+minWallThck*2+spacing*2;
 fudge=0.1;
 $fn=100;
 
-base();
+difference(){
+  base();
+  if (showCut) color("darkRed") translate([0,-baseDia/4,baseHght/2]) cube([baseDia+fudge,baseDia/2,baseHght+fudge],true);
+}
+
+if (showDome)
+  translate([0,0,baseHght-minWallThck]) glassDome();
 
 if (showPico)
-  translate([0,-domeDia,0]) piPico(false);
+  translate([0,-domeOuterDia,0]) piPico(false);
 
 //base with drainslots and reservoir for condensing water 
 module base(){
-  topHght=15;
-  botHght=30;
-  baseHght=topHght+botHght;
-  baseDia=domeDia+minWallThck*2+spacing*2;
-  slotCount=18;
+  
+  
+  slotCount=12;
   threadLen=5;
   angInc=360/slotCount;
   threadSpcng=0.2;
+  rodDia=2.2;
+  rodDistDia=30; 
+  chamfer=1;
   
-  innerDia=domeDia-domeWallThck-spacing;
-  slotDims=[3,1,topHght+fudge];
+  innerDia=domeOuterDia-domeWallThck*2-spacing*2;
+  slotDims=[4,2,topHght+fudge];
   if (showBaseTop)
     translate([0,0,botHght]) top();
   
@@ -48,15 +60,24 @@ module base(){
   module top(){  
     difference(){
       cylinder(d=baseDia,h=topHght);
-      translate([0,0,topHght-minWallThck-spacing]) 
-        linear_extrude(minWallThck*2+spacing+fudge) difference(){
-          circle(d=domeDia+spacing);
+        rotate_extrude() translate([(domeOuterDia-domeWallThck)/2,topHght-minWallThck]) circle(d=domeWallThck+spacing*2);
+ 
+        translate([0,0,topHght-minWallThck]) 
+          linear_extrude(minWallThck+fudge) difference(){
+          circle(d=domeOuterDia+spacing*2);
           circle(d=innerDia);
-        }
-       //slots
+          }
+        
+        //slots
         for (ir=[0:angInc:360-angInc])
-          rotate(ir) translate([(innerDia-slotDims.x)/2,0,topHght/2]) cube(slotDims,true);
-      //thread
+          rotate(ir) translate([(innerDia-slotDims.x)/2+spacing+domeWallThck/2,0,topHght/2]) cube(slotDims,true);
+        //holes for metal rods
+        for (ir=[0:120:240])
+          rotate(ir) translate([rodDistDia/2,0,0]){
+            cylinder(d=rodDia,h=topHght+fudge-chamfer);
+            translate([0,0,topHght-chamfer]) cylinder(d1=rodDia,d2=rodDia+(chamfer+fudge)*2,h=chamfer+fudge);
+          }
+        //thread
         if (showThreads)
           translate([0,0,-fudge]) metric_thread(diameter=baseDia-minWallThck+threadSpcng, 
                                                 pitch=2, 
@@ -65,6 +86,12 @@ module base(){
         else
           color("cyan") translate([0,0,-fudge]) cylinder(d=baseDia-minWallThck*2,h=topHght-minWallThck*3-spacing+fudge);
       }
+      //sockets for metal rods
+        for (ir=[0:120:240])
+          rotate(ir) translate([rodDistDia/2,0,0]) difference(){
+            cylinder(d=rodDia+2*minWallThck,h=topHght-chamfer);
+            translate([0,0,minWallThck]) cylinder(d=rodDia,h=topHght);
+          }
     }
       
   module bottom(){
