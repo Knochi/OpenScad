@@ -27,7 +27,7 @@ module cameraBoard(type="OV5640"){
   translate(pin1Offset){
     color(pcbBlackCol) 
       linear_extrude(brdDims.z) 
-        difference(){
+        !difference(){
           union(){
             square(pcbDims);
             //if (type=="OV5640") 
