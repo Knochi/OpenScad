@@ -113,6 +113,30 @@ module microMatch(pos=10){
   }
 }
 
+!SLconnector();
+module SLconnector(pos=2,height=5){
+  //preci-dip Spring-Loaded Connectors SLC 
+  //Series 811 https://www.precidip.com/en/Products/Spring-Loaded-Connectors/pview/811-S1-NNN-30-XXX101.html
+  //single row 2..10 contacts, SMD
+  //811-SS-NNN-30-XXX101 NNN is number of poles, XXX is code for height A
+  //heights=[4.5:0.5:7.5] XXX=001-007
+
+  bodyHght= (height<6) ? 2.95 : 4;
+  pitch=2.54;
+  stroke=1.4;
+  btmDia=1.83;
+  btmThck=0.4;
+  pinDia=1.07;
+  //pin
+  color(metalGoldPinCol) translate([0,0,btmThck+bodyHght]){
+     cylinder(d=pinDia,h=height-bodyHght-btmThck-pinDia/2);
+     translate([0,0,height-bodyHght-btmThck-pinDia/2]) sphere(d=pinDia);
+  }
+
+  color(blackBodyCol) translate([0,0,btmThck]) linear_extrude(bodyHght)  octagon();
+  color(metalGoldPinCol) cylinder(d=btmDia,h=btmThck);
+}
+
 *M411P(false);
 module M411P(isMale=true){
  //https://www.hyte.pro/product/m411p-en.html
@@ -1517,6 +1541,15 @@ module bend(size=[50,20,2],angle=45,radius=10,center=false, flatten=false){
         rotate_extrude(angle=angle)
           translate([radius,0,0]+bendOffset1) square([size.z,size.x]);
   }
+}
+
+module octagon(size=2.54){
+  //isolator octagon 2D shape
+  poly=[[-size/2,size/4],[-size/3,size/2],
+        [size/3,size/2],[size/2,size/4],
+        [size/2,-0.635],[size/3,-size/2],
+        [-size/3,-size/2],[-size/2,-size/4]];
+  polygon(poly);
 }
 
 *frustum([3,2,0.9],method="poly");

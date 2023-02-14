@@ -297,6 +297,6 @@ function c_centers(P1, P2, r)= let(
   q = sqrt(pow((P2.x-P1.x),2) + pow((P2.y-P1.y),2)),
   x3 = (P1.x + P2.x) /2,
   y3 = (P1.y + P2.y) /2,
-  xx = sqrt((pow(r,2) - pow(q/2,2))*(P1.y-P2.y)/q,
-  yy = sqrt((pow(r,2) - pow(q/2,2))*(P2.x-P1.x)/q
+  xx = sqrt((pow(r,2) - pow(q/2,2)))*(P1.y-P2.y)/q,
+  yy = sqrt((pow(r,2) - pow(q/2,2)))*(P2.x-P1.x)/q
 ) [[x3 + xx, y3+yy], [x3-xx,y3-yy]];
