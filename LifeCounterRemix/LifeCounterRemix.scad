@@ -11,8 +11,8 @@ sprWdth=3.85; //width of spring arms
 sprDia=21.6; //outer Dia of spring
 
 /* [Ring] */
-digits=10;
 digitWdth=8.33;
+rngSize=15; //inner radius of digitRing
 
 /* [Tube] */
 tbDia=10.5;
@@ -26,6 +26,8 @@ sideDia=36; //outer dia of octagong
 sideWdth=10;
 
 /* [show] */
+showSTL=false; //show the original STL
+showRing=true;
 showSpring=true;
 showTube=true;
 showSide=true;
@@ -33,6 +35,7 @@ sideIsLeft=true;
 
 /*[Hidden]*/
 fudge=0.1;
+digits=10; //some submodules doesn't calculate radii correctly when this changes!
 $fn=100;
 
 if (showSpring)
@@ -41,6 +44,8 @@ if (showTube)
   tube();
 if (showSide)
   side();
+if (showRing)
+  ring();
 
 module spring(){
   cutWdth=sprDia/2-minWallThck-sprThck-tbDia/2-spcng;
@@ -48,9 +53,8 @@ module spring(){
   mainCutDia=tbDia/2+minWallThck+spcng;
   tipDia=2.2;
   tipAng=2*asin((tipDia/2)/sprDia); //angle from tip dia
-  //template
-  %translate([0.2,-12.85-21.6/2,0])
-    import("Life_Counter_spring.stl");
+  if (showSTL)
+    %translate([0.2,-12.85-21.6/2,0]) import("Life_Counter_spring.stl");
 
   //spring arms
   difference(convexity=4){
@@ -83,8 +87,10 @@ module spring(){
 
 module tube(){
   tbLen=29.1;
-  %translate([-24-10.5/2,42.75-4.3/2,0])
-    import("Life_Counter_tube.stl");
+
+  if (showSTL)
+    %translate([-24-10.5/2,42.75-4.3/2,0]) import("Life_Counter_tube.stl");
+
   linear_extrude(height = tbLen){
     difference(){
       union(){
@@ -96,16 +102,46 @@ module tube(){
   } 
 }
 
-!ring();
+*ring();
 module ring(){
-  %translate([0,-41.11,0]) import("Life_Counter_ring.stl");
+  ri=rngSize;
+  chmfr=0.5;
+  emboss=1;
+  roChmf=(ri-chmfr)*(1/cos(180/digits));
+  ro=ri*(1/cos(180/digits)); //works only for 10 digits! //TODO make it work for n-gons
+  if (showSTL)
+    %rotate(-18) translate([(15.08-14.93)/2,-41.11-31.55/2,0]) import("Life_Counter_ring.stl");
+  
+  rotate(-18) difference(){
+    //body
+    rotate(18){
+      cylinder(r1=roChmf,r2=ro,h=chmfr,$fn=digits);
+      translate([0,0,chmfr]) cylinder(r=ro,h=digitWdth-2*chmfr,$fn=digits);
+      translate([0,0,digitWdth-chmfr]) cylinder(r2=roChmf,r1=ro,h=chmfr,$fn=digits);
+    }
+    //nudges for spring
+    translate([0,0,-fudge/2]) linear_extrude(digitWdth+fudge) {
+      circle(d=sprDia+spcng*2);
+      for (ir=[0:360/digits:360-(360/digits)]) rotate(ir) translate([sprDia/2-fudge,0]) circle(d=3.1+fudge,$fn=4); //TODO needs tuning
+    }
+    //digits
+    for (i=[0:(digits-1)])
+      rotate(i*360/digits)
+        translate([ri-emboss,0,digitWdth/2]) 
+          rotate([0,90,0]) linear_extrude(emboss+fudge) 
+            text(size=8,str(i),valign="center",halign="center",font="Arial:style=Bold");
+  }
+  
+
 }
 
 module side(isLeft=true){
   a=sideDia*sin(18); //decagon side length
   ri=0.5*sqrt(5+2*sqrt(5))*a; 
   echo(a,ri);
-  %rotate(90) translate([-19.92+4.1/2,9.69+3,0]) import("Life_Counter_sides.stl");
+  if (showSTL)
+    %rotate(90) translate([-19.92+4.1/2,9.69+3,0]) import("Life_Counter_sides.stl");
+
   difference(){
     union(){
       cylinder(d=sideDia,h=sideWdth/1.5,$fn=10);
@@ -128,6 +164,7 @@ module side(isLeft=true){
 }
 
 function toRad(angDeg=90)=angDeg*PI/180;
+
 
 *chamferedCube(method="hull");
 module chamferedCube(size=[10,15,20], chamfer=1, center=false, method="hull"){
