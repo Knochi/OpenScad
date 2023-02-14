@@ -1,9 +1,12 @@
 // This is a remix of https://www.thingiverse.com/thing:3351902
 // Tolerances where to thight and want to have it customizable
 
+use </Fonts/MorrisRomanBlack/MorrisRoman-Black.ttf>
+
 /* [General] */
 minWallThck=6.75-5.35;
-spcng=0.1;
+ringsCnt=3;
+spcng=0.3;
 
 /* [Spring] */
 sprThck=1; //thickness of spring arms
@@ -11,41 +14,114 @@ sprWdth=3.85; //width of spring arms
 sprDia=21.6; //outer Dia of spring
 
 /* [Ring] */
-digitWdth=8.33;
+rngWdth=8.33;
 rngSize=15; //inner radius of digitRing
+rngSpcng=0.2; //spacing between the rings and to sides
+revDigits=false; //reverse order of digits
+rngFont="Morris Roman:style=Bold";
+rngFntSz=9;
 
 /* [Tube] */
 tbDia=10.5;
 ndgDims=[2.0,1.3]; 
 
 /* [Clip] */
-clipDims=[5.97,4.09];
+clipXYDims=[6,4];
 
 /* [Side] */
 sideDia=36; //outer dia of octagong
 sideWdth=10;
+feetProtrude=0.15; //percent
+revArrows=true;
 
 /* [show] */
 showSTL=false; //show the original STL
-showRing=true;
-showSpring=true;
+showRings=true;
+showSprings=true;
 showTube=true;
+showClip=true;
 showSide=true;
-sideIsLeft=true;
+showCut="none"; //["none","x-y","y-z"]
+cutOffset=0;
+export="none"; //["none","spring","clip","side"]
 
 /*[Hidden]*/
 fudge=0.1;
 digits=10; //some submodules doesn't calculate radii correctly when this changes!
+tubeZPos=0.5*sqrt(5+2*sqrt(5))*sideDia*sin(18); ;
+tbLen=ringsCnt*rngWdth+minWallThck*2+(ringsCnt+1)*rngSpcng;
+sideXPos=ringsCnt/2*rngWdth+rngSpcng*(ringsCnt+1)/2;
+ovDims=[(sideXPos+sideWdth*(1+feetProtrude))*2,sideDia*(1+feetProtrude),tubeZPos*2];
+//clipLen=tbLen+sideWdth+minWallThck;//was 40.16;
+clipLen=sideWdth+ringsCnt*rngWdth+(ringsCnt+1)*rngSpcng+minWallThck*2.5;
 $fn=100;
 
-if (showSpring)
-  spring();
-if (showTube)
-  tube();
-if (showSide)
-  side();
-if (showRing)
-  ring();
+
+// --- assembly ---
+difference(){
+  union(){
+    if (showSprings)
+      for (ix=[-(ringsCnt-1)/2:(ringsCnt-1)/2])
+      translate([ix*rngWdth,0,tubeZPos]) 
+        rotate([90,0,90]) translate([0,0,-rngWdth/2]) spring();
+
+    if (showTube)
+      translate([0,0,tubeZPos]) rotate([90,0,90]) translate([0,0,-tbLen/2]) tube();
+
+    if (showSide){
+      translate([-sideXPos,0,tubeZPos]) 
+        rotate([90,0,-90]) side(isLeft=true);
+      translate([sideXPos,0,tubeZPos]) 
+        rotate([90,0,90]) side(isLeft=false);
+    }
+
+    if (showRings)
+      for (ix=[-(ringsCnt-1)/2:(ringsCnt-1)/2])
+      translate([ix*(rngWdth+rngSpcng),0,tubeZPos]) 
+        rotate([0,-90,0]) translate([0,0,-rngWdth/2]) ring();
+
+    if (showClip)
+      translate([-sideXPos-sideWdth,0,tubeZPos-clipXYDims.y/2]) rotate(-90) clip();
+  }
+  if (showCut=="x-y")
+    color("darkred") translate([0,0,tubeZPos+ovDims.z/4]) cube([ovDims.x+fudge,ovDims.y+fudge,ovDims.z/2+fudge],true);
+  else if (showCut=="y-z")
+    color("darkred") translate([ovDims.x/4+cutOffset,0,ovDims.z/2]) cube([ovDims.x/2+fudge-cutOffset*2,ovDims.y+fudge,ovDims.z+fudge],true);
+}
+
+// -- export --
+if (export=="spring")
+  !spring();
+else if (export=="clip")
+  !clip();
+else if (export=="side")
+  !side();
+
+*clip();
+module clip(){
+  tipDims=[4.4,4.5];
+  tipPoly=[[-tipDims.x/2,0],[tipDims.x/2,0],[0,tipDims.y]];
+  if (showSTL)
+    %rotate(-90) translate([-12.54,43.9-6/2,0]) import("Life_Counter_clip.stl");
+
+  linear_extrude(clipXYDims.y,convexity=2) difference(){
+    union(){
+      translate([-clipXYDims.x,0]) square([clipXYDims.x*2,minWallThck*2]);
+      translate([-clipXYDims.x/2,0]) square([clipXYDims.x,clipLen]);
+      for (ix=[-1,1])
+      translate([ix*(clipXYDims.x-minWallThck)/2,clipLen]) polygon(tipPoly);
+    }
+    //slot
+    hull() for (iy=[0,1])
+      translate([0,minWallThck*3+iy*(clipLen/2-minWallThck*2)]) circle(d=clipXYDims.x-minWallThck*1.5);
+    //springy tip
+    hull(){
+      translate([0,minWallThck*3+(clipLen/2+minWallThck*2)]) circle(d=clipXYDims.x-minWallThck*3);
+      translate([0,minWallThck*3+(clipLen+minWallThck*2)]) circle(d=clipXYDims.x-minWallThck*1.5);
+    }
+    
+  }
+}
 
 module spring(){
   cutWdth=sprDia/2-minWallThck-sprThck-tbDia/2-spcng;
@@ -55,11 +131,11 @@ module spring(){
   tipAng=2*asin((tipDia/2)/sprDia); //angle from tip dia
   if (showSTL)
     %translate([0.2,-12.85-21.6/2,0]) import("Life_Counter_spring.stl");
-
+  
   //spring arms
-  difference(convexity=4){
+  difference(){
     //body
-    linear_extrude(digitWdth) difference(convexity=3){
+    linear_extrude(rngWdth,convexity=2) difference(){
       union(){
         circle(d=sprDia);
         for (im=[0,1]) mirror([im,0])
@@ -71,33 +147,32 @@ module spring(){
     for (im=[0,1]) mirror([im,0,0]){
       //main
       rotate(90+mainCutAng[0]) rotate_extrude(angle=mainCutAng[1]-mainCutAng[0]) 
-        translate([mainCutDia,-fudge/2]) square([cutWdth,digitWdth+fudge]);
-      rotate(90+mainCutAng[1]) translate([mainCutDia+cutWdth/2,0,-fudge/2]) cylinder(d=cutWdth,h=digitWdth+fudge);
+        translate([mainCutDia,-fudge/2]) square([cutWdth,rngWdth+fudge]);
+      rotate(90+mainCutAng[1]) translate([mainCutDia+cutWdth/2,0,-fudge/2]) cylinder(d=cutWdth,h=rngWdth+fudge);
       //tips
       rotate(90+mainCutAng[0]) rotate_extrude(angle=360/digits-mainCutAng[0]-tipAng)
-        translate([mainCutDia,-fudge/2]) square([cutWdth+sprThck+fudge,digitWdth+fudge]); 
+        translate([mainCutDia,-fudge/2]) square([cutWdth+sprThck+fudge,rngWdth+fudge]); 
       //flatten
       rotate(90+mainCutAng[0]) rotate_extrude(angle=mainCutAng[1]-mainCutAng[0]+15) 
-        translate([mainCutDia,sprWdth]) square([cutWdth+sprThck+tipDia/2+fudge,digitWdth-sprWdth+fudge]);
+        translate([mainCutDia,sprWdth]) square([cutWdth+sprThck+tipDia/2+fudge,rngWdth-sprWdth+fudge]);
     }
     //nudge
-    translate([0,-tbDia/2,digitWdth/2]) cube([ndgDims.x+spcng*2,(ndgDims.y+spcng)*2,digitWdth+fudge],true);
+    translate([0,-tbDia/2,rngWdth/2]) cube([ndgDims.x+spcng*2,(ndgDims.y+spcng)*2,rngWdth+fudge],true);
   }
 }
 
 module tube(){
-  tbLen=29.1;
-
+  //tbLen=29.1;
   if (showSTL)
     %translate([-24-10.5/2,42.75-4.3/2,0]) import("Life_Counter_tube.stl");
 
-  linear_extrude(height = tbLen){
+  linear_extrude(height = tbLen,convexity=2){
     difference(){
       union(){
         circle(d=tbDia);
         translate([0,-tbDia/2]) square([ndgDims.x,ndgDims.y*2],true);
       }
-      square(clipDims+[spcng*2,spcng*2],true);
+      square([clipXYDims.x,clipXYDims.y]+[spcng*2,spcng*2],true);
     }
   } 
 }
@@ -109,58 +184,98 @@ module ring(){
   emboss=1;
   roChmf=(ri-chmfr)*(1/cos(180/digits));
   ro=ri*(1/cos(180/digits)); //works only for 10 digits! //TODO make it work for n-gons
+  //ro=ri*tan(180/digits)/(cos(180/digits));
   if (showSTL)
     %rotate(-18) translate([(15.08-14.93)/2,-41.11-31.55/2,0]) import("Life_Counter_ring.stl");
-  
-  rotate(-18) difference(){
+  //circle(ri);
+  rotate(-36) difference(){
     //body
     rotate(18){
       cylinder(r1=roChmf,r2=ro,h=chmfr,$fn=digits);
-      translate([0,0,chmfr]) cylinder(r=ro,h=digitWdth-2*chmfr,$fn=digits);
-      translate([0,0,digitWdth-chmfr]) cylinder(r2=roChmf,r1=ro,h=chmfr,$fn=digits);
+      translate([0,0,chmfr]) cylinder(r=ro,h=rngWdth-2*chmfr,$fn=digits);
+      translate([0,0,rngWdth-chmfr]) cylinder(r2=roChmf,r1=ro,h=chmfr,$fn=digits);
     }
     //nudges for spring
-    translate([0,0,-fudge/2]) linear_extrude(digitWdth+fudge) {
+    translate([0,0,-fudge/2]) linear_extrude(rngWdth+fudge) {
       circle(d=sprDia+spcng*2);
       for (ir=[0:360/digits:360-(360/digits)]) rotate(ir) translate([sprDia/2-fudge,0]) circle(d=3.1+fudge,$fn=4); //TODO needs tuning
     }
     //digits
-    for (i=[0:(digits-1)])
-      rotate(i*360/digits)
-        translate([ri-emboss,0,digitWdth/2]) 
+    for (i=[0:(digits-1)]){
+      inc= revDigits ? 360/digits : -360/digits;
+      rotate(i*inc)
+        translate([ri-emboss,0,rngWdth/2]) 
           rotate([0,90,0]) linear_extrude(emboss+fudge) 
-            text(size=8,str(i),valign="center",halign="center",font="Arial:style=Bold");
+            text(size=rngFntSz,str(i),valign="center",halign="center",font=rngFont);
+    }
   }
   
 
 }
 
-module side(isLeft=true){
+*side();
+module side(isLeft=false){
   a=sideDia*sin(18); //decagon side length
   ri=0.5*sqrt(5+2*sqrt(5))*a; 
+  foodDims=[a,minWallThck*2,sideWdth*(1+feetProtrude)];
+  tipRoomDia=12+spcng*2;
+
+  //box for arrows
+  emboss=1; //emboss of the arrows
+  boxChmf=0.7;
+  boxRot= isLeft ? 90-36 : 90+36;
+
   echo(a,ri);
   if (showSTL)
-    %rotate(90) translate([-19.92+4.1/2,9.69+3,0]) import("Life_Counter_sides.stl");
+    if (isLeft)
+      %rotate(90) translate([-19.92+4.1/2,9.69+3,0]) import("Life_Counter_sides.stl");
+    else
+      %rotate(-90) translate([19.74-4.1/2,9.69+3,0]) import("Life_Counter_sides.stl");
 
   difference(){
-    union(){
-      cylinder(d=sideDia,h=sideWdth/1.5,$fn=10);
-      translate([0,0,sideWdth/1.5]) cylinder(d1=sideDia,d2=28.3,h=sideWdth/3,$fn=10);
-    }
-    translate([0,0,-fudge]) linear_extrude(2+fudge) {
-      circle(d=tbDia+spcng); //only 1 spncg for press fit
+    body();
+    //recess for tube
+    translate([0,0,-fudge]) linear_extrude(minWallThck+fudge+spcng) {
+      circle(d=tbDia+spcng); //only 1/2 spncg for press fit
       translate([0,-tbDia/2]) square([ndgDims.x+spcng,ndgDims.y*2+spcng],true);
     }
-    translate([0,0,-fudge/2]) linear_extrude(sideWdth+fudge) {
-      square(clipDims+[spcng*2,spcng*2],true);
+    translate([0,0,-fudge/2]) linear_extrude(sideWdth-minWallThck+fudge) {
+      square([clipXYDims.x,clipXYDims.y]+[spcng*2,spcng*2],true);
     }
-    translate([0,0,sideWdth-minWallThck*2]) linear_extrude(sideWdth+fudge) {
-      square([clipDims.x*2,clipDims.y]+[spcng*2,spcng*2],true);
+    if (isLeft)
+    //recess for clip foot
+    translate([0,0,sideWdth-minWallThck*2-spcng]) linear_extrude(minWallThck*2+fudge+spcng) {
+      square([clipXYDims.x*2,clipXYDims.y]+[spcng*2,spcng*2],true);
     }
+    //room for clip tip
+    else {  
+      translate([0,0,minWallThck*2.5-spcng]) rotate([90,0,0]) 
+        rotate_extrude(angle=180) translate([0,-clipXYDims.y/2-spcng]) square([tipRoomDia/2,clipXYDims.y+spcng*2]);
+    }
+    //arrows
+    arRot= revArrows ? [90,-90,90] : [90,90,90];
+    arZPos= revArrows ? sideWdth/2-boxChmf : sideWdth/2 ; 
+    rotate(boxRot) 
+      translate([ri+fudge-emboss,0,arZPos]) 
+        rotate(arRot) linear_extrude(emboss+fudge) circle(d=a*0.8,$fn=3);
   }
-  //arrow
-  chmf=0.7;
-  rotate(36*1.5) translate([ri-sideWdth/3,0,sideWdth/2]) chamferedCube([sideWdth/1.5,a+chmf*2,sideWdth],chmf,true);
+  //feet
+  for (im=[0,1]) mirror([im,0,0])
+    hull(){
+      translate([sideDia*0.4,-ri+minWallThck,foodDims.z/2]) cube(foodDims,true);
+      intersection(){
+        body();
+        translate([sideDia/2-foodDims.x/2,-clipXYDims.y/2-minWallThck-spcng*2,foodDims.z/2]) cube(foodDims,true);
+      }
+  }
+  
+
+  module body(){
+    cylinder(d=sideDia,h=sideWdth/1.5,$fn=10);
+    translate([0,0,sideWdth/1.5]) cylinder(d1=sideDia,d2=28.3,h=sideWdth/3,$fn=10);
+    //arrow box
+    rotate(boxRot) translate([ri-sideWdth/3,0,sideWdth/2]) chamferedCube([sideWdth/1.5,a+boxChmf*2,sideWdth],boxChmf,true);
+  }
 }
 
 function toRad(angDeg=90)=angDeg*PI/180;
