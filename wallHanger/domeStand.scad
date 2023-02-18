@@ -6,7 +6,7 @@ showThreads=false;
 showPico=false;
 showBaseTop=true;
 showBaseBottom=true;
-showDome=true;
+showDome=false;
 showCut=false;
 topOffset=0; //[0:40]
 
@@ -59,6 +59,8 @@ module base(){
   rodDia=2.2;
   rodDistDia=30; 
   chamfer=1;
+
+  fabricSlotDims=[2,10];
   
   innerDia=domeOuterDia-domeWallThck*2-domeSpacing*2;
   slotDims=[4,2,topHght+fudge];
@@ -79,14 +81,19 @@ module base(){
           circle(d=innerDia);
           }
         
-        //slots
+        //drain slots
         for (ir=[0:angInc:360-angInc])
           rotate(ir) translate([(innerDia-slotDims.x)/2+domeSpacing+domeWallThck/2,0,topHght/2]) cube(slotDims,true);
         //holes for metal rods
-        for (ir=[0:120:240])
+        for (ir=[0,120,240])
           rotate(ir) translate([rodDistDia/2,0,0]){
             cylinder(d=rodDia,h=topHght+fudge-chamfer);
             translate([0,0,topHght-chamfer]) cylinder(d1=rodDia,d2=rodDia+(chamfer+fudge)*2,h=chamfer+fudge);
+          }
+        //slots for fabric
+        for (ir=[60,180,300],d=[rodDistDia/4,rodDistDia*0.6])
+          rotate(ir) translate([d,0,topHght/2]){
+            cube([fabricSlotDims.x,fabricSlotDims.y,topHght+fudge],true);
           }
         //thread
         if (showThreads)
@@ -98,11 +105,12 @@ module base(){
           color("cyan") translate([0,0,-fudge]) cylinder(d=baseDia-minWallThck*2,h=topHght-minWallThck*3-domeSpacing+fudge);
       }
       //sockets for metal rods
-        for (ir=[0:120:240])
-          rotate(ir) translate([rodDistDia/2,0,0]) difference(){
-            cylinder(d=rodDia+2*minWallThck,h=topHght-chamfer);
-            translate([0,0,minWallThck]) cylinder(d=rodDia,h=topHght);
-          }
+      for (ir=[0:120:240])
+        rotate(ir) translate([rodDistDia/2,0,0]) difference(){
+          cylinder(d=rodDia+2*minWallThck,h=topHght-chamfer);
+          translate([0,0,minWallThck]) cylinder(d=rodDia,h=topHght);
+        }
+      
     }
       
   module bottom(){
@@ -112,6 +120,7 @@ module base(){
     filetRad=10;
     
     difference(){
+      //body
       union(){
         cylinder(d=baseDia,h=botHght);
         attachment(atWidth, atAng, baseDia, height=botHght);
@@ -125,6 +134,7 @@ module base(){
         else
           color("cyan") translate([0,0,botHght]) cylinder(d=baseDia-minWallThck,h=threadLen);
       } //union
+      //results in minWallTchk*1.5 walls
       translate([0,0,minWallThck]) cylinder(d=baseDia-3*minWallThck,h=botHght+threadLen);
       //recesses for magnets (or feet, or whatever)
       for (ir=[0:120:240])
@@ -135,56 +145,73 @@ module base(){
           cylinder(d=atWidth-minWallThck*2,h=botHght-minWallThck+fudge);
       rotate(-atAng/2) rotate_extrude(angle=atAng) 
         translate([(baseDia)/2+minWallThck,minWallThck]) square([atWidth-minWallThck*2,botHght-minWallThck+fudge]);
-      
+      //open attachment
+      attachment(atWidth, atAng, baseDia, height=botHght, cut=true);
     } //diff
     //add material above recesses to ensure watertightness
     for (ir=[0:120:240])
       rotate(ir) translate([baseDia/3,0,magThck+magSpcng]) cylinder(d=magDia+magSpcng*2+minWallThck*2,h=minWallThck);
   }//bottom
 }
-*attachment();
- module attachment(width=10, angle=20, baseDia=baseDia, height=botHght, filetRad=10, hollow=true){
-  minWallThck = (minWallThck == undef) ? 1 : minWallThck;
-  a=filetRad+width/2; 
-  b=baseDia/2+filetRad;
-  c=baseDia/2+width/2; 
-  beta=acos((a^2+c^2-b^2)/(2*a*c)); //angle for tangrad
-  atFilAng=acos((b^2+c^2-a^2)/(2*b*c)); //extended angle for fillet, law of cosines
-  atFilDist=b;
-  atTangRad=sqrt((width/2)^2+c^2-2*(width/2)*c*cos(beta)); //radius at which the tangents meet    
 
-  difference(){
-    union(){
-      rotate(-angle/2) rotate_extrude(angle=angle) translate([(baseDia)/2,0,0]) square([width,height]);
+*attachment(wallThck=minWallThck*1.5);
+ module attachment(width=10, angle=20, baseDia=baseDia, height=botHght, filetRad=10, hollow=true, wallThck=undef, cut=false){
+  minWallThck = (minWallThck == undef) ? 1 : minWallThck;//only for floor and top
+  wallThck = (wallThck == undef) ? minWallThck : wallThck;
+  //calculate fillets, see filletBetween2Circles.png
+  //filletRad=r3, width/2 = r2, baseDia/2=r1, atFilAng=alpha
+  a=filetRad+width/2; 
+  b=baseDia/2+filetRad; 
+  c=baseDia/2+width/2; 
+  atFilDist=b;
+  atFilAng=acos((b^2+c^2-a^2)/(2*b*c)); //angle for fillet circle
+  
+  beta=acos((a^2+c^2-b^2)/(2*a*c)); //angle for tangent 
+  atTangRad=sqrt((width/2)^2+c^2-2*(width/2)*c*cos(beta)); //radius at which the tangents meet (d)
+
+  if (cut)
+    difference(){
       rotate(-(angle/2+atFilAng)) 
         rotate_extrude(angle=angle+atFilAng*2) 
-          translate([(baseDia)/2-fudge,0,0]) square([atTangRad-baseDia/2+fudge,height]);
-        for (ir=[-1,1])
-          rotate(ir*angle/2) translate([(baseDia+width)/2,0,0]) cylinder(d=width,h=height);
-    }
-    if (hollow){
-      //core
-      rotate(-angle/2) rotate_extrude(angle=angle) 
-        translate([(baseDia)/2+minWallThck,minWallThck]) square([width-minWallThck*2,height-minWallThck*2]);
+          translate([(baseDia)/2-minWallThck*3-fudge/2,minWallThck]) square([minWallThck*3+fudge,height-minWallThck*2]);
       for (ir=[-1,1])
-          rotate(ir*angle/2) translate([(baseDia+width)/2,0,minWallThck]) 
-            cylinder(d=width-minWallThck*2,h=height-minWallThck*2);
-      //into the fillets
-      difference(){
+        rotate(ir*(angle/2+atFilAng)) translate([atFilDist,0,-fudge/2]) cylinder(r=filetRad+minWallThck,h=height+fudge);
+    }
+  else 
+    difference(){
+      union(){
+        rotate(-angle/2) rotate_extrude(angle=angle) translate([(baseDia)/2,0,0]) square([width,height]);
         rotate(-(angle/2+atFilAng)) 
           rotate_extrude(angle=angle+atFilAng*2) 
-            translate([(baseDia)/2-1,minWallThck]) square([atTangRad-baseDia/2+1,height-minWallThck*2]);
-        for (ir=[-1,1])
-          rotate(ir*(angle/2+atFilAng)) translate([atFilDist,0,minWallThck-fudge/2]) 
-            cylinder(r=filetRad+minWallThck+fudge,h=height-minWallThck*2+fudge);
+            translate([(baseDia)/2-fudge,0,0]) square([atTangRad-baseDia/2+fudge,height]);
+          for (ir=[-1,1])
+            rotate(ir*angle/2) translate([(baseDia+width)/2,0,0]) cylinder(d=width,h=height);
       }
-       
-     }
-    //fillets
-    for (ir=[-1,1])
-      rotate(ir*(angle/2+atFilAng)) translate([atFilDist,0,-fudge/2]) cylinder(r=filetRad,h=height+fudge);
-  }
-      
+      if (hollow){
+        //core
+        rotate(-angle/2) rotate_extrude(angle=angle) 
+          translate([(baseDia)/2+wallThck,minWallThck]) square([width-wallThck*2,height-minWallThck*2]);
+        //radii
+        for (ir=[-1,1])
+            rotate(ir*angle/2) translate([(baseDia+width)/2,0,minWallThck]) 
+              cylinder(d=width-wallThck*2,h=height-minWallThck*2);
+        
+        //into the fillets
+        difference(){
+          rotate(-(angle/2+atFilAng)) 
+            rotate_extrude(angle=angle+atFilAng*2) 
+              translate([(baseDia)/2-1,minWallThck]) square([atTangRad-baseDia/2+1,height-minWallThck*2]);
+          for (ir=[-1,1])
+            rotate(ir*(angle/2+atFilAng)) translate([atFilDist,0,minWallThck-fudge/2]) 
+              cylinder(r=filetRad+wallThck+fudge,h=height-minWallThck*2+fudge);
+        }
+        
+      }
+      //fillets
+      for (ir=[-1,1])
+        rotate(ir*(angle/2+atFilAng)) translate([atFilDist,0,-fudge/2]) cylinder(r=filetRad,h=height+fudge);
+    }
+  
 }//attachment
     
 //glass dome
@@ -207,3 +234,12 @@ module glassDome(dia=90, height=170, wallThck=2.5){
     }
   }
 }
+
+function filletAng(r1, r2, r3)= let(
+  a=r2+r3,
+  b=r1+r3,
+  c=r1+r2,
+  alpha=acos((b^2+c^2-a^2)/(2*b*c)),
+  beta=acos((a^2+c^2-b^2)/(2*a*c)),
+  gamma=180-alpha-beta
+) [alpha,beta,gamma];
