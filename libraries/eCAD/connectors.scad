@@ -1469,6 +1469,37 @@ module BKLPwrCable(angled=true,length=20){
   color("black") translate([14.9+26.9-14.9,2.35/2,4.8+11.6/2]) rotate([0,90,0]) cylinder(d=2.35,h=length);
 }
 
+!WEredCube();
+module WEredCube(W=10,T=4,H=8.5,pins=9){
+  //Wuerth Redcube Terminals
+  //https://www.we-online.com/de/components/products/em/redcube_terminals
+  pinD=1.5; //diagonale
+  pinA=pinD/sqrt(2); //side length
+  pinLen=3;
+  pinBevel=0.4;
+  pitch=(W-pinA)/(sqrt(pins)-1);
+  lift=0.5;
+  bodyHght=3;
+  threatBevel=0.5;
+  threatLen=H-lift-bodyHght;
+  //-- THR with external threat
+  //body
+  translate([0,0,lift]) linear_extrude(bodyHght) square([W,W],true);
+  //threat
+  translate([0,0,lift+bodyHght]) cylinder(d=T,h=threatLen-threatBevel);
+  translate([0,0,lift+bodyHght+threatLen-threatBevel]) cylinder(d1=T,d2=T-threatBevel*2,h=threatBevel);
+  //pins
+  for (ix=[-(sqrt(pins)-1)/2:(sqrt(pins)-1)/2],iy=[-(sqrt(pins)-1)/2:(sqrt(pins)-1)/2])
+    translate([ix*pitch,iy*pitch,0]) pin();
+  
+  module pin(){
+    translate([0,0,-pinLen]) rotate(45){
+      cylinder(d1=pinD-pinBevel*2,d2=pinD,h=pinBevel,$fn=4);
+      translate([0,0,pinBevel]) cylinder(d=pinD,h=pinLen-pinBevel+lift,$fn=4);
+    }
+    
+  }
+}
 // ---- helpers ---
 
 // bend modifier
