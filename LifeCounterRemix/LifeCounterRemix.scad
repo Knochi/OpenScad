@@ -1,7 +1,7 @@
 // This is a remix of https://www.thingiverse.com/thing:3351902
 // Tolerances where to thight and want to have it customizable
 
-use </Fonts/MorrisRomanBlack/MorrisRoman-Black.ttf>
+use <./Fonts/MorrisRomanBlack/MorrisRoman-Black.ttf>
 
 /* [General] */
 minWallThck=6.75-5.35;
@@ -43,7 +43,8 @@ showClip=true;
 showSide=true;
 showCut="none"; //["none","x-y","y-z"]
 cutOffset=0;
-export="none"; //["none","spring","clip","left side", "right side", "tube", "ring"]
+export="none"; //["none","spring","clip","left side", "right side", "tube", "ring", "tuneSpring"]
+
 
 /*[Hidden]*/
 fudge=0.1;
@@ -102,6 +103,11 @@ else if (export=="tube")
   !tube();
 else if (export=="ring")
   !ring();
+else if (export=="tuneSpring")
+  !union(){
+    rotate(360/(digits*2)) ring();
+    spring();
+  }
 
 *clip();
 module clip(){
@@ -133,7 +139,7 @@ module spring(){
   cutWdth=sprDia/2-minWallThck-sprThck-tbDia/2-spcng;
   mainCutAng=[18,131]; //start and end of main cuts
   mainCutDia=tbDia/2+minWallThck+spcng;
-  tipDia=2.2;
+  tipDia=2.5;
   tipAng=2*asin((tipDia/2)/sprDia); //angle from tip dia
   if (showSTL)
     %translate([0.2,-12.85-21.6/2,0]) import("Life_Counter_spring.stl");
@@ -144,6 +150,7 @@ module spring(){
     linear_extrude(rngWdth,convexity=2) difference(){
       union(){
         circle(d=sprDia);
+        //tips
         for (im=[0,1]) mirror([im,0])
           rotate(90-360/(digits)) translate([sprDia/2,0]) circle(d=tipDia);
       }
@@ -164,6 +171,9 @@ module spring(){
     }
     //nudge
     translate([0,-tbDia/2,rngWdth/2]) cube([ndgDims.x+spcng*2,(ndgDims.y+spcng)*2,rngWdth+fudge],true);
+    //tip cuts
+    for (im=[0,1]) mirror([im,0])
+      rotate(90-360/(digits)) translate([sprDia/2,0,0]) rotate([0,-45,0]) translate([0,0,-tipDia/2]) cube([tipDia*2,tipDia,tipDia],true);
   }
 }
 
@@ -190,6 +200,7 @@ module ring(){
   emboss=1;
   roChmf=(ri-chmfr)*(1/cos(180/digits));
   ro=ri*(1/cos(180/digits)); //works only for 10 digits! //TODO make it work for n-gons
+  nudgeDia=3.6+fudge;
   //ro=ri*tan(180/digits)/(cos(180/digits));
   if (showSTL)
     %rotate(-18) translate([(15.08-14.93)/2,-41.11-31.55/2,0]) import("Life_Counter_ring.stl");
@@ -204,7 +215,7 @@ module ring(){
     //nudges for spring
     translate([0,0,-fudge/2]) linear_extrude(rngWdth+fudge) {
       circle(d=sprDia+spcng*2);
-      for (ir=[0:360/digits:360-(360/digits)]) rotate(ir) translate([sprDia/2-fudge,0]) circle(d=3.1+fudge,$fn=4); //TODO needs tuning
+      for (ir=[0:360/digits:360-(360/digits)]) rotate(ir) translate([sprDia/2-fudge,0]) circle(d=nudgeDia,$fn=4); //TODO needs tuning
     }
     //digits
     for (i=[0:(digits-1)]){
@@ -244,7 +255,7 @@ module side(isLeft=false){
     body();
     //recess for tube
     translate([0,0,-fudge]) linear_extrude(minWallThck+fudge+spcng) {
-      circle(d=tbDia+spcng); //only 1/2 spncg for press fit
+      circle(d=tbDia+spcng*2);
       translate([0,-tbDia/2]) square([ndgDims.x+spcng,ndgDims.y*2+spcng],true);
     }
     translate([0,0,-fudge/2]) linear_extrude(sideWdth-minWallThck+fudge) {
