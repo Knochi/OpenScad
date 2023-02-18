@@ -43,7 +43,7 @@ showClip=true;
 showSide=true;
 showCut="none"; //["none","x-y","y-z"]
 cutOffset=0;
-export="none"; //["none","spring","clip","side"]
+export="none"; //["none","spring","clip","left side", "right side", "tube", "ring"]
 
 /*[Hidden]*/
 fudge=0.1;
@@ -94,8 +94,14 @@ if (export=="spring")
   !spring();
 else if (export=="clip")
   !clip();
-else if (export=="side")
-  !side();
+else if (export=="left side")
+  !side(isLeft=true);
+else if (export=="right side")
+  !side(isLeft=false);
+else if (export=="tube")
+  !tube();
+else if (export=="ring")
+  !ring();
 
 *clip();
 module clip(){
@@ -222,10 +228,12 @@ module side(isLeft=false){
 
   //box for arrows
   emboss=1; //emboss of the arrows
-  boxChmf=0.7;
+
+  chmfSmall=1; //decorative inside
+  chmfBig=sideWdth/3; //decorative outside
+
   boxRot= isLeft ? 90-36 : 90+36;
 
-  echo(a,ri);
   if (showSTL)
     if (isLeft)
       %rotate(90) translate([-19.92+4.1/2,9.69+3,0]) import("Life_Counter_sides.stl");
@@ -254,7 +262,7 @@ module side(isLeft=false){
     }
     //arrows
     arRot= revArrows ? [90,-90,90] : [90,90,90];
-    arZPos= revArrows ? sideWdth/2-boxChmf : sideWdth/2 ; 
+    arZPos= revArrows ? sideWdth/2-chmfSmall : sideWdth/2 ; 
     rotate(boxRot) 
       translate([ri+fudge-emboss,0,arZPos]) 
         rotate(arRot) linear_extrude(emboss+fudge) circle(d=a*0.8,$fn=3);
@@ -262,19 +270,24 @@ module side(isLeft=false){
   //feet
   for (im=[0,1]) mirror([im,0,0])
     hull(){
-      translate([sideDia*0.4,-ri+minWallThck,foodDims.z/2]) cube(foodDims,true);
+      translate([sideDia*0.4,-ri+minWallThck,foodDims.z/2]) 
+        //cube(foodDims,true);
+        chamferedCube(foodDims, chmfSmall,true);
       intersection(){
         body();
-        translate([sideDia/2-foodDims.x/2,-clipXYDims.y/2-minWallThck-spcng*2,foodDims.z/2]) cube(foodDims,true);
+        translate([sideDia/2-foodDims.x/2,-clipXYDims.y/2-minWallThck-spcng*2,foodDims.z/2]) 
+          cube(foodDims,true);
+          
       }
   }
   
 
   module body(){
-    cylinder(d=sideDia,h=sideWdth/1.5,$fn=10);
-    translate([0,0,sideWdth/1.5]) cylinder(d1=sideDia,d2=28.3,h=sideWdth/3,$fn=10);
+    cylinder(d1=sideDia-chmfSmall*2,d2=sideDia,h=chmfSmall,$fn=digits);
+    translate([0,0,chmfSmall]) cylinder(d=sideDia,h=sideWdth-chmfBig-chmfSmall,$fn=digits);
+    translate([0,0,sideWdth/1.5]) cylinder(d1=sideDia,d2=sideDia-chmfBig*2,h=chmfBig,$fn=digits);
     //arrow box
-    rotate(boxRot) translate([ri-sideWdth/3,0,sideWdth/2]) chamferedCube([sideWdth/1.5,a+boxChmf*2,sideWdth],boxChmf,true);
+    rotate(boxRot) translate([ri-sideWdth/3,0,(sideWdth+chmfSmall)/2]) chamferedCube([sideWdth/1.5,a+chmfSmall*2,sideWdth-chmfSmall],chmfSmall,true);
   }
 }
 
