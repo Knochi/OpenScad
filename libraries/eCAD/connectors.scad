@@ -113,6 +113,30 @@ module microMatch(pos=10){
   }
 }
 
+!SLconnector();
+module SLconnector(pos=2,height=5){
+  //preci-dip Spring-Loaded Connectors SLC 
+  //Series 811 https://www.precidip.com/en/Products/Spring-Loaded-Connectors/pview/811-S1-NNN-30-XXX101.html
+  //single row 2..10 contacts, SMD
+  //811-SS-NNN-30-XXX101 NNN is number of poles, XXX is code for height A
+  //heights=[4.5:0.5:7.5] XXX=001-007
+
+  bodyHght= (height<6) ? 2.95 : 4;
+  pitch=2.54;
+  stroke=1.4;
+  btmDia=1.83;
+  btmThck=0.4;
+  pinDia=1.07;
+  //pin
+  color(metalGoldPinCol) translate([0,0,btmThck+bodyHght]){
+     cylinder(d=pinDia,h=height-bodyHght-btmThck-pinDia/2);
+     translate([0,0,height-bodyHght-btmThck-pinDia/2]) sphere(d=pinDia);
+  }
+
+  color(blackBodyCol) translate([0,0,btmThck]) linear_extrude(bodyHght)  octagon();
+  color(metalGoldPinCol) cylinder(d=btmDia,h=btmThck);
+}
+
 *M411P(false);
 module M411P(isMale=true){
  //https://www.hyte.pro/product/m411p-en.html
@@ -1469,37 +1493,6 @@ module BKLPwrCable(angled=true,length=20){
   color("black") translate([14.9+26.9-14.9,2.35/2,4.8+11.6/2]) rotate([0,90,0]) cylinder(d=2.35,h=length);
 }
 
-!WEredCube();
-module WEredCube(W=10,T=4,H=8.5,pins=9){
-  //Wuerth Redcube Terminals
-  //https://www.we-online.com/de/components/products/em/redcube_terminals
-  pinD=1.5; //diagonale
-  pinA=pinD/sqrt(2); //side length
-  pinLen=3;
-  pinBevel=0.4;
-  pitch=(W-pinA)/(sqrt(pins)-1);
-  lift=0.5;
-  bodyHght=3;
-  threatBevel=0.5;
-  threatLen=H-lift-bodyHght;
-  //-- THR with external threat
-  //body
-  translate([0,0,lift]) linear_extrude(bodyHght) square([W,W],true);
-  //threat
-  translate([0,0,lift+bodyHght]) cylinder(d=T,h=threatLen-threatBevel);
-  translate([0,0,lift+bodyHght+threatLen-threatBevel]) cylinder(d1=T,d2=T-threatBevel*2,h=threatBevel);
-  //pins
-  for (ix=[-(sqrt(pins)-1)/2:(sqrt(pins)-1)/2],iy=[-(sqrt(pins)-1)/2:(sqrt(pins)-1)/2])
-    translate([ix*pitch,iy*pitch,0]) pin();
-  
-  module pin(){
-    translate([0,0,-pinLen]) rotate(45){
-      cylinder(d1=pinD-pinBevel*2,d2=pinD,h=pinBevel,$fn=4);
-      translate([0,0,pinBevel]) cylinder(d=pinD,h=pinLen-pinBevel+lift,$fn=4);
-    }
-    
-  }
-}
 // ---- helpers ---
 
 // bend modifier
@@ -1548,6 +1541,15 @@ module bend(size=[50,20,2],angle=45,radius=10,center=false, flatten=false){
         rotate_extrude(angle=angle)
           translate([radius,0,0]+bendOffset1) square([size.z,size.x]);
   }
+}
+
+module octagon(size=2.54){
+  //isolator octagon 2D shape
+  poly=[[-size/2,size/4],[-size/3,size/2],
+        [size/3,size/2],[size/2,size/4],
+        [size/2,-0.635],[size/3,-size/2],
+        [-size/3,-size/2],[-size/2,-size/4]];
+  polygon(poly);
 }
 
 *frustum([3,2,0.9],method="poly");
