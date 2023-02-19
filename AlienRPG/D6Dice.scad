@@ -1,4 +1,4 @@
-diceDim=15;
+diceDim=16;
 edgeRad=1.5;
 crnrRad=0;
 emboss=0.3;
@@ -63,6 +63,10 @@ module framedNumber(no=2, scl=0.8){
   text(str(no),size=size*0.5,valign="center",halign="center",font="arial:style=bold");
   }
 }
+*shard();
 
-
+module shard(){
+ circle(d=diceDim/2,$fn=4);
+ 
+}
   
