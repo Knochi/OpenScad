@@ -4,7 +4,7 @@
 use <./Fonts/MorrisRomanBlack/MorrisRoman-Black.ttf>
 
 /* [General] */
-minWallThck=6.75-5.35;
+minWallThck=1.4;
 ringsCnt=3;
 spcng=0.3;
 
@@ -33,6 +33,7 @@ sideDia=36; //outer dia of octagong
 sideWdth=10;
 feetProtrude=0.15; //percent
 revArrows=true;
+noSupportMod=true;
 
 /* [show] */
 showSTL=false; //show the original STL
@@ -41,7 +42,7 @@ showSprings=true;
 showTube=true;
 showClip=true;
 showSide=true;
-showCut="none"; //["none","x-y","y-z"]
+showCut="none"; //["none","x-y","y-z","x-z"]
 cutOffset=0;
 export="none"; //["none","spring","clip","left side", "right side", "tube", "ring", "tuneSpring"]
 
@@ -85,9 +86,11 @@ difference(){
       translate([-sideXPos-sideWdth,0,tubeZPos-clipXYDims.y/2]) rotate(-90) clip();
   }
   if (showCut=="x-y")
-    color("darkred") translate([0,0,tubeZPos+ovDims.z/4]) cube([ovDims.x+fudge,ovDims.y+fudge,ovDims.z/2+fudge],true);
+    color("darkred") translate([0,0,tubeZPos+ovDims.z/4+cutOffset]) cube([ovDims.x+fudge,ovDims.y+fudge-cutOffset*2,ovDims.z/2+fudge],true);
   else if (showCut=="y-z")
     color("darkred") translate([ovDims.x/4+cutOffset,0,ovDims.z/2]) cube([ovDims.x/2+fudge-cutOffset*2,ovDims.y+fudge,ovDims.z+fudge],true);
+  else if (showCut=="x-z")
+    color("darkred") translate([0,-ovDims.y/4+cutOffset,ovDims.z/2]) cube([ovDims.x+fudge,ovDims.y/2+fudge+cutOffset*2,ovDims.z+fudge],true);
 }
 
 // -- export --
@@ -116,7 +119,7 @@ module clip(){
   if (showSTL)
     %rotate(-90) translate([-12.54,43.9-6/2,0]) import("Life_Counter_clip.stl");
 
-  linear_extrude(clipXYDims.y,convexity=2) difference(){
+  linear_extrude(clipXYDims.y,convexity=3) difference(){
     union(){
       translate([-clipXYDims.x,0]) square([clipXYDims.x*2,minWallThck*2]);
       translate([-clipXYDims.x/2,0]) square([clipXYDims.x,clipLen]);
@@ -177,20 +180,46 @@ module spring(){
   }
 }
 
-module tube(){
-  //tbLen=29.1;
-  if (showSTL)
+*tube(true);
+module tube(cut=false){
+ 
+  poly=[[-tbDia/2+minWallThck,0],[-(clipXYDims.y/2+spcng),minWallThck*2+spcng+fudge],
+        [(clipXYDims.y/2+spcng),minWallThck*2+spcng+fudge],[tbDia/2-minWallThck,0]
+  ];
+  
+  if (cut)
+    translate([0,0,minWallThck]) rotate([0,180,0]) difference(){
+      union(){
+        translate([0,0,-spcng]) cylinder(d=tbDia+spcng*2,h=minWallThck+spcng*2);
+        translate([0,-tbDia/2,minWallThck/2]) cube([ndgDims.x+spcng*2,(ndgDims.y+spcng)*2,minWallThck+spcng*2],true);
+      }
+      //TODO calculate proper spcng 
+      translate([0,0,-spcng-fudge/2]) rotate([90,0,90]) linear_extrude(tbDia+spcng*2+fudge,center=true) polygon(poly);
+      
+    }
+
+  else{
+    if (showSTL)
     %translate([-24-10.5/2,42.75-4.3/2,0]) import("Life_Counter_tube.stl");
 
-  linear_extrude(height = tbLen,convexity=2){
     difference(){
-      union(){
-        circle(d=tbDia);
-        translate([0,-tbDia/2]) square([ndgDims.x,ndgDims.y*2],true);
+      linear_extrude(height = tbLen,convexity=3){
+        difference(){
+          union(){
+            circle(d=tbDia);
+            translate([0,-tbDia/2]) square([ndgDims.x,ndgDims.y*2],true);
+          }
+          square([clipXYDims.x,clipXYDims.y]+[spcng*2,spcng*2],true);
+        }
+      } 
+      if (noSupportMod){
+        translate([0,0,-fudge/2]) 
+         rotate([90,0,90]) linear_extrude(tbDia+fudge,center=true) polygon(poly);
+        translate([0,0,tbLen+fudge/2]) 
+         rotate([-90,0,90]) linear_extrude(tbDia+fudge,center=true) polygon(poly);
       }
-      square([clipXYDims.x,clipXYDims.y]+[spcng*2,spcng*2],true);
     }
-  } 
+  }
 }
 
 *ring();
@@ -254,10 +283,13 @@ module side(isLeft=false){
   difference(){
     body();
     //recess for tube
-    translate([0,0,-fudge]) linear_extrude(minWallThck+fudge+spcng) {
-      circle(d=tbDia+spcng*2);
-      translate([0,-tbDia/2]) square([ndgDims.x+spcng,ndgDims.y*2+spcng],true);
-    }
+    if (noSupportMod)
+      tube(true);
+    else
+      translate([0,0,-fudge]) linear_extrude(minWallThck+fudge+spcng) {
+        circle(d=tbDia+spcng*2);
+        translate([0,-tbDia/2]) square([ndgDims.x+spcng,ndgDims.y*2+spcng],true);
+      }
     translate([0,0,-fudge/2]) linear_extrude(sideWdth-minWallThck+fudge) {
       square([clipXYDims.x,clipXYDims.y]+[spcng*2,spcng*2],true);
     }
