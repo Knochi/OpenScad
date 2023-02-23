@@ -25,8 +25,19 @@
   
   ## Mega-Holz
   https://mega-holz.de/produkt-kategorie/sichtschutzzaun/
-  ###VARO Lärche 
+  ### VARO Lärche 
   25x70mm
+  ### Rhombus 180x180cm
+  Lamellen: 24 x 77mm 
+    https://mega-holz.de/produkt/rhombusleiste-laerche-24x77-cm/
+  Verstrebungen: 25x75mm
+  
+  # Garten Maße
+  Terasse: 2.75m
+  Vorsprung Küche: 0.68m
+  Küche <-> Tor: 4.35m
+  
+  
 */
 /* [Dimensions] */
 fenceDims=[1800,1800];
