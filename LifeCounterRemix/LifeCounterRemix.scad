@@ -33,7 +33,7 @@ sideDia=36; //outer dia of octagong
 sideWdth=10;
 feetProtrude=0.15; //percent
 revArrows=true;
-noSupportMod=true;
+noSupportMod=false;
 
 /* [show] */
 showSTL=false; //show the original STL
@@ -123,12 +123,13 @@ module clip(){
     union(){
       translate([-clipXYDims.x,0]) square([clipXYDims.x*2,minWallThck*2]);
       translate([-clipXYDims.x/2,0]) square([clipXYDims.x,clipLen]);
+      //arrow tip
       for (ix=[-1,1])
-      translate([ix*(clipXYDims.x-minWallThck)/2,clipLen]) polygon(tipPoly);
+        translate([ix*(clipXYDims.x-minWallThck)/2,clipLen]) polygon(tipPoly);
     }
     //slot
     hull() for (iy=[0,1])
-      translate([0,minWallThck*3+iy*(clipLen/2-minWallThck*2)]) circle(d=clipXYDims.x-minWallThck*1.5);
+      translate([0,minWallThck*3+iy*(clipLen/2-minWallThck*2)]) circle(d=clipXYDims.x-minWallThck*2);
     //springy tip
     hull(){
       translate([0,minWallThck*3+(clipLen/2+minWallThck*2)]) circle(d=clipXYDims.x-minWallThck*3);
@@ -183,8 +184,8 @@ module spring(){
 *tube(true);
 module tube(cut=false){
  
-  poly=[[-tbDia/2+minWallThck,0],[-(clipXYDims.y/2+spcng),minWallThck*2+spcng+fudge],
-        [(clipXYDims.y/2+spcng),minWallThck*2+spcng+fudge],[tbDia/2-minWallThck,0]
+  poly=[[-tbDia/2+minWallThck,0],[-(clipXYDims.y/2+spcng),minWallThck+spcng],
+        [(clipXYDims.y/2+spcng),minWallThck+spcng],[tbDia/2-minWallThck,0]
   ];
   
   if (cut)
@@ -194,7 +195,7 @@ module tube(cut=false){
         translate([0,-tbDia/2,minWallThck/2]) cube([ndgDims.x+spcng*2,(ndgDims.y+spcng)*2,minWallThck+spcng*2],true);
       }
       //TODO calculate proper spcng 
-      translate([0,0,-spcng-fudge/2]) rotate([90,0,90]) linear_extrude(tbDia+spcng*2+fudge,center=true) polygon(poly);
+      translate([0,0,-spcng]) rotate([90,0,90]) linear_extrude(tbDia+spcng*2+fudge,center=true) polygon(poly);
       
     }
 
@@ -406,4 +407,14 @@ module octahedron(r=10){
     [2,3,4]
   ];
   polyhedron(verts,faces);
+}
+
+translate([22,14,4]) rotate([0,90,0]) coinCell(type="V364");
+module coinCell(type="custom",dia=11.6,h=5.4){
+  coinDims= (type=="custom") ?  [dia,h] :
+            (type=="LR45") ? [11.6,5.4] :
+            (type=="V364") ? [6.8,2.2] :
+            (type=="LR41") ? [8,3] : [10,3];
+  
+  color("silver") cylinder(d=coinDims[0],h=coinDims[1]);
 }
