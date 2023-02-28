@@ -44,7 +44,7 @@ showClip=true;
 showSide=true;
 showCut="none"; //["none","x-y","y-z","x-z"]
 cutOffset=0;
-export="none"; //["none","spring","clip","left side", "right side", "tube", "ring", "tuneSpring"]
+isolate="none"; //["none","spring","clip","left side", "right side", "tube", "ring", "tuneSpring", "testMagnets"]
 
 
 /*[Hidden]*/
@@ -93,24 +93,26 @@ difference(){
     color("darkred") translate([0,-ovDims.y/4+cutOffset,ovDims.z/2]) cube([ovDims.x+fudge,ovDims.y/2+fudge+cutOffset*2,ovDims.z+fudge],true);
 }
 
-// -- export --
-if (export=="spring")
+// -- isolate --
+if (isolate=="spring")
   !spring();
-else if (export=="clip")
+else if (isolate=="clip")
   !clip();
-else if (export=="left side")
+else if (isolate=="left side")
   !side(isLeft=true);
-else if (export=="right side")
+else if (isolate=="right side")
   !side(isLeft=false);
-else if (export=="tube")
+else if (isolate=="tube")
   !tube();
-else if (export=="ring")
+else if (isolate=="ring")
   !ring();
-else if (export=="tuneSpring")
+else if (isolate=="tuneSpring")
   !union(){
     rotate(360/(digits*2)) ring();
     spring();
   }
+else if (isolate=="testMagnets")
+  !magTest();
 
 *clip();
 module clip(){
@@ -334,6 +336,56 @@ module side(isLeft=false){
     rotate(boxRot) translate([ri-sideWdth/3,0,(sideWdth+chmfSmall)/2]) chamferedCube([sideWdth/1.5,a+chmfSmall*2,sideWdth-chmfSmall],chmfSmall,true);
   }
 }
+
+*magTest();
+module magTest(){
+  //just test dimensions for magnet detends
+  ri=rngSize;
+  chmfr=0.5;
+  emboss=1;
+  roChmf=(ri-chmfr)*(1/cos(180/digits));
+  ro=ri*(1/cos(180/digits)); //works only for 10 digits! //TODO make it work for n-gons
+  
+  axisDia=20;
+  rings=3;
+  axisLen=rings*(rngWdth+rngSpcng)+rngSpcng;
+  longMagDims=[20,4,2];
+  smallMagDims=[3,3,2];
+
+  for (iz=[0:rings-1])
+    translate([0,0,iz*(rngWdth+rngSpcng)+rngSpcng]) ring();
+  axis();
+
+  module ring(){
+    *rotate(-36) difference(){
+      //body
+      rotate(18){
+        cylinder(r1=roChmf,r2=ro,h=chmfr,$fn=digits);
+        translate([0,0,chmfr]) cylinder(r=ro,h=rngWdth-2*chmfr,$fn=digits);
+        translate([0,0,rngWdth-chmfr]) cylinder(r2=roChmf,r1=ro,h=chmfr,$fn=digits);
+      }
+      //center hole
+      translate([0,0,-fudge/2]) linear_extrude(rngWdth+fudge) {
+        circle(d=axisDia+spcng*2);
+      } 
+    }
+    //magnets
+    for (ix=[-1,1])
+      color("silver") translate([ix*(axisDia/2+spcng+smallMagDims.z/2),0,rngWdth/2]) rotate([0,90,0]) cylinder(d=smallMagDims.x,h=smallMagDims.z,center=true);
+  }
+
+  module axis(){
+    color("darkslategrey") linear_extrude(axisLen)
+      circle(d=axisDia);
+    //large Magnets
+    for (ir=[0:digits/2-1])
+    rotate(ir*360/digits)
+      color("silver") translate([(axisDia-longMagDims.z)/2,0,axisLen/2]) rotate([0,90,0]) cube(longMagDims,true);
+  }
+  
+}
+
+// --- functions and helpers ---
 
 function toRad(angDeg=90)=angDeg*PI/180;
 
