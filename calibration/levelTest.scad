@@ -1,5 +1,5 @@
 /* [Dimensions] */
-areaSize=[150,150];
+areaSize=[140,140];
 patchSize=[20,20];
 //printed line thickness
 lineWidth=0.4;
