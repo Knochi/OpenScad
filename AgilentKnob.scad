@@ -6,7 +6,7 @@ crossDims=[5,1];
 sqDim=3.2;
 deep=8;
 fudge=0.1;
-spcng=0.1;
+spcng=0.3;
 
 $fn=20;
 sqSpcng=[spcng*2,spcng*2];
