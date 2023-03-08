@@ -1,4 +1,4 @@
-tileDims=[28,25,20]; //ferrero Küsschen
+tileDims=[28,24.5,20]; //ferrero Küsschen
 ovTileCnt=[10,3,9]; 
 headTilesX=2;
 headTilesZ=3;
@@ -18,7 +18,7 @@ showbodyLeft=true;
 showHeadRight=true;
 showHeadBottom=true;
 showBase=true;
-isolate="none"; //["none","base"]
+isolate="none"; //["none","base","face"]
 
 
 /* [Hidden] */
@@ -36,7 +36,7 @@ fudge=0.1;
 
 //## Assembly ##
 if (showFaces) for (iy=[-1,1])
-  color("wheat") translate([0,iy*(tileDims.y*ovTileCnt.y-matThck)/2+matThck/2,0]) rotate([90,0,0]) face();
+  color("wheat") translate([0,iy*(tileDims.y*ovTileCnt.y-matThck)/2+matThck/2,0]) rotate([90,0,0]) linear_extrude(matThck) face();
 if (showTop)
   color("burlyWood") translate([0,-ovDims.y/2,ovDims.z-matThck]) linear_extrude(matThck) top();
 if (showRight)
@@ -55,6 +55,8 @@ if (showBase)
 //## Export ##
 if (isolate=="base")
   !base();
+if (isolate=="face")
+  !face();
 
 module left(){
   wall([headTileCnt.z+topTileCnt.z,ovTileCnt.y],[tileDims.y,tileDims.y],[1,0.5]);
@@ -118,7 +120,7 @@ module face(){
   topDims=[ovTileCnt.x*tileDims.x,(ovTileCnt.z-bodyTileCnt.z)*tileDims.y];
 
   headYOffset=(bodyTileCnt.z-headTileCnt.z)*tileDims.y;
-  linear_extrude(matThck) difference(){
+  difference(){
     union(){
       translate([0,(bodyTileCnt.z)*tileDims.y]) square(topDims); //top
       translate([(ovTileCnt.x-bodyTileCnt.x)*tileDims.x,0]) square([bodyDims.x,bodyDims.z]); //body
