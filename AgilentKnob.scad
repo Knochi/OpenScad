@@ -18,7 +18,7 @@ showHoles=false;
 showSlots=false;
 
 fudge=0.1;
-spcng=0.1;
+spcng=0.3;
 
 $fn=20;
 sqSpcng=[spcng*2,spcng*2];
