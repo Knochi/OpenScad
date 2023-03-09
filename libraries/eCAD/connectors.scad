@@ -1554,7 +1554,9 @@ module octagon(size=2.54){
 
 *frustum([3,2,0.9],method="poly");
 module frustum(size=[1,1,1], flankAng=[5,5], center=false, method="poly", col="darkSlateGrey"){
-  //cube with a trapezoid crosssection
+  //a square frustum --> cube with a trapezoid crosssection
+  //https://en.wikipedia.org/wiki/Frustum
+  
   //size = base dimensions x height
   //https://en.wikibooks.org/wiki/OpenSCAD_User_Manual/Primitive_Solids#polyhedron
   cntrOffset= (center) ? [0,0,-size.z/2] : [size.x/2,size.y/2,0];
