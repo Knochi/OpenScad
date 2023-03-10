@@ -36,7 +36,80 @@ translate([160,40,0]) uSDCard(showCard=true);
 translate([200,0,0]) tubeSocket9pinFlange();
 translate([230,0,0]) PJ398SM();
 
+
 *rotate([0,0,-90]) femHeaderSMD(20,2,center=true);
+
+!WAGO_2601();
+module WAGO_2601(poles=5,release=false){
+  //vertical WAGO PCB terminal block; CAGE-CLAMP; 3.5mm pitch; 1.5mm²
+  pitch=3.5;
+  endPlateWdth=1.5;
+  ovWdth=(poles)*pitch+endPlateWdth; //overall Width "L"
+  pinDims=[1,0.5,3.6];
+  pinYPos=[5.45,10.45]; //from front
+  elmntDims=[pitch,12.75,14.5];
+  tFeaturesWdth=0.7; //tiny features on the left
+  pivot=[pitch/2,9.71,2.23]; //pivot point of the lever
+  leverRot=(release) ? -60 : 0;
+
+  for (ix=[0:(poles-1)]){
+    //body Elements
+    color(greyBodyCol) translate([ix*pitch,0,0]) bdyElmnt();
+    //levers
+    color(orangeBodyCol) 
+    translate(pivot)
+    rotate([leverRot])
+      translate([ix*pitch+pitch/2,elmntDims.y,0]-pivot) 
+          lever();
+    //pins
+    for (yPos=pinYPos)
+      color(metalGreyPinCol) translate([ix*pitch+pitch/2,yPos,-pinDims.z/2]) cube(pinDims,true); 
+  }
+
+  //end Plate
+    color(greyBodyCol) translate([poles*pitch,0,0]) bdyElmnt(true);
+
+  *lever();
+
+  module bdyElmnt(isPlate=false){
+    
+    rad=0.3;
+    cutAng=50;
+    portOffset=[1.85,5.2-3.6/2];
+    poly=[[rad,rad],[elmntDims.y-rad,rad],[elmntDims.y-rad,rad+10.4],[rad+9.21,elmntDims.z-rad],[rad,elmntDims.z-rad]];
+    cutOutDims=[2.7,1.85+fudge,elmntDims.z-3.45+fudge];
+
+    if (isPlate)
+      rotate([90,0,90]) linear_extrude(endPlateWdth) offset(rad) polygon(poly);
+    else
+      difference(){
+        rotate([90,0,90]) linear_extrude(elmntDims.x) offset(rad) polygon(poly);
+        translate([portOffset.x,portOffset.y,elmntDims.z-2]) linear_extrude(2+fudge) portShape();
+        translate([elmntDims.x/2,elmntDims.y-(cutOutDims.y-fudge)/2,(cutOutDims.z+fudge)/2+3.45]) cube(cutOutDims,true);
+      }
+  }
+
+  module portShape(){
+    //shape of the port Holes
+    lRad=0.6;
+    sRad=0.3;
+    lDims=[2.9,3.6];
+    sDims=[1.2,5.1];
+
+    hull() for (ix=[-1,1],iy=[-1,1])
+      translate([ix*(lDims.x/2-lRad),iy*(lDims.y/2-lRad)]) circle(lRad);
+    hull() for (ix=[-1,1],iy=[-1,1])
+      translate([ix*(sDims.x/2-sRad),iy*(sDims.y/2-sRad)+(sDims.y-lDims.y)/2]) circle(sRad);
+  }
+  
+  module lever(){
+    rad=0.3;
+    poly=[[rad,3.8+3.45],[rad,12.8+3.45],[rad+0.8,12.8+3.45],[2.3-rad,10.35+3.45],[1.75-rad,13.12],[1.75-rad,3.8+3.45],[1.85+1.75-rad,3.6],[1.85+rad,3.6]]; //starting with outer knee point
+
+    rotate([90,0,-90]) linear_extrude(2.6,center=true) offset(rad) polygon(poly);
+  }
+
+}
 
 *microMatch();
 module microMatch(pos=10){
