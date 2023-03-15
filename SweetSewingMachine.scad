@@ -124,7 +124,7 @@ module face(){
     union(){
       translate([0,(bodyTileCnt.z)*tileDims.y]) square(topDims); //top
       translate([(ovTileCnt.x-bodyTileCnt.x)*tileDims.x,0]) square([bodyDims.x,bodyDims.z]); //body
-      translate([0,headYOffset]) square([headDims.x,headDims.z]); //head
+      translate([0,headYOffset]) square([headDims.x,headDims.z+fudge]); //head
     }
     //top & bottom edge
     for (ix=[0:2:(ovTileCnt.x-1)], iy=[-1,1])
