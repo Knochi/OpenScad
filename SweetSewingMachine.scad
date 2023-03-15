@@ -7,6 +7,7 @@ bodyTilesZ=7;
 baseBrimTiles=[2,5];
 baseRad=tileDims.y;
 spcng=0;
+kerf=0.1;
 matThck=3;
 
 /*[show]*/
@@ -18,7 +19,7 @@ showbodyLeft=true;
 showHeadRight=true;
 showHeadBottom=true;
 showBase=true;
-isolate="none"; //["none","base","face"]
+isolate="none"; //["none","base","face","kerfTest"]
 
 
 /* [Hidden] */
@@ -50,34 +51,59 @@ if (showHeadRight)
 if (showHeadBottom)
   color("burlyWood") translate([0,-ovDims.y/2,ovDims.z-topDims.z-headDims.z]) linear_extrude(matThck) headBottom();
 if (showBase)
-  color("burlyWood")  linear_extrude(matThck) base();
+  color("burlyWood")  translate([0,0,-matThck]) linear_extrude(matThck) base();
 
 //## Export ##
 if (isolate=="base")
   !base();
 if (isolate=="face")
   !face();
+if (isolate=="kerfTest")
+  !kerfTest();
 
+
+*linear_extrude(matThck) kerfTest();
+module kerfTest(size=[30,20]){
+  rad=3;
+  difference(){
+    hull() for (ix=[-1,1],iy=[-1,1])
+      translate([ix*(size.x/2-rad),iy*(size.y/2-rad)]) circle(rad);
+    square([size.x*2/3-kerf,matThck],true);
+    translate([0,-(size.y-matThck)/2]) square([size.x*2/3-kerf,matThck],true);
+    translate([0,matThck]) text(str("kerf=", kerf),size=matThck,halign="center",font="Stencil:style=Regular");
+  }
+  translate([0,(size.y+matThck-fudge)/2]) square([size.x*2/3+kerf,matThck+fudge],true);
+  
+}
+
+*left();
 module left(){
   wall([headTileCnt.z+topTileCnt.z,ovTileCnt.y],[tileDims.y,tileDims.y],[1,0.5]);
 }
 
+*right();
 module right(){
-  wall([ovTileCnt.z,ovTileCnt.y],[tileDims.y,tileDims.y],[1,0.5]);
+  wall([ovTileCnt.z,ovTileCnt.y],[tileDims.y,tileDims.y],[1,0.5],enable=[0,1,1,1]);
+  translate([0,ovDims.y/2]) rotate(-90) tap(size=[tileDims.y,3]);
 }
 
+*top();
 module top(){
   wall([ovTileCnt.x,ovTileCnt.y],tileDims,[1,1.5]);
 }
 
+*bodyLeft();
 module bodyLeft(){
-  wall([bodyTileCnt.z,ovTileCnt.y],[tileDims.y,tileDims.y],[1,0.5]);
+  wall([bodyTileCnt.z,ovTileCnt.y],[tileDims.y,tileDims.y],[1,0.5],enable=[0,1,1,1]);
+  translate([0,ovDims.y/2]) rotate(-90) tap(size=[tileDims.y,3]);
 }
 
+*headRight();
 module headRight(){
   wall([headTileCnt.z,ovTileCnt.y],[tileDims.y,tileDims.y],[1,0.5]);
 }
 
+*headBottom();
 module headBottom(){
   difference(){
     wall([headTileCnt.x,ovTileCnt.y],tileDims,[-0.5,1.5]);
@@ -91,7 +117,7 @@ module base(){
     hull() for (ix=[-1,1],iy=[-1,1])
       translate([ix*(baseDims.x/2-baseRad),iy*(baseDims.y/2-baseRad)]+[baseDims.x/2-baseBrimTiles.x/2*tileDims.x,0]) circle(baseRad);
     //front and back slots
-    for (ix=[0:2:(bodyTileCnt.x-1)], iy=[-1,1])
+    for (ix=[1:2:(bodyTileCnt.x-1)], iy=[-1,1])
       translate([ix*tileDims.x+bodyOffset,iy*(tileDims.y*ovTileCnt.y-matThck)/2]) square([tileDims.x,matThck],true);
     //left and right slots
     for (ix=[-1,1],iy=[0:2:(bodyTileCnt.y-2)])
@@ -102,16 +128,18 @@ module base(){
 }
 
 *wall([ovTileCnt.x,ovTileCnt.y]);
-module wall(tiles=[5,5],tileDims=[10,10],start=[0,0]){
+module wall(tiles=[5,5],tileDims=[10,10],start=[0,0],enable=[1,1,1,1]){
   wallDims=[tiles.x*tileDims.x,tiles.y*tileDims.y];
       difference(){
         square(wallDims);
         //front and back edge
         for (ix=[start.x:2:(tiles.x)], iy=[-1,1])
-          translate([ix*tileDims.x+tileDims.x/2,iy*(wallDims.y-matThck+fudge)/2+wallDims.y/2]) square([tileDims.x,matThck+fudge],true);
+          if ((iy<0 && enable[2])||(iy>0 && enable[3]))
+            translate([ix*tileDims.x+tileDims.x/2,iy*(wallDims.y-matThck+fudge)/2+wallDims.y/2]) square([tileDims.x-kerf,matThck+fudge],true);
         //left and right edge
         for (ix=[-1,1], iy=[start.y:2:(tiles.y)])
-          translate([ix*(wallDims.x-matThck+fudge)/2+wallDims.x/2,iy*tileDims.y]) square([matThck+fudge,tileDims.y],true);
+          if ((ix<0 && enable[0])||(ix>0 && enable[1]))
+            translate([ix*(wallDims.x-matThck+fudge)/2+wallDims.x/2,iy*tileDims.y]) square([matThck+fudge,tileDims.y-kerf],true);
     }
 }
 
@@ -126,24 +154,35 @@ module face(){
       translate([(ovTileCnt.x-bodyTileCnt.x)*tileDims.x,0]) square([bodyDims.x,bodyDims.z]); //body
       translate([0,headYOffset]) square([headDims.x,headDims.z+fudge]); //head
     }
-    //top & bottom edge
-    for (ix=[0:2:(ovTileCnt.x-1)], iy=[-1,1])
-      translate([ix*tileDims.x+tileDims.x/2,iy*(ovTileCnt.z*tileDims.y-matThck+fudge)/2+ovDims.z/2]) square([tileDims.x,matThck+fudge],true);
+    //top edge
+    for (ix=[0:2:(ovTileCnt.x-1)])
+      translate([ix*tileDims.x+tileDims.x/2,(ovTileCnt.z*tileDims.y-matThck+fudge)/2+ovDims.z/2]) square([tileDims.x-kerf,matThck+fudge],true);
     //head bottom
     for (ix=[0.5:2:(headTileCnt.x-1)])
-      translate([ix*tileDims.x+tileDims.x/2,headYOffset+(matThck-fudge)/2]) square([tileDims.x,matThck+fudge],true);
+      translate([ix*tileDims.x+tileDims.x/2,headYOffset+(matThck-fudge)/2]) square([tileDims.x-kerf,matThck+fudge],true);
     
     
     //left & right edge
     for (ix=[-1,1],iy=[0:2:(ovTileCnt.z-1)])
-      translate([ix*(topDims.x-matThck+fudge)/2+topDims.x/2,iy*tileDims.y+tileDims.y/2]) square([matThck+fudge,tileDims.y],true);
+      translate([ix*(topDims.x-matThck+fudge)/2+topDims.x/2,iy*tileDims.y+tileDims.y/2]) square([matThck+fudge,tileDims.y-kerf],true);
     //head right
     for (iy=[0:2:(headTileCnt.z-1)])
-      translate([headDims.x-(matThck-fudge)/2,iy*tileDims.y+(tileDims.y-fudge)/2+headYOffset]) square([matThck+fudge,tileDims.y+fudge],true);
+      translate([headDims.x-(matThck-fudge)/2,iy*tileDims.y+(tileDims.y-fudge)/2+headYOffset]) square([matThck+fudge,tileDims.y-kerf],true);
     //body left
     for (iy=[0:2:(bodyTileCnt.z-1)])
-      translate([ovDims.x-bodyDims.x+(matThck-fudge)/2,iy*tileDims.y+(tileDims.y-fudge)/2]) square([matThck+fudge,tileDims.y+fudge],true);
-    
+      translate([ovDims.x-bodyDims.x+(matThck-fudge)/2,iy*tileDims.y+(tileDims.y-fudge)/2]) square([matThck+fudge,tileDims.y-kerf],true);
+  }
+  //bottom taps
+  for (ix=[ovTileCnt.x-4:2:(ovTileCnt.x-1)])
+    translate([ix*tileDims.x+tileDims.x/2,-(ovTileCnt.z*tileDims.y)/2+ovDims.z/2]) tap([tileDims.x+kerf,matThck]);
+}
+
+*tap();
+module tap(size=[10,3],rad=1){
+  translate([0,-size.y/2]){
+    hull() for (ix=[-1,1])
+    translate([ix*(size.x/2-rad),-size.y/2+rad]) circle(rad);
+    translate([0,size.y/2-rad]) square([size.x,size.y-rad],true);
   }
 }
 
