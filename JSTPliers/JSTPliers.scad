@@ -5,8 +5,10 @@ opnAng=0; //[0:45]
 $fn=50;
 debug=false;
 debugHndl=false;
+debugJaw=true;
 showHndl=true;
 showCntr=true;
+showJaw=true;
 ovHght=10;
 fudge=0.1;
 
@@ -17,7 +19,42 @@ if (debug)
 if (showHndl)
   handle();
 if (showCntr)
-  center();
+  color("grey") center();
+if (showJaw)
+  jaw();
+
+module jaw(iter=0){
+  dias=[14,11,9.3,7.70,6.8,5.7]; //diameters 
+  pos=[[5.4,-7],//0
+       [7.2,-13.7],
+       [7.73,-18.2],
+       [7.85,-23.5],
+       [7.55,-27],
+       [6.7,-32.2]
+       ]; //X,Y pos'
+  
+
+  chamfer=0.5;
+  
+  if (debugJaw)
+    for (i=[0:len(pos)-1]) difference(){
+      translate([pos[i].x,pos[i].y,0]) difference(){
+        pill(dias[i],ovHght,chamfer);
+        translate([0,0,ovHght/2-1]) linear_extrude(1+fudge) 
+          text(str(i),valign="center",size=(dias[i]-chamfer*2)*0.8,halign="center");
+      }
+    }
+  //chainhull operation
+  else if (iter<(len(pos)-1)){
+    color("grey") hull(){
+      translate([pos[iter].x,pos[iter].y,0]) pill(dias[iter],ovHght,chamfer);
+      translate([pos[iter+1].x,pos[iter+1].y,0]) pill(dias[iter+1],ovHght,chamfer);
+    }
+    jaw(iter=iter+1); //recursion
+  }
+  //final operation
+  //else{]
+}
 
 module center(){
   chamfer=0.5;
