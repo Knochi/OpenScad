@@ -12,7 +12,8 @@ tgDist=[31.5,48];
 
 /* [slots] */
 sltsOffset=[0,1.2];
-
+sltsCount=[9,20];
+sltsDims=[40,20];
 
 /* [screwDomes] */
 
@@ -36,32 +37,32 @@ $fn=40;
    !difference(){
      a1(showCustom);
      if (showCustom) 
-       translate([sltsOffset.x,sltsOffset.y,-fudge/2]) linear_extrude(2.3+fudge) slotter(sltCnt=[9,20],center=true);
+       translate([sltsOffset.x,sltsOffset.y,-fudge/2]) linear_extrude(2.3+fudge) slotter(sltCnt=sltsCount,center=true);
    }
  if (isolate=="a2")
    //difference(){
      !a2(showCustom);
      /*if (showCustom) 
-       translate([sltsOffset.x,sltsOffset.y,-fudge/2]) linear_extrude(2.3+fudge) slotter(sltCnt=[9,20],center=true);
+       translate([sltsOffset.x,sltsOffset.y,-fudge/2]) linear_extrude(2.3+fudge) slotter(sltCnt=sltsCount,center=true);
    }*/
    
  if (isolate=="a3")
    !difference(){
      a3(showCustom);
      if (showCustom) 
-       translate([sltsOffset.x,sltsOffset.y,-fudge/2]) linear_extrude(2.3+fudge) slotter(sltCnt=[9,20],center=true);
+       translate([sltsOffset.x,sltsOffset.y,-fudge/2]) linear_extrude(2.3+fudge) slotter(sltCnt=sltsCount,center=true);
    }
  if (isolate=="a4")
    !difference(){
      a4(showCustom);
      if (showCustom) 
-       translate([sltsOffset.x,sltsOffset.y,-fudge/2]) linear_extrude(2.3+fudge) slotter(sltCnt=[9,20],center=true);
+       translate([sltsOffset.x,sltsOffset.y,-fudge/2]) linear_extrude(2.3+fudge) slotter(sltCnt=sltsCount,center=true);
    }
  if (isolate=="b3")
    !difference(){
      b3();
      if (showCustom) 
-       translate([sltsOffset.x,sltsOffset.y,-fudge/2]) linear_extrude(2.3+fudge) slotter(sltCnt=[9,20],center=true);
+       translate([sltsOffset.x,sltsOffset.y,-fudge/2]) linear_extrude(2.3+fudge) slotter(sltCnt=sltsCount,center=true);
    }
  
  
@@ -77,17 +78,17 @@ module Asite(){
   difference(convexity=5){
     union(){
       a1(true);
-      a2(true); 
-      a3();
+      
+      a3(true);
       a4(true);
-      translate([plateDims.x/2+spcng , spcng/2,0]) a5();
-      translate([plateDims.x/2       ,-spcng/2,0]) a6();
+      
     }
    if (showCustom)
-    translate([sltsOffset.x,sltsOffset.y,-fudge/2]) linear_extrude(2.3+fudge) slotter(sltCnt=[9,20],center=true);
+    translate([sltsOffset.x,sltsOffset.y,-fudge/2]) linear_extrude(2.3+fudge) slotter(sltCnt=sltsCount,center=true);
   }
-
-  
+  a2(true); 
+  translate([plateDims.x/2+spcng , spcng/2,0]) a5();
+  translate([plateDims.x/2       ,-spcng/2,0]) a6();
 }
 
 module Bsite(){
@@ -168,7 +169,7 @@ module a1(place=false){
 module a2(place=false){
   cntrOffset= place ? [-spcng-plateDims.x/2,-spcng/2,0] : [0,0,0];
   translate(cntrOffset){
-  translate([-206.21,-238.66,0]) import("pegboard a2.stl"); 
+  color("grey") translate([-206.21,-238.66,0]) import("pegboard a2.stl"); 
   //close the holes
   *translate([-63,-205,0]) cube([63,205,2.0]);
   }
