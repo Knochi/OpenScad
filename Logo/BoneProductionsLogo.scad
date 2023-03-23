@@ -1,3 +1,5 @@
+include </eCAD/KiCadColors.scad>
+
 $fn=100;
 
 /* [Dimensions] */
@@ -19,7 +21,7 @@ input="ltrSpcInput"; //["ltrSpcInput","baseLineDist","all"]
 
 /* [Options] */
 tiltB=false;
-bridgeUN=true;
+bridgeUN=false;
 bridgeTE=true;
 
 /* [show] */
@@ -29,9 +31,9 @@ showtiltBone=false;
 debug=false;
 
 /* [Colors] */
-strokeColor=[0.07,  0.3,    0.12];//"#b0a998";
-boneColor=[0.2,   0.17,   0.087];//"#4c4c4c";
-fillColor=[0.859, 0.738,  0.496];//"#dbbc7e";
+strokeColor=blackBodyCol;//[0.07,  0.3,    0.12];//"#b0a998";
+boneColor=FR4Col;//6[0.2,   0.17,   0.087];//"#4c4c4c";
+fillColor=metalGoldPinCol;//[0.859, 0.738,  0.496];//"#dbbc7e";
 
 /* [Hidden] */
 
