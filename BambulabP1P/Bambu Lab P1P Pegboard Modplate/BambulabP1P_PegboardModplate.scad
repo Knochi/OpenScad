@@ -8,13 +8,22 @@ prssFit=0.03; //press Fit spacing on connectors
 /* [Tongue&Groove] */
 tgDist=[31.5,48];
 
-/* [Ribs] */
+/* [Customizer] */
+variant="studs"; //["none","slots","studs"]
 
 /* [slots] */
+//slotter(sltDims=[5,15],sltDist=[40,20],sltCnt=[5,10],sltStagger=[20,0],rndSlt=true,center=false){
 sltsOffset=[0,1.2];
 sltsCount=[9,20];
-sltsDims=[40,20];
+sltsDims=[5,15];
+sltsSpacing=[40,20];
+sltsStagger=[20,0];
+sltN=20;
 
+/* [Studs] */
+stdsOffset=[0,0];
+stdsCount=[50,50];
+stdsHeight=1.8;
 /* [screwDomes] */
 
 mntHoleDia=2.6;
@@ -32,11 +41,44 @@ flankAng=atan(2.5/1); //tan(alpha)=GK/AK
 fudge=0.1;
 $fn=40;
  
- //isolate
- if (isolate=="a1")
+ 
+ if (isolate!="none")
    !difference(){
-     a1(showCustom);
-     if (showCustom) 
+     union(){
+      if (isolate=="a1") a1(showCustom);
+      if (isolate=="a3") a3(showCustom);
+      if (isolate=="a4") a4(showCustom);
+        
+      if (showCustom && (variant=="studs")){
+        intersection(){
+          translate([0,0,-1.8]) linear_extrude(1.8+fudge){
+            if (isolate=="a1") a1(place=true,getFootprint=true);
+            if (isolate=="a3") a3(place=true,getFootprint=true);
+            if (isolate=="a4") a4(place=true,getFootprint=true);
+            }
+          translate([stdsOffset.x,stdsOffset.y,-1.8]) linear_extrude(stdsHeight) studder(count=stdsCount,center=true);
+        }
+      }
+     }
+     if (showCustom && (variant=="slots")) 
+       translate([sltsOffset.x,sltsOffset.y,-fudge/2]) linear_extrude(2.3+fudge) 
+        //slotter(sltCnt=sltsCount,center=true);
+       slotter(sltDims=sltsDims,sltCnt=sltsCount,sltDist=sltsSpacing,sltStagger=sltsStagger,center=true,$fn=sltN);
+   }
+   
+ //isolate
+ *if (isolate=="a1")
+   !difference(){
+     union(){
+      a1(showCustom);
+      if (showCustom && (variant=="studs")){
+        intersection(){
+          translate([0,0,-1.8]) linear_extrude(1.8+fudge) a1(place=true,getFootprint=true);
+          translate([stdsOffset.x,stdsOffset.y,-1.8]) linear_extrude(stdsHeight) studder(count=stdsCount,center=true);
+        }
+      }
+     }
+     if (showCustom && (variant=="slots")) 
        translate([sltsOffset.x,sltsOffset.y,-fudge/2]) linear_extrude(2.3+fudge) slotter(sltCnt=sltsCount,center=true);
    }
  if (isolate=="a2")
@@ -46,17 +88,36 @@ $fn=40;
        translate([sltsOffset.x,sltsOffset.y,-fudge/2]) linear_extrude(2.3+fudge) slotter(sltCnt=sltsCount,center=true);
    }*/
    
- if (isolate=="a3")
+ *if (isolate=="a3")
    !difference(){
-     a3(showCustom);
-     if (showCustom) 
+     union(){
+       a3(showCustom);
+       if (showCustom && (variant=="studs")){
+          intersection(){
+            translate([0,0,-1.8]) linear_extrude(1.8+fudge) a3(place=true,getFootprint=true);
+            translate([stdsOffset.x,stdsOffset.y,-1.8]) linear_extrude(stdsHeight) studder(count=stdsCount,center=true);
+          }
+        }
+      }
+     if (showCustom && (variant=="slots")) 
        translate([sltsOffset.x,sltsOffset.y,-fudge/2]) linear_extrude(2.3+fudge) slotter(sltCnt=sltsCount,center=true);
    }
- if (isolate=="a4")
+   
+ *if (isolate=="a4")
    !difference(){
-     a4(showCustom);
-     if (showCustom) 
-       translate([sltsOffset.x,sltsOffset.y,-fudge/2]) linear_extrude(2.3+fudge) slotter(sltCnt=sltsCount,center=true);
+     union(){
+       a4(showCustom);
+       if (showCustom && (variant=="studs")){
+          intersection(){
+            translate([0,0,-1.8]) linear_extrude(1.8+fudge) a4(place=true,getFootprint=true);
+            translate([stdsOffset.x,stdsOffset.y,-1.8]) linear_extrude(stdsHeight) 
+              studder(count=stdsCount,center=true);
+          }
+        }
+      }
+     if (showCustom && (variant=="slots")) 
+       translate([sltsOffset.x,sltsOffset.y,-fudge/2]) linear_extrude(2.3+fudge) 
+        slotter(sltCnt=sltsCount,center=true);
    }
  if (isolate=="b3")
    !difference(){
@@ -78,13 +139,13 @@ module Asite(){
   difference(convexity=5){
     union(){
       a1(true);
-      
       a3(true);
       a4(true);
-      
     }
    if (showCustom)
-    translate([sltsOffset.x,sltsOffset.y,-fudge/2]) linear_extrude(2.3+fudge) slotter(sltCnt=sltsCount,center=true);
+    //slotter(sltDims=[5,15],sltDist=[40,20],sltCnt=[5,10],sltStagger=[20,0],rndSlt=true,center=false){
+    translate([sltsOffset.x,sltsOffset.y,-fudge/2]) linear_extrude(2.3+fudge) 
+      slotter(sltDims=sltsDims,sltCnt=sltsCount,sltDist=sltsSpacing,sltStagger=sltsStagger,center=true,$fn=sltN);
   }
   a2(true); 
   translate([plateDims.x/2+spcng , spcng/2,0]) a5();
@@ -102,13 +163,15 @@ module Bsite(){
 
 // --- A-Site parts ---
 *a1();
-module a1(place=false){
+module a1(place=false,getFootprint=false){
   ovDims=[74.7,224.1,60.5];
   wallDims=[ovDims.x,ovDims.y,wallThck];
   crnRad=2;
   cntrOffset= place ? [-spcng-plateDims.x/2, spcng/2,0] : [0,0,0];
+  
   translate(cntrOffset){    
-    if (showRebuild){
+    if (getFootprint) translate([-ovDims.x,0])#square([ovDims.x,ovDims.y]);
+    else if (showRebuild){
       //right side of P1P
       translate([-wallDims.x+crnRad,0,-2+wallThck]) cube(wallDims+[-crnRad,0,0]);
       //corner
@@ -176,7 +239,7 @@ module a2(place=false){
 }
 
 *a3();
-module a3(place=false){
+module a3(place=false,getFootprint=false){
   domePos=[[118.18,61.2,wallThck],[117.86,198.46,wallThck]]; //center pos
   domeDims=[[14.4,10.23,6.9],[10.81,14.4,6.9]];
   domeFlanks=[[4.4,4.4,1,2.6],[0,0,4.4,4.4]];
@@ -194,7 +257,9 @@ module a3(place=false){
                topFieldWidths[0]+topFieldWidths[1]+topFieldWidths[2]+6.5+3*3];
   cntrOffset= place ? [-plateDims.x/2      , spcng/2,0] : [0,0,0];
   
-  if (showRebuild) translate(cntrOffset){
+  if (getFootprint)
+    translate(cntrOffset) square([plateDims.x,plateDims.y]);
+  else if (showRebuild) translate(cntrOffset){  
     if (showGhosts) %translate([248.45,-332.52,0]) rotate(90) import("pegboard a3.stl");
     //plate
     linear_extrude(wallThck) difference(){
@@ -248,13 +313,16 @@ module a3(place=false){
 }
 
 *a4();
-module a4(place=false){
+module a4(place=false, getFootprint=false){
   plateDims=[237.2,224.10,1.6];//plate with minimum thickness
   cntrOffset= place ? [-plateDims.x/2      ,-spcng/2,0] : [0,0,0];
   drillPos=[[12.74,8.29],[222.66,8.29]];
   lwrBrim=[plateDims.x,18.4]; //size of the brim at the bottom
   tongOffset=31.9;
-  translate(cntrOffset) if (showRebuild){
+  
+  if (getFootprint)
+    translate(cntrOffset+[0,-plateDims.y,0]) square([plateDims.x,plateDims.y]);
+  else if (showRebuild) translate(cntrOffset){
     if (showGhosts) %translate([-11.29,640.5,0]) rotate(-90) import("pegboard a4.stl");
       
     translate([0,-plateDims.y,2-wallThck]) linear_extrude(wallThck-0.4) difference(){
@@ -418,16 +486,35 @@ module b6(){
    translate([-1165.97+0.23,184.8+0.1,0]) import("pegboard b6.stl");
 }
 
-*slotter();
-module slotter(sltDims=[5,15],sltDist=[40,20],sltCnt=[5,10],sltOffset=[20,0],rndSlt=true,center=false){
+*union(){
+  cube([80,80,2]);
+  render() translate([4,4,2]) linear_extrude(2) studder();
+}
+*studder(center=true);
+module studder(dia=4.85,count=[10,10],spacing=8,center=false){
+  //a module to create studs on a surface
+  //defaults to danish brick
+  stdOffset=[0,0];
+  cntrOffset= center ? [-(spacing*(count.x-1))/2-stdOffset.x,-(spacing*(count.y-1)-stdOffset.y)/2] :  [0,0,0];
+  
+  translate(cntrOffset) for (ix=[0:count.x-1],iy=[0:count.y-1]){
+   //xOffset= (iy % 2) ? stdOffset.x : 0;
+   //yOffset= (ix % 2) ? stdOffset.y : 0;
+   *translate([ix*spacing+xOffset,iy*spacing+yOffset]) circle(d=dia);
+   translate([ix*spacing,iy*spacing]) circle(d=dia);
+  }
+}
+
+*slotter(sltDims=sltsDims,sltDist=sltsSpacing,sltStagger=sltsStagger,sltCnt=sltsCount,center=true);
+module slotter(sltDims=[5,15],sltDist=[40,20],sltCnt=[5,10],sltStagger=[20,0],rndSlt=true,center=false){
   //a module to generate slots in custom form and arrangement
   //defaults to IKEA SKADIS
   
-  cntrOffset= center ? [-(sltDist.x*(sltCnt.x-1)+sltOffset.x)/2,-(sltDist.y*(sltCnt.y-1)-sltOffset.y)/2] :  [0,0,0];
+  cntrOffset= center ? [-(sltDist.x*(sltCnt.x-1)+sltStagger.x)/2,-(sltDist.y*(sltCnt.y-1)-sltStagger.y)/2] :  [0,0,0];
   
   translate(cntrOffset) for (ix=[0:sltCnt.x-1],iy=[0:sltCnt.y-1]){
-   xOffset= (iy % 2) ? sltOffset.x : 0;
-   yOffset= (ix % 2) ? sltOffset.y : 0;
+   xOffset= (iy % 2) ? sltStagger.x : 0;
+   yOffset= (ix % 2) ? sltStagger.y : 0;
    translate([ix*sltDist.x+xOffset,iy*sltDist.y+yOffset]) slot();
   }
   
