@@ -7,7 +7,7 @@
 $fn=50;
 
 /* [Select] */
-export= "C32"; //["PDUUAT16","ACT1210","SumidaCR43","TY6028","C32","none"]
+export= "none"; //["C32","none"]
 
 /* [Variants] */
 capSize=[26.5,14.5,29.5];
@@ -59,18 +59,66 @@ pcbBlue=            [0.07,  0.12,   0.3];
 FR4darkCol=         [0.2,   0.17,   0.087]; //?
 FR4Col=             [0.43,  0.46,   0.295]; //?
 
-if (export == "PDUUAT16")
-  !PDUU(false);
-else if (export == "ACT1210")
-  !ACT1210();
-else if (export == "SumidaCR43")
-  !sumidaCR43();
-else if (export == "TY6028")
-  !TY_6028();
-else if (export == "C32")
+if (export == "C32")
   !boxCapacitor(size=capSize, leads=[capLeadDia,capLeadLngth], pitch=capPitch);
 else
   echo("Nothing to render!")
+
+capacitorTHT();
+module capacitorTHT(D=16,L=30,axial=true){
+  showMarking=true;
+  rad=0.5;
+  notch=1.0;
+  foilThck=0.1;
+  foilOpnDia=12.8;
+  ringPos=0.15;
+  footHght=1;
+  footDia=10.8;
+  //leads
+  lSpcng=7.5;
+  lDia=0.8;
+  lLen=[20.5,16];
+  //marking
+  mkWdth=5.9;
+  mkAng=asin((mkWdth/2)/(D/2))*2;
+  
+  //body
+  translate([0,0,footHght]){ 
+    //marking slice
+    if (showMarking) color(whiteBodyCol) intersection(){
+      body(0.01);
+      rotate(-mkAng/2) rotate_extrude(angle=mkAng) translate([foilOpnDia/2,-fudge]) square([D/2-foilOpnDia/2+fudge,L+fudge]);
+    }
+    //body wth. removed slice for marking
+    difference(){
+      color(blackBodyCol) body();
+      if (showMarking) rotate(-mkAng/2) rotate_extrude(angle=mkAng) translate([foilOpnDia/2,-fudge]) square([D/2-foilOpnDia/2+fudge,L+fudge]);    
+      color(metalSilverCol) translate([0,0,-fudge]) cylinder(d=foilOpnDia,h=foilThck+fudge);
+      color(metalSilverCol) translate([0,0,L-footHght-foilThck]) cylinder(d=foilOpnDia,h=foilThck+fudge);
+    }
+  }
+  //foot
+  color(darkGreyBodyCol) cylinder(d=footDia,h=footHght);
+  //leads
+  for (i=[0:1]){
+    color(metalGreyPinCol) translate([i*lSpcng-lSpcng/2,0,-lLen[i]]) cylinder(d=lDia,h=lLen[i]);
+    color(metalGreyPinCol) translate([i*lSpcng-lSpcng/2,0,-lLen[i]]) sphere(d=lDia);
+  }
+  
+
+  
+  module body(thckn=0){
+    rotate_extrude(){     
+      difference(){
+        offset(rad+thckn) difference(){
+          translate([0,rad]) square([D/2-rad,L-footHght-rad*2]);
+          translate([(D+notch-rad)/2,L*ringPos+footHght]) circle(notch+rad);
+        }
+      translate([-(rad+thckn+fudge),-fudge]) square([rad+thckn+fudge,L+fudge]);
+      }
+    }
+  }
+}
 
 *boxCapacitor();
 module boxCapacitor(size=[57,35,50], leads=[1.2,5.5], pitch=[52.5,20.3], center=false){
