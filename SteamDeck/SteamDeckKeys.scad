@@ -1,9 +1,17 @@
+//deckMate adapter https://deckmate.me/
+//steamdeck offizial 3D data https://gitlab.steamos.cloud/SteamDeck/hardware
+
+
 use <eCAD/elMech.scad>
+use <eCAD/devboards.scad>
+
 $fn=20;
 
 /* [show] */
 showSection=false;
+showPico=false;
 export="none";
+
 
 /* [Dimensions] */
 minWallThck=2; //minimum Wallthickness
@@ -18,12 +26,7 @@ jogPositions=[[70,-40,zOffset],[70,-30,zOffset],[70,-20,zOffset],[75,10,zOffset]
 
 /* [Hidden] */
 fudge=0.1;
-latchWdth=19.81+35.2;
-slotWdth=21.25+34.7;
-clipDims=[90+fudge,62.37+61.55+fudge,23+3+fudge];
-ClBlankOffset=[21.25-19.81-(slotWdth-latchWdth)/2,-70,0.35];// offset between ClipMain and Clipblank
-clip2LatchOffset=[-0.65,0.5,19.5];
-latchPivotOffset=[24.3,-117.5,50.75];
+
 M3RivetDrill= (export != "none") ? 4.6 : 4;
 
 
@@ -31,22 +34,25 @@ translate([0,0,-19.03]) rotate([180,0,0])
   import("steamdeck_stl_20220202.stl");
 
   //Raspberry PICO
-  picoDims=[21,51,1];
-  color("darkgreen") translate([0,0,7]) rotate([90,0,0]) 
-    translate([-picoDims.x/2,picoDims.z/2,picoDims.y/2]) 
-      import("RP_PICO.stl");
+  
+  if (showPico) translate([0,0,7]) piPico();
+  
+// --- Deckmate ---
+color("darkgrey") rotate([180,0,0]) translate([0,-150,18.9]) import("/Deckmate/Deck_Mate_Marked_02.stl");
+translate([0,-6.2,0]) rotate([180,0,0]) DM_mecha(true);
 
-translate([0,0,-19.03]) rotate([180,0,0]) difference() {
-    color("grey") import("SteamClipMain.stl");
-    if (showSection) translate([clipDims.x/2,(62.37-61.55)/2,-clipDims.z/2+3]) cube(clipDims,true);
+//deckmate mechanism assembly
+!DM_mecha(false);
+module DM_mecha(showPlate=false){
+  rotate([180,0,0]) color("orange"){
+    translate([-65.19,-191.9-6.59,18.9]) import("/Deckmate/Deck_Mate_Mechanism_Bot_Print_02.stl");
+    translate([-0.19,-6.59,18.91]) import("/Deckmate/Deck_Mate_Mechanism_Top_Print_02.stl");
+  }
+  
+  if (showPlate) color("grey") translate([106.3,-6.5,26-7.7]) import("/Deckmate/Deck_Mate_Universal_02.stl");
 }
 
-translate([0,0,-19.03]) rotate([180,0,0]) translate(ClBlankOffset){
-  color("ivory") import("SteamClipBlank.stl");
-  color("lightgrey") translate(clip2LatchOffset-latchPivotOffset) 
-  rotate([0,-latchPivotRot,0]) 
-    translate(latchPivotOffset) import("SteamClipBlankLatch.stl");
-}
+
 
 for (m=[0,1],i=[0:len(jogPositions)-1])
     mirror([m,0,0]) translate(jogPositions[i]) rotate(jogRotations[i]) jogHolder();
@@ -99,6 +105,14 @@ module jogHolder(){
 
 module M3Rivet(){
   color("gold") linear_extrude(5.7) 
+    difference(){
+      circle(d=4.6);
+      circle(d=3);
+    }
+}
+
+module M3SRivet(){
+  color("gold") linear_extrude(4) 
     difference(){
       circle(d=4.6);
       circle(d=3);
