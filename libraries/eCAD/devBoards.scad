@@ -53,13 +53,15 @@ module piPico(showLabels=true){
   MCUPos=[0,0.5,0];
   btnPos=[-pcbDims.x/2+7,pcbDims.y/2-12,0];
   
-  translate([0,0,-pcbDims.z/2]){
+  translate([0,0,pcbDims.z/2]){
     PCB();
     pads();
   }
-  translate([0,pcbDims.y/2-1,0]) rotate(180) mUSB();
-  translate(MCUPos) QFN(pos=54,size=[7,7,1],pitch=0.4,label="RP2040");
-  translate(btnPos) rotate(90) KMR2();
+  translate([0,0,pcbDims.z]){
+    translate([0,pcbDims.y/2-1,0]) rotate(180) mUSB();
+    translate(MCUPos) QFN(pos=54,size=[7,7,1],pitch=0.4,label="RP2040");
+    translate(btnPos) rotate(90) KMR2();
+  }
   
   module pads(){
     //pads 1-40
