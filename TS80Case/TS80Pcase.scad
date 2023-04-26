@@ -2,17 +2,26 @@ include <eCAD/KiCADColors.scad>
 $fn=20;
 
 /* -- [Dimensions] -- */
+//overall Dimensions
 ovDims=[164.8,95,25];
+//Omnifix IO plate dimensions
 OFDims=[160,90,1.2];
+//main corner radius
 ovCrnrRad=10.4;
+//magnets height
 magnetHght=2;
+//magnets diameter
 magnetDia=4;
+//minimum Wall thickness
 minWallThck=2;
+//circumfence ledge (kante)
 ledge=[1,1,1.2]; 
 mainCompDims=[104,30];
 cleanCompDia=50;
 cleanCompOpening=40;
 
+/* -- [Positions] --*/
+TS80TipPos=[161,67.8,10.5];
 
 /* -- [show] -- */
 showOrig=true;
@@ -20,19 +29,21 @@ showRemix=true;
 showTS80P=true;
 showTip=true;
 showCentered=false;
+showSection=false;
+sectionOffset=150;
 
 /* -- [Configure] -- */
 original="OF-TS80P"; // ["OF-TS80P","TS80Case","OF-FieldBox"]
 
 originalFile= (original=="OF-TS80P") ? "omnifixo_box.stl" :
-              (original=="TS80Case") ? "ts80_case_main.stl" :
-              (original=="PF-FieldBox") ? "OMNIFIXO_FIELD_BOX.stl" : "ts80_case_main.stl";
+              (original=="TS80Case") ? "ts80_case_main_fixed.stl" :
+              (original=="OF-FieldBox") ? "OMNIFIXO_FIELD_BOX.stl" : "ts80_case_main.stl";
 ogRotation= (original=="OF-TS80P") ? [0,0,90] :
             (original=="TS80Case") ? [90,0,0] :
-            (original=="PF-FieldBox") ? "OMNIFIXO_FIELD_BOX.stl" : "ts80_case_main.stl";
+            (original=="OF-FieldBox") ? [90,0,0] : [0,0,0];
 ogTranslation = (original=="OF-TS80P") ? [187.4,-77.9,0] :
                 (original=="TS80Case") ? [0,ovDims.y,0] :
-                (original=="PF-FieldBox") ? "OMNIFIXO_FIELD_BOX.stl" : "ts80_case_main.stl";
+                (original=="OF-FieldBox") ? [0,0,0] : [0,0,0];
 
 echo(original,originalFile);
 /* [Hidden] */
@@ -55,11 +66,17 @@ compDims=[mainCompDims.x,mainCompDims.y,ovDims.z-minWallThck];
 magPos=[[ovDims.x-minWallThck-ledge.x-magnetDia/2,ovDims.y-minWallThck-ledge.y-mainCompDims.y-minWallThck/2]];
 fudge=0.1;
 
-
-if (showOrig) %translate(ogTranslation) rotate(ogRotation) import(originalFile);
-if (showTS80P) translate([160,ovDims.y-12.5,4+13/2]) rotate([0,-90,0]) TS80P();
-if (showTip) translate([161,32.7,4+13/2]) rotate([0,-90,0]) color("silver") TS80PTip();
-if (showRemix) mainCase(showCentered);
+difference (){
+  union(){
+    if (showOrig) translate(ogTranslation) rotate(ogRotation) import(originalFile, convexity=5);
+    if (showTS80P) translate([160,ovDims.y-12.5,4+13/2]) rotate([0,-90,0]) TS80P();
+    if (showTip) translate(TS80TipPos) rotate([0,-90,0]) color("silver") TS80PTip();
+    if (showRemix) mainCase(showCentered);
+  }
+    if (showSection) color("darkred") 
+      translate([-fudge/2+sectionOffset,-fudge/2,-fudge/2]) 
+        cube(ovDims+[fudge-sectionOffset+20,fudge+20,fudge+10]);
+  }
   
 module mainCase(center=false){
   crnRad=ovCrnrRad;
