@@ -1,0 +1,9 @@
+{
+    "fileFormatVersion": "1",
+    "parameterSets": {
+        "New set 1": {
+            "fudge": "0.10000000000000001",
+            "showBox": "false"
+        }
+    }
+}
