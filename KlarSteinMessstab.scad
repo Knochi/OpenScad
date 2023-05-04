@@ -1,9 +1,9 @@
 /* [Parameters] */
-barDims=[25,1000,2]; //Dimensions of the raw bar to engrave
+barDims=[20,1000,2]; //Dimensions of the raw bar to engrave
 subStrokeDims=[10,0.3];
-mainStrokeDims=[20,0.6];
+mainStrokeDims=[18,0.6];
 firstStrokeOffset=7; //2 litres at39mm
-textOffset=[0,1];
+textOffset=[-4,1];
 textSize=8;
 kettleDia=280;
 litresPerDiv=2; //litres per division
