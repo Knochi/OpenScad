@@ -1,7 +1,8 @@
 fudge=0.1;
 /* [show] */
 showBox=true;
-export="none"; //["none","cardTray"]
+export="none"; //["none","cardTray","doveTailTestPos","doveTailTestNeg"]
+
 /* [Dimensions] */
 boxDims=[228,288,52];
 boxWallThck=1.8;
@@ -14,6 +15,8 @@ dTSize=[5,10];
 dTAngle=60;
 dTRadius=0.5;
 dTSpacing=0.1;
+dTTestStart=0.2;
+dTTestInc=0.2;
 
 /* [Cards] */
 sleeveDims = [68,94,0.46];
@@ -32,6 +35,11 @@ if (export=="none"){
 
 else if (export=="cardTray")
   !tripleCards();
+  
+else if (export=="doveTailTestPos")
+  !doveTailTest(isPositive=true);
+else if (export=="doveTailTestNeg")
+  !doveTailTest(isPositive=false);
 
 if (showBox)
   color("darkslategrey") AlienRPGBox();
@@ -82,7 +90,7 @@ module tripleCards(height=20, slice=true){
           doveTail(dTSize,dTAngle,dTRadius,1);
 }
 
-!doveTailTest();
+*doveTailTest();
 module doveTailTest(startSpacing=0.2, increment=0.2, isPositive=true, label=true){
   sSpcng=startSpacing;
   inc=increment;
