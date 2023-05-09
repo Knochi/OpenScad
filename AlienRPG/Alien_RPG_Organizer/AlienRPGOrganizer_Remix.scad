@@ -2,7 +2,9 @@ fudge=0.1;
 /* [show] */
 $fn=50;
 showBox=true;
-export="none"; //["none","original","cardTray"]
+
+export="none"; //["none","original","cardTray","diceTray","doveTailTestPos","doveTailTestNeg"]
+
 
 /* [Dimensions] */
 boxDims=[228,288,52];
@@ -15,8 +17,11 @@ slice=true;
 /* [DoveTails] */
 dTSize=[5,10];
 dTAngle=60;
+
 dTRadius=0.7;
 dTSpacing=0.4;
+dTTestStart=0.2;
+dTTestInc=0.2;
 
 /* [Dice] */
 diceDims=16;
@@ -63,6 +68,14 @@ else if (export=="none"){
 
 else if (export=="cardTray")
   !tripleCards();
+  
+else if (export=="diceTray")
+  !diceTray(showDice=false);
+  
+else if (export=="doveTailTestPos")
+  !doveTailTest(isPositive=true);
+else if (export=="doveTailTestNeg")
+  !doveTailTest(isPositive=false);
 
 if (showBox)
   AlienRPGBox();
@@ -82,18 +95,21 @@ module cards(stack=10){
 }
 
 *diceTray();
-module diceTray(){
+module diceTray(showDice=true){
 
   ovDims=[boxDims.x/2-boxSpacing*2-boxWallThck,diceDims+minWallThck*2+diceSpcng*2,diceDims*2+minWallThck+diceSpcng];
-
-  color("yellow") for(ix=[-2:2])
-    translate([ix*(diceDims+diceSpcng),0,diceDims/2+minWallThck]) dice();
-    translate([0,0,ovDims.z/2]) difference(){
-      cube(ovDims,true);
-      translate([0,0,minWallThck]) cube([diceDims*5+diceSpcng*6,diceDims+diceSpcng*2,diceDims*2+diceSpcng+fudge],true);
-      for (ix=[-1,1])
-        translate([ix*ovDims.x/2,0,0]) cylinder(d=ovDims.y-minWallThck*2,ovDims.z+fudge,center=true);
-      }  
+  
+  if (showDice)
+    color("yellow") for(ix=[-2:2])
+      translate([ix*(diceDims+diceSpcng),0,diceDims/2+minWallThck]) dice();
+    
+  translate([0,0,ovDims.z/2]) difference(){
+    cube(ovDims,true);
+    translate([0,0,minWallThck]) 
+      cube([diceDims*5+diceSpcng*6,diceDims+diceSpcng*2,diceDims*2+diceSpcng+fudge],true);
+    for (ix=[-1,1])
+      translate([ix*ovDims.x/2,0,0]) cylinder(d=ovDims.y-minWallThck*2,ovDims.z+fudge,center=true);
+    }  
 }
 
 !dualTray(height=diceDims*2+minWallThck+diceSpcng);
