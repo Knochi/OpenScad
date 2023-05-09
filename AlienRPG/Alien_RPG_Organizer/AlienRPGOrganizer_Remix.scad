@@ -1,5 +1,6 @@
 fudge=0.1;
 /* [show] */
+$fn=50;
 showBox=true;
 
 export="none"; //["none","original","dualCardTray","tripleCardTray","diceTray","doveTailTestPos","doveTailTestNeg"]
@@ -55,8 +56,8 @@ else if (export=="none"){
     if (slice)  rotate(180) tripleCards();  
   }
   translate([0,boxDims.y/2-tripleCardYDim*2-boxWallThck-boxSpacing*3-dualCardYDim/2,0]){
-    dualCards(slice=slice);
-    if (slice) rotate(180) dualCards();
+    dualTray(slice=slice);
+    if (slice) rotate(180) dualTray();
   }
 
   //dice
@@ -114,19 +115,28 @@ module diceTray(showDice=true){
     }  
 }
 
-*dualCards();
-module dualCards(height=20, slice=true){
+!dualTray(height=diceDims*2+minWallThck+diceSpcng);
+module dualTray(height=20, slice=true, forCards=false){
   //card Dims
   
   ovDims=[boxDims.x-boxSpacing*2-boxWallThck*2,cDims.x+minWallThck*2+cardSpacing*2,height];
+  compDims= forCards ? [cDims.y+cardSpacing*2,cDims.x+cardSpacing*2,height-minWallThck+fudge] : //cardDimes
+                       [ovDims.x/2-minWallThck*2,ovDims.y-minWallThck*2,height-minWallThck+fudge]; //maximum Dims
 
   translate([0,0,height/2]) difference(){
     cube(ovDims,true);
-    for (ix=[-1,1])
-      translate([ix*(ovDims.x-cDims.y-minWallThck*2)/2,0,(minWallThck+fudge)/2])
-          cube([cDims.y+cardSpacing*2,cDims.x+cardSpacing*2,height-minWallThck+fudge],true);
-    for (ix=[-1:1], iy=[-1,1]) //to align with tripleCards
-      translate([ix*(cDims.x+minWallThck+cardSpacing*2),iy*ovDims.y/2,0]) 
+    for (im=[0,1])
+      mirror([im,0,0]) translate([((ovDims.x-compDims.x)/2-minWallThck),0,(minWallThck+fudge)/2])
+        if (forCards)
+          cube(compDims,true);
+        else
+          compartment();
+    if (forCards) //cutouts to grab cards
+      for (ix=[-1,1], iy=[-1,1]) //to align with tripleCards
+        translate([ix*(cDims.x+minWallThck+cardSpacing*2),iy*ovDims.y/2,0]) 
+          cylinder(d=cardGripDia,h=height+fudge,center=true);
+    for (iy=[-1,1]) //center grip
+      translate([0,iy*ovDims.y/2,0]) 
         cylinder(d=cardGripDia,h=height+fudge,center=true);
     if (slice){
       translate([-dTSpacing/2,-(ovDims.y+fudge)/2,-(height+fudge)/2])
@@ -139,6 +149,21 @@ module dualCards(height=20, slice=true){
     translate([0,-(ovDims.y-cardGripDia)/4,0]) 
         linear_extrude(height)
           doveTail(dTSize,dTAngle,dTRadius,1);
+  *compartment();
+  module compartment(){
+    rad=height/3;
+    intersection(){
+    translate([0,0,-height/2])
+      linear_extrude(height) difference(){
+        square([compDims.x,compDims.y],true);
+        for (iy=[-1,1])
+          translate([-((ovDims.x-compDims.x)/2-minWallThck),iy*(compDims.y/2+minWallThck)]) circle(d=cardGripDia+minWallThck*2);
+        translate([-(compDims.x-dTSize.x-dTSpacing)/2,0]) square([dTSize.x+dTSpacing,compDims.y+fudge],true);
+      }
+    hull() for(ix=[-1,1],iy=[-1,1],iz=[-1,1])
+      translate([ix*((compDims.x-dTSize.x-dTSpacing)/2-rad)+(dTSize.x+dTSpacing)/2,iy*(compDims.y/2-rad),iz*(height/2)+rad]) sphere(rad);
+    }
+  }
 }
   
 module tripleCards(height=20, slice=true){
