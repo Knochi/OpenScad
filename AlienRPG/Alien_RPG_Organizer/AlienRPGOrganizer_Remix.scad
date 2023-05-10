@@ -10,6 +10,7 @@ export="none"; //["none","original","dualCardTray","tripleCardTray","diceTray","
 boxDims=[228,288,52];
 boxWallThck=1.8;
 minWallThck=1;
+floorThck=2;
 boxSpacing=0.4;
 pressFit=0.1;
 slice=true;
@@ -100,7 +101,7 @@ module cards(stack=10){
 *diceTray();
 module diceTray(showDice=true){
 
-  ovDims=[boxDims.x/2-boxSpacing*2-boxWallThck,diceDims+minWallThck*2+diceSpcng*2,diceDims*2+minWallThck+diceSpcng];
+  ovDims=[boxDims.x/2-boxSpacing*2-boxWallThck,diceDims+minWallThck*2+diceSpcng*2,diceDims*2+floorThck+diceSpcng];
   
   if (showDice)
     color("yellow") for(ix=[-2:2])
@@ -115,18 +116,18 @@ module diceTray(showDice=true){
     }  
 }
 
-!dualTray(height=diceDims*2+minWallThck+diceSpcng);
+!dualTray(height=diceDims*2+floorThck+diceSpcng);
 module dualTray(height=20, slice=true, forCards=false){
   //card Dims
   
   ovDims=[boxDims.x-boxSpacing*2-boxWallThck*2,cDims.x+minWallThck*2+cardSpacing*2,height];
-  compDims= forCards ? [cDims.y+cardSpacing*2,cDims.x+cardSpacing*2,height-minWallThck+fudge] : //cardDimes
-                       [ovDims.x/2-minWallThck*2,ovDims.y-minWallThck*2,height-minWallThck+fudge]; //maximum Dims
+  compDims= forCards ? [cDims.y+cardSpacing*2,cDims.x+cardSpacing*2,height-floorThck+fudge] : //cardDims
+                       [ovDims.x/2-minWallThck*2,ovDims.y-minWallThck*2,height-floorThck+fudge]; //maximum Dims
 
   translate([0,0,height/2]) difference(){
     cube(ovDims,true);
     for (im=[0,1])
-      mirror([im,0,0]) translate([((ovDims.x-compDims.x)/2-minWallThck),0,(minWallThck+fudge)/2])
+      mirror([im,0,0]) translate([((ovDims.x-compDims.x)/2-minWallThck),0,(floorThck+fudge)/2])
         if (forCards)
           cube(compDims,true);
         else
@@ -149,6 +150,7 @@ module dualTray(height=20, slice=true, forCards=false){
     translate([0,-(ovDims.y-cardGripDia)/4,0]) 
         linear_extrude(height)
           doveTail(dTSize,dTAngle,dTRadius,1);
+
   *compartment();
   module compartment(){
     rad=height/3;
@@ -161,7 +163,8 @@ module dualTray(height=20, slice=true, forCards=false){
         translate([-(compDims.x-dTSize.x-dTSpacing)/2,0]) square([dTSize.x+dTSpacing,compDims.y+fudge],true);
       }
     hull() for(ix=[-1,1],iy=[-1,1],iz=[-1,1])
-      translate([ix*((compDims.x-dTSize.x-dTSpacing)/2-rad)+(dTSize.x+dTSpacing)/2,iy*(compDims.y/2-rad),iz*(height/2)+rad]) sphere(rad);
+      translate([ix*((compDims.x-dTSize.x-dTSpacing)/2-rad)+(dTSize.x+dTSpacing)/2,iy*(compDims.y/2-rad),iz*((compDims.z+fudge)/2)+rad+fudge/2]) //iz*(compDims.z/2-rad+rad+fudge/2)+rad+fudge/2
+        sphere(rad);
     }
   }
 }
