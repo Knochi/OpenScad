@@ -3,7 +3,7 @@ fudge=0.1;
 $fn=50;
 showBox=true;
 
-export="none"; //["none","original","cardTray","diceTray","doveTailTestPos","doveTailTestNeg"]
+export="none"; //["none","original","dualCardTray","tripleCardTray","diceTray","doveTailTestPos","doveTailTestNeg"]
 
 
 /* [Dimensions] */
@@ -66,8 +66,11 @@ else if (export=="none"){
 }
 
 
-else if (export=="cardTray")
+else if (export=="tripleCardTray")
   !tripleCards();
+  
+else if (export=="dualCardTray")
+  !dualCards();
   
 else if (export=="diceTray")
   !diceTray(showDice=false);
