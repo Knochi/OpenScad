@@ -39,7 +39,7 @@ translate([230,0,0]) PJ398SM();
 
 *rotate([0,0,-90]) femHeaderSMD(20,2,center=true);
 
-!WAGO_2601();
+*WAGO_2601();
 module WAGO_2601(poles=5,release=false){
   //vertical WAGO PCB terminal block; CAGE-CLAMP; 3.5mm pitch; 1.5mm²
   pitch=3.5;
@@ -186,7 +186,7 @@ module microMatch(pos=10){
   }
 }
 
-!SLconnector();
+*SLconnector();
 module SLconnector(pos=2,height=5){
   //preci-dip Spring-Loaded Connectors SLC 
   //Series 811 https://www.precidip.com/en/Products/Spring-Loaded-Connectors/pview/811-S1-NNN-30-XXX101.html
@@ -973,7 +973,7 @@ module duraClikRA(pos=2,diff="none"){
   }
 
   else {
-   color("Ivory")
+   color(whiteBodyCol)
     difference(){
       translate([0,0,ovHght/2]) cube([A,ovDpth,ovHght],true);//body
       translate([0,(-ovDpth+plug[1])/2-fudge,plug[2]/2+plugZ])
@@ -987,15 +987,16 @@ module duraClikRA(pos=2,diff="none"){
   }
 }
 
-*duraClik(2,true);
+!duraClik(2);
 module duraClik(pos=2,givePoly=false){
-  A= (pos>2) ? 6.6+2*pos : 10.9;
-  B= (pos>2) ? 3.7+pos*2 : 8;
-  C= (pos>6) ? pos*2-0.9 : (pos>2) ? pos*2 : 0;
-  D= (pos>5) ? 11.8 : (pos>2) ? -0.2+2*pos : 6.3;
+  A= (pos>2) ? 6.6+2*pos : 10.9; 
+  B= (pos>2) ? 3.7+pos*2 : 8; 
+  C= (pos>6) ? pos*2-0.9 : 
+     (pos>2) ? pos*2 : 0;
+  D= (pos>5) ? 11.8 : 
+     (pos>2) ? -0.2+2*pos : 6.3;
 
   ovDpth=7.8;
-
 
   baseThck=3;
   scktThck=5.05;
@@ -1006,12 +1007,15 @@ module duraClik(pos=2,givePoly=false){
 
   plug=[1+2*pos,4.7,5+fudge];
   plgY=2.3;
+  
+  pinDims=[0.5,1.35,1];
+  hdrDims=[0.5,0.5,3.4];
+  yOffset=-0.96;
 
-
-  if (givePoly) square([A,ovDpth],true);
+  if (givePoly) !square([A,ovDpth],true);
     
-  color("Ivory")
-  difference(){
+  color(whiteBodyCol)
+  translate([0,yOffset,0]) difference(){
     union(){
       translate([0,0,baseThck/2]) cube([A,ovDpth,baseThck],true); //base
       translate([0,0,baseThck+(scktThck/2)-fudge/2]) cube([B-2,ovDpth,scktThck+fudge],true); //socket
@@ -1027,9 +1031,18 @@ module duraClik(pos=2,givePoly=false){
       translate([D/2,-(ovDpth)/2-fudge,-fudge/2]) cube([(C-D)/2,2.3,scktThck+fudge]);
     }
     else translate([0,-(ovDpth-resess[1])/2-fudge,resess[2]/2-fudge]) cube(resess,true); //resess
-
   }
-
+  //pins
+  color(metalGreyPinCol)
+  for (ix=[-(pos-1)/2:(pos-1)/2]){
+    translate([ix*2,(ovDpth+pinDims.y)/2+yOffset,pinDims.z/2]) cube(pinDims,true);
+    translate([ix*2,0,baseThck]) header();
+  }
+  module header(){
+    tipDims=[hdrDims.x,0.25,0.5];
+    linear_extrude(hdrDims.z-tipDims.z) square([hdrDims.x,hdrDims.y],true);
+    translate([0,0,hdrDims.z-tipDims.z]) linear_extrude(tipDims.z, scale=[1,0.5]) square([hdrDims.x,hdrDims.y],true);
+  }
 }
 
 *SDCard();
