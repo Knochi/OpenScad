@@ -1,3 +1,5 @@
+include <KiCADColors.scad>
+use <connectors.scad>
 
 $fn=20;
 /* [Dimensions]  */
@@ -12,7 +14,49 @@ translate([200,0,0]) Adafruit128x128TFT();
 translate([300,0,0]) AdafruitOLED23();
 translate([500,0,0]) raspBerry7Inch();
 
-!LD8133();
+
+!OLED1_3_4pin();
+module OLED1_3_4pin(){
+  //chinese OLED display 4pin 1.3Inch
+  //like: https://de.aliexpress.com/item/32844104782.html
+  PCBDims=[35.4,33.5,1.2];
+  glassDims=[35,23,1.5];
+  aaDims=[29.42,14.7,0.02];
+  cutOutDims=[14,4.5];
+  holeDist=[30.4,28.5];
+  //offsets from top
+  holeYOffset=-2.5;
+  glassYOffset=-5.25;
+  hdrYOffset=-2;
+  aaYOffset=-7.35;
+  holeDia=3;
+  mfudge=0.01;//microfudge to isolate surfaces
+  
+  color(pcbGreenCol) linear_extrude(PCBDims.z)
+    difference(){
+      square([PCBDims.x,PCBDims.y],true);
+      //screwholes
+      for (ix=[-1,1],iy=[-1,1])
+        translate([ix*holeDist.x/2,iy*holeDist.y/2+cntrOffset(holeYOffset,holeDist.y)]) circle(d=3);
+      //pins
+      for (ix=[-(4-1)/2:(4-1)/2])
+        translate([ix*2.54,PCBDims.y/2+hdrYOffset]) circle(d=1.2);
+      //cutout
+      translate([0,(-PCBDims.y+cutOutDims.y)/2]) square(cutOutDims,true);
+      }
+  //glass
+  color(glassGreyCol) 
+    translate([0,cntrOffset(glassYOffset,glassDims.y),PCBDims.z+glassDims.z/2+mfudge]) 
+      cube(glassDims,true);
+  //active area
+  color(glassBlueCol)
+    translate([0,cntrOffset(aaYOffset,aaDims.y),PCBDims.z+glassDims.z+aaDims.z+mfudge]) 
+      cube(aaDims,true);
+    
+  function cntrOffset(yOffset,yDim)=(PCBDims.y-yDim)/2+yOffset;
+  
+}
+*LD8133();
 module LD8133(){
   //NEC 9 digit VFD tube
   tbDia=10;

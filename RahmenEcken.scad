@@ -4,15 +4,20 @@ $fn=50;
 ovDims=[40,40,15];
 thick=5;
 
+
+*color("grey")
+  translate([-66.5,-91.5,6.3]) corner();
+*color("ivory") frame();
+
+for (i=[0:3])
+  translate([i*thick*1.7,i*thick*1.7,0]) corner();
+
 module corner(){
   translate([thick/2,thick/2,0]) linear_extrude(ovDims.z){
     hull() for (ix=[0,1]) translate([ix*(ovDims.x-thick/2),0]) circle(d=thick);
     hull() for (iy=[0,1]) translate([0,iy*(ovDims.y-thick/2)]) circle(d=thick);
   }
 }
-color("grey")
-translate([-66.5,-91.5,6.3]) corner();
-color("ivory") frame();
 
 module frame(){
   ovDims=[155,205,36];

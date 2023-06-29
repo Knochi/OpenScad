@@ -12,7 +12,7 @@ MPE_192(6);
 translate([col[0],0,0]) MPE_196(6);
 
 translate([col[1],5,0]) text("MPE_098",size=2);
-translate([col[1],0,0]) MPE_098(pins=6,variant=1);
+translate([col[1],0,0]) MPE_098(pins=4,variant=4);
 translate([col[1],-10,0]) MPE_098(pins=6,variant=2);
 translate([col[1],-20,0]) MPE_098(pins=12,variant=3);
 translate([col[1],-30,0]) MPE_098(pins=6,variant=4);
@@ -228,6 +228,7 @@ module MPE_094(pins, center=false, diff="none", thick=8.5){ //receptable housing
 
 
 *rotate(-90) MPE_098(20,3,true,center=true);
+
 module MPE_098(pins,variant=1,peg=false,diff="none",center=false){
   //-- variations --
   //single row, low profile (3.7mm)      - 1,2 (Pin Layout 1,2)
@@ -237,6 +238,7 @@ module MPE_098(pins,variant=1,peg=false,diff="none",center=false){
   
   rows = ((variant == 3)||(variant==6)) ? 2 : 1;
   bdHght = (variant>=4) && (variant<=6) ? 7.5 : 3.5;
+  
   
   cntrOffset = center ? [-pins/(2*rows)*2.54,-1.25*rows,0] : [-1.27,-1.25,0];
 
