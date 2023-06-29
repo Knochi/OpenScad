@@ -15,23 +15,32 @@ translate([300,0,0]) AdafruitOLED23();
 translate([500,0,0]) raspBerry7Inch();
 
 
-!OLED1_3_4pin();
-module OLED1_3_4pin(center=false){
+!OLED1_3inch4pin();
+module OLED1_3inch4pin(center=false){
   //chinese OLED display 4pin 1.3Inch
   //like: https://de.aliexpress.com/item/32844104782.html
+  
+  //Dimensions of the elements
   PCBDims=[35.4,33.5,1.2];
   glassDims=[35,23,1.5];
-  aaDims=[29.42,14.7,0.02];
-  cutOutDims=[14,4.5];
-  holeDist=[30.4,28.5];
-  //offsets from top
+  aaDims=[29.42,14.7,0.02]; //active area
+  cutOutDims=[14,4.5]; //cutOut at the bottom
+  
+  //offsets from top of PCB to top of element
   holeYOffset=-2.5;
   glassYOffset=-5.25;
   hdrYOffset=-2;
   aaYOffset=-7.35;
-  holeDiaIn=3;
-  holeDiaOut=4.5;
-  mfudge=0.01;//microfudge to isolate surfaces
+  
+  //mounting hole pattern
+  holeDist=[30.4,28.5];
+  
+  //inner and outer diameter of mounting holes (PTH)
+  holeDiaIn=3; //drill
+  holeDiaOut=4.5; //copper
+  
+  //microfudge to isolate surfaces
+  mfudge=0.01;
   
   cntrOffset= center ? [0,0,0] : [2.54*1.5,-PCBDims.y/2-hdrYOffset,2.5];
   
