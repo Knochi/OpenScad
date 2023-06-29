@@ -1,6 +1,6 @@
 include <KiCADColors.scad>
 use <connectors.scad>
-
+use <MPEGarry.scad>
 $fn=20;
 /* [Dimensions]  */
 fudge=0.1;
@@ -16,7 +16,7 @@ translate([500,0,0]) raspBerry7Inch();
 
 
 !OLED1_3_4pin();
-module OLED1_3_4pin(){
+module OLED1_3_4pin(center=false){
   //chinese OLED display 4pin 1.3Inch
   //like: https://de.aliexpress.com/item/32844104782.html
   PCBDims=[35.4,33.5,1.2];
@@ -29,30 +29,45 @@ module OLED1_3_4pin(){
   glassYOffset=-5.25;
   hdrYOffset=-2;
   aaYOffset=-7.35;
-  holeDia=3;
+  holeDiaIn=3;
+  holeDiaOut=4.5;
   mfudge=0.01;//microfudge to isolate surfaces
   
-  color(pcbGreenCol) linear_extrude(PCBDims.z)
-    difference(){
-      square([PCBDims.x,PCBDims.y],true);
-      //screwholes
-      for (ix=[-1,1],iy=[-1,1])
-        translate([ix*holeDist.x/2,iy*holeDist.y/2+cntrOffset(holeYOffset,holeDist.y)]) circle(d=3);
-      //pins
-      for (ix=[-(4-1)/2:(4-1)/2])
-        translate([ix*2.54,PCBDims.y/2+hdrYOffset]) circle(d=1.2);
-      //cutout
-      translate([0,(-PCBDims.y+cutOutDims.y)/2]) square(cutOutDims,true);
-      }
-  //glass
-  color(glassGreyCol) 
-    translate([0,cntrOffset(glassYOffset,glassDims.y),PCBDims.z+glassDims.z/2+mfudge]) 
-      cube(glassDims,true);
-  //active area
-  color(glassBlueCol)
-    translate([0,cntrOffset(aaYOffset,aaDims.y),PCBDims.z+glassDims.z+aaDims.z+mfudge]) 
-      cube(aaDims,true);
-    
+  cntrOffset= center ? [0,0,0] : [2.54*1.5,-PCBDims.y/2-hdrYOffset,2.5];
+  
+  translate(cntrOffset){
+    color(pcbBlueCol) linear_extrude(PCBDims.z)
+      difference(){
+        square([PCBDims.x,PCBDims.y],true);
+        //screwholes
+        for (ix=[-1,1],iy=[-1,1])
+          translate([ix*holeDist.x/2,iy*holeDist.y/2+cntrOffset(holeYOffset,holeDist.y)]) circle(d=holeDiaOut);
+        //pins
+        for (ix=[-(4-1)/2:(4-1)/2])
+          translate([ix*2.54,PCBDims.y/2+hdrYOffset]) circle(d=1.0);
+        //cutout
+        translate([0,(-PCBDims.y+cutOutDims.y)/2]) square(cutOutDims,true);
+        }
+    //glass
+    color(glassGreyCol) 
+      translate([0,cntrOffset(glassYOffset,glassDims.y),PCBDims.z+glassDims.z/2+mfudge]) 
+        cube(glassDims,true);
+    //active area
+    color(blackBodyCol)
+      translate([0,cntrOffset(aaYOffset,aaDims.y),PCBDims.z+glassDims.z+aaDims.z+mfudge])
+        cube(aaDims,true);
+    //screw holes
+    color(metalGoldPinCol) linear_extrude(PCBDims.z) 
+        for (ix=[-1,1],iy=[-1,1])
+          translate([ix*holeDist.x/2,iy*holeDist.y/2+cntrOffset(holeYOffset,holeDist.y)]) difference(){
+            circle(d=holeDiaOut);
+            circle(d=holeDiaIn);
+          }
+    //pinHeader
+    translate([-2.54*1.5,PCBDims.y/2+hdrYOffset,0]) rotate([180,0,0]) MPE_087(rows=1,pins=4,A=11.3,markPin1=false);
+   
+  }
+  
   function cntrOffset(yOffset,yDim)=(PCBDims.y-yDim)/2+yOffset;
   
 }
@@ -661,6 +676,7 @@ module pixels(count=[16,8],size=[0.41,0.39],pitch=[0.43,0.41]){
 }
 
 function xTilt(dist,ang)=[tan(ang)*dist,dist]; 
+
 
 module uSDCard(showCard=true){
   //push-push by Wuerth 

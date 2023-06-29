@@ -23,9 +23,9 @@ translate([col[2],0,0]) MPE_087();
 
 
 
-*MPE_087(rows=1,pins=17,center=true);
+*MPE_087(rows=1,pins=4,A=11.3,center=true);
 module MPE_087(rows=2, pins=6, A=19.8,markPin1=true, center=false){
-  //       A   ,  B  ,   C , L // overall Length, 
+  //       A   ,  B  ,   C , L // overall Length, above body, below body, body
   Ldict=[[10.20, 5.20, 2.50, 2.50],
         [11.30, 5.50, 3.30, 2.50],
         [10.80, 5.80, 2.50, 2.50],
@@ -61,9 +61,10 @@ module MPE_087(rows=2, pins=6, A=19.8,markPin1=true, center=false){
   //pins
   for (ix=[0:pins/rows-1],iy=[0:rows-1]){
     pinNo=(ix*rows+1)+iy;
-    pinCol= ((pinNo==1)&&markPin1) ? "red" : metalGoldPinCol;
+    pinCol= ((pinNo==1)&&markPin1) ? redBodyCol : metalGoldPinCol;
     translate([ix*pitch,iy*pitch,-C]+cntrOffset) 
-      color(pinCol) squarePin();
+      color(pinCol) squarePin(size=0.64, length=A,center=false);
+    //squarePin(size=0.64,length=10,center=false){
   }
   color(blackBodyCol) 
     linear_extrude(L){ 
@@ -408,14 +409,14 @@ module octagon(size=2.54){
   polygon(poly);
 }
 
-*squarePin();
+*squarePin(center=true);
 module squarePin(size=0.64,length=10,center=false){
   cntrOffset= center ? 0 : length/2;
   
   translate([0,0,cntrOffset]){
-    translate([0,0,-(length/2-size)]) mirror([0,0,1]) pyramid();
-    translate([0,0,size/2]) cube([size,size,length-size],true);
-    translate([0,0,(length)/2]) pyramid();
+    translate([0,0,-(length-size)/2]) mirror([0,0,1]) pyramid();
+    translate([0,0,0]) cube([size,size,length-size],true);
+    translate([0,0,(length-size)/2]) pyramid();
   }
   
   module pyramid(){

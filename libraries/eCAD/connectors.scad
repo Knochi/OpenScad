@@ -987,7 +987,7 @@ module duraClikRA(pos=2,diff="none"){
   }
 }
 
-!duraClik(2);
+*duraClik(2);
 module duraClik(pos=2,givePoly=false){
   A= (pos>2) ? 6.6+2*pos : 10.9; 
   B= (pos>2) ? 3.7+pos*2 : 8; 

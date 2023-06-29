@@ -36,7 +36,7 @@ glassGreenCol=      [0.000000, 0.75, 0.44, glassAlpha];
 glassOrangeCol=     [0.75, 0.44, 0.000000, glassAlpha];
 pcbGreenCol=        [0.07,  0.3,    0.12]; //pcb green
 pcbBlackCol=        [0.16,  0.16,   0.16]; //pcb black
-pcbBlue=            [0.07,  0.12,   0.3];
+pcbBlueCol=            [0.07,  0.12,   0.3];
 FR4darkCol=         [0.2,   0.17,   0.087]; //?
 FR4Col=             [0.43,  0.46,   0.295]; //?
 
@@ -78,7 +78,7 @@ glassGreenCol,
 glassOrangeCol, //32
 pcbGreenCol, //33 pcb
 pcbBlackCol,
-pcbBlue,
+pcbBlueCol,
 FR4darkCol,
 FR4Col //37
 ];
