@@ -64,6 +64,19 @@ translate([140,0,0]) slideSwitch();
 translate([180,0,0]) arcadeButton();
 translate([220,0,0]) toggleSwitch();
 
+
+
+!Relay_WM686();
+module Relay_WM686(){
+  //body
+  cube([45,45,45],true);
+  //screw connectors
+  for (ix=[-1,1]) translate([ix*29/2,0,-45/2]){
+    translate([0,0,-16]) cylinder(d=6,h=16);
+    translate([0,0,-3]) cylinder(d=8,h=3);
+  }
+}
+
 *pushLever();
 module pushLever(){
   //nav Style switch
