@@ -23,6 +23,66 @@ translate([col[2],0,0]) MPE_087();
 
 
 
+*MPE_006(1,10,11);
+module MPE_006(rows=1, pins=10, AH=11){
+  //     AH, L  
+  LDict=[[ 6,5.9],
+         [ 8,8],
+         [ 9,9],
+         [10,10.1],
+         [11,11.2],    
+         [12,11.9],
+         [15,15],
+         [22,22]];
+  dTip=0.52;
+  lTip=3;
+  dSpcr=0.625;
+  dTop=0.9;
+  lTop=4.2;
+  dFlng=1.6;//the part that is visible from above
+  lFlng=0.7;
+  dDrill=0.7;
+  lDrill=3.7;
+  lCntc=2.4;
+  bdyHght=2.8;
+  
+  pick = search(AH,LDict);
+  L=LDict[pick[0]][1];
+  echo(pick);
+  for (ix=[0:pins-1])
+    translate([ix*2.54,0,0]){
+      pin();
+      translate([0,0,L-bdyHght]) body();
+    }
+  
+  module body(ri=2.54/2){
+    ro=2/sqrt(3)*ri;
+    color(blackBodyCol) linear_extrude(2.8) difference(){
+      circle(r=ro,$fn=6);
+      circle(d=dFlng);
+    }
+  }
+  module pin(){
+    difference(){
+      union(){
+        color(metalGoldPinCol) translate([0,0,-(lTip-dTip/2)]){
+          cylinder(d=dTip,h=lTip-dTip/2);
+          sphere(d=dTip);
+        }
+        color(metalGoldPinCol) cylinder(d1=dTip,d2=dSpcr,h=(dSpcr-dTip)/2);
+        color(metalGoldPinCol) translate([0,0,(dSpcr-dTip)/2]) cylinder(d=dSpcr,h=L-(dSpcr-dTip)/2);
+        color(metalGoldPinCol) translate([0,0,L-lTop]) cylinder(d1=dSpcr,d2=dTop,h=(dTop-dSpcr)/2);
+        color(metalGoldPinCol) translate([0,0,L-lTop+(dTop-dSpcr)/2]) cylinder(d=dTop,h=lTop-(dTop-dSpcr)/2);
+        color(metalGoldPinCol) translate([0,0,L-lFlng]) cylinder(d=dFlng,h=lFlng);
+      }
+      color(metalGoldPinCol) translate([0,0,L-lDrill]) cylinder(d=dDrill,h=lDrill+fudge);
+    }
+  }
+  
+  
+};
+
+
 *MPE_087(rows=1,pins=4,A=11.3,center=true);
 module MPE_087(rows=2, pins=6, A=19.8,markPin1=true, center=false){
   //       A   ,  B  ,   C , L // overall Length, above body, below body, body
@@ -184,15 +244,16 @@ module MPE_196(pins,cntrX=false,diff="none"){
   }
   }
 }
-//!MPE_094(16,cntr=false);
-module MPE_094(pins, center=false, diff="none", thick=8.5){ //receptable housing
+
+*MPE_094(16,1,center=false);
+module MPE_094(pins, rows=2, center=false, diff="none", thick=8.5){ //receptable housing
   //dual row, SMD
   holeX=0.7;
   holeY=0.7;
   drill=1.02;
   
-  cntrOffset = center ? [-pins/4*2.54-0.25,-2.54,0] : [-1.27-0.25,-1.25,0];
-  
+  cntrOffset = center ? [-pins/rows/2*2.54,-rows*1.25,0] : [-1.27,-1.25,0];
+  //cntrOffset=[0,0,0];
   pinWdth=0.64;
   pinLen=3.1;
   
@@ -211,16 +272,17 @@ module MPE_094(pins, center=false, diff="none", thick=8.5){ //receptable housing
       translate([pins/4*2.54+0.25,2.54,-matThck+fudge/2]) rndRect(2.54*pins/2,5.08,thick,1.27,0);
     }
     else {
+      //body     
       difference(){
-        color(blackBodyCol) cube([2.54*(pins/2)+0.5,5.08,8.5]);
-        for (i=[0:2.54:(pins/2-1)*2.54],j=[1.27,1.27+2.54]){
-          translate([i+1.27+0.25-holeX/2,j-holeY/2,-fudge/2+2]) cube([holeX,holeY,6.5+fudge]);
+        color(blackBodyCol) cube([2.54*((pins/rows-1)+1),rows*2.5,8.5]);
+        for (i=[0:2.54:(pins/rows-1)*2.54],j=[0:2.54:(rows-1)*2.54]){
+          translate([i+1.27-holeX/2,1.25+j-holeY/2,-fudge/2+2]) cube([holeX,holeY,6.5+fudge]);
         }
       }
-    
+      //pins
       color(metalGoldPinCol)
-        for (i=[0:2.54:(pins/2-1)*2.54],j=[1.27,1.27+2.54]){
-          translate([i+1.27+0.25-holeX/2,j-0.2,-pinLen]) cube([pinWdth,0.4,pinLen]);
+        for (i=[0:2.54:(pins/rows-1)*2.54],j=[0:2.54:(rows-1)*2.54]){
+          translate([i+1.27-holeX/2,1.25+j,-pinLen]) cube([pinWdth,0.4,pinLen]);
         }
     }//else
   }

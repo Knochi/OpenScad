@@ -6,7 +6,7 @@ $fn=20;
 fudge=0.1;
 
 Midas96x16();
-translate([0,100,0]) EA_W128032(true);
+translate([0,100,0]) EA_W128032(center=true);
 translate([100,0,0]) LCD_20x4();
 translate([100,60,0]) LCD_16x2();
 translate([100,120,0]) FutabaVFD();
@@ -15,7 +15,7 @@ translate([300,0,0]) AdafruitOLED23();
 translate([500,0,0]) raspBerry7Inch();
 
 
-!OLED1_3inch4pin();
+*OLED1_3inch4pin();
 module OLED1_3inch4pin(center=false){
   //chinese OLED display 4pin 1.3Inch
   //like: https://de.aliexpress.com/item/32844104782.html
@@ -528,37 +528,118 @@ module HCS12SS(){
   }
 }
 
+*EA_DOGS164_A();
+module EA_DOGS164_A(bLight=true){
+  //https://www.lcd-module.de/fileadmin/pdf/doma/dogs164.pdf
+  panelDims=[40,30,0.7];//big glass
+  glassDims=[40,21,0.7]; //cover glass
+  pinDims=[0.5,0.3,6];
+  pinDist=[2.54,30.48];
+  AADims=[32.185,14.865]; //Active Area
+  VADims=[37.4,18.0,0.2]; //Viewable Area
+  AAyOffset=pinDist.y/2-17.53;
+  
+  //panel
+  color("grey",0.3) translate([0,0,panelDims.z/2]) cube(panelDims,true);
+  
+  //coverGlass
+  color("grey",0.3) translate([0,AAyOffset,panelDims.z+glassDims.z/2]) cube(glassDims,true);
+  
+  //VA
+  color("white",0.6) translate([0,AAyOffset,panelDims.z+glassDims.z+VADims.z/2]) cube(VADims,true);
+  
+ //pins
+  color("grey") for (ix=[-4.5:4.5])
+    translate([ix*pinDist.x,pinDist.y/2,0]){
+     translate([0,0,-pinDims.z/2]) cube(pinDims,true);
+     translate([0,-(1.3-pinDims.y)/2,panelDims.z/2]) cube([1.8,1.3,1.5],true);
+    }
+  
+  color("grey") for (ix=[-4.5,-3.5,3.5,4.5])
+    translate([ix*pinDist.x,-pinDist.y/2,0]){
+      translate([0,0,-pinDims.z/2]) cube(pinDims,true);
+      translate([0,(1.3-pinDims.y)/2,panelDims.z/2]) cube([1.8,1.3,1.5],true);
+    }
+  //backlight
+  color("white") translate([0,0,-2.6]){
+    linear_extrude(0.6) difference(){
+      square([40,33],true);
+      for (ix=[-4.5:4.5])
+        translate([ix*pinDist.x,pinDist.y/2]) circle(d=0.8);
+      for (ix=[-4.5,-3.5,3.5,4.5])
+        translate([ix*pinDist.x,-pinDist.y/2]) circle(d=0.8);
+    }
+    translate([0,-2.3,0.6+1]) cube([40,21,2],true);
+  }
+      
+}
 
-module EA_W128032(center=false){
+!EA_W128032(4,center=true);
+
+module EA_W128032(bendHght=3,center=false,cut=false){
   //Electronic Assembly 128x32 px 2.22"
+  //https://www.lcd-module.de/fileadmin/eng/pdf/grafik/W128032-XALG.pdf
   
-  panelDims=[62,24,2.35];//overall Dims
+  ovDims=[62,24,2.05];
+  panelDims=[ovDims.x,ovDims.y,1.8];//glass Dims
+  tapeThck=(ovDims.z-panelDims.z)/2;
+  VADims=[57.02,15.1,tapeThck];
+  VAOffset=[2.491,2.0];//from top left edge
+  AADims=[55.018,13.098];
   
+    
+  //flex
+  // minimum bend radius=1.5mm
+  // minimum length from display 2.0mm (including bend)
   flexDims=[12.5,19.6,0.3];
   flexRad=1.5;//bend radius
-  flexOffset=2;//offset for bend
+  flexOffset=1;//offset for bend
   bendLngth=(2*PI*flexRad)/4; //one quarter of a circle
-  flexTailLngth=flexDims.y-flexOffset-bendLngth;
-  cntrOffset= center ? [0,0,0] : panelDims/2;
+  quartBends=3; //number of quarter bends
+  flexTailLngth=flexDims.y-flexOffset*2-bendLngth*quartBends-bendHght;//length of the tail
+  cntrOffset= center ? [0,0,-ovDims.z/2] : panelDims/2;
   
-  
-  
-  translate(cntrOffset){
+  if (cut){
+    hull() for (ix=[-1,1])
+      translate([ix*ovDims.x/2,0]) difference(){
+        circle(ovDims.z);
+        translate([0,-ovDims.z/2]) square([ovDims.z*2,ovDims.z],true);
+      }
+    translate([0,flexRad*quartBends/2+ovDims.z]) 
+      square([flexDims.x+1.0,flexRad*quartBends],true); //tolerances are 0.3mm
+  }
+  else translate(cntrOffset){
     //panel
-    cube(panelDims,true);
+    color(glassGreyCol) cube(panelDims,true);
+    //front
+    color(blackBodyCol) translate([0,(panelDims.y-20.1)/2,(panelDims.z+tapeThck/2)/2]) 
+      cube([panelDims.x,20.1,tapeThck/2],true);
+    //VA
     
-    //flex bend 90 degrees
-    color("brown") translate([0,-(panelDims.y+flexOffset)/2,0]){
+      translate([(VADims.x-panelDims.x)/2+VAOffset.x,
+                 (-VADims.y+panelDims.y)/2-VAOffset.y,
+                 (panelDims.z/2+tapeThck*0.5)]){ 
+        color(darkGreyBodyCol) cube([VADims.x,VADims.y,tapeThck/4],true);
+        color(glassOrangeCol) translate([0,0,tapeThck/4]) linear_extrude(tapeThck/4) 
+                   pixels([128,32],[0.408,0.388],[0.43,0.41]);
+        }
+    
+    //flex bend 180 degrees
+    color(polymidCol) translate([0,-(panelDims.y+flexOffset)/2,(panelDims.z-flexDims.z)/2-0.7]){
       cube([flexDims.x,flexOffset,flexDims.z],true);
-      translate([0,-flexOffset/2,-flexRad]) rotate([90,0,-90]) 
-        rotate_extrude(angle=90) translate([flexRad,0]) 
+      translate([0,-flexOffset/2,-flexRad]) rotate([90,90,-90]) 
+        rotate_extrude(angle=180) translate([flexRad,0]) 
           square([flexDims.z,flexDims.x],true);
-      translate([0,-flexRad-flexOffset/2,-flexTailLngth/2-flexRad]) 
-        cube([flexDims.x,flexDims.z,flexTailLngth],true);
-      
+      translate([0,bendHght/2,-flexRad*2]) 
+        cube([flexDims.x,bendHght+flexOffset,flexDims.z],true);
+      translate([0,flexOffset/2+bendHght,-flexRad*3]) rotate([90,180,-90]) 
+        rotate_extrude(angle=-90) translate([flexRad,0]) 
+          square([flexDims.z,flexDims.x],true);
+      translate([0,flexOffset/2+bendHght+flexRad,-flexRad*3]) rotate([180,0,0]) linear_extrude(flexTailLngth) square([flexDims.x,flexDims.z],true);
     }
   }
 }
+
 *AdafruitOLED23(true);
 module AdafruitOLED23(cut=false){
   //2.3" 128x32px OLED from Adafruit 
