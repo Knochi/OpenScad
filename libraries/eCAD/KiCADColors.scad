@@ -39,7 +39,8 @@ pcbBlackCol=        [0.16,  0.16,   0.16]; //pcb black
 pcbBlueCol=            [0.07,  0.12,   0.3];
 FR4darkCol=         [0.2,   0.17,   0.087]; //?
 FR4Col=             [0.43,  0.46,   0.295]; //?
-
+//non VRML cols
+polymidCol=         "#cd8200";
 
 
 colorList=[
@@ -96,8 +97,6 @@ module testColors(){
             [[21:27],"LEDs",2],
             [[28:32],"glass",3],
             [[33:37],"PCB",4]];
-    echo(groups);
-
     
     for (group=groups, ix=group[0]){
       color(whiteBodyCol) translate([0,group[2]*(cubeSize+cubeDist),(cubeSize-txtHght)/2]) 

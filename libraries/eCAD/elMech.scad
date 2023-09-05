@@ -637,7 +637,236 @@ module KMR2(){
     translate([i*(4.6-0.5)/2,j*(2.2-0.6)/2,0.1/2]) cube([0.5,0.6,0.1],true);
   }
 }
+*PEL12D();
+module PEL12D(){
+  //Bourns PEL12D https://www.bourns.com/docs/product-datasheets/PEL12D.pdf
+  //vertical, 15mm shaft, with switch (PEC12R-2x15F-Sxxxx)
+  
+  
+  LM=16; //total length
+  LB=5; //threat length
+  F=7; //flatten length
+  C=0.5; //chamfer
+  
+  //total length (LM) vs. flatted lenght(L1)
+  LDict=[[16,3],[18.5,5],[21,7],[26,12],[31,12]];
+  
+  L1= LDict[search(LM,LDict)[0]][0]; //flatted length
+  
+  threatDia=6.8;
+  
+  shftDia=6;
+  fltnDia=4.5; //flattended Dia (D-Type)
+  
+  bodyDims=[12.5,7,13.2];
+  shftZOffset=10;
+  bdyZOffset=0;
+  
+  //pins
+  //mounting pins (always 2)
+  mPitch=12.9; 
+  mYPos=6;
+  mPinDims=[0.3,1.9,3.5];//mounting Pins
+  
+  //encoder pins pitch (always 3)
+  ePitch=2.5; 
+  ePinDims=[0.8,0.1,3.5];
+  ePinYPos=mYPos-3.5;
+  
+  //switch/LED Pins
+  sPitch=2.0;
+  sPinDims=ePinDims;
+  sYPos=1;
+  sCount=4;
+  
+  
+  //body
+  color(blackBodyCol) translate([0,bodyDims.y/2,shftZOffset]) 
+    cube([bodyDims.x,bodyDims.y,bodyDims.z],true);
+  *color(metalAluminiumCol) translate([0,bodyDims.y/6,shftZOffset]) 
+    cube([bodyDims.x,bodyDims.y/3,bodyDims.z],true);
+  //nupsis
+  color(blackBodyCol)translate([0,0,shftZOffset]) rotate([90,0,0]) for (ix=[-1,1],iy=[-1,1])
+    translate([ix*8.4/2,iy*10.2/2,0]) cylinder(d=1.1,h=0.8);
+    
+  //threat
+  color(metalAluminiumCol) translate([0,0,shftZOffset]) rotate([90,0,0]) cylinder(d=threatDia,h=LB);
+  
+  //shaft
+  color(blackBodyCol) translate([0,0,shftZOffset]) rotate([90,0,0])  difference(){
+    union(){
+      translate([0,0,LB]) cylinder(d=shftDia,h=L1-LB-C);
+      translate([0,0,L1-C]) cylinder(d1=shftDia,d2=shftDia-C*2,h=C);
+    }
+    translate([0,-shftDia/2+(shftDia-fltnDia)/2,-F/2+L1]) cube([shftDia+fudge,shftDia-fltnDia+fudge,F+fudge],true);
+  }
+  
+  //encoder pins
+  spcng=shftZOffset-bodyDims.z/2+bdyZOffset;
+  color(metalGreyPinCol) for (ix=[-1:1])
+    translate([ix*ePitch,ePinYPos,-(ePinDims.z-spcng)/2]) cube(ePinDims+[0,0,spcng],true);
+  //mounting Pins
+  color(metalGreyPinCol) for (ix=[-1,1])
+    translate([ix*mPitch/2,mYPos,-(mPinDims.z-spcng)/2]) cube(mPinDims+[0,0,spcng],true);
+  
+  *color(metalGreyPinCol) for (iy=[-1,1])
+    translate([mXPos,iy*mPitch/2,-(mPinDims.z-spcng)/2]) cube(mPinDims+[0,0,spcng],true);
+  
+}
 
+
+*PEC12R();
+module PEC12R(L=20){
+  //Bourns PEC12R https://www.bourns.com/pdfs/pec12R.pdf
+  //vertical, 15mm shaft, with switch (PEC12R-2x15F-Sxxxx)
+  
+  LB=5.0; //threat length
+  
+  C=0.5; //chamfer
+  
+  LDict=[[17.5,5],[20,7],[22.5,7],[25,12],[30,12]];
+  F= LDict[search(L,LDict)[0]][1]; //flatted length
+  assert(F!=undef,"Length not Found");
+  threatDia=7;
+  shftDia=6;
+  shftZOffset=10;
+  fltnDia=4.5; //flattended Dia (D-Type)
+  
+  bodyDims=[12.5,6,13.4];
+  bdyZOffset=0;
+  
+  //shaft length
+  L1=L-bodyDims.y;
+  
+  //pins
+  pitch=2.5;
+  pinDims=[0.8,0.1,3.5];
+  mPitch=12.9;
+  mYPos=6;
+  mPinDims=[0.3,1.9,3.5];//mounting Pins
+  
+  
+  //body
+  color(blackBodyCol) translate([0,bodyDims.y/2,shftZOffset]) 
+    cube([bodyDims.x,bodyDims.y,bodyDims.z],true);
+  *color(metalAluminiumCol) translate([0,bodyDims.y/6,shftZOffset]) 
+    cube([bodyDims.x,bodyDims.y/3,bodyDims.z],true);
+  //nupsis
+  color(blackBodyCol)translate([0,0,shftZOffset]) rotate([90,0,0]) for (ix=[-1,1],iy=[-1,1])
+    translate([ix*8.4/2,iy*10.2/2,0]) cylinder(d=1.1,h=0.8);
+    
+  //threat
+  color(metalAluminiumCol) translate([0,0,shftZOffset]) rotate([90,0,0]) cylinder(d=threatDia,h=LB);
+  
+  //shaft
+  color(blackBodyCol) translate([0,0,shftZOffset]) rotate([90,0,0])  difference(){
+    union(){
+      translate([0,0,LB]) cylinder(d=shftDia,h=L1-LB-C);
+      translate([0,0,L1-C]) cylinder(d1=shftDia,d2=shftDia-C*2,h=C);
+    }
+    translate([0,-shftDia/2+(shftDia-fltnDia)/2,-F/2+L1]) cube([shftDia+fudge,shftDia-fltnDia+fudge,F+fudge],true);
+  }
+  
+  //pins
+  spcng=shftZOffset-bodyDims.z/2+bdyZOffset;
+  color(metalGreyPinCol) for (ix=[-1:1])
+    translate([ix*pitch,mYPos-3.5,-(pinDims.z-spcng)/2]) cube(pinDims+[0,0,spcng],true);
+  //mounting Pins
+  color(metalGreyPinCol) for (ix=[-1,1])
+    translate([ix*mPitch/2,mYPos,-(mPinDims.z-spcng)/2]) cube(mPinDims+[0,0,spcng],true);
+  
+  *color(metalGreyPinCol) for (iy=[-1,1])
+    translate([mXPos,iy*mPitch/2,-(mPinDims.z-spcng)/2]) cube(mPinDims+[0,0,spcng],true);
+  
+}
+
+
+*PEC16();
+module PEC16(){
+  //Bourns PEC16 https://www.bourns.com/pdfs/pec16.pdf
+  //vertical, 15mm shaft (PEC16-2x15F) only for now
+  L1=15; //shaft length
+  LB=5; //threat length
+  F=7; //flatten length
+  
+  threatDia=9;
+  shftZOffset=12.5;
+  
+  bodyDims=[8,16,17.6];
+  bodyZOffset=1;
+  
+  //body
+  color(greenBodyCol) translate([-bodyDims.x*2/3,0,shftZOffset-bodyZOffset/2]) 
+    cube([bodyDims.x/3*2,bodyDims.y,bodyDims.z],true);
+  color(metalAluminiumCol) translate([-bodyDims.x/6,0,shftZOffset-bodyZOffset/2]) 
+    cube([bodyDims.x/3,bodyDims.y,bodyDims.z],true);
+  color(metalAluminiumCol) translate([-0.5,0,(12.5-9.3)/2]) cube([1,4,12.5-9.3],true);
+  
+  //locking
+  color(metalAluminiumCol) translate([0,0,12.5-9]) rotate([0,90,0]) linear_extrude(2) difference(){
+    circle(d=3);
+    translate([-1.6,0]) square(3,true);
+  }
+  
+  //threat
+  color(metalAluminiumCol) translate([0,0,shftZOffset]) rotate([0,90,0]) cylinder(d=threatDia,h=LB);
+  
+  //shaft
+  color(blackBodyCol) translate([0,0,shftZOffset]) rotate([0,90,0]) difference(){
+    union(){
+      translate([0,0,LB]) cylinder(d=6,h=L1-LB-1.5);
+      translate([0,0,L1-1.5]) cylinder(d1=6,d2=4.5,h=1.5);
+    }
+    translate([-4.5/2,0,-F/2+L1]) cube([6-4.5+fudge,6+fudge,F+fudge],true);
+  }
+  
+  //pins
+  color(metalGreyPinCol) for (iy=[-1:1])
+    translate([-7.5+3.1,iy*5,0]) cube([0.2,1,12.5-9.3+3.5],true);
+  color(metalGreyPinCol) for (iy=[-1,1])
+    translate([-7.5,iy*16.1/2,0]) cube([2,0.4,12.5-9.3+3.5],true);
+  
+}
+
+*knob_K88(true);
+module knob_K88(cut=false){
+  //CLIFF KNOB K88
+  //https://cdn-reichelt.de/documents/datenblatt/C160/K88-KNOB_ENG_TDS.pdf
+  //CLL17886x, 6mm D-Shaft
+  //Reichelt: https://www.reichelt.de/ws/de/knopf-12-mm-6-mm-d-shaft-schwarz-cliff-cl178862-p227921.html?&trstct=pol_0&nbc=1
+   difference(){
+    color(blackBodyCol) cylinder(d1=12,d2=10,h=17);
+    color(blackBodyCol) translate([0,0,-fudge]) cylinder(d=6,h=11.5+fudge);
+    color(redBodyCol) if (cut) translate([0,3,15/2]) cube([12+fudge,6+fudge,15+fudge],true);
+  }
+  color(blackBodyCol) translate([0,0,17]) cylinder(d=9,h=1);
+}
+
+
+*knob450AA();
+module knob_450AA(){
+  //Eagle Plastic Devices 450-AA series
+  //https://www.mouser.de/datasheet/2/209/EPD_09202017_200733-1171041.pdf
+  A=15; //base dia
+  A1=3.2; //base height
+  B=19; //knob height
+  C=12; //bore length
+  D=2;  //base bore length
+  E=13; //base bore dia
+  
+  difference(){
+    union(){
+      cylinder(d=A,h=A1);
+      translate([0,0,A1]) cylinder(d1=E,d2=10,h=B-A1);
+    }
+    translate([0,0,-fudge]){
+      cylinder(d=E,h=D+fudge);
+      cylinder(d=12.5,h=3+fudge);
+      cylinder(d=5.8,h=C+fudge);
+    }
+
+  }
+}
 module rotEncoder(diff="none",thick=3,knob=false){
   //SparkFun Rotary Encoder COM-10982 - https://www.sparkfun.com/products/10982
   if (diff=="body"){
@@ -900,7 +1129,7 @@ module arcadeButton(size=24,panelThck=3,col="red"){
 
 }
 
-!joystick();
+*joystick();
 module joystick(plateThck=3, cut=false){
 //Joystick: https://www.berrybase.de/arcade-joystick-8-wege-78-2mm-hoehe-rot
   sheetThck=1.6;

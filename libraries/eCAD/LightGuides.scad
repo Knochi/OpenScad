@@ -21,7 +21,9 @@ module Mentor_1271_2001(){
   translate([0,0.56,1.56]) rotate([90,0,90]) linear_extrude(2,center=true) polygon(poly);
 }
 
-module Mentor(){
+Mentor_1276_2004();
+module Mentor_1276_2004(){
+  //https://www.mentor.de.com/bauelemente/product/1276-2004/
   crv4=7.5; //curvature
   crv3=5.5;
   crv2=3.5;

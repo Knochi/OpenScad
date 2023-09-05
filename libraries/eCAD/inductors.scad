@@ -9,7 +9,7 @@ fudge=0.1;
 
 
 /* [Select] */
-export= "CKCS"; //["PDUUAT","ACT1210","SumidaCR43","TY6028","TMPC","CKCS","none"]
+export= "ACT1210"; //["PDUUAT","ACT1210","SumidaCR43","TY6028","TMPC","CKCS","none"]
 
 /* [configure] */
 PDUUATseries= "UU16"; //["UU9.8","UU10.5","UU16"]
@@ -465,4 +465,54 @@ module rndRectInt(size=[5,5,2],rad=1,center=false, method=""){
   else
     translate(cntrOffset) hull() for (ix=[-1,1],iy=[-1,1])
       translate([ix*(size.x/2-rad),iy*(size.y/2-rad),0]) cylinder(r=rad,h=size.z,center=true);
+}
+
+// bend modifier
+// bends an child object along the x-axis
+// size: size of the child object to be bend
+// angle: angle to bend the object, negative angles bend down
+// radius: bend radius, if center= false is measured on the outer if center=true is measured on the mid
+// center=true: bend relative to the childrens center
+// center=false: bend relative to the childrens lower left edge
+// flatten: calculates only the stretched length of the bend and adds a cube accordingly
+*bend(size=[0.35,0.46,0.1],angle=-90,radius=0.15,center=false, flatten=false)
+          cube([0.35,0.46,0.1]);
+*bend(center=true) cube([50,20,2],true);
+module bend(size=[50,20,2],angle=-90,radius=10,center=false, flatten=false){
+  alpha=angle*PI/180; //convert in RAD
+  strLngth=abs(radius*alpha);
+  
+  i = (angle<0) ? -1 : 1;
+  
+  
+  bendOffset1= (center) ? [-size.z/2,0,0] : [-size.z,0,0];
+  bendOffset2= (center) ? [0,0,-size.x/2] : [size.z/2,0,-size.x/2];
+  bendOffset3= (center) ? [0,0,0] : [size.x/2,0,size.z/2];
+  
+  childOffset1= (center) ? [0,size.y/2,0] : [0,0,size.z/2*i-size.z/2];
+  childOffset2= (angle<0) ? [0,0,size.z] : [0,0,0]; //check
+  
+  flatOffsetChld= (center) ? [0,size.y/2+strLngth,0] : [0,strLngth,0];  
+  flatOffsetCb= (center) ? [0,strLngth/2,0] : [0,0,0];  
+  
+  angle=abs(angle);
+  
+  if (flatten){
+    translate(flatOffsetChld) children();
+    translate(flatOffsetCb) cube([size.x,strLngth,size.z],center);
+  }
+  else{
+    //move child objects
+    translate([0,0,i*radius]+childOffset2) //checked for cntr+/-, cntrN+
+      rotate([i*angle,0,0]) 
+      translate([0,0,i*-radius]+childOffset1) //check
+        children();
+    
+    //create bend object
+    translate(bendOffset3) //checked for cntr+/-, cntrN+/-
+      rotate([0,i*90,0]) //re-orientate bend
+       translate([-radius,0,0]+bendOffset2)
+        rotate_extrude(angle=angle) 
+          translate([radius,0,0]+bendOffset1) square([size.z,size.x]);
+  }
 }
