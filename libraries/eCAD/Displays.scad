@@ -577,13 +577,15 @@ module EA_W128032(bendHght=3,center=false,cut=false){
   VAOffset=[2.491,2.0];//from top left edge
   AADims=[55.018,13.098];
   
-    
   //flex
   // minimum bend radius=1.5mm
   // minimum length from display 2.0mm (including bend)
   flexDims=[12.5,19.6,0.3];
+  padDims=[0.3,3.0,0.05];
+  padPitch=0.5;
+  padCnt=24;
   flexRad=1.5;//bend radius
-  flexOffset=1;//offset for bend
+  flexOffset=1;//offset for 1st bend
   bendLngth=(2*PI*flexRad)/4; //one quarter of a circle
   quartBends=3; //number of quarter bends
   flexTailLngth=flexDims.y-flexOffset*2-bendLngth*quartBends-bendHght;//length of the tail
@@ -615,19 +617,36 @@ module EA_W128032(bendHght=3,center=false,cut=false){
         }
     
     //flex bend 180 degrees
-    color(polymidCol) translate([0,-(panelDims.y+flexOffset)/2,(panelDims.z-flexDims.z)/2-0.7]){
-      cube([flexDims.x,flexOffset,flexDims.z],true);
-      translate([0,-flexOffset/2,-flexRad]) rotate([90,90,-90]) 
-        rotate_extrude(angle=180) translate([flexRad,0]) 
-          square([flexDims.z,flexDims.x],true);
-      translate([0,bendHght/2,-flexRad*2]) 
-        cube([flexDims.x,bendHght+flexOffset,flexDims.z],true);
-      translate([0,flexOffset/2+bendHght,-flexRad*3]) rotate([90,180,-90]) 
-        rotate_extrude(angle=-90) translate([flexRad,0]) 
-          square([flexDims.z,flexDims.x],true);
-      translate([0,flexOffset/2+bendHght+flexRad,-flexRad*3]) rotate([180,0,0]) linear_extrude(flexTailLngth) square([flexDims.x,flexDims.z],true);
+    
+      translate([0,-(panelDims.y+flexOffset)/2,(panelDims.z-flexDims.z)/2-0.7]){
+        color(polymidCol){ 
+        cube([flexDims.x,flexOffset,flexDims.z],true);
+        translate([0,-flexOffset/2,-flexRad]) rotate([90,90,-90]) 
+          rotate_extrude(angle=180) translate([flexRad,0]) 
+            square([flexDims.z,flexDims.x],true);
+        translate([0,bendHght/2,-flexRad*2]) 
+          cube([flexDims.x,bendHght+flexOffset,flexDims.z],true);
+        translate([0,flexOffset/2+bendHght,-flexRad*3]) rotate([90,180,-90]) 
+          rotate_extrude(angle=-90) translate([flexRad,0]) 
+            square([flexDims.z,flexDims.x],true);
+        translate([0,flexOffset/2+bendHght+flexRad,-flexRad*3]) 
+          rotate([180,0,0]) linear_extrude(flexTailLngth) 
+            square([flexDims.x,flexDims.z],true);
+      }
+      //pads
+        translate([0,flexOffset/2+bendHght+flexRad-flexDims.z/2,-flexRad*3-flexTailLngth+padDims.y/2]){ 
+          color(metalGoldPinCol) for (ix=[-(padCnt-1)/2:(padCnt-1)/2])
+            translate([ix*padPitch,0,0]) rotate([90,0,0]) cube(padDims,true);
+          color(whiteBodyCol){
+            translate([-(padCnt-1)/2*padPitch,0,padDims.y/2+fudge]) rotate([90,0,0]) 
+              linear_extrude(padDims.z) text("1",size=1,halign="center");
+            translate([-(padCnt-1)/2*padPitch,flexDims.z,padDims.y/2+fudge]) rotate([90,0,180]) 
+              linear_extrude(padDims.z) text("1",size=1,halign="center");
+          }
+        }
     }
   }
+ 
 }
 
 *AdafruitOLED23(true);
