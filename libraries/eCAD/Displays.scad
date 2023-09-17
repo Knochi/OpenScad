@@ -40,12 +40,12 @@ module OLED1_3inch4pin(center=false){
   holeDiaOut=4.5; //copper
   
   //microfudge to isolate surfaces
-  mfudge=0.01;
+  mfudge=0.1;
   
   cntrOffset= center ? [0,0,0] : [2.54*1.5,-PCBDims.y/2-hdrYOffset,2.5];
   
   translate(cntrOffset){
-    color(pcbBlueCol) linear_extrude(PCBDims.z)
+    *color(pcbBlueCol) linear_extrude(PCBDims.z)
       difference(){
         square([PCBDims.x,PCBDims.y],true);
         //screwholes
@@ -57,14 +57,23 @@ module OLED1_3inch4pin(center=false){
         //cutout
         translate([0,(-PCBDims.y+cutOutDims.y)/2]) square(cutOutDims,true);
         }
-    //glass
-    color(glassGreyCol) 
-      translate([0,cntrOffset(glassYOffset,glassDims.y),PCBDims.z+glassDims.z/2+mfudge]) 
-        cube(glassDims,true);
+        
+    /*//glass with active area
+    color(glassGreyCol) translate([0,0,PCBDims.z+mfudge])
+      linear_extrude(glassDims.z)
+      difference(){
+        translate([0,cntrOffset(glassYOffset,glassDims.y)])
+          square([glassDims.x,glassDims.y],true);
+        translate([0,cntrOffset(aaYOffset,aaDims.y),PCBDims.z+glassDims.z+aaDims.z+mfudge]) square([aaDims.x,aaDims.y],true);
+        } */
+        
     //active area
-    color(blackBodyCol)
-      translate([0,cntrOffset(aaYOffset,aaDims.y),PCBDims.z+glassDims.z+aaDims.z+mfudge])
-        cube(aaDims,true);
+    translate([0,0,PCBDims.z+mfudge]) 
+      color(blackBodyCol)
+        linear_extrude(glassDims.z)
+          translate([0,cntrOffset(aaYOffset,aaDims.y)]) 
+            square([aaDims.x,aaDims.y],true);
+        
     //screw holes
     color(metalGoldPinCol) linear_extrude(PCBDims.z) 
         for (ix=[-1,1],iy=[-1,1])
@@ -72,8 +81,9 @@ module OLED1_3inch4pin(center=false){
             circle(d=holeDiaOut);
             circle(d=holeDiaIn);
           }
+          
     //pinHeader
-    translate([-2.54*1.5,PCBDims.y/2+hdrYOffset,0]) rotate([180,0,0]) MPE_087(rows=1,pins=4,A=11.3,markPin1=false);
+    *translate([-2.54*1.5,PCBDims.y/2+hdrYOffset,0]) rotate([180,0,0]) MPE_087(rows=1,pins=4,A=11.3,markPin1=false);
    
   }
   
