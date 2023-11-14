@@ -574,8 +574,7 @@ module EA_DOGS164_A(bLight=true){
       
 }
 
-!EA_W128032(4,center=true);
-
+*EA_W128032(4,center=true);
 module EA_W128032(bendHght=3,center=false,cut=false){
   //Electronic Assembly 128x32 px 2.22"
   //https://www.lcd-module.de/fileadmin/eng/pdf/grafik/W128032-XALG.pdf
@@ -786,6 +785,39 @@ module rndRect(size, rad, drill=0, center=true){
       for (ix=[-1,1],iy=[-1,1])
         translate([ix*(size.x/2-rad),iy*(size.y/2-rad)]) circle(d=drill);
     }
+}
+
+!sevenSegment();
+module sevenSegment(size=[4.22,7.62], width=0.8, tilt=10){
+  gap=0.1;
+  gapOffset=sqrt(2)*gap/2; //for 45°
+  xTiltOffset=tan(tilt)*(size.y-width)/2;
+  
+  //horizontal segments (a,g,d)
+  for (iy=[-1:1])
+    translate([iy*xTiltOffset,iy*((size.y-width)/2)]) shape(); //a
+  //vertical segments (b,c,e,f)
+  for (ix=[-1,1],iy=[-1,1]){
+    translate([ix*(size.x-width)/2+iy*xTiltOffset/2,iy*(size.y-width)/4]) rotate(90) shape(true);
+  }
+  
+  module shape(vertical=false){
+    //vertical
+    tipYOffset= vertical ? -xTiltOffset : 0;
+    topYOffset= vertical ? tan(tilt)*((-size.y+width)/2) : 0;
+    //horizontal
+    horXOffset= vertical ? 0 : tan(tilt) * width/2; 
+    
+    
+    poly=[[-(size.x-width)/2+gapOffset,-tipYOffset/2], //left
+          [-(size.x/2-width)+gapOffset+horXOffset,width/2-topYOffset/2], //top left
+          [(size.x/2-width)-gapOffset+horXOffset,width/2+topYOffset/2], //top right
+          [(size.x-width)/2-gapOffset,tipYOffset/2], //right
+          [(size.x/2-width)-gapOffset-horXOffset,-width/2+topYOffset/2], //bottom right
+          [-(size.x/2-width)+gapOffset-horXOffset,-width/2-topYOffset/2]]; //bottom left
+    
+    polygon(poly);
+  }
 }
 
 *pixels();
