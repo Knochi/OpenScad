@@ -25,7 +25,8 @@ lightBrownLabelCol= [0.691, 0.664,  0.598];
 ledBlueCol=         [0.700, 0.100,  0.050, ledAlpha];
 ledYellowCol=       [0.100, 0.250,  0.700, ledAlpha];
 ledGreyCol=         [0.98,  0.840,  0.066, ledAlpha];
-ledWhiteCol=        [0.895, 0.891, 0.813, ledAlpha];
+ledRedCol=          [0.700, 0.100,  0.050, ledAlpha];
+ledWhiteCol=        [0.895, 0.891,  0.813, ledAlpha];
 ledgreyCol=         [0.27, 0.25, 0.27, ledAlpha];
 ledBlackCol=        [0.1, 0.05, 0.1];
 ledGreenCol=        [0.400, 0.700,  0.150, ledAlpha];
@@ -69,19 +70,20 @@ ledBlueCol, //21 leds
 ledYellowCol,
 ledGreyCol,
 ledWhiteCol,
-ledgreyCol,
+ledGreyCol,
+ledRedCol,
 ledBlackCol,
-ledGreenCol, // 27
-glassGreyCol, //28 glass
+ledGreenCol, // 28
+glassGreyCol, //29 glass
 glassGoldCol,
 glassBlueCol,
 glassGreenCol,
-glassOrangeCol, //32
-pcbGreenCol, //33 pcb
+glassOrangeCol, //33
+pcbGreenCol, //34 pcb
 pcbBlackCol,
 pcbBlueCol,
 FR4darkCol,
-FR4Col //37
+FR4Col //38
 ];
 
 *testColors();
@@ -94,9 +96,9 @@ module testColors(){
     //groups [[indizes,label,row],[...],...]
     groups=[[[0:6],"metals",0],
             [[7:20],"bodies",1],
-            [[21:27],"LEDs",2],
-            [[28:32],"glass",3],
-            [[33:37],"PCB",4]];
+            [[21:28],"LEDs",2],
+            [[29:33],"glass",3],
+            [[34:38],"PCB",4]];
     
     for (group=groups, ix=group[0]){
       color(whiteBodyCol) translate([0,group[2]*(cubeSize+cubeDist),(cubeSize-txtHght)/2]) 

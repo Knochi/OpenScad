@@ -15,6 +15,45 @@ translate([300,0,0]) AdafruitOLED23();
 translate([500,0,0]) raspBerry7Inch();
 
 
+//double 7-segment display
+!KingbrightACDA();
+module KingbrightACDA(){
+  //https://www.kingbrightusa.com/images/catalog/SPEC/ACDA03-41SEKWA-F01.pdf
+  
+  bdyDims=[7.2,10,2.95];
+  pcbDims=[14.8,12,0.8];
+  sgmntDeep=1; //how deep to carve out the segments
+  coatThck=0.05; //grey coating
+  
+  //bodies
+  translate([0,0,pcbDims.z]) difference(convexity=3){
+    union(){
+      color(whiteBodyCol) for (ix=[-1,1]) 
+        translate([ix*(pcbDims.x-bdyDims.x)/2,0,0]) 
+          linear_extrude(bdyDims.z-coatThck,convexity=3)
+            square([bdyDims.x,bdyDims.y],true);
+      color(greyBodyCol) for (ix=[-1,1]) 
+        translate([ix*(pcbDims.x-bdyDims.x)/2,0,bdyDims.z-coatThck]) 
+          linear_extrude(coatThck,convexity=3)
+            square([bdyDims.x,bdyDims.y],true);
+    }
+    for (ix=[-1,1]) translate([ix*(pcbDims.x-bdyDims.x)/2,0,bdyDims.z-sgmntDeep]) 
+      linear_extrude(sgmntDeep+fudge)
+        sevenSegment();
+  }
+  
+  //digits
+  color(whiteBodyCol) for (ix=[-1,1])
+    translate([ix*(pcbDims.x-bdyDims.x)/2,0,pcbDims.z+bdyDims.z-sgmntDeep]) 
+      linear_extrude(sgmntDeep,convexity=3)
+        sevenSegment();
+  
+  //pcb
+  color(FR4Col) linear_extrude(pcbDims.z) difference(){
+    square([pcbDims.x,pcbDims.y],true);
+  }
+}
+
 *OLED1_3inch4pin();
 module OLED1_3inch4pin(center=false){
   //chinese OLED display 4pin 1.3Inch
@@ -787,19 +826,26 @@ module rndRect(size, rad, drill=0, center=true){
     }
 }
 
-!sevenSegment();
-module sevenSegment(size=[4.22,7.62], width=0.8, tilt=10){
-  gap=0.1;
+
+
+*sevenSegment();
+module sevenSegment(size=[4.22,7.62], width=0.8, tilt=10, dot=true){
+  *translate([-size.x/2-0.6,-size.y/2]) %import("./sources/ACDA03-41SEKWA-F01.svg");
+  gap=0.2;
   gapOffset=sqrt(2)*gap/2; //for 45°
   xTiltOffset=tan(tilt)*(size.y-width)/2;
-  
+  dotPos=[2.6,-3.41]; 
+  dotDia=0.9;
   //horizontal segments (a,g,d)
   for (iy=[-1:1])
     translate([iy*xTiltOffset,iy*((size.y-width)/2)]) shape(); //a
   //vertical segments (b,c,e,f)
   for (ix=[-1,1],iy=[-1,1]){
-    translate([ix*(size.x-width)/2+iy*xTiltOffset/2,iy*(size.y-width)/4]) rotate(90) shape(true);
+    translate([ix*(size.x-width)/2+iy*(xTiltOffset/2+0.04),iy*(size.y-width)/4]) rotate(90) shape(true);
   }
+  //dot
+  if (dot)
+    translate(dotPos) circle(d=dotDia);
   
   module shape(vertical=false){
     //vertical
