@@ -1,4 +1,6 @@
-include </eCAD/KiCadColors.scad>
+include </eCAD/KiCADColors.scad>
+
+
 
 $fn=100;
 
