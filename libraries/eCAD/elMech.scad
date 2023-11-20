@@ -66,7 +66,7 @@ translate([220,0,0]) toggleSwitch();
 
 
 
-!Relay_WM686();
+*Relay_WM686();
 module Relay_WM686(){
   //body
   cube([45,45,45],true);

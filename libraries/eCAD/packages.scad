@@ -185,7 +185,7 @@ module QFN(pos=28,size=[5,5,1], pitch=0.5, pSize=undef, label="QFN"){
         linear_extrude(A3) polygon([[-J/2+b,K/2],[J/2,K/2],[J/2,-K/2],[-J/2,-K/2],[-J/2,K/2-b]]);
 }
 
-!DHVQFN();
+*DHVQFN();
 module DHVQFN(pos=20){
   // Nexperia DHVQFN14,16,20,24
   // https://www.nexperia.com/support/packages/
@@ -869,6 +869,38 @@ module SMF(){
   
 }
 
+!SMAF_JD();
+module SMAF_JD(){
+  //Jingdao Microelectronics SMAF
+  //https://datasheet.lcsc.com/szlcsc/Shandong-Jingdao-Microelectronics-SSL36F_C128734.pdf
+  padDim=[1.2,1.6,0.25];
+  bodyDim=[3.7,2.7,1.2-padDim.z]; //bodyDim at widest
+  
+  bodyAng=7;
+  bodyRed=tan(bodyAng)/bodyDim.z; //reduction in width by angle
+  padRed=tan(bodyAng)/padDim.z;
+  
+  bodyScale=[(bodyDim.x-bodyRed*2)/bodyDim.x,(bodyDim.y-bodyRed*2)/bodyDim.y];
+  padScale=[(padDim.x-padRed*2)/padDim.x,(padDim.y-padRed*2)/padDim.y];
+  
+  mfudge=0.01;
+  //pads
+  for (i=[-1,1])
+    color("silver") translate([i*(3.9-padDim.x)/2,0,padDim.z/2]) cube(padDim,true);
+  
+ //body top
+  difference(){
+    color("darkSlateGrey") translate([0,0,padDim.z+bodyDim.z/2+mfudge]) 
+      frustum(bodyDim,flankAng=bodyAng,center=true,method="Poly");
+    color("grey") translate([-bodyDim.x/3,0,bodyDim.z+padDim.z]) cube([0.3,bodyDim.y-bodyRed*2-0.2,0.05],true);
+  }
+  //body bottom
+  color("darkSlateGrey") translate([0,0,padDim.z/2+mfudge]) 
+  mirror([0,0,1])
+    frustum([bodyDim.x,bodyDim.y,padDim.z],flankAng=bodyAng,center=true,method="Poly");
+      //linear_extrude(padDim.z,scale=bodyScale) square([bodyDim.x,bodyDim.y],true);
+  
+}
 
 *APA102();
 module APA102(){
