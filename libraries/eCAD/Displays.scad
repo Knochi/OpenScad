@@ -24,6 +24,10 @@ module KingbrightACDA(){
   pcbDims=[14.8,12,0.8];
   sgmntDeep=1; //how deep to carve out the segments
   coatThck=0.05; //grey coating
+  copperThck=0.035; //copper plating
+  pins=20;
+  pinDims=[1,1.3,pcbDims.z+copperThck*2];
+  pitch=1.5;
   
   //bodies
   translate([0,0,pcbDims.z]) difference(convexity=3){
@@ -51,7 +55,16 @@ module KingbrightACDA(){
   //pcb
   color(FR4Col) linear_extrude(pcbDims.z) difference(){
     square([pcbDims.x,pcbDims.y],true);
+    for (ix=[-((pins/2-1)/2):((pins/2-1)/2)],iy=[-1,1])
+      translate([ix*pitch,iy*pcbDims.y/2]) circle(d=0.65+copperThck);
   }
+  //pins
+  color(metalGoldPinCol) translate([0,0,-copperThck]) for (ix=[-((pins/2-1)/2):((pins/2-1)/2)],iy=[-1,1])
+    linear_extrude(pinDims.z) difference(){
+      translate([ix*pitch,iy*(pcbDims.y-pinDims.y+copperThck)/2]) 
+        square([pinDims.x,pinDims.y],true);
+      translate([ix*pitch,iy*pcbDims.y/2]) circle(d=0.65);
+    }
 }
 
 *OLED1_3inch4pin();
