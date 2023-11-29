@@ -16,8 +16,8 @@ translate([500,0,0]) raspBerry7Inch();
 
 
 //double 7-segment display
-!KingbrightACDA();
-module KingbrightACDA(){
+!KingbrightACDx03();
+module KingbrightACDx03(){
   //https://www.kingbrightusa.com/images/catalog/SPEC/ACDA03-41SEKWA-F01.pdf
   
   bdyDims=[7.2,10,2.95];
