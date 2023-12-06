@@ -45,7 +45,43 @@ FR4Col=             [0.43,  0.46,   0.295]; //?
 $fn=50;
 fudge=0.1;
 
+
 CIT_L115F1();
+
+translate([50,0,0]) FTR_E1();
+module FTR_E1(){
+// Fujitsu FTR-E1 https://www.fcl.fujitsu.com/downloads/MICRO/fcai/relays/ftr-e1.pdf
+  ovDims=[43.6,28.3,36.8]; //typical
+  spacing=1;
+  radius=0.75;
+  pinDims=[1.6,0.8,4];//below zero
+  pin1Offset=[28.8/2,-13.9/2,0];
+  //body
+  translate(pin1Offset){
+    color(blackBodyCol) difference(){
+      translate([0,0,ovDims.z/2]) cube(ovDims,true);
+      *rotate([90,0,0]) hull() for(ix=[-1,1]){
+        translate([ix*(39/2-radius),0]){
+          translate([0,spacing-radius]) cylinder(r=radius,h=ovDims.y+fudge,center=true);
+          translate([0,(spacing-radius)/2]) cube([radius*2,spacing-radius+fudge,ovDims.y+fudge],true);
+          }
+        }
+      *rotate([90,0,90]) hull() for(ix=[-1,1]){
+        translate([ix*(24/2-radius),0]){
+          translate([0,spacing-radius]) cylinder(r=radius,h=ovDims.x+fudge,center=true);
+          translate([0,(spacing-radius)/2]) cube([radius*2,spacing-radius+fudge,ovDims.x+fudge],true);
+          }
+        }
+    }
+    //contact pins
+    for (iy=[-9.8,-4.4,4.4,9.8])
+      color(metalGreyPinCol) translate([28.8/2,iy,-(pinDims.z+spacing)/2+spacing]) cube([pinDims.y,pinDims.x,pinDims.z+spacing],true);
+    for (iy=[-13.9/2,13.9/2])
+      color(metalGreyPinCol) translate([-28.8/2,iy,-(pinDims.z+spacing)/2+spacing]) cube([pinDims.x,pinDims.y,pinDims.z+spacing],true);
+  }  
+}
+
+
 module CIT_L115F1(DT=true,center2Pin1=true){
   ovDims=[32.05,27,20];
   crnrRad=1;
@@ -83,7 +119,7 @@ module CIT_L115F1(DT=true,center2Pin1=true){
       for (i=[0:len(rndPinPos)-1])
         translate(rndPinPos[i]) rndPin();
     }
-  !rotate(180) translate(cntrOffset) shape();
+  *rotate(180) translate(cntrOffset) shape();
    
   module shape(){
     poly=[[0,0],[0,27],[12.6,27],[12.6,27-5.5],[32.05,27-5.5],
