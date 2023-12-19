@@ -1,0 +1,24 @@
+{
+    "fileFormatVersion": "1",
+    "parameterSets": {
+        "New set 1": {
+            "cndlDia": "23",
+            "cndlLen": "150",
+            "cndlSpcng": "-0.5",
+            "minWallThck": "1.5",
+            "nailDia": "3",
+            "nailHdCntSnk": "true",
+            "nailHdDia": "7.5",
+            "nailHdThck": "3",
+            "nailLen": "82.5",
+            "nailSpcng": "0.10000000000000001",
+            "ripsCnt": "3",
+            "ripsHght": "20",
+            "ripsWdth": "5",
+            "showAdapter": "true",
+            "showNail": "true",
+            "showSection": "false",
+            "slvHght": "24"
+        }
+    }
+}

@@ -1,7 +1,7 @@
 // adapt Nail to a candle
 
 /* [Nail] */
-nailDia=3; //shaft dia
+nailDia=3.7; //shaft dia
 nailLen=82.5; //Length (just for display)
 nailHdDia=7.5; //Diameater of the Head
 nailHdThck=3; //Thickness of the head
@@ -11,19 +11,19 @@ cndlDia=23; //Diameter of the Candle
 cndlLen=150; //Lenght of the candle (just for Display)
 
 /* [Properties] */
-minWallThck=1.5; //minimum Wall Thickness
+minWallThck=1.2; //minimum Wall Thickness
 slvHght=24; //Length of the sleeve
 ripsCnt=3; //How many rips in the sleeve
-ripsHght=20;
+ripsHght=24;
 ripsWdth=5;
 cndlSpcng=-0.5; //spacing between candle and sleeve
 nailSpcng=0.1; //spacing between nail and adapter
 
 
 /* [show] */
-showNail=true;
+showNail=false;
 showAdapter=true;
-showSection=true;
+showSection=false;
 
 /* [Hidden] */
 slvOutDia=cndlDia+(cndlSpcng+minWallThck)*2;
@@ -35,8 +35,7 @@ fudge=0.1;
 
 
  
-if (showNail)
- translate([0,0,-nailHdThck]) color("silver") nail();
+
 
 if (showAdapter)
   difference(){
@@ -45,6 +44,9 @@ if (showAdapter)
       translate([slvOutDia/4+fudge/2,0,(slvHght-botHght-minWallThck)/2]) 
         cube([slvOutDia/2+fudge,slvOutDia+fudge,slvHght+botHght+minWallThck+fudge],true);
 }
+
+if (showNail)
+ translate([0,0,-nailHdThck]) color("silver") nail();
   
 module nail(){
   
@@ -85,6 +87,9 @@ module adapter(){
     circle(d=slvOutDia);
     circle(d=slvInDia);
   }
+  //rounded corner
+  translate([0,0,slvHght]) rotate_extrude() translate([slvInDia/2+(slvOutDia-slvInDia)/4,0]) circle(d=(slvOutDia-slvInDia)/2);
+  
   //bottom
   rotate(ripAng/2) difference(){
     translate([0,0,-minWallThck]){
