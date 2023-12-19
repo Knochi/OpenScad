@@ -13,10 +13,11 @@ translate([100,120,0]) FutabaVFD();
 translate([200,0,0]) Adafruit128x128TFT();
 translate([300,0,0]) AdafruitOLED23();
 translate([500,0,0]) raspBerry7Inch();
+translate([100,180,0]) EA_DOGS164_A();
 
 
 //double 7-segment display
-!KingbrightACDx03();
+*KingbrightACDx03();
 module KingbrightACDx03(){
   //https://www.kingbrightusa.com/images/catalog/SPEC/ACDA03-41SEKWA-F01.pdf
   
@@ -708,6 +709,70 @@ module EA_W128032(bendHght=3,center=false,cut=false){
     }
   }
  
+}
+ 
+!VIM_878_DP();
+module VIM_878_DP(){
+  //VARITRONIX 8x1 14Segment Display
+  
+  //glass
+  frntGlassDims=[52,17,1.1];
+  backGlassDims=[52,22,1.1];
+  frntPolDims=[50,16,0.15];
+  backPolDims=[50,16,0.25];
+  // View
+  VADims=[48,13];
+  //pins
+  pinCnt=36;
+  pinLength=5;
+  pitch=2.54;
+  pinThck=0.3;
+  pinDist= pinLength<=10 ? 2.54 + backGlassDims.y : 1.75 + backGlassDims.y;
+  clampDims=[1.27,1];
+  
+  
+  //glass body
+  color(glassGreyCol){
+    translate([0,0,-backGlassDims.z-backPolDims.z/2]) cube(backPolDims,true);
+    translate([0,0,-backGlassDims.z/2]) cube(backGlassDims,true);
+    translate([0,0,frntGlassDims.z/2]) cube(frntGlassDims,true);
+    translate([27/2-frntGlassDims.x/2-1,0,0]) linear_extrude(frntGlassDims.z) difference(){
+      circle(d=27);
+      translate([1+fudge/2,0,0]) square(27+fudge,true);
+    }
+    translate([0,0,frntGlassDims.z+frntPolDims.z/2]) cube(frntPolDims,true);
+    
+    
+  }
+  
+  //pins
+  for (ix=[-(pinCnt/2-1)/2:(pinCnt/2-1)/2])
+    color(metalGreyPinCol) translate([ix*pitch,-backGlassDims.y/2,0]) pin();
+  for (ix=[-(pinCnt/2-1)/2:(pinCnt/2-1)/2])
+    color(metalGreyPinCol) translate([ix*pitch,backGlassDims.y/2,0]) rotate(180) pin();
+    
+  module pin(){
+    //measured from drawing
+    
+    kinked();
+    translate([0,0,-backGlassDims.z]) mirror([0,0,1]) kinked();
+    translate([0,-pinThck/2,-backGlassDims.z/2]) cube([clampDims.x,pinThck,backGlassDims.z+pinThck],true);
+    translate([0,-pinThck/2,-1.55-pinThck/2]) cube([clampDims.x/3,pinThck,2-backGlassDims.z],true);
+    translate([0,-pinThck/2,-2-pinThck/2]) rotate([0,90,0]) cylinder(d=pinThck,h=clampDims.x/3,center=true);
+    translate([0,-pinThck/2,-2-pinThck/2]) rotate([-153,0,0]){
+      translate([0,1.24/2,0]) cube([clampDims.x/3,1.24,pinThck],true);
+      translate([0,1.24,0]) rotate([0,90,0]) cylinder(d=pinThck,h=clampDims.x/3,center=true);
+      translate([0,1.24,0]) rotate([153+180,0,0]) translate([0,0,pinLength/2]) cube([clampDims.x/3,pinThck,pinLength],true);
+    }
+    
+    
+    module kinked(){
+      translate([0,clampDims.y,pinThck/2]) rotate([35.6,0,0]) translate([0,0.8/2,0]) cube([clampDims.x,0.8,pinThck],true);
+      translate([0,clampDims.y,pinThck/2]) rotate([0,90,0]) cylinder(d=pinThck,h=clampDims.x,center=true);
+      translate([0,clampDims.y/2-pinThck/4,pinThck/2]) cube([clampDims.x,clampDims.y+pinThck/2,pinThck],true);
+      translate([0,-pinThck/2,pinThck/2]) rotate([0,90,0]) cylinder(d=pinThck,h=clampDims.x,center=true);
+    }
+  }
 }
 
 *AdafruitOLED23(true);
