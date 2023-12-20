@@ -9,7 +9,7 @@ fudge=0.1;
 
 
 /* [Select] */
-export= "ACT1210"; //["PDUUAT","ACT1210","SumidaCR43","TY6028","TMPC","CKCS","none"]
+export= "ACT1210"; //["PDUUAT","ACT1210","SumidaCR43","TY6028","TMPC","CKCS","SNR","none"]
 
 /* [configure] */
 PDUUATseries= "UU16"; //["UU9.8","UU10.5","UU16"]
@@ -71,6 +71,8 @@ else if (export == "TMPC")
   !boxInductor();
 else if (export == "CKCS")
   !wwCoil();
+else if (export == "SNR")
+  !wwCoil([10,10,5],[1.8,4.2],rad=1.5, chamfer=0);
 else
     echo("Nothing to render!");
 
@@ -265,49 +267,67 @@ module ACT1210(rad=0.06){
 }
 
 
+
 wwCoil();
-module wwCoil(dims=[5,5,4],padWdth=1.7){
+module wwCoil(dims=[5,5,4],padDims=[1.7,2],rad=0.35,chamfer=5*0.25){
   //wirewound coil with tinned contacts and octagon cap
   //e.g. Shenzen Cenker Enterprise Series CKCS 5040 (fig.3)
   //https://datasheet.lcsc.com/lcsc/1912111437_CENKER-CKCS5040-4-7uH-M_C354606.pdf
   //dims=[A,B,C], padWdth=E
 
-  W=dims.x; //A
-  L=dims.y; //B
-  H=dims.z; //C
-  e=padWdth; //E
+  W=dims.x; // overall width(x) of the coil
+  L=dims.y; // overall depth(y) of the coil
+  H=dims.z; // overall height(z) of the coil
+  //e=padDims.x; //width of the pads (x)
+  //d=padDims.y; //depth of the pads (y)
+  
 
   //other Dims
-  rad=0.35; //corner radius
-  chamfer=dims.y*0.25; //chamfer of octagon
+  //rad=0.35; //corner radius
+  //chamfer=dims.y*0.25; //chamfer of octagon
   ferrThck=1; //ferrite Thickness
   solder=0.05; //thickness of solder
-
-  coilDia=1;
+  baseRad=0.5; //radii on base shape
+  grvDia=0.5; //groove in base for coil wire
+  coilDiaRel=0.8;
   
   translate([0,0,solder]){
     //base
-    color(metalGreyCol) base();
+    color(metalGreyCol) linear_extrude(ferrThck) difference(){
+      base();
+    }
     //cap octagon  
     color(metalGreyCol) translate([0,0,dims.z-ferrThck-solder]) cap();  
   }
   
   //coil
-  color(metalCopperCol) translate([0,0,ferrThck+solder]) cylinder(d=dims.y*0.9,h=dims.z-ferrThck*2-solder);
+  color(metalCopperCol) translate([0,0,ferrThck+solder]) 
+    cylinder(d=dims.y*coilDiaRel,h=dims.z-ferrThck*2-solder);
 
-  //pads
+  //solder pads
   color(metalGreyPinCol) for(ix=[-1,1]){
-    intersection(){
+    linear_extrude(solder) intersection(){
       base();
-      translate([ix*(dims.x-padWdth)/2,0,solder/2]) cube([padWdth,dims.y+fudge,solder+fudge],true);
+      translate([ix*(dims.x-padDims.x)/2,0,solder/2]) square(padDims,true);
     }
   }
 
   module base(offset=0){
-    hull() for (ix=[-1,1],iy=[-1,1])
-      translate([ix*(dims.x/2-rad),iy*((dims.y*0.85)/2-rad)]) 
-        cylinder(r=rad+offset,h=ferrThck);
-    cap();
+    //cross shaped base
+    difference(){
+      hull() for (ix=[-1,1],iy=[-1,1])
+        translate([ix*(dims.x/2-baseRad),iy*((padDims.y)/2-baseRad)]) 
+          circle(r=baseRad+offset);
+      for (ix=[-1,1],iy=[-1,1])
+        translate([ix*(dims.x/2-padDims.x+grvDia/2),iy*(padDims.y/2)]) circle(d=grvDia);
+    }
+    
+    hull() for (ix=[-1,1],iy=[-1,1]){
+      translate([ix*((dims.x/2-padDims.x)*0.8-baseRad),iy*((dims.y)/2-baseRad)]) 
+        circle(r=baseRad+offset);
+      translate([ix*((dims.x/2-padDims.x)-baseRad),iy*((padDims.y)/2)]) 
+        circle(r=baseRad+offset);
+    }
   }
 
   *cap();
