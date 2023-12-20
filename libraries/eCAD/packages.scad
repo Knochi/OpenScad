@@ -293,6 +293,43 @@ module SOIC(pins=8, label=""){
   
 }
 
+*PG_TSDSO();
+module PG_TSDSO(pins=14, label=""){
+  //Infinieon PG-TSDSO 
+  //https://www.infineon.com/cms/en/product/packages/PG-TSDSO/PG-TSDSO-14-22/
+  
+  b= 0.25; //lead width 
+  pitch=0.65; //make overide
+  A= 1.15; // total height 
+  A1=0.05; //space below package 
+  c= 0.2; //lead tAickness 
+  D= 4.9; // 14..16pin
+  E1=3.9; //body width
+  E=6.0; //total width
+  h=0.5; //chamfer width h=0.25-0.5
+  
+  txtSize=D/(0.8*len(label));
+  if (label)
+    color(lightBrownLabelCol) translate([0,0,A]) linear_extrude(0.1) 
+      text(text=label,size=txtSize,halign="center",valign="center", font="consolas");
+  
+  
+  //body
+  color(blackBodyCol)
+    difference(){
+      translate([-D/2,-E1/2,A1]) cube([D,E1,(A-A1)]);
+      translate([0,E1/2+fudge,A+fudge]) 
+        rotate([0,90,180]) 
+          linear_extrude(D+fudge,center=true) 
+            polygon([[0,0],[h+fudge,0],[0,h+fudge]]);
+    }    
+  //leads
+  color(metalGreyPinCol)
+    for (i=[-pins/2+1:2:pins/2],r=[-90,90])
+      rotate([0,0,r]) translate([E1/2,i*pitch/2,0]) lead([(E-E1)/2,b,A*0.5]);
+  echo(pitch);
+}
+
 *SSOP();
 module SSOP(pins=8, pitch=0.635,  label="test"){
   //Plastic shrink small outline package (14,16,18,20,24,26,28 pins)
@@ -869,7 +906,7 @@ module SMF(){
   
 }
 
-!SMAF_JD();
+*SMAF_JD();
 module SMAF_JD(){
   //Jingdao Microelectronics SMAF
   //https://datasheet.lcsc.com/szlcsc/Shandong-Jingdao-Microelectronics-SSL36F_C128734.pdf
@@ -1079,11 +1116,12 @@ module bendLeg(){
   A2=0.049*25.4; //body height (min)
   E= 0.236*25.4; // (BSC)
   E1=0.154*25.4; // (BSC)
-  echo((E-E1)/2); //max length (1.041)
+  //echo((E-E1)/2); //max length (1.041)
   theta=8; //0-8° foot angle
   theta1=15; //5-15° body flank angle
   theta2=0; //0-x° vertical leg angle
   
+  //first segment
   translate([0,0,A1+(A2-c)/2]){ //lift to component mid
     cube([Lx,b,c]);
     translate([Lx,b,-R1]) 
@@ -1092,11 +1130,15 @@ module bendLeg(){
           translate([R1,0]) 
             square([c,b]);
   }
+  //mid segment
+  
+  //bend to tip
   translate([R*2+c+Lx,b,R+L2+c/2])
       rotate([90,90+theta,0])
         rotate_extrude(angle=-90+theta) 
           translate([R,0]) 
             square([c,b]);
+  //tip
   translate([R*2+c+Lx,0,R+L2+c/2])
     rotate([0,theta,0])
       translate([0,0,-c-R])
@@ -1118,6 +1160,14 @@ module lead(dims=[1.04,0.51,0.7],thick=0.2){
   }
 }
 
+*gullwing();
+module gullwing(dims=[1.05,0.25,0.5],tip=0.67,thick=0.2){
+//Gullwing lead
+  angle=8;
+  rad=0.5;
+  sgmnts=[dims.x-tip,0,tip];//start, mid, end-segments
+  linear_extrude(sgmnts[0]) square([thick,dims.y],true);
+}
 
 
 module r_SMD(size="0603"){
