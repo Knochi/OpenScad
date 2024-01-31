@@ -715,7 +715,7 @@ module LED5050(pins=6){
         translate([0.1,0,0.45]) cube([0.2,1.0,0.9],true);
       }
 }
-PLCC6();
+!PLCC6();
 module PLCC6(){
   // e.g. CREE CLP6C-FKB https://media.digikey.com/pdf/Data%20Sheets/CREE%20Power/CLP6C-FKB.pdf
   
@@ -736,7 +736,7 @@ module PLCC6(){
         polygon([[marking.x+fudge,fudge],[-fudge,fudge],[-fudge,-marking.x-fudge]]);
     }
   color("grey",0.6)
-    translate([0,0,dims.z-grvHght]) cylinder(d1=3.2,d2=grvDia,h=grvHght);
+    translate([0,0,dims.z-grvHght+0.01]) cylinder(d1=3.19,d2=grvDia-0.01,h=grvHght-0.01);
   //leads
   color("silver")
     for (i=[-pins/2+1:2:pins/2],r=[90,-90])
@@ -869,7 +869,7 @@ module SMF(){
   
 }
 
-!SMAF_JD();
+*SMAF_JD();
 module SMAF_JD(){
   //Jingdao Microelectronics SMAF
   //https://datasheet.lcsc.com/szlcsc/Shandong-Jingdao-Microelectronics-SSL36F_C128734.pdf
