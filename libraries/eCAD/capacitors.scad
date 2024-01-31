@@ -7,7 +7,7 @@
 $fn=50;
 
 /* [Select] */
-export= "none"; //["C32","none"]
+export= "none"; //["C32","3D2H306KLMB0420400200","none"]
 
 /* [Variants] */
 capSize=[26.5,14.5,29.5];
@@ -61,10 +61,12 @@ FR4Col=             [0.43,  0.46,   0.295]; //?
 
 if (export == "C32")
   !boxCapacitor(size=capSize, leads=[capLeadDia,capLeadLngth], pitch=capPitch);
+else if (export =="3D2H306KLMB0420400200")
+  !boxCapacitor(size=[42.0,20.0,40.0], leads=[1.2,20], pitch=[37.5,10.2]);
 else
   echo("Nothing to render!")
 
-capacitorTHT();
+*capacitorTHT();
 module capacitorTHT(D=16,L=30,axial=true){
   showMarking=true;
   rad=0.5;
@@ -142,6 +144,8 @@ module boxCapacitor(size=[57,35,50], leads=[1.2,5.5], pitch=[52.5,20.3], center=
     color(greyBodyCol) translate([0,0,size.z-rad]) cube([size.x-rad*2,size.y-rad*2,rad*2],true);
     */
     color(greyBodyCol) translate([0,0,size.z/2]) cube(size,true);
+    
+    //pins
     for (ix=[-1,1],iy=iyPins)
       color(metalGreyPinCol) translate([ix*pitch.x/2,iy*pitch.y/2,-leads[1]]) 
         cylinder(d=leads[0],h=leads[1]);

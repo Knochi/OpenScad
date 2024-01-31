@@ -1,0 +1,13 @@
+{
+    "fileFormatVersion": "1",
+    "parameterSets": {
+        "New set 1": {
+            "$fn": "50",
+            "capLeadDia": "0.80000000000000004",
+            "capLeadLngth": "4.5",
+            "capPitch": "[22.5, 0]",
+            "capSize": "[26.5, 14.5, 29.5]",
+            "export": "3D2H306KLMB0420400200"
+        }
+    }
+}
