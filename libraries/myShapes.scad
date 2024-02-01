@@ -114,13 +114,25 @@ module arc(r=1,angle=60){
 }
 
 
-
+//ri is inner radius and re is outer radius
 module star(N=5, ri=15, re=30) {
     polygon([
         for (n = [0 : N-1], in = [true, false])
             in ? 
                 [ri*cos(-360*n/N + 360/(N*2)), ri*sin(-360*n/N + 360/(N*2))] :
                 [re*cos(-360*n/N), re*sin(-360*n/N)]
+    ]);
+}
+
+//n-Gon from side length
+!nGon();
+module nGon(N=5, a=10) {
+  //https://calcresource.com/geom-ngon.html
+  theta=360/N;
+  rc=a/(2*sin(theta/2));
+    polygon([
+        for (n = [0 : N-1])
+                [rc*cos(-360*n/N), rc*sin(-360*n/N)]
     ]);
 }
 
@@ -186,7 +198,6 @@ module circFromPoints(points=[],debug=false){
    
   }
 }
-
 
 
 
