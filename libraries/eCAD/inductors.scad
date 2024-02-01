@@ -9,7 +9,7 @@ fudge=0.1;
 
 
 /* [Select] */
-export= "ACT1210"; //["PDUUAT","ACT1210","SumidaCR43","TY6028","TMPC","CKCS","SNR","none"]
+export= "SNR"; //["PDUUAT","ACT1210","SumidaCR43","TY6028","TMPC","CKCS","SNR","none"]
 
 /* [configure] */
 PDUUATseries= "UU16"; //["UU9.8","UU10.5","UU16"]

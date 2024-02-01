@@ -4,6 +4,20 @@ fudge=0.1;
 
 LEDButton();
 
+module dualLED(){
+//https://datasheet.lcsc.com/lcsc/2311141648_MEIHUA-MHK2310GEBTD_C7470875.pdf
+  translate([1.27,10/2-8.59,10/2]) cube([4.6,10,10],true);
+  for (iz=[-1,1]){
+    col = (iz<1) ? "red" : "green";
+    color(col) translate([1.27,-8.59,10/2+iz*2.5]) rotate([90,0,0]){
+      cylinder(d=2.9,h=2.8-2.9/2);
+      translate([0,0,2.8-2.9/2]) sphere(d=2.9);
+      }
+    }
+  color("grey") for (ix=[-1,1],iy=[0,-1])
+    translate([ix*1.27+1.27,iy*2.54,-3]) linear_extrude(3) square(0.5,true);
+}
+
 module LEDButton(dia=9){
   PCBThck=1.5;
   LED5050();

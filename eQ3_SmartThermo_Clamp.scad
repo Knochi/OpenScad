@@ -7,11 +7,13 @@ threadTest=true;
 showSectionCut=true;
 
 
+
 /* [thread] */
-thDia=8;    //Outer diameter of thread
-thMinDia=6; //inner minimum Dia of the thread
-thSize=2; //Size of thread (default thread pitch)
+thDia=9;    //Outer diameter of thread
+thMinDia=1; //inner minimum Dia of the thread
+thSize=1.75; //Size of thread (default thread pitch)
 thRect=1.0; //ratio depth/(axial) width (default 1=square)
+thPitch=1.75; //this should be fixed
 
 /* [threadTest] */
 varyX="thDia"; //["none","thDia","threadSize","thMinDia"]
@@ -19,6 +21,7 @@ varyY="threadSize"; //["none","thDia","threadSize","thMinDia"]
 thSizeVar=0.5;  //the Variation for threat Size 
 thDiaVar=0.5;   //the Variation for threat Diameter 
 thMinDiaVar=0.5;  //the variation of rect parameter 
+
 thTstODia=11;  //Outer Dia of the cylinders
 thTstSpcng=3;
 thTstHght=8;
@@ -37,7 +40,8 @@ if (threadTest)
       color("darkRed") translate([0,-thTstDims.y/2,thTstDims.z/2]) cube(thTstDims+[fudge,fudge,fudge],true);
       }
 else
-  mainBody();
+  //mainBody();
+  echo("nothing to rende");
 
 
 
@@ -51,7 +55,6 @@ module threadTest(){
     }
     
   for (ix=[-1:1], iy=[-1:1]){
-
     //Variations in X and Y
     curThDia=   (varyX=="thDia") ? thDia+ix*thDiaVar : 
                 (varyY=="thDia") ? thDia+iy*thDiaVar :
@@ -74,11 +77,11 @@ module threadTest(){
       difference(){
         cylinder(d=thTstODia,h=thTstHght);
         metric_thread(diameter=curThDia, 
-                      pitch=1.75, 
+                      pitch=thPitch, 
                       length=thTstHght+fudge, 
                       leadin=1,
                       thread_size=curThSize, 
-                      square=true,
+                      square=false,
                       //rectangle=curThRect, 
                       internal=true);
         cylinder(d=curMinDia,h=thTstHght);

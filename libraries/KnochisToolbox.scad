@@ -3,7 +3,7 @@ module twoByTwo(size=[5,5]){
     translate([ix*size.x/2,iy*size.y/2,0]) children();
 }
 
-arc(r=10);
+*arc(r=10);
 module arc(r=1,angle=45,poly=[],iter=0){
   facets= fragFromR(r,angle);
   iter = iter ? iter-1 : facets;
@@ -44,7 +44,9 @@ function fragFromR(r,ang=360)=$fn>0 ? ($fn>=3 ? $fn : 3) : ceil(max(min(360/$fa,
 function framFromA()=360/$fa;
 function fragFromS()=r*2*PI/$fs;
 
-//arc function simlar to svg path command "A" (https://www.w3.org/TR/SVG11/paths.html#PathData)
+$fn=50;
+polygon(concat([[0,0]],push_arc([2.6,10.55],[3.6,11.33],1.03)));
+
 //arc function simlar to svg path command "a/A" (https://www.w3.org/TR/SVG11/paths.html#PathData)
 function push_arc(start, end, r, sweep=1, poly=[], iter=0)=let(
   chord = norm(start-end),

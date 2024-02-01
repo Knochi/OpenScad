@@ -1,3 +1,11 @@
+
+
+
+/* [export] */
+export = "none"; //["CIT","FTR","JY32FN","BS4"]
+
+/* [Hidden] */
+
 // KiCAD Colors
 ledAlpha=0.1;
 glassAlpha=0.39;
@@ -41,14 +49,74 @@ pcbBlue=            [0.07,  0.12,   0.3];
 FR4darkCol=         [0.2,   0.17,   0.087]; //?
 FR4Col=             [0.43,  0.46,   0.295]; //?
 
-
 $fn=50;
 fudge=0.1;
 
+if (export=="CIT")
+  CIT_L115F1();
+else if (export=="FTR")
+  FTR_E1();
+else if (export=="JY32FN")
+  JY32FN();
+else if (export=="BS4")
+  BS4();
+else
+  echo("nothing to render");
+  
 
-CIT_L115F1();
+module BS4(){
+  //https://datasheet.lcsc.com/lcsc/2309121625_JIEYING-RELAY-JY32FNH-SH-DC12V-A-20A_C17702416.pdf
+  //http://www.jieyingrelay.com/upload/download/d2_20190823125882.pdf
+  ovDims=[15.5,11,11.5];
+  pin1Offset=[ovDims.x/2-1.4,-7.62/2,0]; //centeroffset
+  pinPos=[[0,0],[0,-7.62],
+          [10.16,0],[10.16,-7.62],
+          [10.16+2.54,0],[10.16+2.54,-7.62]];
+  pinDims=[[0.2,0.5,3.6],[0.2,0.5,3.6],
+           [0.5,0.5,3.6],[0.5,0.5,3.6],
+           [0.5,0.5,3.6],[0.5,0.5,3.6],
+           ];
+  
+  translate(pin1Offset){
+    color(blackBodyCol) 
+      translate([0,0,ovDims.z/2]) cube(ovDims,true);
+  }
+  
+  for (i=[0:len(pinPos)-1]){
+    //round pin
+    if (len(pinDims[i])==2)
+      color(metalGreyPinCol) translate([pinPos[i].x,pinPos[i].y,-pinDims[i][1]]) 
+        cylinder(d=pinDims[i][0],h=pinDims[i][1]);
+    else
+      color(metalGreyPinCol) translate([pinPos[i].x,pinPos[i].y,-pinDims[i][2]/2]) 
+        cube(pinDims[i],true);
+  }
+}  
 
-translate([50,0,0]) FTR_E1();
+module JY32FN(){
+  //https://datasheet.lcsc.com/lcsc/2309121625_JIEYING-RELAY-JY32FNH-SH-DC12V-A-20A_C17702416.pdf
+  //http://www.jieyingrelay.com/upload/download/d2_20190823125882.pdf
+  ovDims=[18.2,10.2,15.5];
+  pin1Offset=[ovDims.x/2-1.7,-7.6/2,0]; //centeroffset
+  pinPos=[[0,0],[0,-7.6],[12.7+2.54,0],[12.7,-7.6]];
+  pinDims=[[0.5,4.1],[0.5,4.1],[0.3,1,4.1],[0.3,1,4.1]];
+  
+  translate(pin1Offset){
+    color(blackBodyCol) 
+      translate([0,0,ovDims.z/2]) cube(ovDims,true);
+  }
+  
+  for (i=[0:len(pinPos)-1]){
+    //round pin
+    if (len(pinDims[i])==2)
+      color(metalGreyPinCol) translate([pinPos[i].x,pinPos[i].y,-pinDims[i][1]]) 
+        cylinder(d=pinDims[i][0],h=pinDims[i][1]);
+    else
+      color(metalGreyPinCol) translate([pinPos[i].x,pinPos[i].y,-pinDims[i][2]/2]) 
+        cube(pinDims[i],true);
+  }
+}  
+
 module FTR_E1(){
 // Fujitsu FTR-E1 https://www.fcl.fujitsu.com/downloads/MICRO/fcai/relays/ftr-e1.pdf
   ovDims=[43.6,28.3,36.8]; //typical
@@ -60,6 +128,8 @@ module FTR_E1(){
   translate(pin1Offset){
     color(blackBodyCol) difference(){
       translate([0,0,ovDims.z/2]) cube(ovDims,true);
+      
+      /* doesn't work with freecad atm
       *rotate([90,0,0]) hull() for(ix=[-1,1]){
         translate([ix*(39/2-radius),0]){
           translate([0,spacing-radius]) cylinder(r=radius,h=ovDims.y+fudge,center=true);
@@ -72,6 +142,7 @@ module FTR_E1(){
           translate([0,(spacing-radius)/2]) cube([radius*2,spacing-radius+fudge,ovDims.x+fudge],true);
           }
         }
+        */
     }
     //contact pins
     for (iy=[-9.8,-4.4,4.4,9.8])
