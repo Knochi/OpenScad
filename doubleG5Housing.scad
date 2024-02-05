@@ -21,7 +21,7 @@ for (ix=[-1,1])
 housing();
 module housing(){
   ovDims=[lampDist+lampDia,lampDia,40];
-  strHght=16;
+  strHght=socketHght;
   litDims=[ovDims.x,ovDims.y/2,ovDims.z-strHght];
   
   
