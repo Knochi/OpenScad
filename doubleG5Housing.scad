@@ -11,19 +11,27 @@ boreDia=7.6;
 showLamps=true;
 showSockets=true;
 showHousing=true;
+showScrew=true;
 export="none"; //["none","Housing","Lit"]
+
 for (ix=[-1,1])
   translate([ix*lampDist/2,0,0]){
     if (showSockets) translate([0,0,-2.5]) socketG4();
     if (showLamps) translate([0,0,0]) lampG4();
 }
 
-housing();
+if (export=="none") housing();
+else !housing();
+
+
+
 module housing(){
   ovDims=[lampDist+lampDia,lampDia,40];
   strHght=16;
   litDims=[ovDims.x,ovDims.y/2,ovDims.z-strHght];
   
+  if (showScrew && (export=="none"))
+    translate([0,-ovDims.y/2+3,-ovDims.z/2]) rotate([90,0,0]) color("silver")  hexScrew(l=12);
   
   intersection(){
     difference(){
@@ -36,7 +44,7 @@ module housing(){
         translate([-ix*lampDist/2,0,-socketHght]) cylinder(d=boreDia+spcng*2,h=socketHght+fudge);
         translate([-ix*lampDist/2,0,-2.5-spcng]) cylinder(d=8.9+spcng*2,h=2.5+spcng+fudge);
       }
-      //lit
+      //remove lit
       if (export=="Housing")
         translate([0,-litDims.y/2,-ovDims.z+litDims.z/2]) cube(litDims,true);      
         
@@ -66,7 +74,7 @@ module housing(){
           circle(d=6+spcng*2);
     }
   if (export=="Lit")
-     translate([0,-litDims.y/2,-ovDims.z+litDims.z/2]) cube(litDims,true);      
+     translate([0,-litDims.y/2,-ovDims.z+litDims.z/2-spcng]) cube(litDims+[0,0,-spcng],true);      
   }
     
 }
@@ -86,4 +94,10 @@ module socketG4(){
 module lampG4(){
   color("white") cylinder(d=lampDia,h=7.5);
   color("white",0.5) translate([0,0,7.5]) cylinder(d=lampDia,h=33.2-7.5);
+}
+
+module hexScrew(dia=3,l=10){
+  //threat
+  cylinder(d=5.5,h=3);
+  translate([0,0,-l]) cylinder(d=dia,h=l);
 }

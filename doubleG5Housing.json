@@ -1,0 +1,32 @@
+{
+    "fileFormatVersion": "1",
+    "parameterSets": {
+        "New set 1": {
+            "$fn": "50",
+            "boreDia": "7.5999999999999996",
+            "export": "Lit",
+            "fudge": "0.10000000000000001",
+            "lampDia": "15.6",
+            "lampDist": "20",
+            "showHousing": "true",
+            "showLamps": "true",
+            "showSockets": "true",
+            "spcng": "0.10000000000000001",
+            "wireDia": "1.5"
+        },
+        "New set 2": {
+            "$fn": "50",
+            "boreDia": "7.5999999999999996",
+            "export": "Lit",
+            "fudge": "0.10000000000000001",
+            "lampDia": "15.6",
+            "lampDist": "20",
+            "showHousing": "true",
+            "showLamps": "true",
+            "showScrew": "false",
+            "showSockets": "true",
+            "spcng": "0.10000000000000001",
+            "wireDia": "1.5"
+        }
+    }
+}
