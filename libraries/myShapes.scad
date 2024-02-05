@@ -2,10 +2,11 @@
 
 
 translate([0,20,0]) linear_extrude(1) star(N=36,ri=5,re=6);
-translate([15,0,0]) skewedCube([10,10,4],[45,0],center=true);
+translate([20,0,0]) skewedCube([10,10,4],[45,0],center=true);
 translate([30,0,0]) linear_extrude(1)  arc(r=10, angle=50);
 translate([30,30,0]) rotate_extrude() rotate(30) arc(r=10, angle=60);
 circFromPoints([[56,32],[61,17],[50,30]],true);
+translate([0,0,0]) nGon();
 
 //-- compare facet handling of arc with rotate_extrude
 //$fs=0.2;
@@ -125,11 +126,11 @@ module star(N=5, ri=15, re=30) {
 }
 
 //n-Gon from side length
-!nGon();
-module nGon(N=5, a=10) {
+*nGon();
+module nGon(N=5, S=10) {
   //https://calcresource.com/geom-ngon.html
   theta=360/N;
-  rc=a/(2*sin(theta/2));
+  rc=S/(2*sin(theta/2));
     polygon([
         for (n = [0 : N-1])
                 [rc*cos(-360*n/N), rc*sin(-360*n/N)]
