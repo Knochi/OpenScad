@@ -1,0 +1,12 @@
+{
+    "fileFormatVersion": "1",
+    "parameterSets": {
+        "New set 1": {
+            "$fn": "30",
+            "cmpSpcng": "0.5",
+            "compDims": "[150, 150, 150]",
+            "showBase": "true",
+            "showRoll": "false"
+        }
+    }
+}
