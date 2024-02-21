@@ -752,7 +752,7 @@ module LED5050(pins=6){
         translate([0.1,0,0.45]) cube([0.2,1.0,0.9],true);
       }
 }
-!PLCC6();
+*PLCC6();
 module PLCC6(){
   // e.g. CREE CLP6C-FKB https://media.digikey.com/pdf/Data%20Sheets/CREE%20Power/CLP6C-FKB.pdf
   

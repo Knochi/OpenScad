@@ -36,16 +36,25 @@ module piZero(){
   }
 }
 
-module piPico(showLabels=true){
+module piPico(showLabels=false){
   //dimension took from official STP model
   //https://datasheets.raspberrypi.org/pico/Pico-R3-step.zip
-  
+  //thicknesses
+
   //these pads will be square, others rounded
   sqrPads=[3,8,13,18,23,28,33,38];
   //signal labels
   labels=["zero","VBUS","VSYS","GND","3V3_EN","3V3","ADC_VREF","GP28_A2","AGND","GP27_A1","GP26_A0","RUN","GP22","GND","GP21","GP20","GP19","GP18","GND","GP17","GP16", //1-20
           "GP15","GP14","GND","GP13","GP12","GP11","GP10","GND","GP9","GP8","GP7","GP6","GND","GP5","GP4","GP3","GP2","GND","GP1","GP0"]; //21-40
-
+  //Testpoint positions from lower left corner
+  testPointsPos=[
+  [9.5,49.8],
+  [11.5,49.8],
+  [10.5,46.5],
+  [8,43],
+  [8,40.5],
+  [8,38]
+  ];
   pcbDims=[21,51,1];
   holeDist=[11.4,pcbDims.y-4];
   
@@ -57,10 +66,18 @@ module piPico(showLabels=true){
     PCB();
     pads();
   }
+  
   translate([0,0,pcbDims.z]){
     translate([0,pcbDims.y/2-1,0]) rotate(180) mUSB();
     translate(MCUPos) QFN(pos=54,size=[7,7,1],pitch=0.4,label="RP2040");
     translate(btnPos) rotate(90) KMR2();
+  }
+  
+  module testPointShp(){
+    dims=[1.5,1.5];
+    rad=0.3;
+    hull() for (ix=[-1,1],iy=[-1,1])
+      translate([ix*(dims.x/2-rad),iy*(dims.y/2-rad)]) circle(rad);
   }
   
   module pads(){
@@ -82,7 +99,7 @@ module piPico(showLabels=true){
     for (ix=[-1,1],iy=[-1,1])
         translate([ix*holeDist.x/2,iy*holeDist.y/2,0]) drillPad();
     
-    //debug pads
+    //SWD pads
     for (ix=[-1,1]){
       lbl= (ix<0) ? "SWCLK" : "SWDIO";
       translate([ix*2.54,-pcbDims.y/2+1.61]) rotate(-90){
@@ -92,29 +109,40 @@ module piPico(showLabels=true){
             rotate([180,0,0]) linear_extrude(0.1) text(str(lbl),size=1,halign="right",valign="center");
       }
     }
+    //center SWD pad
     translate([0,-pcbDims.y/2+1.61]) rotate(-90){
       picoPad(true);
       if (showLabels)
         color(whiteBodyCol) translate([-1.6/2,0,-pcbDims.z/2-0.1]) 
           rotate([180,0,0]) linear_extrude(0.1) text("GND",size=1,halign="right",valign="center");
     }
+    
+    for (pos=testPointsPos)
+        translate([pos.x,pos.y,0]-pcbDims/2) color(metalGoldPinCol) linear_extrude(fudge) testPointShp();
   }
   
   module PCB(){
     //PCB with cutouts
     difference(){
       color(pcbGreenCol) cube(pcbDims,true);
+      //cutout Pads left right
       for (ix=[-1,1],iy=[-(20-1)/2:(20-1)/2]){
         PadNo= (ix<0) ? iy+(20-1)/2+1 : iy+20+(20-1)/2+1;
         translate([ix*(pcbDims.x/2-1.61),iy*2.54]) 
           rotate(90-ix*90) picoPad(sqrPad=search(PadNo,sqrPads),cut=true);
       }
+      
+      //cutout pads SWD
       for (ix=[-1,1])
         translate([ix*2.54,-pcbDims.y/2+1.61]) rotate(-90) picoPad(false,true);
       translate([0,-pcbDims.y/2+1.61]) rotate(-90) picoPad(true,true);
       
+      //coutout NPTH
       for (ix=[-1,1],iy=[-1,1])
         translate([ix*holeDist.x/2,iy*holeDist.y/2,0])  color(pcbGreenCol) cylinder(d=3.8,h=pcbDims.z+fudge,center=true);
+      //cutout Testpoints
+      for (pos=testPointsPos)
+        translate([pos.x,pos.y,-fudge]-pcbDims/2) color(pcbGreenCol) linear_extrude(fudge*2) testPointShp();
     }
   }
   

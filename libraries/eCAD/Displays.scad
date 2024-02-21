@@ -711,7 +711,7 @@ module EA_W128032(bendHght=3,center=false,cut=false){
  
 }
  
-!VIM_878_DP();
+*VIM_878_DP();
 module VIM_878_DP(){
   //VARITRONIX 8x1 14Segment Display
   
