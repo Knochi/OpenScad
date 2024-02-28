@@ -24,7 +24,7 @@ cleanCompOpening=40;
 TS80TipPos=[161,67.8,10.5];
 
 /* -- [show] -- */
-showOrig=true;
+showOrig=false;
 showRemix=true;
 showTS80P=true;
 showTip=true;
@@ -45,7 +45,6 @@ ogTranslation = (original=="OF-TS80P") ? [187.4,-77.9,0] :
                 (original=="TS80Case") ? [0,ovDims.y,0] :
                 (original=="OF-FieldBox") ? [0,0,0] : [0,0,0];
 
-echo(original,originalFile);
 /* [Hidden] */
 /* --- Compartments --- */
 //add height to the main compartment dimensions
@@ -55,12 +54,11 @@ compDims=[mainCompDims.x,mainCompDims.y,ovDims.z-minWallThck];
   mainCompOffset=[(ovDims.x-compDims.x)/2-minWallThck-ledge.x,
                   (ovDims.y-compDims.y)/2-minWallThck-ledge.y,
                    -ovDims.z/2+minWallThck];
-  //rest
-  solderCompDims=[compDims.x,ovDims.y-compDims.y-minWallThck*3-ledge.y*2,compDims.z];
-  solderCompOffset=[(ovDims.x-compDims.x)/2-minWallThck-ledge.x,
-                  (-ovDims.y+solderCompDims.y)/2+minWallThck+ledge.y,
-                   -ovDims.z/2+minWallThck];
-
+//rest
+solderCompDims=[compDims.x,ovDims.y-compDims.y-minWallThck*3-ledge.y*2,compDims.z];
+solderCompOffset=[(ovDims.x-compDims.x)/2-minWallThck-ledge.x,
+                (-ovDims.y+solderCompDims.y)/2+minWallThck+ledge.y,
+                 -ovDims.z/2+minWallThck];
 
 //configure x-y positions for magnets
 magPos=[[ovDims.x-minWallThck-ledge.x-magnetDia/2,ovDims.y-minWallThck-ledge.y-mainCompDims.y-minWallThck/2]];
@@ -143,28 +141,30 @@ module mainCase(center=false){
 
 /* --- Dummys ---*/
 *OmnifixoPlate();
-module OmnifixoPlate(){
+module OmnifixoPlate(center=false){
   //https://omnifixo.com/
   baseDims=OFDims; //[160.2,90.2,1.2];
   baseRad=8;
   drillDia=3;
   drillOffset=[148,47.8];
-
-  //plate
-  color(blackBodyCol) linear_extrude(baseDims.z) difference(){
-    rndRect([baseDims.x,baseDims.y],radius=baseRad,drillDia=0, center=true);
-    for (ix=[-1,1],iy=[-1,1]){
-      translate([0,iy*(drillOffset.y-drillDia)/2]){
-        translate([ix*(drillOffset.x-drillDia)/2,0]) circle(d=drillDia);
-        translate([ix*(baseDims.x)/2,0]) square([4,4.8],true);
+  cntrOffset= center ? [0,0,0] : [baseDims.x/2,baseDims.y/2,0];
+  
+  translate(cntrOffset){
+    //plate
+    color(blackBodyCol) linear_extrude(baseDims.z) difference(){
+      rndRect([baseDims.x,baseDims.y],radius=baseRad,drillDia=0, center=true);
+      for (ix=[-1,1],iy=[-1,1]){
+        translate([0,iy*(drillOffset.y-drillDia)/2]){
+          translate([ix*(drillOffset.x-drillDia)/2,0]) circle(d=drillDia);
+          translate([ix*(baseDims.x)/2,0]) square([4,4.8],true);
+        }
       }
     }
+    //feet
+    color(darkGreyBodyCol) for (ix=[-1,1],iy=[-1,1])
+      translate([ix*(baseDims.x/2-baseRad),iy*(baseDims.y/2-baseRad),0]) 
+        mirror([0,0,1]) lathe([[0.5,16],[1.7,15,14.8],[2.4,9.8,9]]);
   }
-  //feet
-  color(darkGreyBodyCol) for (ix=[-1,1],iy=[-1,1])
-    translate([ix*(baseDims.x/2-baseRad),iy*(baseDims.y/2-baseRad),0]) 
-      mirror([0,0,1]) lathe([[0.5,16],[1.7,15,14.8],[2.4,9.8,9]]);
-
 }
 *OFMagFoot();
 //magnetic foot

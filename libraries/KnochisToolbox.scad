@@ -3,23 +3,17 @@ module twoByTwo(size=[5,5]){
     translate([ix*size.x/2,iy*size.y/2,0]) children();
 }
 
-*arc(r=10);
-module arc(r=1,angle=45,poly=[],iter=0){
-  facets= fragFromR(r,angle);
-  iter = iter ? iter-1 : facets;
-  aSeg=angle/facets;
-  x= r * cos(aSeg*iter);
-  y= r * sin(aSeg*iter);
-  poly = concat(poly,[[x,y]]);
-  if (iter>0){
-    echo(iter);
-    arc(r,angle,poly,iter);
-  }
-  else {
-    poly=concat(poly, [[0,0]]);
-    polygon(poly);
-  }
-}
+*polygon(concat([[0,0]],arc(r=10,angle=45)));
+//return an arc polygon
+function arc(r=1,angle=45,poly=[],iter=0)=let(
+  facets= fragFromR(r,angle),
+  iter = iter ? iter-1 : facets,
+  aSeg=angle/facets,
+  x= r * cos(aSeg*iter),
+  y= r * sin(aSeg*iter),
+  poly = concat(poly,[[x,y]])) (iter>0) ?
+    arc(r,angle,poly,iter) : poly;
+
 
 // a lathe tool that accepts diameters and offsets
 module lathe(dimensions=[],zOffset=0,iter=0){
@@ -120,3 +114,10 @@ function roundVec(Vec,digits)= let(
   y = round(Vec.y*pow(10,digits))/pow(10,digits),
   z = (len(Vec) > 2) ? round(Vec.z*pow(10,digits))/pow(10,digits) : 0
 ) (len(Vec) > 2) ? [x,y,z] : [x,y];
+
+
+//translate points in 2D space
+function translatePoints(pointsIn,vector,pointsOut=[],iter=0)=
+  iter<len(pointsIn) ? 
+    translatePoints(pointsIn,vector,pointsOut=concat(pointsOut,[pointsIn[iter]+vector]),iter=iter+1) : 
+    pointsOut;
