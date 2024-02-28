@@ -1,0 +1,32 @@
+{
+    "parameterSets": {
+        "Original Dimensions": {
+            "$fn": "20",
+            "brimDims": "[2, 1]",
+            "chamfer": "2.4",
+            "crnrRad": "10",
+            "fudge": "0.1",
+            "grooveDepth": "1.35",
+            "grooveDia": "45",
+            "orgBrimHght": "1",
+            "orgPcsOffset": "[2.5, 5]",
+            "orgPcsThck": "2.4",
+            "pcsDistance": "0",
+            "pcsLabelDpth": "1",
+            "pcsLabelSize": "4",
+            "pcsOffset": "[-2.5, 5, 1.6]",
+            "pcsThck": "2.4",
+            "pcsWdth": "7.2",
+            "showOrigPcs": "false",
+            "showOrigTray": "false",
+            "showPieces": "false",
+            "showTray": "true",
+            "spcng": "0.13",
+            "topLeftLabel": "[\"RADIUS\", \"MEASURING\", \"TOOLKIT\"]",
+            "topLeftLabelDpth": "1",
+            "topLeftLabelSize": "6",
+            "topLeftLineSpcng": "1.5"
+        }
+    },
+    "fileFormatVersion": "1"
+}
