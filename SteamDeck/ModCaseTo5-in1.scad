@@ -9,7 +9,7 @@ jsxOvDims=[113.5,66,27.85]; //overall Dimensions without feet
 jsxBevAng=34.5;
 jsxWallThck=2.2; //wall thickness of the groove
 jsxBackAng=24; //angle of the back wall of the groove#
-jsxFrntHght=17; //height of the front wall
+jsxFrntHght=17.25; //height of the front wall
 jsxGrvBtmWdth=18.3; //width without the chamfer \__
 jsxGrvChmfr=2; //45° chamfer size [2,2]
 jsxGrvChmfrOut= jsxGrvChmfr+jsxWallThck-tan(45/2)*jsxWallThck;
@@ -20,9 +20,9 @@ jsxGrvOffset=-(jsxOvDims.y-jsxGrvBtmWdth-jsxGrvChmfr-jsxWallThck);
 //pads
 jsxPadDimsBck=[90,9,1.1];
 jsxPadHghtBck=+20; //mounting height of back pad
-jsxGrvPadDims=[19.7,1.5]; //width * thickness
+jsxGrvPadDims=[21,1.5]; //width * thickness
 jsxGrvChmfrPad= jsxGrvChmfr-jsxGrvPadDims.y+tan(45/2)*jsxGrvPadDims.y;
-jsxGrvPadDist=70;
+jsxGrvPadDist=71;
   
 //assembly
 //jsxDock();
@@ -30,8 +30,9 @@ minWallThck=1.6;
 
 grvOffset=[1.2,7.7]; //Offset between the two grooves
 
+jsxDock();
 
-//rotate([90,0,-90]) 
+translate([0,grvOffset.x,grvOffset.y]) rotate([90,0,-90]) 
   difference(){
     linear_extrude(jsxOvDims.x+minWallThck*2,center=true,convexity=3)  
       grooveShp();
