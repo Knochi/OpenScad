@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="210mm"
+   height="297mm"
+   viewBox="0 0 210 297"
+   version="1.1"
+   id="svg5"
+   inkscape:version="1.2 (dc2aedaf03, 2022-05-15)"
+   sodipodi:docname="chmferOffsetTrigo.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview7"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm"
+     showgrid="false"
+     showguides="true"
+     inkscape:zoom="22.627417"
+     inkscape:cx="275.68326"
+     inkscape:cy="269.49607"
+     inkscape:window-width="3840"
+     inkscape:window-height="2066"
+     inkscape:window-x="-11"
+     inkscape:window-y="-11"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1">
+    <sodipodi:guide
+       position="34.76536,187.82734"
+       orientation="0,1"
+       id="guide247"
+       inkscape:locked="false" />
+    <sodipodi:guide
+       position="34.765361,187.82734"
+       orientation="-1,0"
+       id="guide453"
+       inkscape:locked="false" />
+    <sodipodi:guide
+       position="82.194121,220.1544"
+       orientation="0,-1"
+       id="guide463"
+       inkscape:locked="false" />
+    <sodipodi:guide
+       position="80.605469,219.49219"
+       orientation="0,-1"
+       id="guide465"
+       inkscape:locked="false" />
+    <sodipodi:guide
+       position="67.923827,219.49219"
+       orientation="-0.70710678,0.70710678"
+       id="guide473"
+       inkscape:locked="false"
+       inkscape:label=""
+       inkscape:color="rgb(0,134,229)" />
+  </sodipodi:namedview>
+  <defs
+     id="defs2" />
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.1;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-dasharray:none"
+       d="m 34.765361,63.238347 33.821501,0 13.607259,13.607257 v 32.327066 h -47.42876 z"
+       id="path245"
+       sodipodi:nodetypes="cccccc" />
+    <path
+       id="path456"
+       style="fill:none;stroke:#000000;stroke-width:0.1;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-dasharray:none"
+       d="m 36.353516,107.58398 c 14.750651,0 29.501302,0 44.251953,0 0,-10.025386 0,-20.050777 0,-30.076168 -4.227214,-4.227213 -8.454427,-8.454427 -12.681641,-12.68164 -10.523437,0 -21.046875,0 -31.570312,0 0,14.252604 0,28.505208 0,42.757808 z" />
+    <path
+       style="fill:none;stroke:#95a844;stroke-width:0.1;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-dasharray:none"
+       d="M 67.923827,64.82617 V 77.507811 H 80.605468"
+       id="path467" />
+    <path
+       style="fill:none;stroke:#a21e4d;stroke-width:0.1;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-dasharray:none"
+       d="M 68.586862,63.238347 V 76.845601 H 82.194116"
+       id="path469" />
+    <path
+       style="fill:none;stroke:#da0c1f;stroke-width:0.1;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-dasharray:none"
+       d="m 75.390075,70.04156 -1.125429,1.125429"
+       id="path527" />
+    <path
+       style="fill:none;stroke:#da0c1f;stroke-width:0.1;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-dasharray:none"
+       d="m 80.605468,77.507811 h 1.588653"
+       id="path529" />
+    <text
+       xml:space="preserve"
+       style="font-size:2.63173px;line-height:1.25;font-family:Cupra;-inkscape-font-specification:Cupra;stroke-width:0.264583"
+       x="72.454803"
+       y="58.897053"
+       id="text1201"><tspan
+         sodipodi:role="line"
+         id="tspan1199"
+         style="stroke-width:0.264583"
+         x="72.454803"
+         y="58.897053">c=sqrt(2)*a</tspan></text>
+    <path
+       style="fill:none;stroke:#442ee0;stroke-width:0.2;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-dasharray:none"
+       d="m 68.586862,76.844775 -0.663035,0.663036"
+       id="path1255" />
+    <path
+       style="fill:none;stroke:#fccd22;stroke-width:0.1;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-dasharray:none"
+       d="m 74.264646,71.166989 -6.340819,6.340822"
+       id="path1253" />
+  </g>
+</svg>
