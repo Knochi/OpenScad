@@ -1,19 +1,37 @@
-boxDims=[100,50,100];
-chamfer=7;
+/* [Dimensions] */
+boxDims=[100,100,100];
+flangeDims=[130,100,3];
+drillDia=3.1;
+drillDist=[115,80];
+chamfer=10; 
 wallThck=1;
 
 /* [hidden] */
 fudge=0.1;
+$fn=20;
 
 chamfBox();
 
 module chamfBox(){
   //inner chamfer from wallthck
-  chmfIn=sqrt(2)*(sqrt(2)*chamfer/2-wallThck);
-  echo(chmfIn);
+  
+  a1=tan(45/2)*wallThck; //[a1,a1] offset between inner and outer chamfer origin
+  c1=sqrt(2)*a1; //offset distance 45°
+  hchmf=sqrt(2)*chamfer/2; //diagonal of outer offset
+  
+  chmfIn=2*(hchmf+c1-wallThck)/sqrt(2);
+  
   difference(){
-    chamfCube(boxDims,chamfer);
-    translate([0,0,-fudge]) chamfCube([boxDims.x-wallThck*2,boxDims.y-wallThck*2,boxDims.z-wallThck],chmfIn+0.7);
+    union(){
+      chamfCube(boxDims,chamfer);
+      linear_extrude(flangeDims.z,convexity=3) difference(){
+        chamferedRect([flangeDims.x,flangeDims.y],chamfer);
+        for (ix=[-1,1],iy=[-1,1])
+          translate([ix*drillDist.x/2,iy*drillDist.y/2]) circle(d=drillDia);
+      }
+    }
+    translate([0,0,-fudge]) chamfCube([boxDims.x-wallThck*2,boxDims.y-wallThck*2,boxDims.z-wallThck],chmfIn);
+    
   }
 }
 
