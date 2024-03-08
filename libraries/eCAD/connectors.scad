@@ -750,15 +750,24 @@ module ETH(){
 
 }
 
+!usbCUpright();
+module usbCUpright(){
+  //upright USB-C connector
+  //https://www.xunpu.com.cn/uploadfile/202307/b4bb7aeb28cf0b3.pdf
+  
+  translate([0,0,4.58+0.2]) rotate([0,90,0]) usbC(true);
+}
+
+
 *usbC();
-module usbC(){
+module usbC(center=false){
   //https://usb.org/document-library/usb-type-cr-cable-and-connector-specification-revision-21
   //rev 2.1 may 2021
   //receptacle dims
   shellOpng=[8.34,2.56];
   shellLngth=6.2; //reference Length of shell to datum A
   shellThck=0.2;
-
+  centerOffset = center ? [0,0,-(shellOpng.y+shellThck*2)/2] : [0,0,0] ;
   //tongue
   tngDims=[6.69,4.45,0.6];
 
@@ -772,7 +781,7 @@ module usbC(){
   cntcDims=[0.25,0.05];
   pitch=0.5;
 
-  translate([0,0,shellOpng.y/2+shellThck]) rotate([90,0,0]){
+  translate([0,0,shellOpng.y/2+shellThck]+centerOffset) rotate([90,0,0]){
     color("silver") translate([0,0,-bdyLngth]) shell(shellLngth+bdyLngth);
     tongue();
     color("darkSlateGrey") translate([0,0,-bdyLngth]) linear_extrude(bdyLngth) shellShape();
@@ -796,7 +805,7 @@ module usbC(){
   }
   module shellShape(size=[shellOpng.x,shellOpng.y]){
     hull() for (ix=[-1,1])
-        translate([ix*(size.x/2),0]) circle(d=size.y);
+        translate([ix*(size.x-size.y)/2,0]) circle(d=size.y);
   }
 }
 
@@ -1685,7 +1694,7 @@ module rndRect(size=[10,10], rad=1, center=false){
   }
   else{
     cntrOffset= center ? [0,0] : size/2;    
-    hull() for(ix=[-1,1],iy=[-1,1])
+    hull() for(ix=[-1,1],iy=[-1,1])https://usb.org/document-library/usb-type-cr-cable-and-connector-specification-revision-21
       translate([ix*(size.x/2-rad),iy*(size.y/2-rad),0]+cntrOffset) circle(r=rad);
   }
 }
