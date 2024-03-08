@@ -12,8 +12,14 @@ export="all"; //["all","left","right"]
 variant="onePiece"; //["onePiece","split"]
 //add magnets to the base and the pieces
 addMagnets=true;
-leftRadii=[10:10:120];
-rightRadii=[5:10:125];
+
+/* [Radii] */
+leftRadiiStart=10;
+leftRadiiInc=10;
+leftRadiiEnd=120;
+rightRadiiStart=5;
+rightRadiiInc=10;
+rightRadiiEnd=125;
 
 /* [pieces] */
 pcsThck=2.4; 
@@ -45,13 +51,17 @@ pcsLabelSize=4;
 pcsLabelDpth=1;
 
 /* [top left label] */
-topLeftLabel=["RADIUS","MEASURING","TOOLKIT"];
+topLeftLabel1="RADIUS";
+topLeftLabel2="MEASURING";
+topLeftLabel3="TOOLKIT";
 topLeftLabelSize=6;
 topLeftLabelDpth=1;
 topLeftLineSpcng=1.5;
 
 /* [top right label] */
-topRightLabel=["5mm - 125mm"];
+topRightLabel1="5mm - 125mm";
+topRightLabel2="";
+topRightLabel3="";
 topRightLabelSize=6;
 topRightLabelDpth=1;
 topRightLineSpcng=1.5;
@@ -61,6 +71,7 @@ magnetDia=2;
 magnetThck=1;
 //spacing for magnet compartments (x-y,z)
 magnetSpcng=[0.1,0.2]; 
+magTrayZPos="top"; //["top","bottom"]
 
 /* [Hidden] */
 // --- Original Dimensions ---
@@ -68,8 +79,11 @@ orgTrayDims=[140+125,10+130,5];
 orgPcsThck=2.4;
 orgPcsOffset=[2.5,5];
 orgBrimHght=1;
-
+leftRadii=[leftRadiiStart:leftRadiiInc:leftRadiiEnd];
+rightRadii=[rightRadiiStart:rightRadiiInc:rightRadiiEnd];
 fudge=0.1;
+topLeftLabel=[topLeftLabel1,topLeftLabel2,topLeftLabel3];
+topRightLabel=[topRightLabel1,topRightLabel2,topRightLabel3];
 
 
 if (showOrigTray)
@@ -113,15 +127,18 @@ if (showTray)
 //pieces
 if (showPieces)
   color("orange") translate(pcsOffset) difference(){
-    linear_extrude(pcsThck, convexity=3) piecesShp();
+    linear_extrude(pcsThck, convexity=3) piecesShp(export);
     translate([0,0,pcsThck-pcsLabelDpth]) linear_extrude(pcsLabelDpth+fudge) labelsShp();
     if (addMagnets)
       translate([0,0,-fudge]) linear_extrude(magnetThck+fudge+magnetSpcng[1]) offset(magnetSpcng[0]) magnetsShp();
   }
 
 //magnets
-if (showMagnets)
-  color("silver") translate(pcsOffset+[0,0,-magnetThck]) linear_extrude(magnetThck) magnetsShp();
+if (showMagnets){
+  //tray
+  magTrayZ= (magTrayZPos=="top") ? -magnetThck : -pcsOffset.z;
+  color("silver") translate(pcsOffset+[0,0,magTrayZ]) linear_extrude(magnetThck) magnetsShp();
+  }
 
 module tray(){
   difference(){
@@ -142,8 +159,9 @@ module tray(){
       translate([trayDims.x/2-crnrRad,trayDims.y-crnrRad-i*topRightLabelSize*1.5,trayDims.z-brimDims.y-topRightLabelDpth]) 
         linear_extrude(topRightLabelDpth+fudge) text(topRightLabel[i],size=topRightLabelSize,valign="top",halign="right");
     //magnets
+    magTrayZ= (magTrayZPos=="top") ? -magnetThck-magnetSpcng[1] : -pcsOffset.z-fudge;
     if (addMagnets)
-      translate(pcsOffset+[0,0,-magnetThck-magnetSpcng[1]]) 
+      translate(pcsOffset+[0,0,magTrayZ]) 
         linear_extrude(magnetThck+fudge+magnetSpcng[1]) offset(magnetSpcng[0]) magnetsShp();
   }
   module body(){
@@ -181,15 +199,17 @@ module tray(){
 }
 
 //arrange pieces
-module piecesShp(){
+module piecesShp(sides="all"){
   
-  //left (even)
-  for (r=leftRadii)
-    translate([-pcsDistance/2,0]) rotate(90) piece(r);
+  //left (even) 
+  if ((sides=="all") || (sides=="left"))
+    for (r=leftRadii)
+      translate([-pcsDistance/2,0]) rotate(90) piece(r);
   
   //right (odd)
-  for (r=rightRadii)
-    translate([pcsDistance/2,0]) rotate(0) piece(r);
+  if ((sides=="all") || (sides=="right"))
+    for (r=rightRadii)
+      translate([pcsDistance/2,0]) rotate(0) piece(r);
 }
 
 //arrange labels
