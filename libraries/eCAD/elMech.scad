@@ -1190,6 +1190,56 @@ module snapActionSwitch(){
   }
 }
 
+!rocpuSideSwitch();
+module rocpuSideSwitch(){
+  //https://www.lcsc.com/datasheet/lcsc_datasheet_2303211430_ROCPU-Switches-TP12422663_C5381383.pdf
+  bdyDims=[6,3.6,3.5];
+  sheetThck=0.1;
+  
+  //body
+  color(blackBodyCol){
+    difference(){
+      translate([0,sheetThck/2,bdyDims.z/2]) cube(bdyDims+[0,-sheetThck,0],true);
+      color(metalSilverCol) for (ix=[-1,1])
+      translate([ix*5.2/2,(bdyDims.y-1.2)/2,(sheetThck-fudge)/2]) cube([1.2,1.3,sheetThck+fudge],true);
+    }
+    //pegs
+    for (ix=[-1,1]){
+      translate([ix,0.65,-0.6]) cylinder(d=0.8,h=0.6);
+      translate([ix,0.65,-0.8]) cylinder(d1=0.6,d2=0.8,h=0.2);
+    }
+  }
+  //metalsheet
+  color(metalSilverCol) translate([0,-bdyDims.y/2+sheetThck,0]) sheet();
+  
+  //button
+  color(whiteBodyCol) translate([0,-bdyDims.y/2,1.7]) 
+    rotate([90,0,0]) linear_extrude(2.7,scale=[0.9,0.9]) square([3,1.45],true);
+  //pads
+  color(metalSilverCol) for (ix=[-1,1])
+    translate([ix*4.8/2,(bdyDims.y-1.2)/2,sheetThck/2]) cube([0.6,1.2,sheetThck],true);
+  
+  module sheet(){
+    sheetDims=[7.95,3.5];
+    rad=0.2;
+    
+    //front
+    rotate([90,0,0]) linear_extrude(sheetThck){
+      translate([0,1.7/2+sheetThck/4]) square([sheetDims.x,1.7-sheetThck/2],true);
+      translate([0,(3.5+sheetThck/2)/2,0]) square([6,sheetDims.y-sheetThck/2],true);
+      
+    }
+    //pads
+    for (ix=[-1,1]){
+      translate([ix*(7.95-0.65)/2,-sheetThck/2,sheetThck/2]) 
+        rotate([0,90,0]) cylinder(d=sheetThck,h=0.65,center=true);
+      translate([ix*(7.95-0.65)/2,(1.1-sheetThck)/2,0]) 
+        linear_extrude(sheetThck) square([0.65,1.1],true);
+      
+    }
+  }
+}
+
 
 // --- Helpers ---
 *bendTerminal();
