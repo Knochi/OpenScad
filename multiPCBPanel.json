@@ -1,0 +1,30 @@
+{
+    "fileFormatVersion": "1",
+    "parameterSets": {
+        "Neue Parameter Liste1": {
+            "boxBrmOvHng": "4",
+            "boxBrmRad": "8",
+            "boxCrnrRad": "20",
+            "boxHght": "138",
+            "boxLwrDims": "[241, 156]",
+            "boxTopDims": "[260, 175]",
+            "footDims": "[34, 34, 7]",
+            "litOvHng": "4",
+            "litSpcng": "0.5",
+            "litStckSpcng": "2",
+            "quality": "20",
+            "rcsGripDepth": "16.5",
+            "rcsGripHght": "100",
+            "rcsGripRad": "15",
+            "rcsGripTopWdth": "75",
+            "rcsSiteDepth": "2.5",
+            "rcsSiteHght": "100",
+            "rcsSiteTopWdth": "160",
+            "sectionPlane": "none",
+            "sectionPos": "0.5",
+            "showBox": "true",
+            "showLit": "false",
+            "wallThck": "1.6000000000000001"
+        }
+    }
+}
