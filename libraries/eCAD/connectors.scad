@@ -401,33 +401,40 @@ module PJ398SM(){
   translate([-0.4,-6.48-0.1/2,-3.5]) rotate([-alpha,0,0]) cube([0.8,0.1,lgLngth]);
 }
 
-module femHeaderSMD(pins=10,rows=1,height=3.7,pPeg=true,center=false){
-  pitch=2.54;
-  pinDims=[0.64,2.5/2+0.2*2,0.2];
-  bdDims=[pins*2.54/rows,2.5*rows,height-pinDims.z];
+*femHeaderSMD(10,2,3.7,1.27,center=false);
+module femHeaderSMD(pins=10,rows=1,height=3.7, pitch=2.54, pPeg=true,center=false){
+  //1.27: https://www.mpe-connector.de/de/produkte/buchsenleisten/buchsenleiste-smd-127-mm
+  //2.54: https://www.mpe-connector.de/de/produkte/buchsenleisten/buchsenleiste-smd-254-mm
+  
+  rowWdth= (pitch==2.54) ? 2.5 : 1.5;
+  holeWdth = (pitch==2.54) ? 0.7 : 0.35;
+  pinDims= (pitch==2.54) ? [0.64,(7.2-pitch-holeWdth)/2,0.2] : [0.32,(4.3-pitch-holeWdth)/2,0.15];
+  bdDims= [pins*pitch/rows,rowWdth*rows,height-pinDims.z];
+  frstmDims= (pitch==2.54) ? [2,2,1+fudge] : [1,1,0.5+fudge] ;
+  pegDia= (pitch==2.54) ? 1.6 : 0.55;
+  pegHght= (pitch==2.54) ? 1.1 : 0.9 ;
 
-
-  cntrOffset= (center) ? [0,0,height/2+pinDims.z] : [(pins/rows-1)*pitch/2,pitch/2*(rows-1),height/2+pinDims.z] ;
+  cntrOffset= (center) ? [0,0,height/2+pinDims.z/2] : [(pins/rows-1)*pitch/2,pitch/2*(rows-1),height/2+pinDims.z/2] ;
 
   translate(cntrOffset){
 
         difference(){
-          color("darkslategrey") cube(bdDims,true);
+          color(blackBodyCol) cube(bdDims,true);
           translate([0,0,-(bdDims.z-pinDims.z)/2])
-            color("darkslategrey")
-              cube([bdDims.x+fudge,2*rows,pinDims.z+fudge],true);
+            color(blackBodyCol)
+              cube([bdDims.x+fudge,pitch+frstmDims.x,pinDims.z+fudge],true);
 
             if (rows==1) for (ix=[-(pins-1)/2:(pins-1)/2]){
-              translate([ix*pitch,0,0]) color("darkslategrey")
-                cube([0.7,0.7,bdDims.z+fudge],true);
-              translate([ix*pitch,0,(bdDims.z-1)/2]) mirror([0,0,1])
-                frustum(size=[2,2,1+fudge],flankAng=40, col="darkslategrey");
+              translate([ix*pitch,0,0]) color(blackBodyCol)
+                cube([holeWdth,holeWdth,bdDims.z+fudge],true);
+              translate([ix*pitch,0,(bdDims.z-frstmDims.z+fudge)/2]) mirror([0,0,1])
+                frustum(size=frstmDims,flankAng=40, col=blackBodyCol);
             }
             else for (ix=[-(pins/2-1)/2:(pins/2-1)/2],iy=[-1,1]){
-              translate([ix*pitch,iy*pitch/2,0]) color("darkslategrey")
-                cube([0.7,0.7,bdDims.z+fudge],true);
-              translate([ix*pitch,iy*pitch/2,(bdDims.z-1)/2]) mirror([0,0,1])
-                frustum(size=[2,2,1+fudge],flankAng=40, col="darkslategrey");
+              translate([ix*pitch,iy*pitch/2,0]) color(blackBodyCol)
+                cube([holeWdth,holeWdth,bdDims.z+fudge],true);
+              translate([ix*pitch,iy*pitch/2,(bdDims.z-frstmDims.z+fudge)/2]) mirror([0,0,1])
+                frustum(size=frstmDims,flankAng=40, col=blackBodyCol);
             }
           }
 
@@ -435,20 +442,20 @@ module femHeaderSMD(pins=10,rows=1,height=3.7,pPeg=true,center=false){
     if (rows==1){
         for (ix=[-(pins-1)/2:2:(pins-1)/2])
           translate([ix*pitch,pinDims.y/2+1-pinDims.z*2,-(bdDims.z+pinDims.z)/2])
-            color("gold") cube(pinDims,true);
+            color(metalGoldPinCol) cube(pinDims,true);
         for (ix=[-(pins-3)/2:2:(pins-1)/2])
-          translate([ix*pitch,-(pinDims.y/2+1-pinDims.z*2),-(bdDims.z+pinDims.z)/2]) color("gold")
+          translate([ix*pitch,-(pinDims.y/2+1-pinDims.z*2),-(bdDims.z+pinDims.z)/2]) color(metalGoldPinCol)
             cube(pinDims,true);
       }
     else {
         for (ix=[-(pins/2-1)/2:(pins/2-1)/2],iy=[-1,1])
-          translate([ix*pitch,iy*(pinDims.y/2+pitch/2+0.7),-(bdDims.z+pinDims.z)/2])
-            color("gold") cube(pinDims,true);
+          translate([ix*pitch,iy*(pinDims.y/2+pitch/2+holeWdth/2),-(bdDims.z+pinDims.z)/2])
+            color(metalGoldPinCol) cube(pinDims,true);
         if (pPeg)
           for (ix=[-1,1])
-            translate([-ix*((pins/2-2)*pitch)/2,0,-(bdDims.z/2+1.3)]){
-              color("darkSlateGrey") cylinder(d1=1.2,d2=1.6,h=0.2);
-              translate([0,0,0.2]) color("darkSlateGrey") cylinder(d=1.6,h=1.1+pinDims.z+fudge);
+            translate([-ix*((pins/2-2)*pitch)/2,0,-(bdDims.z/2+pegHght)]){
+              color(blackBodyCol) cylinder(d1=pegDia-0.4,d2=pegDia,h=0.2);
+              translate([0,0,0.2]) color(blackBodyCol) cylinder(d=pegDia,h=pegHght+pinDims.z+fudge);
             }
 
     }
@@ -634,12 +641,12 @@ module DSub(pins=9, isFemale=true, mountBehind=true, THT=false, cutOut=false, dr
         } 
         //pins
         for (ix=[-(pins-1)/4:(pins-1)/4])
-          color("gold") translate([ix*pitch.x,pitch.y/2,0]){
+          color(metalGoldPinCol) translate([ix*pitch.x,pitch.y/2,0]){
             cylinder(d=pinDia,h=5.1-pinDia/2);
             translate([0,0,5.1-pinDia/2]) sphere(d=pinDia);
         }
         for (ix=[-(floor(pins/2-1)/2):(floor(pins/2-1)/2)])
-          color("gold") translate([ix*pitch.x,-pitch.y/2,0]){
+          color(metalGoldPinCol) translate([ix*pitch.x,-pitch.y/2,0]){
             cylinder(d=pinDia,h=5.1-pinDia/2);
             translate([0,0,5.1-pinDia/2]) sphere(d=pinDia);
         }
@@ -750,17 +757,27 @@ module ETH(){
 
 }
 
-!usbCUpright();
+*usbCUpright();
 module usbCUpright(){
   //upright USB-C connector
   //https://www.xunpu.com.cn/uploadfile/202307/b4bb7aeb28cf0b3.pdf
-  
-  translate([0,0,4.58+0.2]) rotate([0,90,0]) usbC(true);
+  bdyDims=[];
+  translate([0,-0.1-7.15/2,4.58+0.2]) rotate([0,90,0]) usbC(true,pins=16);
+  //mounting pins
+  for (ix=[-1,1],iy=[-1,1])
+    color(metalSilverCol) translate([ix*4.06/2,iy*6.1/2,0]) rotate([0,90,0]) linear_extrude(0.2,center=true){
+      translate([1.35-0.5,0]) circle(d=1);
+      translate([(1.35-0.5)/2,0]) square([1.35-0.5,1],true);
+    }
+  for (iy=[-1,1])
+    color(blackBodyCol) translate([0,iy*7.15/2,-1]) cylinder(d=0.6,h=1);
+  //body
+    color(metalSilverCol) translate([0,0,9.9/2]) cube([4.35,8,9.9],true);
 }
 
 
 *usbC();
-module usbC(center=false){
+module usbC(center=false, pins=24){
   //https://usb.org/document-library/usb-type-cr-cable-and-connector-specification-revision-21
   //rev 2.1 may 2021
   //receptacle dims
@@ -776,24 +793,27 @@ module usbC(center=false){
 
   //contacts
   //          pinA1          ...                        pinA12
-  cntcLngths=[4,3.5,3.5,4,3.5,3.5,3.5,3.5,4,3.5,3.5,4]; //8x short, 4x long per side
+  cntcLngths= (pins>16) ? [4,3.5,3.5,4,3.5,3.5,3.5,3.5,4,3.5,3.5,4] : //8x short, 4x long per side
+                          [4,0,0,4,3.5,3.5,3.5,3.5,4,0,0,4]; //16pin
+  cntcDims=[0.25,0.05]; //width, thickness
   
-  cntcDims=[0.25,0.05];
   pitch=0.5;
-
+  
+  //assembly
   translate([0,0,shellOpng.y/2+shellThck]+centerOffset) rotate([90,0,0]){
-    color("silver") translate([0,0,-bdyLngth]) shell(shellLngth+bdyLngth);
+    //shell
+    color(metalSilverCol) translate([0,0,-bdyLngth]) shell(shellLngth+bdyLngth);
     tongue();
-    color("darkSlateGrey") translate([0,0,-bdyLngth]) linear_extrude(bdyLngth) shellShape();
+    color(blackBodyCol) translate([0,0,-bdyLngth]) linear_extrude(bdyLngth) shellShape();
   }
 
   module tongue(){
     tngPoly=[[0,0.6],[1.37,0.6],[1.62,tngDims.z/2],[tngDims.y-0.1,tngDims.z/2],[tngDims.y,tngDims.z/2-0.1],
     [tngDims.y,-(tngDims.z/2-0.1)],[tngDims.y-0.1,-tngDims.z/2],[1.62,-tngDims.z/2],[1.37,-0.6],[0,-0.6]];
 
-    color("darkSlateGrey") rotate([0,-90,0]) linear_extrude(tngDims.x,center=true) polygon(tngPoly);
+    color(blackBodyCol) rotate([0,-90,0]) linear_extrude(tngDims.x,center=true) polygon(tngPoly);
     for (ix=[0:11],iy=[-1,1])
-      color("gold") translate([ix*pitch-11/2*pitch,iy*(tngDims.z+cntcDims.y)/2,cntcLngths[ix]/2]) 
+      color(metalGoldPinCol) translate([ix*pitch-11/2*pitch,iy*(tngDims.z+cntcDims.y)/2,cntcLngths[ix]/2]) 
         cube([cntcDims.x,cntcDims.y,cntcLngths[ix]],true);
   }
 
@@ -1647,16 +1667,17 @@ module octagon(size=2.54){
   polygon(poly);
 }
 
-*frustum([3,2,0.9],method="poly");
+*frustum([3,2,0.9],method="linExt");
 module frustum(size=[1,1,1], flankAng=[5,5], center=false, method="poly", col="darkSlateGrey"){
   //a square frustum --> cube with a trapezoid crosssection
   //https://en.wikipedia.org/wiki/Frustum
   
+  flnkAng = is_list(flankAng) ? flankAng : [flankAng,flankAng];
   //size = base dimensions x height
   //https://en.wikibooks.org/wiki/OpenSCAD_User_Manual/Primitive_Solids#polyhedron
   cntrOffset= (center) ? [0,0,-size.z/2] : [size.x/2,size.y/2,0];
-
-  flankRed=[tan(flankAng.x)*size.z,tan(flankAng.x)*size.z]; //reduction in width by angle
+  
+  flankRed=[tan(flnkAng.x)*size.z,tan(flnkAng.x)*size.z]; //reduction in width by angle
   faceScale=[(size.x-flankRed.x*2)/size.x,(size.y-flankRed.y*2)/size.y]; //scale factor for linExt
 
   if (method=="linExt")
@@ -1694,7 +1715,7 @@ module rndRect(size=[10,10], rad=1, center=false){
   }
   else{
     cntrOffset= center ? [0,0] : size/2;    
-    hull() for(ix=[-1,1],iy=[-1,1])https://usb.org/document-library/usb-type-cr-cable-and-connector-specification-revision-21
+    hull() for(ix=[-1,1],iy=[-1,1])
       translate([ix*(size.x/2-rad),iy*(size.y/2-rad),0]+cntrOffset) circle(r=rad);
   }
 }

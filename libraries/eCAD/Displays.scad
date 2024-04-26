@@ -1,7 +1,7 @@
 include <KiCADColors.scad>
 use <connectors.scad>
 use <MPEGarry.scad>
-$fn=20;
+$fn=50;
 /* [Dimensions]  */
 fudge=0.1;
 
@@ -143,6 +143,82 @@ module OLED1_3inch4pin(center=false){
   function cntrOffset(yOffset,yDim)=(PCBDims.y-yDim)/2+yOffset;
   
 }
+
+*roundDisplayWS();
+module roundDisplayWS(){
+  // Waveshare ESP32-S3 round 1.28" IPS display with headers
+  // https://www.waveshare.com/wiki/ESP32-S3-LCD-1.28
+  pcbRad=18.25;
+  pcbHght=38;
+  pcbThck=1.6;
+  footDims=[12.81,5.48]; //trapez lower, height \___/ 
+  segWdth=18.37; //width of the chord 
+  segHght= pcbRad-0.5*sqrt(4*pcbRad^2-segWdth^2);
+  headerDist=27.0;
+  footPoly=[[-segWdth/2,0],[segWdth/2,0],[footDims.x/2,-footDims.y],[-footDims.x/2,-footDims.y]];
+  
+  displayThck=1.6;
+  //PCB
+  color(blueBodyCol) 
+    linear_extrude(pcbThck){
+      circle(pcbRad,$fn=42);
+      translate([0,-pcbRad+segHght]) polygon(footPoly);
+  }
+    
+  //Connectors
+  for (ix=[-1,1])
+    translate([ix*headerDist/2,0,pcbThck])
+      rotate(90) femHeaderSMD(20,2,3.7,1.27,pPeg=false,center=true);
+  translate([0,-15.0,1.7]) usbC();
+  
+  //Display
+  translate([0,0,-1.6]){
+    color(darkGreyBodyCol) linear_extrude(displayThck)
+      difference(){
+        circle(pcbRad);
+        circle(d=1.28*25.4);
+      }
+      color(blackBodyCol) linear_extrude(displayThck) circle(d=1.28*25.4);
+    }
+}
+
+*roundDisplay();
+module roundDisplayAE(){
+ //https://de.aliexpress.com/item/1005006306530830.html
+  studDist=[24.85,19.0767];
+  pcbDia=36.0202;
+  pcbHght=39.81;
+  pcbThck=1.6;
+  footWdth=14;
+  studDia=3;
+  studHght=3;
+  
+  // (rad+footWdth/2)²+(pcbHght-pcbDia/2)²=(rad+pcbDia/2)²
+  // rad²+2*rad*footWdth/2+(footWdth/2)² + pcbHght²-2*pcbHght*(pcbDia/2)+(pcbDia/2)² = rad²+2*rad*pcbDia/2+(pcbDia/2)²
+  // <=> -rad²,-(pcbDia/2)², -(2*rad*footWdth/2)
+  //(footWdth/2)²+pcbHght²-2*pcbHght*(pcbDia/2)=2*rad*(pcbDia/2)-2*rad*footWdth/2
+  rad=((footWdth/2)^2+pcbHght^2-2*pcbHght*pcbDia/2)/(pcbDia-footWdth);
+  ang=acos((pcbHght-pcbDia/2)/(rad+pcbDia/2));
+  baseWdth=sin(ang)*pcbDia;
+  
+  //PCB
+  color(blackBodyCol) linear_extrude(pcbThck) difference(){
+    union(){
+      circle(d=pcbDia);
+      translate([0,-pcbHght/2+pcbDia/4]) square([baseWdth,pcbHght-pcbDia/2],true);
+    }
+    for (ix=[-1,1])
+      translate([ix*(footWdth/2+rad),pcbDia/2-pcbHght]) circle(rad);
+  }
+  //studs
+  color(metalGoldPinCol) for (ix=[-1,1],iy=[-1,1])
+    translate([ix*studDist.x/2,iy*studDist.y/2,pcbThck]) cylinder(d=studDia,h=studHght);
+  //Connectors
+  translate([0,-16.5,1.7]) usbC();
+}
+
+
+
 *LD8133();
 module LD8133(){
   //NEC 9 digit VFD tube
