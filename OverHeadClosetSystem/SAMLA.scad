@@ -17,10 +17,11 @@
 quality=40; //[12:4:100]
 showBox=true;
 showLit=true;
+showCut=true;
 sectionPlane="none"; // ["none","Y-Z","X-Z","X-Y"]
 sectionPos=0.5; // [0:0.1:1]
 
-/* [Box Dimensions] */
+/* [Custom Box Dimensions] */
 //overall height of the box
 boxHght=138;
 //outer radius of the brim
@@ -97,9 +98,12 @@ difference(){
   if (sectionPlane=="X-Y") 
     translate([0,0,(sctBoxDims.z-fudge)/2+sctBoxDims.z*sectionPos]) 
       color("darkRed") cube(sctBoxDims,true);
+  if (showCut)
+    SAMLAbox(true);
 }
 
-module SAMLAbox(){
+
+module SAMLAbox(cut=false,ripDim=[101,0]){
   //polygon for cutout in y
   yPoly=[[-rcsSiteLwrWdth/2,0],
          [-rcsSiteLwrWdth/2-tan(rcsSiteFlankAng)*footDims.z,footDims.z+fudge],
@@ -111,42 +115,50 @@ module SAMLAbox(){
          [rcsGripLwrWdth/2,0]];
   
       
-  *polygon(gripRcsShpPts());
-  
-  difference(){
-    body();
-    //feet (needs to be improved)
-    translate([0,0,-fudge]) rotate([90,0,0]) linear_extrude(boxTopDims.y,center=true) polygon(yPoly);
-    translate([0,0,-fudge]) rotate([90,0,90]) linear_extrude(boxTopDims.x,center=true) polygon(xPoly);
-    *translate([0,0,(footDims.z-fudge)/2]){
-      cube([boxTopDims.x,boxLwrDims.y-footDims.y*2,footDims.z+fudge],true);
-    }
-    //inner
+  if (cut)
     difference(){
-      translate([0,0,footDims.z+wallThck]) 
-        body(topDims=[boxTopDims.x-wallThck*2,boxTopDims.y-wallThck*2],
-            lwrDims=flrDims,
-            height=boxDims.z-footDims.z-wallThck+fudge,
-            crnrRad=boxCrnrRad-wallThck);
+      hull() for (ix=[-1,1],iy=[-1,1])
+        translate([ix*(boxLwrDims.x/2-boxCrnrRad),iy*(boxLwrDims.y/2-boxCrnrRad)]) circle(boxCrnrRad);
+      square([boxLwrDims.x+fudge,ripDim.y],true);
+      square([ripDim.x, boxLwrDims.y+fudge],true);
+    }
+      
+  else {  
+    difference(){
+      body();
+      //feet (needs to be improved)
+      translate([0,0,-fudge]) rotate([90,0,0]) linear_extrude(boxTopDims.y,center=true) polygon(yPoly);
+      translate([0,0,-fudge]) rotate([90,0,90]) linear_extrude(boxTopDims.x,center=true) polygon(xPoly);
+      *translate([0,0,(footDims.z-fudge)/2]){
+        cube([boxTopDims.x,boxLwrDims.y-footDims.y*2,footDims.z+fudge],true);
+      }
+      //inner
+      difference(){
+        translate([0,0,footDims.z+wallThck]) 
+          body(topDims=[boxTopDims.x-wallThck*2,boxTopDims.y-wallThck*2],
+              lwrDims=flrDims,
+              height=boxDims.z-footDims.z-wallThck+fudge,
+              crnrRad=boxCrnrRad-wallThck);
+        for (im=[0,1]){
+          mirror([0,im,0]) translate([0,-boxLwrDims.y/2+rcsSiteDepth,0]) siteRecess();
+          mirror([im,0,0]) translate([boxLwrDims.x/2+fudge,0,0]) rotate(90) 
+            easyLoft(gripRcsShpPts(width=boxLwrDims.y-2*footDims.y,wallOffset=wallThck),
+                     gripRcsShpPts(width=rcsGripTopWdth,yOffset=-tan(bdyFlankAng.y)*rcsGripHght,wallOffset=wallThck),
+                     rcsGripHght+wallThck);
+          }
+      }
+      //recesses
       for (im=[0,1]){
-        mirror([0,im,0]) translate([0,-boxLwrDims.y/2+rcsSiteDepth,0]) siteRecess();
+        mirror([0,im,0]) translate([0,-boxLwrDims.y/2+rcsSiteDepth,0]) siteRecess(true);
         mirror([im,0,0]) translate([boxLwrDims.x/2+fudge,0,0]) rotate(90) 
-          easyLoft(gripRcsShpPts(width=boxLwrDims.y-2*footDims.y,wallOffset=wallThck),
-                   gripRcsShpPts(width=rcsGripTopWdth,yOffset=-tan(bdyFlankAng.y)*rcsGripHght,wallOffset=wallThck),
-                   rcsGripHght+wallThck);
-        }
+          easyLoft(gripRcsShpPts(width=boxLwrDims.y-2*footDims.y),
+                   gripRcsShpPts(width=rcsGripTopWdth,yOffset=-tan(bdyFlankAng.y)*rcsGripHght),
+                   rcsGripHght);
+      }
     }
-    //recesses
-    for (im=[0,1]){
-      mirror([0,im,0]) translate([0,-boxLwrDims.y/2+rcsSiteDepth,0]) siteRecess(true);
-      mirror([im,0,0]) translate([boxLwrDims.x/2+fudge,0,0]) rotate(90) 
-        easyLoft(gripRcsShpPts(width=boxLwrDims.y-2*footDims.y),
-                 gripRcsShpPts(width=rcsGripTopWdth,yOffset=-tan(bdyFlankAng.y)*rcsGripHght),
-                 rcsGripHght);
-    }
+    
+    translate([0,0,boxDims.z]) brim();
   }
-  
-  translate([0,0,boxDims.z]) brim();
 
   module body(topDims=boxTopDims,lwrDims=boxLwrDims, height=boxDims.z,crnrRad=boxCrnrRad,useLoft=true){
     
