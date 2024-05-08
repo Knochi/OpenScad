@@ -111,15 +111,6 @@ module OLED1_3inch4pin(center=false){
         translate([0,(-PCBDims.y+cutOutDims.y)/2]) square(cutOutDims,true);
         }
         
-    /*//glass with active area
-    color(glassGreyCol) translate([0,0,PCBDims.z+mfudge])
-      linear_extrude(glassDims.z)
-      difference(){
-        translate([0,cntrOffset(glassYOffset,glassDims.y)])
-          square([glassDims.x,glassDims.y],true);
-        translate([0,cntrOffset(aaYOffset,aaDims.y),PCBDims.z+glassDims.z+aaDims.z+mfudge]) square([aaDims.x,aaDims.y],true);
-        } */
-        
     //active area
     translate([0,0,PCBDims.z+mfudge]) 
       color(blackBodyCol)
@@ -144,8 +135,8 @@ module OLED1_3inch4pin(center=false){
   
 }
 
-*roundDisplayWS();
-module roundDisplayWS(){
+!roundDisplayWS();
+module roundDisplayWS(showPlug=false){
   // Waveshare ESP32-S3 round 1.28" IPS display with headers
   // https://www.waveshare.com/wiki/ESP32-S3-LCD-1.28
   pcbRad=18.25;
@@ -157,7 +148,7 @@ module roundDisplayWS(){
   headerDist=27.0;
   footPoly=[[-segWdth/2,0],[segWdth/2,0],[footDims.x/2,-footDims.y],[-footDims.x/2,-footDims.y]];
   
-  displayThck=1.6;
+  displayThck=3.4-1.6;
   //PCB
   color(blueBodyCol) 
     linear_extrude(pcbThck){
@@ -168,16 +159,21 @@ module roundDisplayWS(){
   //Connectors
   for (ix=[-1,1])
     translate([ix*headerDist/2,0,pcbThck])
-      rotate(90) femHeaderSMD(20,2,3.7,1.27,pPeg=false,center=true);
-  translate([0,-15.0,1.7]) usbC();
+      rotate(90) femHeaderSMD(20,2,4.5,1.27,pPeg=false,center=true);
+  translate([0,-15.0,1.7]) usbC(plug=showPlug);
   
   //Display
-  translate([0,0,-1.6]){
+  translate([0,0,-displayThck]){
     color(darkGreyBodyCol) linear_extrude(displayThck)
       difference(){
-        circle(pcbRad);
+        union(){
+          circle(pcbRad);
+          translate([0,-pcbRad+segHght]) polygon(footPoly);
+        }
         circle(d=1.28*25.4);
-      }
+      
+      
+    }
       color(blackBodyCol) linear_extrude(displayThck) circle(d=1.28*25.4);
     }
 }
