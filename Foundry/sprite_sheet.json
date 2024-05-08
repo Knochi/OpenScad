@@ -1,0 +1,1381 @@
+{
+  "sprites": [
+    {
+      "fileName": "advanced_xenoferrite_ignium_blend_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 1,
+      "y": 1
+    },
+    {
+      "fileName": "air_intake_base_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 515,
+      "y": 1
+    },
+    {
+      "fileName": "al_merger_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 1,
+      "y": 515
+    },
+    {
+      "fileName": "al_painter_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 515,
+      "y": 515
+    },
+    {
+      "fileName": "al_producer_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 1029,
+      "y": 1
+    },
+    {
+      "fileName": "al_rail_straight_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 1029,
+      "y": 515
+    },
+    {
+      "fileName": "al_splitter_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 1,
+      "y": 1029
+    },
+    {
+      "fileName": "al_start_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 515,
+      "y": 1029
+    },
+    {
+      "fileName": "assembler_i_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 1029,
+      "y": 1029
+    },
+    {
+      "fileName": "assembler_ii_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 1543,
+      "y": 1
+    },
+    {
+      "fileName": "assembler_iii_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 1543,
+      "y": 515
+    },
+    {
+      "fileName": "battery_i_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 1543,
+      "y": 1029
+    },
+    {
+      "fileName": "battery_ii_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 1,
+      "y": 1543
+    },
+    {
+      "fileName": "biomass_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 515,
+      "y": 1543
+    },
+    {
+      "fileName": "biomass_burner_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 1029,
+      "y": 1543
+    },
+    {
+      "fileName": "boiler_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 1543,
+      "y": 1543
+    },
+    {
+      "fileName": "blast_furnace_base_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 2057,
+      "y": 1
+    },
+    {
+      "fileName": "burner_generator_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 2057,
+      "y": 515
+    },
+    {
+      "fileName": "casting_machine_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 2057,
+      "y": 1029
+    },
+    {
+      "fileName": "cement_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 2057,
+      "y": 1543
+    },
+    {
+      "fileName": "chemical_processor_i_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 1,
+      "y": 2057
+    },
+    {
+      "fileName": "color_tool_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 515,
+      "y": 2057
+    },
+    {
+      "fileName": "concrete_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 1029,
+      "y": 2057
+    },
+    {
+      "fileName": "construction_drone_port_i_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 1543,
+      "y": 2057
+    },
+    {
+      "fileName": "ceiling_light_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 2057,
+      "y": 2057
+    },
+    {
+      "fileName": "construction_material_i_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 2571,
+      "y": 1
+    },
+    {
+      "fileName": "construction_rubble_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 2571,
+      "y": 515
+    },
+    {
+      "fileName": "construction_warehouse_i_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 2571,
+      "y": 1029
+    },
+    {
+      "fileName": "container_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 2571,
+      "y": 1543
+    },
+    {
+      "fileName": "conveyor_balancer_i_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 2571,
+      "y": 2057
+    },
+    {
+      "fileName": "conveyor_balancer_ii_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 1,
+      "y": 2571
+    },
+    {
+      "fileName": "conveyor_i_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 515,
+      "y": 2571
+    },
+    {
+      "fileName": "conveyor_balancer_iii_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 1029,
+      "y": 2571
+    },
+    {
+      "fileName": "conveyor_ii_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 1543,
+      "y": 2571
+    },
+    {
+      "fileName": "conveyor_iii_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 2057,
+      "y": 2571
+    },
+    {
+      "fileName": "conveyor_slope_i_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 2571,
+      "y": 2571
+    },
+    {
+      "fileName": "conveyor_slope_ii_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 3085,
+      "y": 1
+    },
+    {
+      "fileName": "conveyor_slope_iii_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 3085,
+      "y": 515
+    },
+    {
+      "fileName": "cpu_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 3085,
+      "y": 1029
+    },
+    {
+      "fileName": "crate_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 3085,
+      "y": 1543
+    },
+    {
+      "fileName": "curcuit_board_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 3085,
+      "y": 2057
+    },
+    {
+      "fileName": "decor_base_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 3085,
+      "y": 2571
+    },
+    {
+      "fileName": "decor_misc_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 1,
+      "y": 3085
+    },
+    {
+      "fileName": "decor_struts_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 515,
+      "y": 3085
+    },
+    {
+      "fileName": "decor_support_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 1029,
+      "y": 3085
+    },
+    {
+      "fileName": "decor_wall_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 1543,
+      "y": 3085
+    },
+    {
+      "fileName": "decor_window_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 2057,
+      "y": 3085
+    },
+    {
+      "fileName": "decor_window_modular_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 2571,
+      "y": 3085
+    },
+    {
+      "fileName": "dirt_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 3085,
+      "y": 3085
+    },
+    {
+      "fileName": "distillation_column_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 3599,
+      "y": 1
+    },
+    {
+      "fileName": "door_i_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 3599,
+      "y": 515
+    },
+    {
+      "fileName": "door_ii_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 3599,
+      "y": 1029
+    },
+    {
+      "fileName": "door_iii_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 3599,
+      "y": 1543
+    },
+    {
+      "fileName": "drone_miner_i_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 3599,
+      "y": 2057
+    },
+    {
+      "fileName": "drone_miner_ii_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 3599,
+      "y": 2571
+    },
+    {
+      "fileName": "drone_transport_startpad_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 3599,
+      "y": 3085
+    },
+    {
+      "fileName": "drone_transport_targetpad_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 1,
+      "y": 3599
+    },
+    {
+      "fileName": "dynamite_i_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 515,
+      "y": 3599
+    },
+    {
+      "fileName": "dynamite_remote_control_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 1029,
+      "y": 3599
+    },
+    {
+      "fileName": "ec_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 1543,
+      "y": 3599
+    },
+    {
+      "fileName": "electric_arc_furnace_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 2057,
+      "y": 3599
+    },
+    {
+      "fileName": "elevator_i_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 2571,
+      "y": 3599
+    },
+    {
+      "fileName": "emergency_beacon_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 3085,
+      "y": 3599
+    },
+    {
+      "fileName": "energy_cell_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 3599,
+      "y": 3599
+    },
+    {
+      "fileName": "firmarlite_bar_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 4113,
+      "y": 1
+    },
+    {
+      "fileName": "firmarlite_sheet_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 4113,
+      "y": 515
+    },
+    {
+      "fileName": "flare_stack_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 4113,
+      "y": 1029
+    },
+    {
+      "fileName": "floor_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 4113,
+      "y": 1543
+    },
+    {
+      "fileName": "fluid_assembler_i_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 4113,
+      "y": 2057
+    },
+    {
+      "fileName": "fracking_tower_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 4113,
+      "y": 2571
+    },
+    {
+      "fileName": "freight_elevator_i_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 4113,
+      "y": 3085
+    },
+    {
+      "fileName": "freight_elevator_ii_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 4113,
+      "y": 3599
+    },
+    {
+      "fileName": "freight_elevator_iii_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 1,
+      "y": 4113
+    },
+    {
+      "fileName": "fuel_rod_casing_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 515,
+      "y": 4113
+    },
+    {
+      "fileName": "glass_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 1029,
+      "y": 4113
+    },
+    {
+      "fileName": "gravel_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 1543,
+      "y": 4113
+    },
+    {
+      "fileName": "greenhouse_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 2057,
+      "y": 4113
+    },
+    {
+      "fileName": "hand_drill_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 2571,
+      "y": 4113
+    },
+    {
+      "fileName": "hydraulic_piston_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 3085,
+      "y": 4113
+    },
+    {
+      "fileName": "ignium_fuel_rod_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 3599,
+      "y": 4113
+    },
+    {
+      "fileName": "incinerator_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 4113,
+      "y": 4113
+    },
+    {
+      "fileName": "ignium_powder_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 4627,
+      "y": 1
+    },
+    {
+      "fileName": "ingots_telluxite_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 4627,
+      "y": 515
+    },
+    {
+      "fileName": "light_post_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 4627,
+      "y": 1029
+    },
+    {
+      "fileName": "loader_one_filter_i_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 4627,
+      "y": 1543
+    },
+    {
+      "fileName": "loader_one_i_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 4627,
+      "y": 2057
+    },
+    {
+      "fileName": "loader_three_i_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 4627,
+      "y": 2571
+    },
+    {
+      "fileName": "logistic_container_i_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 4627,
+      "y": 3085
+    },
+    {
+      "fileName": "logistic_container_iii_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 4627,
+      "y": 3599
+    },
+    {
+      "fileName": "long_range_scanner_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 4627,
+      "y": 4113
+    },
+    {
+      "fileName": "machinery_parts_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 1,
+      "y": 4627
+    },
+    {
+      "fileName": "machinery_parts_advanced_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 515,
+      "y": 4627
+    },
+    {
+      "fileName": "maintenance_drone_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 1029,
+      "y": 4627
+    },
+    {
+      "fileName": "logistic_container_ii_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 1543,
+      "y": 4627
+    },
+    {
+      "fileName": "loader_two_i_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 2057,
+      "y": 4627
+    },
+    {
+      "fileName": "jetpack_fuel_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 2571,
+      "y": 4627
+    },
+    {
+      "fileName": "hot_air_stove_base_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 3085,
+      "y": 4627
+    },
+    {
+      "fileName": "escalator_tiling_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 3599,
+      "y": 4627
+    },
+    {
+      "fileName": "explosives_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 4113,
+      "y": 4627
+    },
+    {
+      "fileName": "ladder_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 4627,
+      "y": 4627
+    },
+    {
+      "fileName": "mineral_rock_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 5141,
+      "y": 1
+    },
+    {
+      "fileName": "mining_laser_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 5141,
+      "y": 515
+    },
+    {
+      "fileName": "modular_building_planer_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 5141,
+      "y": 1029
+    },
+    {
+      "fileName": "modular_fluid_tank_base_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 5141,
+      "y": 1543
+    },
+    {
+      "fileName": "monument_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 5141,
+      "y": 2057
+    },
+    {
+      "fileName": "office_chair_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 5141,
+      "y": 2571
+    },
+    {
+      "fileName": "office_chair_deluxe_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 5141,
+      "y": 3085
+    },
+    {
+      "fileName": "office_couch_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 5141,
+      "y": 3599
+    },
+    {
+      "fileName": "office_couch_deluxe_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 5141,
+      "y": 4113
+    },
+    {
+      "fileName": "office_desk_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 5141,
+      "y": 4627
+    },
+    {
+      "fileName": "office_desk_deluxe_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 1,
+      "y": 5141
+    },
+    {
+      "fileName": "office_file_cabinet_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 515,
+      "y": 5141
+    },
+    {
+      "fileName": "office_file_cabinet_deluxe_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 1029,
+      "y": 5141
+    },
+    {
+      "fileName": "office_marble_black_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 1543,
+      "y": 5141
+    },
+    {
+      "fileName": "office_marble_white_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 2057,
+      "y": 5141
+    },
+    {
+      "fileName": "office_nameplate_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 2571,
+      "y": 5141
+    },
+    {
+      "fileName": "office_plant_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 3085,
+      "y": 5141
+    },
+    {
+      "fileName": "office_plant_deluxe_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 3599,
+      "y": 5141
+    },
+    {
+      "fileName": "office_statue_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 4113,
+      "y": 5141
+    },
+    {
+      "fileName": "office_table_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 4627,
+      "y": 5141
+    },
+    {
+      "fileName": "office_table_deluxe_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 5141,
+      "y": 5141
+    },
+    {
+      "fileName": "office_wall_i_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 5655,
+      "y": 1
+    },
+    {
+      "fileName": "office_wall_i_plain_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 5655,
+      "y": 515
+    },
+    {
+      "fileName": "office_wall_plaque_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 5655,
+      "y": 1029
+    },
+    {
+      "fileName": "ore_crusher_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 5655,
+      "y": 1543
+    },
+    {
+      "fileName": "ore_crusher_ii_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 5655,
+      "y": 2057
+    },
+    {
+      "fileName": "ore_ignium_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 5655,
+      "y": 2571
+    },
+    {
+      "fileName": "ore_rubble_ignium_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 5655,
+      "y": 3085
+    },
+    {
+      "fileName": "ore_rubble_technum_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 5655,
+      "y": 3599
+    },
+    {
+      "fileName": "ore_rubble_telluxite_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 5655,
+      "y": 4113
+    },
+    {
+      "fileName": "ore_rubble_xenoferrite_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 5655,
+      "y": 4627
+    },
+    {
+      "fileName": "ore_scanner_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 5655,
+      "y": 5141
+    },
+    {
+      "fileName": "ore_technum_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 1,
+      "y": 5655
+    },
+    {
+      "fileName": "ore_telluxite_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 515,
+      "y": 5655
+    },
+    {
+      "fileName": "ore_vein_miner_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 1029,
+      "y": 5655
+    },
+    {
+      "fileName": "ore_xenoferrite_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 1543,
+      "y": 5655
+    },
+    {
+      "fileName": "pipe_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 2057,
+      "y": 5655
+    },
+    {
+      "fileName": "pipe_adapter_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 2571,
+      "y": 5655
+    },
+    {
+      "fileName": "pipe_intake_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 3085,
+      "y": 5655
+    },
+    {
+      "fileName": "pipeline_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 3599,
+      "y": 5655
+    },
+    {
+      "fileName": "plant_seed_blue_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 4113,
+      "y": 5655
+    },
+    {
+      "fileName": "plant_seed_cyan_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 4627,
+      "y": 5655
+    },
+    {
+      "fileName": "plant_seed_green_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 5141,
+      "y": 5655
+    },
+    {
+      "fileName": "plant_seed_orange_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 5655,
+      "y": 5655
+    },
+    {
+      "fileName": "plant_seed_pink_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 6169,
+      "y": 1
+    },
+    {
+      "fileName": "plant_seed_purple_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 6169,
+      "y": 515
+    },
+    {
+      "fileName": "plant_seed_red_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 6169,
+      "y": 1029
+    },
+    {
+      "fileName": "plant_seed_yellow_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 6169,
+      "y": 1543
+    },
+    {
+      "fileName": "plumber_tool_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 6169,
+      "y": 2057
+    },
+    {
+      "fileName": "polymer_board_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 6169,
+      "y": 2571
+    },
+    {
+      "fileName": "portable_fuel_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 6169,
+      "y": 3085
+    },
+    {
+      "fileName": "power_pole_i_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 6169,
+      "y": 3599
+    },
+    {
+      "fileName": "power_pole_ii_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 6169,
+      "y": 4113
+    },
+    {
+      "fileName": "power_pole_iii_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 6169,
+      "y": 4627
+    },
+    {
+      "fileName": "powerline_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 6169,
+      "y": 5141
+    },
+    {
+      "fileName": "pump_pipelines_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 6169,
+      "y": 5655
+    },
+    {
+      "fileName": "pump_pipes_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 1,
+      "y": 6169
+    },
+    {
+      "fileName": "pumpjack_i_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 515,
+      "y": 6169
+    },
+    {
+      "fileName": "radio_tower_base_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 1029,
+      "y": 6169
+    },
+    {
+      "fileName": "railings_straight_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 1543,
+      "y": 6169
+    },
+    {
+      "fileName": "research_entity_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 2057,
+      "y": 6169
+    },
+    {
+      "fileName": "robot_parts_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 2571,
+      "y": 6169
+    },
+    {
+      "fileName": "robot01_arm_left_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 3085,
+      "y": 6169
+    },
+    {
+      "fileName": "robot01_head_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 3599,
+      "y": 6169
+    },
+    {
+      "fileName": "robot01_leg_left_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 4113,
+      "y": 6169
+    },
+    {
+      "fileName": "robot01_torso_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 4627,
+      "y": 6169
+    },
+    {
+      "fileName": "rocky_desert_dirt_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 5141,
+      "y": 6169
+    },
+    {
+      "fileName": "rods_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 5655,
+      "y": 6169
+    },
+    {
+      "fileName": "salescurrency_warehouse_i_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 6169,
+      "y": 6169
+    },
+    {
+      "fileName": "salesitem_warehouse_i_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 6683,
+      "y": 1
+    },
+    {
+      "fileName": "sand_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 6683,
+      "y": 515
+    },
+    {
+      "fileName": "science_pack_i_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 6683,
+      "y": 1029
+    },
+    {
+      "fileName": "science_pack_ii_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 6683,
+      "y": 1543
+    },
+    {
+      "fileName": "science_pack_iii_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 6683,
+      "y": 2057
+    },
+    {
+      "fileName": "science_pack_iv_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 6683,
+      "y": 2571
+    },
+    {
+      "fileName": "science_pack_v_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 6683,
+      "y": 3085
+    },
+    {
+      "fileName": "sign_floor_1x1_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 6683,
+      "y": 3599
+    },
+    {
+      "fileName": "smelter_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 6683,
+      "y": 4113
+    },
+    {
+      "fileName": "smelter_small_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 6683,
+      "y": 4627
+    },
+    {
+      "fileName": "solar_panel_i_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 6683,
+      "y": 5141
+    },
+    {
+      "fileName": "solar_panel_large_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 6683,
+      "y": 5655
+    },
+    {
+      "fileName": "stairs_straight_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 6683,
+      "y": 6169
+    },
+    {
+      "fileName": "steam_turbine_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 1,
+      "y": 6683
+    },
+    {
+      "fileName": "steel_beams_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 515,
+      "y": 6683
+    },
+    {
+      "fileName": "stone_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 1029,
+      "y": 6683
+    },
+    {
+      "fileName": "tank_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 1543,
+      "y": 6683
+    },
+    {
+      "fileName": "telluxite_wafer_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 2057,
+      "y": 6683
+    },
+    {
+      "fileName": "transformer_i_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 2571,
+      "y": 6683
+    },
+    {
+      "fileName": "transformer_ii_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 3085,
+      "y": 6683
+    },
+    {
+      "fileName": "transport_drone_port_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 3599,
+      "y": 6683
+    },
+    {
+      "fileName": "tropical_rainforest_dirt_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 4113,
+      "y": 6683
+    },
+    {
+      "fileName": "walkways_platform_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 4627,
+      "y": 6683
+    },
+    {
+      "fileName": "wall_light_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 5141,
+      "y": 6683
+    },
+    {
+      "fileName": "wire_coil_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 5655,
+      "y": 6683
+    },
+    {
+      "fileName": "xenoferrite_ignium_blend_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 6169,
+      "y": 6683
+    },
+    {
+      "fileName": "xf_plate_512.png",
+      "width": 512,
+      "height": 512,
+      "x": 6683,
+      "y": 6683
+    }
+  ],
+  "packMode": "bin",
+  "padding": 1,
+  "backgroundColor": "rgba(0, 0, 0, 0)",
+  "spriteSheetWidth": 7196,
+  "spriteSheetHeight": 7196
+}

@@ -1,10 +1,12 @@
 use <SAMLA.scad>
 
+$fn=20;
 
 /* [show] */
 showBoxes=true;
 showLits=true;
 showDrawers=true;
+export="none"; //["none","footprint"]
 
 /* [Closet Dimensions] */
 ovInDims=[970,610,435];
@@ -21,16 +23,25 @@ constBeamsDim=[10,40]; //available widths: 10, 20,
 drawer1Pos=0; //[0:0.1:1]
 drawer2Pos=0; //[0:0.1:1]
 drawer3Pos=0; //[0:0.1:1]
-boxDist=[304,200,134];
-boxOffset=[215,110,12.7+9];
+boxDist=[304,195.8,134];
+boxOffset=[215,110,4.7];
 boxCount=[3,3,3];
 boxRotation=0;
-//Thickness of the plywood sheets
-sheetThck=9;
+
 slideLength=600;
 slidesYOffset=-100;
 slidesZOffset=0;
 slideType="TSS-5413";
+//Thickness of the plywood sheets
+sheetThck=9;
+//Thickness of the Footprint sheet
+fpSheetThck=3;
+//Spacing for the Footprints
+fpSpacing=1;
+//width of the sheets
+sheetWidth=280; // samla lit width, was: boxDist.x-constBeamsDim.x-12.7*2;
+//distance of the holes from edge
+holeDist=10; 
 /* [Hidden] */
 
 /*
@@ -41,12 +52,22 @@ slideType="TSS-5413";
 */
 drawerPos=[drawer1Pos,drawer2Pos,drawer3Pos];
 
+if (export=="footprint")
+  !difference(){
+    square([sheetWidth,slideLength],true);
+    for (iy=[0:boxCount.y-1])
+      translate([0,iy*boxDist.y-boxDist.y]) 
+        rotate(boxRotation) offset(fpSpacing) SAMLAbox(true);
+    for (ix=[-1:1],iy=[-boxCount.y/2:boxCount.y/2])
+      translate([ix*(sheetWidth/2-holeDist),iy*boxDist.y]) circle(d=3.5);
+  }
+//drawers
 for (i=[0:boxCount.x-1]) translate([i*boxDist.x+boxOffset.x,boxOffset.y+slidesYOffset,slidesZOffset])
   horizontalDrawer(pos=drawerPos[i]) 
     for (iy=[0:boxCount.y-1],iz=[0:boxCount.z-1])
       translate([0,
                 iy*boxDist.y-boxDist.y,
-                iz*boxDist.z]) 
+                iz*boxDist.z+boxOffset.z]) 
         rotate(boxRotation){
           if (showBoxes)
             color("ghostWhite") SAMLAbox();
@@ -86,8 +107,7 @@ color("tan") translate([-vertBeamSect.x,vertBeamSect.y,-flrThck])
 
 
 module horizontalDrawer(mountFlat=true, pos=0){
-  sheetWidth=280; // samla lit width, was: boxDist.x-constBeamsDim.x-12.7*2;
-  
+ 
   //a set of horizontal drawers from Box Positions
   
     //slides

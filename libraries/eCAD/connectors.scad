@@ -776,8 +776,8 @@ module usbCUpright(){
 }
 
 
-*usbC();
-module usbC(center=false, pins=24){
+!usbC(plug=true);
+module usbC(center=false, pins=24, plug=false){
   //https://usb.org/document-library/usb-type-cr-cable-and-connector-specification-revision-21
   //rev 2.1 may 2021
   //receptacle dims
@@ -802,11 +802,15 @@ module usbC(center=false, pins=24){
   //assembly
   translate([0,0,shellOpng.y/2+shellThck]+centerOffset) rotate([90,0,0]){
     //shell
-    color(metalSilverCol) translate([0,0,-bdyLngth]) shell(shellLngth+bdyLngth);
+    color(metalSilverCol) translate([0,0,-bdyLngth]) rcptShell(shellLngth+bdyLngth);
     tongue();
     color(blackBodyCol) translate([0,0,-bdyLngth]) linear_extrude(bdyLngth) shellShape();
   }
 
+  //plug
+  if (plug)
+    translate([0,0,shellOpng.y/2+shellThck]+centerOffset) rotate([-90,0,0]) plug();
+  
   module tongue(){
     tngPoly=[[0,0.6],[1.37,0.6],[1.62,tngDims.z/2],[tngDims.y-0.1,tngDims.z/2],[tngDims.y,tngDims.z/2-0.1],
     [tngDims.y,-(tngDims.z/2-0.1)],[tngDims.y-0.1,-tngDims.z/2],[1.62,-tngDims.z/2],[1.37,-0.6],[0,-0.6]];
@@ -817,7 +821,7 @@ module usbC(center=false, pins=24){
         cube([cntcDims.x,cntcDims.y,cntcLngths[ix]],true);
   }
 
-  module shell(length=shellLngth){
+  module rcptShell(length=shellLngth){
     linear_extrude(length) difference(){
       offset(shellThck) shellShape();
       shellShape();
@@ -826,6 +830,17 @@ module usbC(center=false, pins=24){
   module shellShape(size=[shellOpng.x,shellOpng.y]){
     hull() for (ix=[-1,1])
         translate([ix*(size.x-size.y)/2,0]) circle(d=size.y);
+  }
+  
+  module plug(){
+    //minimal Plug length from USB.org
+    translate([0,0,-6.65]){
+      color(metalGreyPinCol) linear_extrude(6.65)
+        shellShape(size=[8.25,2.4]);
+      //body max width,height
+      color(blackBodyCol) translate([0,0,-35]) 
+        linear_extrude(35) shellShape(size=[12.35,6.5]);
+    }
   }
 }
 
