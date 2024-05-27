@@ -19,7 +19,7 @@ bdyDiaRmx=15.48;
 /* -- [Model-Dimensions] -- */
 bdyDiaMdl=80;
 wallThck=2;
-displayOffset=[0,-27,0];
+displayOffset=[0,-30,0];
 glueSpcng=0.1;
 
 
@@ -53,7 +53,7 @@ if (showBody){
   difference(){
     body();
     if (showSection=="Y-Z")
-      color("darkred") translate([bdyDia,0,bdyZOffset*sectionOffset]) cube(bdyDia*2,true);
+      color("darkred") translate([bdyDia*sectionOffset*2,0,bdyZOffset]) cube(bdyDia*2,true);
     if (showSection=="X-Y")
       color("darkRed") translate([0,0,bdyZOffset+bdyDia*sectionOffset*2]) cube(bdyDia*2,true);
   }
@@ -63,8 +63,12 @@ if (showDisplay && mode!="remix")
   translate(displayOffset+[0,0,bdyZOffset]) rotate([90,0,180]) roundDisplayWS(showPlug=showPlug);
 
 if (showEars)
-  for (ix=[-1,1])
-    translate([0,0,bdyZOffset]) rotate([0,ix*90,0]) sideDisc();
+  difference(){
+    for (ix=[-1,1])
+      translate([0,0,bdyZOffset]) rotate([0,ix*90,0]) sideDisc();
+    if (showSection=="Y-Z")
+        color("darkred") translate([bdyDia*sectionOffset*2,0,bdyZOffset]) cube(bdyDia*2,true);
+  }
   
 if (showSensor)
   translate(sensorOffset) 
@@ -167,7 +171,7 @@ module body(){
 }
 
 //"ears"
-*sideDisc(true);
+*sideDisc(false);
 module sideDisc(cut=false){
   
   crnrRad=scale2BdyDia(0.36);
@@ -192,6 +196,7 @@ module sideDisc(cut=false){
     }//diff
   
 }
+
 *frntRing();
 module frntRing(){
   //main ring
