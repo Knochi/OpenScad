@@ -28,14 +28,15 @@ bdyDia= (mode=="remix") ? bdyDiaRmx : bdyDiaMdl;
 bdyInDia=bdyDia*0.87;
 frntHoleDia=bdyDia*0.42;
 bdyZOffset=bdyDia*0.72;
-bdyBtmHght=bdyDia*0.4;
-bdyBtmInHght=bdyDia*0.53;
+bdyBtmHght=bdyDia*0.40;//0.443;
+bdyBtmInHght=scale2BdyDia(7.9);
 bdyBtmInDia=bdyDia*0.65;
 sensorOffset=scaleList2BdyDia([2.7,-7.2,4.5]) + [0,0,bdyZOffset];
-
+camPos=[0,+3.5,bdyZOffset+46];
+camTiltAng=-12;
 
 if (showCamera && mode=="model")
- translate([0,+3.5,bdyZOffset+46]) rotate([-12,0,0]) rotate([90,90,0]) OV2640(length=75);
+ translate(camPos) rotate([camTiltAng,0,0]) rotate([90,90,0]) OV2640(length=75);
 
 if (showSTL && mode!="model")
   %difference(){
@@ -53,7 +54,7 @@ if (showBody){
   difference(){
     body();
     if (showSection=="Y-Z")
-      color("darkred") translate([bdyDia*sectionOffset*2,0,bdyZOffset]) cube(bdyDia*2,true);
+     mirror([1,0,0]) color("darkred") translate([bdyDia*sectionOffset*2,0,bdyZOffset]) cube(bdyDia*2,true);
     if (showSection=="X-Y")
       color("darkRed") translate([0,0,bdyZOffset+bdyDia*sectionOffset*2]) cube(bdyDia*2,true);
   }
@@ -77,34 +78,47 @@ if (showSensor)
 
 module body(){
   difference(){
-    union(){
+    
+    union(){ //main body + hood
       translate([0,0,bdyZOffset]) sphere(d=bdyDia); 
       translate([0,0,scale2BdyDia(20)]) rotate([0,-78,90]) topHood();   
     }
     translate([0,0,bdyZOffset]){
       //front hole
-      rotate([90,0,0]) cylinder(d=frntHoleDia,h=bdyDia/2);
+      translate([0,-bdyDia/2,0]) rotate([-90,0,0]) cylinder(d=frntHoleDia,h=bdyDia/2+displayOffset.y);
       //hollow Out main
       difference(){
-        sphere(d=bdyDia-2*wallThck);
+        difference(){//keep some material to hold the display
+          sphere(d=bdyDia-2*wallThck);
+          translate([0,-bdyDia/2,0]) rotate([-90,0,0]) 
+            cylinder(d=bdyDia,h=bdyDia/2+displayOffset.y+wallThck+1.6);
+        }
         translate([0,0,-(bdyDia-2*wallThck)/2]) 
           cylinder(d=bdyDia-2*wallThck,h=((bdyDia-2*wallThck)-frntHoleDia)/2);
       }
       //hollow Out bottom
-        sphere(d=bdyInDia);
-      
+        *sphere(d=bdyInDia);
+      //Display compartment
+       translate(displayOffset) rotate([90,0,180]) roundDisplayWS(cut=true,spcng=glueSpcng);
     }
     //bottom
+    //cap
     cylinder(d=bdyDia,h=bdyBtmHght);
-    cylinder(d=bdyBtmInDia,h=bdyBtmInHght);
+    //hole
+    cylinder(d=bdyBtmInDia,h=bdyBtmInHght-wallThck);
+    cylinder(d=bdyBtmInDia-wallThck*2,h=bdyBtmInHght);
     //cutouts for ears
     for (ix=[-1,1])
       translate([0,0,bdyZOffset]) rotate([0,ix*90,0]) sideDisc(true);
-    
+    //camera compartment
+    translate(camPos) rotate([camTiltAng,0,0]) rotate([90,90,0]) color("white") OV2640(cut=true);
+    //USBplug
+    translate([0,0,bdyBtmHght-0.1]) linear_extrude(4.5) hull() for (ix=[-1,1]) 
+      translate([ix*(6.2-6.5/2),displayOffset.y+3.18]) circle(d=6.5+0.5);
   } //diff
   
   //bottom sphere
-  difference(){
+  *difference(){
     translate([0,0,bdyZOffset]) sphere(d=bdyInDia);    
     translate([0,0,bdyZOffset]) sphere(d=bdyInDia-wallThck*2);    
     translate([0,0,bdyZOffset-frntHoleDia/2]) cylinder(d=bdyInDia,h=bdyInDia);
@@ -144,11 +158,13 @@ module body(){
     chmfMdl=[ for (i=[0:len(chmfRmx)-1]) scaleList2BdyDia(chmfRmx[i]) ];
     
     if (chainHull)
-      for (i = [0: len(dia1)-2])
-        hull(){
-            translate(transMdl[i]) rotate(rotMdl[i]) hoodShape(dia1[i],dia2[i],dist[i],chmfMdl[i]);
-            translate(transMdl[i+1]) rotate(rotMdl[i+1]) hoodShape(dia1[i+1],dia2[i+1],dist[i+1],chmfMdl[i+1]);
-        }
+  
+        for (i = [0: len(dia1)-2])
+          hull(){
+              translate(transMdl[i]) rotate(rotMdl[i]) hoodShape(dia1[i],dia2[i],dist[i],chmfMdl[i]);
+              translate(transMdl[i+1]) rotate(rotMdl[i+1]) hoodShape(dia1[i+1],dia2[i+1],dist[i+1],chmfMdl[i+1]);
+          }
+        
     else
       for (i = [0: len(dia1)-1])
         translate(transMdl[i]) rotate(rotMdl[i]) hoodShape(dia1[i],dia2[i],dist[i],chmfMdl[i]);
@@ -171,10 +187,10 @@ module body(){
 }
 
 //"ears"
-*sideDisc(false);
+*sideDisc(true);
 module sideDisc(cut=false){
   
-  crnrRad=scale2BdyDia(0.36);
+  crnrRad=scale2BdyDia(0.27);
   spcng= cut ? glueSpcng : 0;
   sectionDims=[scale2BdyDia(2),bdyDia/2-scale2BdyDia(3.8)];
   
@@ -184,16 +200,16 @@ module sideDisc(cut=false){
         mirror([0,1]) rotate(-90) hull(){
           translate([scale2BdyDia(0.36),0]) intersection(){
             circle(d=bdyDia);
-            translate([scale2BdyDia(6),0]) square(sectionDims);
+            translate([scale2BdyDia(6.13),0]) square(sectionDims);
           }
-          translate([scale2BdyDia(6.36)+crnrRad,sectionDims.y-0.2]) circle(crnrRad);
-          translate([scale2BdyDia(6.36+0.1),sectionDims.y+scale2BdyDia(0.05)]) circle(scale2BdyDia(0.1));
+          translate([scale2BdyDia(6.50)+crnrRad,sectionDims.y-scale2BdyDia(0.09)]) circle(crnrRad);
+          translate([scale2BdyDia(6.61),sectionDims.y+scale2BdyDia(0.18)]) square(scale2BdyDia(0.24),true);
           
         }//hull
-      translate([0,scale2BdyDia(6)]) square([scale2BdyDia(4.00),wallThck]);
-      }
-      translate([-glueSpcng-0.1,0]) square([glueSpcng+0.1,scale2BdyDia(8.2)]);
-    }//diff
+      translate([0,scale2BdyDia(6.1)]) square([scale2BdyDia(4.00),scale2BdyDia(0.4)]);
+      }//offset
+      translate([-glueSpcng-0.1,0]) square([glueSpcng+0.1,scale2BdyDia(10.0)]);
+    }//diff/rotate
   
 }
 
@@ -214,6 +230,7 @@ module frntRing(){
     rotate_extrude(angle=48) polygon(poly);
   
 }
+
 *sensor();
 module sensor(){
   //poly=[[1.4,-7.2],[1.77,-7.5],[2,-7.5],[2.15,-7.4],[3.25,-7.4]]; //-3.25,+7.2
@@ -242,26 +259,27 @@ module hips(){
 }
 
 *OV2640();
-module OV2640(fov=66,length=40){
+module OV2640(fov=66,length=40,cut=false,spcng=glueSpcng){
   //https://www.aliexpress.com/i/1005004962071810.html
   //connector: e.g. https://www.digikey.de/en/products/detail/te-connectivity-amp-connectors/2-1734839-4/1860480
   // 24pins, 0.5mm pitch, 0.3mm FCC thickness
   //camera module
-  camModDims=[9,9,2];
-  lensDia=8.5;
+  camModDims= cut ? [9+spcng*2,9+spcng*2,2+spcng*2] : [9,9,2] ;
+  lensDia=cut ? 8.5 + spcng*2 : 8.5;
   lensHght=5.5;
+  flxSpcng= cut ? spcng : 0;
   color("darkslateGrey"){
   if (fov==66){
     cylinder(d=lensDia,h=lensHght);
-    translate([0,0,camModDims.z/2]) cube(camModDims,true);
+    translate([0,0,camModDims.z/2-flxSpcng]) cube(camModDims,true);
   }
   if (fov==160)
     cylinder(d=10,h=10.5);
 }
   //flex + connector
   color("orange") 
-    linear_extrude(0.3){
-    translate([0,-6/2]) square([length-camModDims.x/2,6]);
+    translate([0,0,-flxSpcng]) linear_extrude(0.3+flxSpcng*2){
+    translate([0,-6/2-flxSpcng]) square([length-camModDims.x/2,6+flxSpcng*2]);
     translate([length-camModDims.x/2-4.5,-12.5/2]) square([4.5,12.5]);
   }
 }

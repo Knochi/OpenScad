@@ -776,7 +776,7 @@ module usbCUpright(){
 }
 
 
-!usbC(plug=true);
+!usbC(plug=false);
 module usbC(center=false, pins=24, plug=false){
   //https://usb.org/document-library/usb-type-cr-cable-and-connector-specification-revision-21
   //rev 2.1 may 2021
