@@ -1,36 +1,5 @@
 // Sichtschutz
 /* 
-  #Examples
-  
-  ## 212x55x180cm mit Pflanzkasten - 1180EUR
-  Leisten 28mm
-  https://www.binnen-markt.de/pflanzkasten-212-sichtschutz-lang-holz.html
-  
-  ## OBI DIY
-  https://www.obi.de/magazin/garten/zaun/sichtschutz-aus-holz-bauen
-  
-  ## Hornbach "Rhombus Lärche" 180x180cm - 149EUR oder 90x180cm - 99EUR
-  Leisten 22x70mm, Pfähle 22x70mm
-  https://www.hornbach.de/shop/Zaunelement-Rhombus-Laerche-180x180-cm-natur/6420621/artikel.html
-  
-  ## Hornbach DIY
-  - H-Pfostentraäger, Beton für Tor
-  - Einschraub-Bodenhülsen für Zaunpfähle
-  - Pfosten kesseldruckimp.
-    - 7x7x185cm - 9.95EUR
-    - 9x9x185cm - 15.95EUR
-  - Pfosten Lärche
-    - 9x9x180cm - 38.95EUR (reel 8.5x8.5x180mm)
-  https://www.hornbach.de/projekte/holzzaun-bauen/
-  
-  ## Mega-Holz
-  https://mega-holz.de/produkt-kategorie/sichtschutzzaun/
-  ### VARO Lärche 
-  25x70mm
-  ### Rhombus 180x180cm
-  Lamellen: 24 x 77mm 
-    https://mega-holz.de/produkt/rhombusleiste-laerche-24x77-cm/
-  Verstrebungen: 25x75mm
   
   # Garten Maße
   Terasse: 2.53m
@@ -38,39 +7,127 @@
   Hang: 1.66m x 0.62m (Küche)
   Küche <-> Tor: 4.35m
   
+  Terrasse pflastern
+  https://www.obi.de/magazin/garten/terrasse/terrasse-pflastern
+  
+  Ziesak Steine Katalog:
+  https://www.ziesak.de/publish/binarydata/2024/werbung/hagebau_kataloge/9912227_gbs_92_fs24_fl_72dpi_master.pdf
   
 */
+
+
+/* [Show] */
+showLounge=true;
+showPallisade=true;
+showPlantWall=true;
+
+
 /* [Dimensions] */
 fenceDims=[1800,1800];
 postDims=[90,90,1900];
 panelDims=[1719,1140,35];
-slopeDims=[1700,700];
-terraceDims=[2530,7000];
-hutDist=4600;
+terraceDims=[2520,7820];
+ovWidth=11885;
+hutDist=5700;
 protrusion=560;
- 
+wallThck=200;
+stairDims=[350,1000,140];
+stairCnt=5;
+newTerraceDims=[3025,2195,80];
+gravelThck=100; //compressed
+sandThck=30; //compressed
+
 /* [Positioning] */
-xOffsetLeft=200;
+loungePos=[400,-2400,0];
+xOffsetLeft=280;
 xOffsetRight=310;
 yOffset=50;
+
 /* [Panel Positioning] */
 panelPos=[0,-15,650];
 panelRot=[-5,0,0];
+doorYOffset=-(740+1135+1300);
+terraceOffset=2310;
 
 /*[Hidden]*/
+slopeDims=[stairDims.x*stairCnt,stairDims.z*stairCnt];
+newTerraceThck=newTerraceDims.z+gravelThck+sandThck;
+newTerracePos=[wallThck,-terraceOffset,-newTerraceDims.z-gravelThck-sandThck];
 fudge=0.1;
 
 
+// --- new terrace ---
+if (showLounge)
+  translate(loungePos) lounge();
+
+//palissade
+if (showPallisade){
+  translate([wallThck+terraceDims.x+10,-2380,-250]) pallisade();
+  for (i=[0:4])
+    translate([wallThck+terraceDims.x+575,-2380+i*505,-250]) rotate(90) pallisade();
+}
+
+if (showPlantWall)
+  for (ix=[0:2],iz=[0:2])
+  translate([wallThck+10+ix*410,-410,iz*260]) plantBrick();
+
+//wall
+color("FireBrick") 
+translate([wallThck,0,0]) rotate([90,0,-90]) linear_extrude(wallThck) 
+  difference(){
+    square([ovWidth,2700]);
+    //window
+    translate([780,1100]) square([1000,1050]);
+    //door
+    translate([740+1135+1300,150]) square([2750,2000]);
+  }
+
+//Pipes 
+translate([wallThck+140-90/2,doorYOffset+630+90/2,0]){
+  cylinder(d=90,h=2700);
+  translate([0,450,-500]) cylinder(d=90,h=2700+500);
+}
+
+
+//stairs
+color("grey") for(i=[0:stairCnt-1])
+  translate([terraceDims.x+wallThck+i*stairDims.x,doorYOffset-stairDims.y,-stairDims.z-i*stairDims.z]) cube(stairDims);
+
 //floor
-floorPoly=[[0,0],[terraceDims.x,0],[terraceDims.x+slopeDims.x,-slopeDims.y],[0,-slopeDims.y]];
-color("Sienna")
-  rotate([90,0,0]) linear_extrude(terraceDims.y) polygon(floorPoly);
+floorPoly=[[0,0],[terraceDims.x+wallThck,0],[terraceDims.x+wallThck+slopeDims.x,-slopeDims.y],[0,-slopeDims.y]];
+color("SaddleBrown")
+  difference(){
+    rotate([90,0,0]) linear_extrude(ovWidth) polygon(floorPoly);
+    //terrace old
+    translate([wallThck,-terraceDims.y-terraceOffset,-80.5]) cube([terraceDims.x,terraceDims.y,81]);
+    //terrace new
+    translate(newTerracePos) cube(newTerraceDims+[1,1,1+gravelThck+sandThck]);
+  }
+
+//new terrace layers
+translate(newTerracePos){
+  //gravel
+  color("Sienna") cube([newTerraceDims.x,newTerraceDims.y,gravelThck]);
+  //sand
+  color("Khaki") translate([0,0,gravelThck]) color("Sienna") cube([newTerraceDims.x,newTerraceDims.y,sandThck]);
+  //bricks
+  color("Brown") translate([0,0,gravelThck+sandThck]) color("Sienna") cube(newTerraceDims);
+}
+
+//old terrace
+color("Maroon") translate([wallThck,-terraceDims.y-2310,-80.5]) cube([terraceDims.x,terraceDims.y,81]);
+
 //corner
 color("ivory")
-translate([0,-terraceDims.y-protrusion,-slopeDims.y]) linear_extrude(3500) square(protrusion);
+translate([0,-ovWidth-protrusion,-slopeDims.y]) linear_extrude(3500) square(protrusion);
 
 //hut
 translate([hutDist+terraceDims.x+slopeDims.x,0,-slopeDims.y]) hut();
+
+
+
+
+// --- Fences ---
 
 //left
 color("BurlyWood"){
@@ -80,42 +137,46 @@ color("BurlyWood"){
   for (ix=[0,1])
     translate([ix*(fenceDims.x+postDims.x)+xOffsetLeft,-yOffset,0]) post();
   //fence2 (half)
-  translate([fenceDims.x+postDims.x*1.5+xOffsetLeft+900/2,-yOffset,-140]) RhombusDIY([900,50,1800]);
+  translate([fenceDims.x+postDims.x*1.5+xOffsetLeft+900/2,-yOffset,-110]) RhombusDIY([900,50,1800]);
   //Post 3
   translate([fenceDims.x*1.5+postDims.x*2+xOffsetLeft,-yOffset,-182.0]) post();
   //fence3 (half)
-  translate([fenceDims.x*1.5+postDims.x*2.5+xOffsetLeft+900/2,-yOffset,-540]) RhombusDIY([900,50,1800]);
+  translate([fenceDims.x*1.5+postDims.x*2.5+xOffsetLeft+900/2,-yOffset,-480]) RhombusDIY([900,50,1800]);
   //Post 4
-  translate([fenceDims.x*2+postDims.x*3+xOffsetLeft,-yOffset,-600]) post();
-  //fence4
-  translate([fenceDims.x*2.5+postDims.x*3.5+xOffsetLeft,-yOffset,-670]) RhombusDIY();
+  translate([fenceDims.x*2+postDims.x*3+xOffsetLeft,-yOffset,-530]) post();
+  //fence4 (half)
+  translate([fenceDims.x*2+postDims.x*3.5+xOffsetLeft+900/2,-yOffset,-670]) RhombusDIY([900,50,1800]);
   //Post 5
-  translate([fenceDims.x*3+postDims.x*4+xOffsetLeft,-yOffset,-700]) post();
+  translate([fenceDims.x*2.5+postDims.x*4+xOffsetLeft,-yOffset,-700]) post();
   //fence5
-  translate([fenceDims.x*3.5+postDims.x*4.5+xOffsetLeft,-yOffset,-670]) RhombusDIY();
+  translate([fenceDims.x*3+postDims.x*4.5+xOffsetLeft,-yOffset,-670]) RhombusDIY();
   //Post 6
-  translate([fenceDims.x*4+postDims.x*5+xOffsetLeft,-yOffset,-700]) post();
-  //fence6
-  translate([fenceDims.x*4+postDims.x*5.5+xOffsetLeft+900/2,-yOffset,-670]) RhombusDIY([900,50,1800]);
+  translate([fenceDims.x*3.5+postDims.x*5+xOffsetLeft,-yOffset,-700]) post();
+  //fence6 
+  translate([fenceDims.x*4+postDims.x*5.5+xOffsetLeft,-yOffset,-670]) RhombusDIY();
   //Post 6
   translate([fenceDims.x*4.5+postDims.x*6+xOffsetLeft,-yOffset,-700]) post();
+  //fence7 (half)
+  translate([fenceDims.x*4.5+postDims.x*6.5+xOffsetLeft+900/2,-yOffset,-670]) RhombusDIY([900,50,1800]);
+  //Post 7
+  translate([fenceDims.x*5+postDims.x*7+xOffsetLeft,-yOffset,-700]) post();
 }
 
 //right
-color("BurlyWood"){
+color("BurlyWood") translate([0,-ovWidth+yOffset,0]){
   //fence //1
-  translate([(fenceDims.x+postDims.x)/2+xOffsetRight,-terraceDims.y+yOffset,0]) rotate(180) RhombusDIY();
+  translate([(fenceDims.x+postDims.x)/2+xOffsetRight,0,0]) rotate(180) RhombusDIY();
   //Post 1&2
   for (ix=[0,1])
-    translate([ix*(fenceDims.x+postDims.x)+xOffsetRight,-terraceDims.y+yOffset,0]) post();
+    translate([ix*(fenceDims.x+postDims.x)+xOffsetRight,0,0]) post();
   //fence2
-  translate([fenceDims.x+postDims.x*1.5+xOffsetRight+900/2,-terraceDims.y+yOffset,-160]) rotate(180) RhombusDIY([900,50,1800]);
+  translate([fenceDims.x+postDims.x*1.5+xOffsetRight+900/2,0,-160]) rotate(180) RhombusDIY([900,50,1800]);
   //Post 3
-  translate([fenceDims.x*1.5+postDims.x*2+xOffsetRight,-terraceDims.y+yOffset,-270.0]) post();
+  translate([fenceDims.x*1.5+postDims.x*2+xOffsetRight,0,-270.0]) post();
   //fence3
-  translate([fenceDims.x*1.5+postDims.x*2.5+xOffsetRight+900/2,-terraceDims.y+yOffset,-580]) rotate(180) RhombusDIY([900,50,1800]);
+  translate([fenceDims.x*1.5+postDims.x*2.5+xOffsetRight+900/2,0,-580]) rotate(180) RhombusDIY([900,50,1800]);
   //Post 4
-  translate([fenceDims.x*2+postDims.x*3+xOffsetRight,-terraceDims.y+yOffset,-620.0]) post();
+  translate([fenceDims.x*2+postDims.x*3+xOffsetRight,0,-620.0]) post();
 }
 
 *color("DarkSlateGrey"){
@@ -204,3 +265,29 @@ module hut(size=[2200,2200,2500],roof=300){
   translate([0,size.y,0]) rotate([90,0,0]) linear_extrude(2200) polygon(hutShape);
 }
 
+module pallisade(type="paliboard"){
+  color("darkGrey") cube([500,60,250]);
+}
+
+module lounge() {
+  ovDims=[2570,1970,740];
+  back=400;
+  sides=400;
+  
+  color("#bcb3aa") difference(){
+    cube(ovDims);
+    translate([back,-1,430]) cube([ovDims.x-back+1,ovDims.y-back+1,740-430+1]);
+    translate([930,-1,-0.5]) cube([ovDims.x-930+1,ovDims.y-930+1,740+1]);
+    
+  }
+}
+
+
+module plantBrick(){
+  wallThck=60;
+  ovDims=[400,300,250];
+  linear_extrude(ovDims.z) difference(){
+    square([ovDims.x,ovDims.y]);
+    translate([wallThck,wallThck]) square([ovDims.x-wallThck*2,ovDims.y-wallThck*2]);
+  }
+}
