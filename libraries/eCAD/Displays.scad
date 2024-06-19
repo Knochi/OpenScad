@@ -376,6 +376,7 @@ module displayTFT(frameDims=[45.83,34],activeArea=[35.04,28.03],AAOffset=[-(45.8
       cube([activeArea.x,activeArea.y,thick],true);
   }
   
+  
 module Midas96x16(orientation="flat",center=true){
   glassThck=0.55;
   flxRad=0.25; //edge rad of Panel
@@ -473,6 +474,7 @@ module Midas96x16(orientation="flat",center=true){
      }
    } //module Flex    
 }
+
 *EastRising128x32();
 module EastRising128x32(orientation="flat",center=true){
   glassThck=0.55;
@@ -800,6 +802,74 @@ module EA_W128032(bendHght=3,center=false,cut=false){
   }
  
 }
+
+!TP_TOX32();
+module TP_TOX32(){
+  //https://tailorpixels.com/de/PRODUKTE/0-32-Zoll-oled-60x32-wei%C3%9F-i2c-ssd1315/
+  glassThck=0.5;
+  
+  //Flex
+  flxRad=0.25; //edge rad of Flex
+  flxPnlWdth=1.2; //width of Flex on Panel
+  flxTapDims=[[10.5,6.8,4],[7.5,9],0.1];
+  flxThck=0.4;
+  
+  //Panel
+  panelDims=[9.96,8.85,1.0];
+  polDims=[9.36,6,0.05];
+  botGlassDims=[panelDims.x,6.27,glassThck];
+  chipDims=[5.2,0.7,0.3];
+  
+  //Active Area
+  AADims=[7.06,3.82,0.01]; //active Area
+  
+  //panel offsets from top left corner
+  pol2PanelOffset=[0,-0.2,glassThck+polDims.z/2];
+  AA2PanelOffset=[0,-1.2,AADims.z/2];
+  bot2PanelOffset=[0,0,-glassThck/2];
+  chip2PanelOffset=[0,-7.2,-chipDims.z/2];
+  //
+  panel2CenterOffset=[0,-panelDims.y/2+1.2+AADims.y/2,0];
+  
+  
+  capSize=22.7;
+  pitch=0.62;
+  padDim=[2,0.32,0.01];
+  pads=14;
+  
+  
+  flxPoly=//[[-flxDimTap.x[0]-flxPnl+flxRad,flxDimTap.y[0]/2],
+           [[-flxDimTap.x[1],flxDimTap.y[0]/2],
+           [-flxDimTap.x[2],flxDimTap.y[1]/2],
+           [-flxRad,flxDimTap.y[1]/2],
+           [-flxRad,-flxDimTap.y[1]/2],
+           [-flxDimTap.x[2],-flxDimTap.y[1]/2],
+           [-flxDimTap.x[1],-flxDimTap.y[0]/2]];
+           //[-flxDimTap.x[0]-flxPnl+flxRad,-flxDimTap.y[0]/2]];
+  
+//Panel
+translate(panel2CenterOffset){
+  //Active Area
+  color("SlateGrey") translate([0,(panelDims.y-AADims.y)/2,0]+AA2PanelOffset) cube(AADims,true);
+  //Polarizer
+  color("grey",0.5)
+    translate([0,(panelDims.y-polDims.y)/2,0]+pol2PanelOffset) cube(polDims,true);
+  //topGlass
+  color("lightgrey",0.5) 
+    translate([0,0,glassThck/2]) cube([panelDims.x,panelDims.y,glassThck],true);
+  //btmGlass
+  color("lightgrey",0.5)
+    translate([0,(panelDims.y-botGlassDims.y)/2,0]+bot2PanelOffset) cube(botGlassDims,true);
+  //IC
+  color("darkSlateGrey")
+    translate([0,(panelDims.y-chipDims.y)/2]+chip2PanelOffset) cube(chipDims,true);
+}
+  //flex();
+  module flex(){
+    linear_extrude(flexThck)
+  }
+}
+
  
 *VIM_878_DP();
 module VIM_878_DP(){

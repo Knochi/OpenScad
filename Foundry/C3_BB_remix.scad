@@ -11,7 +11,7 @@ showDisplay=true;
 showCamera=true;
 showPlug=true;
 chainHull=true;
-mode="remix"; //["remix","model"]
+mode="reModel"; //["reModel","result"]
 showSection="none"; //["none","Y-Z","X-Y"]
 sectionOffset=0.5; //[0:0.05:1]
 /* -- [Remix-Dimension] -- */
@@ -24,21 +24,21 @@ glueSpcng=0.1;
 
 
 /* -- [Hidden] -- */
-bdyDia= (mode=="remix") ? bdyDiaRmx : bdyDiaMdl;
+bdyDia= (mode=="reModel") ? bdyDiaRmx : bdyDiaMdl;
 bdyInDia=bdyDia*0.87;
 frntHoleDia=bdyDia*0.42;
 bdyZOffset=bdyDia*0.72;
 bdyBtmHght=bdyDia*0.40;//0.443;
 bdyBtmInHght=scale2BdyDia(7.9);
 bdyBtmInDia=bdyDia*0.65;
-sensorOffset=scaleList2BdyDia([2.7,-7.2,4.5]) + [0,0,bdyZOffset];
+sensorOffset=scaleList2BdyDia([2.7,-7.2,4.5]);
 camPos=[0,+3.5,bdyZOffset+46];
 camTiltAng=-12;
 
-if (showCamera && mode=="model")
+if (showCamera && mode=="result")
  translate(camPos) rotate([camTiltAng,0,0]) rotate([90,90,0]) OV2640(length=75);
 
-if (showSTL && mode!="model")
+if (showSTL && mode!="result")
   %difference(){
     translate([-1.47,+2.414,0]) rotate([9.7,-11.1,-11.6+90]) 
       scale(100) import("C3_BB_PrintModel_redox.stl",convexity=3);
@@ -60,7 +60,7 @@ if (showBody){
   }
 }
 
-if (showDisplay && mode!="remix")
+if (showDisplay && mode!="reModel")
   translate(displayOffset+[0,0,bdyZOffset]) rotate([90,0,180]) roundDisplayWS(showPlug=showPlug);
 
 if (showEars)
@@ -72,7 +72,7 @@ if (showEars)
   }
   
 if (showSensor)
-  translate(sensorOffset) 
+  translate(sensorOffset+[0,0,bdyZOffset]) 
     rotate([-90,0,0]) sensor();
 
 
@@ -100,6 +100,8 @@ module body(){
         *sphere(d=bdyInDia);
       //Display compartment
        translate(displayOffset) rotate([90,0,180]) roundDisplayWS(cut=true,spcng=glueSpcng);
+      //Sensor
+      translate(sensorOffset) rotate([-90,0,0]) sensor(true);
     }
     //bottom
     //cap
@@ -125,7 +127,10 @@ module body(){
   }
   
   //front ring
-  translate([0,scale2BdyDia(-7.21),bdyZOffset]) rotate([-90,0,0]) frntRing();
+  difference(){
+    translate([0,scale2BdyDia(-7.21),bdyZOffset]) rotate([-90,0,0]) frntRing();
+    translate(sensorOffset+[0,0,bdyZOffset]) rotate([-90,0,0]) sensor(true);
+  }
   
   
   module baseMount(){
@@ -232,21 +237,29 @@ module frntRing(){
 }
 
 *sensor();
-module sensor(){
+module sensor(cut=false){
   //poly=[[1.4,-7.2],[1.77,-7.5],[2,-7.5],[2.15,-7.4],[3.25,-7.4]]; //-3.25,+7.2
   polyRmx=[[0,0],[1.31,0],[0.93,-0.34],[0.7,-0.34],[0.54,-0.18],[0,-0.18]];
   poly=[ for (i=[0:len(polyRmx)-1]) scaleList2BdyDia(polyRmx[i]) ];
   
-difference(){  
-  union(){
-    rotate_extrude() polygon(poly);
-      hull(){
-        cylinder(r1=scale2BdyDia(1.31),r2=0.1,h=0.1);
-        translate([0,0,scale2BdyDia(4)]) sphere(scale2BdyDia(1.9));
-      }
+  cutOffset = (cut) ? glueSpcng : 0 ;
+  
+  difference(){  
+    union(){
+      rotate_extrude() polygon(poly);
+        hull(){
+          cylinder(r1=scale2BdyDia(1.31)+cutOffset,r2=0.1,h=0.1);
+          translate([0,0,scale2BdyDia(4)]) sphere(scale2BdyDia(1.9)+cutOffset*2);
+        }
+    }
+    //substract the main body sphere
+    difference(){
+      translate([-sensorOffset.x,-bdyZOffset+sensorOffset.z+bdyZOffset,-sensorOffset.y]) sphere(d=bdyDia+glueSpcng*2);
+      cylinder(d=scale2BdyDia(2.2)+cutOffset,h=scale2BdyDia(4));
+    }
   }
-  translate([-sensorOffset.x,-bdyZOffset+sensorOffset.z,-sensorOffset.y]) sphere(d=bdyDia);
-}
+  
+  *rotate([90,0,0]) import("CUI_DEVICES_SP-3541.stl");
 }
 
 module antenna(){
