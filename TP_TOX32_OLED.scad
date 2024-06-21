@@ -1,4 +1,5 @@
 $fn=50;
+include <eCAD/KiCADColors.scad>
 
 TP_TOX32();
 module TP_TOX32(){
@@ -43,34 +44,42 @@ module TP_TOX32(){
 //Panel
 translate(panel2CenterOffset){
   //Active Area
-  color("SlateGrey") translate([0,(panelDims.y-AADims.y)/2,0]+AA2PanelOffset) cube(AADims,true);
+  color(darkGreyBodyCol) translate([0,(panelDims.y-AADims.y)/2,0]+AA2PanelOffset) cube(AADims,true);
   //Polarizer
-  color("grey",0.5)
+  color(glassBlueCol)
     translate([0,(panelDims.y-polDims.y)/2,0]+pol2PanelOffset) cube(polDims,true);
   //topGlass
-  color("lightgrey",0.5) 
+  color(glassGreyCol) 
     translate([0,0,glassThck/2]) cube([panelDims.x,panelDims.y,glassThck],true);
+
   //btmGlass
-  color("lightgrey",0.5)
+  color(glassGreyCol)
     translate([0,(panelDims.y-botGlassDims.y)/2,0]+bot2PanelOffset) cube(botGlassDims,true);
   //chip
-  color("darkSlateGrey")
+  color(blackBodyCol)
     translate([0,(panelDims.y-chipDims.y)/2,0]+chip2PanelOffset) cube(chipDims,true);
 }
   //flex();
   translate([0,-panelDims.y/2,-flxThck]+panel2CenterOffset) flex();
 
   module flex(){
-    
-    color("tan") linear_extrude(flxThck-padDims.z) flexShape();
-    color("orange") translate([0,0,flxThck-padDims.z]) linear_extrude(padDims.z) difference(){
+    //top
+    color(glassOrangeCol) translate([0,0,flxThck-padDims.z]) linear_extrude(padDims.z) difference(){
+      flexShape();
+      translate([0,-flxLen+padDims.y/2]) square([flxTapDims.x,padDims.y],true);
+    }
+    //core
+    color(FR4Col) translate([0,0,padDims.z]) linear_extrude(flxThck-padDims.z*2) flexShape();
+    //bottom
+    color(glassOrangeCol) linear_extrude(padDims.z) difference(){
       flexShape();
       translate([0,-flxLen+padDims.y/2]) square([flxTapDims.x,padDims.y],true);
     }
     
     //pads
-    color("gold") translate([0,0,flxThck-padDims.z]) linear_extrude(padDims.z) for (i=[-(padCnt-1)/2:(padCnt-1)/2])
-      translate([i*padPitch,-flxLen+padDims.y/2]) square([padDims.x,padDims.y],true);
+    color(metalGoldPinCol) for (i=[-(padCnt-1)/2:(padCnt-1)/2],iz=[0,1])
+      translate([0,0,iz*(flxThck-padDims.z)]) linear_extrude(padDims.z) 
+        translate([i*padPitch,-flxLen+padDims.y/2]) square([padDims.x,padDims.y],true);
     
     module flexShape(){
      difference(){
