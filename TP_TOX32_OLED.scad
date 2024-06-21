@@ -109,5 +109,25 @@ translate(panel2CenterOffset){
           translate([ix*flxHoleDist/2,flxHoleBtmOffset-flxLen]) circle(d=flxHoleDia);
       }
     }
+  }
 }
+
+*snakeBend();
+module snakeBend(size=[0.1,5.3],length=2,stepHeight=0.35){
+  //bend rectangular crossection to change height
+  t=stepHeight;
+  l=length;
+  r=(pow(l,2)+pow(t,2))/(4*t);
+  dy=r-t/2;
+  ang=asin((l/2)/r);
+  lfn=110;
+  echo(dy,r,ang);
+  
+  rotate([0,90,0]) translate([-dy-stepHeight/2,0,-size.y/2]){ 
+    rotate_extrude(angle=ang) 
+      translate([r-size.x/2,0]) square(size);
+    translate([dy*2,0.70,0]) rotate(180) rotate_extrude(angle=ang,$fn=lfn) 
+      translate([r-size.x/2,0]) square(size);
+  }
+  //translate([0,l]) rotate(180) translate([-dy-size.x/2,0])  
 }
