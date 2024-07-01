@@ -3,7 +3,7 @@ include <eCAD/KiCADColors.scad>
 
 TP_TOX32();
 module TP_TOX32(){
-  //https://tailorpixels.com/de/PRODUKTE/0-32-Zoll-oled-60x32-wei%C3%9F-i2c-ssd1315/
+  
   glassThck=0.5;
   
   //Flex
@@ -44,13 +44,13 @@ module TP_TOX32(){
 //Panel
 translate(panel2CenterOffset){
   //Active Area
-  color(darkGreyBodyCol) translate([0,(panelDims.y-AADims.y)/2,0]+AA2PanelOffset) cube(AADims,true);
+  *color(darkGreyBodyCol) translate([0,(panelDims.y-AADims.y)/2,0]+AA2PanelOffset) cube(AADims,true);
   //Polarizer
-  color(glassBlueCol)
+  *color(glassBlueCol)
     translate([0,(panelDims.y-polDims.y)/2,0]+pol2PanelOffset) cube(polDims,true);
   //topGlass
   color(glassGreyCol) 
-    translate([0,0,glassThck/2]) cube([panelDims.x,panelDims.y,glassThck],true);
+    translate([0,0,glassThck/2+AADims.z]) cube([panelDims.x,panelDims.y,glassThck-AADims.z],true);
 
   //btmGlass
   color(glassGreyCol)
@@ -81,35 +81,29 @@ translate(panel2CenterOffset){
       translate([0,0,iz*(flxThck-padDims.z)]) linear_extrude(padDims.z) 
         translate([i*padPitch,-flxLen+padDims.y/2]) square([padDims.x,padDims.y],true);
     
-    module flexShape(){
-     difference(){
-        union(){
-          //tap
-          hull(){
-            for (ix=[-1,1],iy=[-1,1])
-              translate([ix*(flxTapDims.x/2-flxRad),iy*(flxTapDims.y/2-flxRad)-flxLen+flxTapDims.y/2]) circle(flxRad);
-          }
-          //main
-          hull(){
-            for (ix=[-1,1],iy=[-1,1])
-              translate([ix*(flxPnlDims.x/2-flxRad),iy*((flxLen+flxPnlDims.y)/2-flxRad)-(flxLen-flxPnlDims.y)/2]) 
-                circle(flxRad);
-          }
-          //45° transistion between tap an main flex
-          hull(){
-           for (ix=[-1,1])
-              translate([ix*(flxPnlDims.x/2-flxRad),((flxLen+flxPnlDims.y)/2-flxRad)-flxLen+(flxTapDims.x-flxPnlDims.x)/2]) 
-                circle(flxRad);
-            for (ix=[-1,1])
-              translate([ix*(flxTapDims.x/2-flxRad),(flxTapDims.y/2-flxRad)-flxLen+flxTapDims.y/2]) circle(flxRad);
-            }
-          }
-        
-        for (ix=[-1,1])
-          translate([ix*flxHoleDist/2,flxHoleBtmOffset-flxLen]) circle(d=flxHoleDia);
-      }
+  module flexShape(){
+    difference(){
+      flexContour(); 
+      for (ix=[-1,1])
+        translate([ix*flxHoleDist/2,flxHoleBtmOffset-flxLen]) circle(d=flxHoleDia);
+    }
+  
+    module flexContour(){
+     //tap
+      translate([0,-flxLen+flxTapDims.y/2]) offset(flxRad) square([flxTapDims.x-flxRad*2,flxTapDims.y-flxRad*2],true);
+      //main
+      translate([0,-(flxLen-flxPnlDims.y)/2]) offset(flxRad) square([flxPnlDims.x-flxRad*2,flxLen+flxPnlDims.y-flxRad*2],true);
+      
+      //45° transistion between tap an main flex
+      poly=[[-(flxPnlDims.x/2-flxRad),((flxLen+flxPnlDims.y)/2-flxRad)-flxLen+(flxTapDims.x-flxPnlDims.x)/2],
+            [(flxPnlDims.x/2-flxRad),((flxLen+flxPnlDims.y)/2-flxRad)-flxLen+(flxTapDims.x-flxPnlDims.x)/2],
+            [(flxTapDims.x/2-flxRad),(flxTapDims.y/2-flxRad)-flxLen+flxTapDims.y/2],
+            [-(flxTapDims.x/2-flxRad),(flxTapDims.y/2-flxRad)-flxLen+flxTapDims.y/2]
+          ];
+      offset(flxRad) polygon(poly);
     }
   }
+}
 }
 
 *snakeBend();
