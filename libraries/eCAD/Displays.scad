@@ -803,7 +803,7 @@ module EA_W128032(bendHght=3,center=false,cut=false){
  
 }
 
-!TP_TOX32();
+*TP_TOX32();
 module TP_TOX32(){
   //https://tailorpixels.com/de/PRODUKTE/0-32-Zoll-oled-60x32-wei%C3%9F-i2c-ssd1315/
   glassThck=0.5;
@@ -866,7 +866,7 @@ translate(panel2CenterOffset){
 }
   //flex();
   module flex(){
-    linear_extrude(flexThck)
+    linear_extrude(flexThck);
   }
 }
 
