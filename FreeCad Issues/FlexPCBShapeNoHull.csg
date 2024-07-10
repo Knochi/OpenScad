@@ -1,0 +1,28 @@
+linear_extrude(height = 0.15, center = false, convexity = 1, scale = [1, 1], $fn = 50, $fa = 12, $fs = 2) {
+	difference() {
+		group() {
+			multmatrix([[1, 0, 0, 0], [0, 1, 0, -8], [0, 0, 1, 0], [0, 0, 0, 1]]) {
+				offset(r = 0.25, $fn = 50, $fa = 12, $fs = 2) {
+					square(size = [8.5, 5.5], center = true);
+				}
+			}
+			multmatrix([[1, 0, 0, 0], [0, 1, 0, -5.05], [0, 0, 1, 0], [0, 0, 0, 1]]) {
+				offset(r = 0.25, $fn = 50, $fa = 12, $fs = 2) {
+					square(size = [4.8, 11.4], center = true);
+				}
+			}
+			offset(r = 0.25, $fn = 50, $fa = 12, $fs = 2) {
+				polygon(points = [[-2.4, -3.45], [2.4, -3.45], [4.25, -5.25], [-4.25, -5.25]], paths = undef, convexity = 1);
+			}
+		}
+		group() {
+			multmatrix([[1, 0, 0, -3.1], [0, 1, 0, -5], [0, 0, 1, 0], [0, 0, 0, 1]]) {
+				circle($fn = 50, $fa = 12, $fs = 2, r = 0.4);
+			}
+			multmatrix([[1, 0, 0, 3.1], [0, 1, 0, -5], [0, 0, 1, 0], [0, 0, 0, 1]]) {
+				circle($fn = 50, $fa = 12, $fs = 2, r = 0.4);
+			}
+		}
+	}
+}
+
