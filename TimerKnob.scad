@@ -3,6 +3,7 @@ quality=20; //[20:100]
 knurlKnob=true;
 showScale=true;
 showKnob=true;
+showDShaft=true;
 
 /* [Dimensions] */
 scaleDia=50.6;
@@ -29,14 +30,16 @@ majorTickLen=5;
 minorTickWdth=0.2;
 minorTickLen=3.5;
 labelThck=0.2;
-txtSize=2;
+labelFlush=true;
+txtOffset=0.5;
+txtSize=4;
 
 /* [D-Shaft] */
 shaftZOffset=2.5;
 shaftDia=6;
 shaftWdth=4.4;
 shaftSlotWdth=2;
-
+shaftWallThck=3;
 
 /* [Hidden] */
 fudge=0.1;
@@ -49,17 +52,27 @@ if (showScale)
   scale();
 if (showKnob)
   knob();
+if (showDShaft)
+  DShaft();
 
 module knob(){
-  if (knurlKnob)
-    translate([0,0,scaleHght]) linear_extrude(totalHght-knobCapHght-scaleHght)
-      difference(){
+  grooveWdth=(innerDia-shaftDia)/2-shaftWallThck;
+  knobBdyHght=totalHght-knobCapHght-scaleHght;
+  //body
+  translate([0,0,scaleHght]) difference(){
+    if (knurlKnob)
+      linear_extrude(knobBdyHght,convexity=3)
         star(N=knurlCount,ri=knobOuterDia/2-knurlThck,re=knobOuterDia/2);
-        circle(d=innerDia);
-      }
-        
-  else
-    cylinder(d=knobOuterDia,h=totalHght-knobCapHght);
+    else
+      cylinder(d=knobOuterDia,h=totalHght-knobCapHght-scaleHght);
+    translate([0,0,-fudge]) cylinder(d=innerDia,h=knobBdyHght-grooveWdth/2);
+    //make inner rounding to make printable wtho supports
+    translate([0,0,knobBdyHght-grooveWdth/2]) rotate_extrude() translate([(innerDia-grooveWdth)/2,0]) circle(d=grooveWdth);
+    }
+  
+    
+  
+  //cap
   translate([0,0,totalHght-knobCapRad]) rotate_extrude(){
     translate([knobCapDia/2-knobCapRad,0]) circle(knobCapRad);
     translate([0,-knobCapRad]) square([knobCapDia/2-knobCapRad,knobCapRad*2]);
@@ -73,46 +86,56 @@ module scale(){
   majorTickAng=sweepAng/majorTickCnt;
   minorTickAng=sweepAng/minorTickCnt;
   
+  //apply tickmarks if raised
+  if (!labelFlush)
+  color("white") intersection(){
+    translate([0,0,scaleBaseHght]) ticks();
+    cylinder(d=scaleDia,h=scaleHght);
+  }
+  
   difference(){
     union(){
       cylinder(d=scaleDia,h=scaleBaseHght);
       translate([0,0,scaleBaseHght]) cylinder(d1=scaleDia,d2=knobOuterDia,h=scaleHght-scaleBaseHght);
     }
     translate([0,0,-fudge/2]) cylinder(d=innerDia,h=scaleHght+fudge);
-  }
-  color("white") translate([0,0,scaleBaseHght]) intersection(){
-    cylinder(d=scaleDia,h=totalHght);
-    ticks();
+    //carve tickmarks if thck is negative
+    if (labelFlush)
+      translate([0,0,scaleBaseHght]) ticks();
   }
   
+  
+    
+  *ticks();
   module ticks(){
+    zOffset= (labelFlush) ? -labelThck : -fudge;
     //minor Ticks
     for (i=[1:minorTickCnt-1])
       if(i%majorTick) rotate(i*minorTickAng+startAng) 
-        translate([scaleDia/2,0,-fudge]) rotate([0,scaleFlankAng,0]) 
-          linear_extrude(labelThck+fudge) translate([-minorTickLen/2,0]) 
-            square([minorTickLen,minorTickWdth],true);
+        translate([scaleDia/2,0,zOffset]) rotate([0,scaleFlankAng,0]) 
+          linear_extrude(abs(labelThck)+fudge) translate([-(minorTickLen+abs(labelThck))/2,0]) 
+            square([minorTickLen+abs(labelThck),minorTickWdth],true);
     //major Ticks and labels
     for (i=[0:majorTickCnt])
       rotate(i*majorTickAng+startAng) 
-        translate([scaleDia/2,0,-fudge]) rotate([0,scaleFlankAng,0]) 
-          linear_extrude(labelThck+fudge,convexity=3){
-            translate([-majorTickLen/2,0]) 
-              square([majorTickLen,majorTickWdth],true);
-            translate([-majorTickLen-txtSize,0]) rotate(-90)
+        translate([scaleDia/2,0,zOffset]) rotate([0,scaleFlankAng,0]) 
+          linear_extrude(abs(labelThck)+fudge,convexity=3){
+            translate([(-majorTickLen+abs(labelThck))/2,0]) 
+              square([majorTickLen+abs(labelThck),majorTickWdth],true);
+            translate([-majorTickLen-txtSize/2-txtOffset,0]) rotate(-90)
               text(str(i*majorTick),txtSize,halign="center",valign="center");
           }
   }    
 }
-DShaft();
+
 module DShaft(){
-  linear_extrude(totalHght-knobCapHght-minWallThck-shaftZOffset) difference(){
-    circle(d=shaftDia+minWallThck*2);
+  linear_extrude(totalHght-knobCapHght-shaftZOffset) difference(){
+    circle(d=shaftDia+shaftWallThck*2);
     intersection(){
       circle(d=shaftDia);
       translate([-shaftDia/2,-shaftDia/2]) square([shaftDia,shaftWdth]);
     }
-    translate([0,-(shaftDia/2+minWallThck)/2]) square([shaftSlotWdth,shaftDia/2+minWallThck],true);
+    translate([0,-(shaftDia/2+shaftWallThck)/2]) square([shaftSlotWdth,shaftDia/2+shaftWallThck],true);
   }
 }
 
