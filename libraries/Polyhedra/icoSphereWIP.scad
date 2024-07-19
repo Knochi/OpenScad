@@ -1,5 +1,9 @@
 // icosphere code copied with pride from Andreas Kahler
 // http://blog.andreaskahler.com/2009/06/creating-icosphere-mesh-in-code.html
+
+// A great repository for all kinds of polyhedra
+// http://dmccooey.com/polyhedra/GeodesicIcosahedra.html
+
 $fn=10;
 
 

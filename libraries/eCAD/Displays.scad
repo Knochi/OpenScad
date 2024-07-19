@@ -68,6 +68,29 @@ module KingbrightACDx03(){
     }
 }
 
+*OLED0_91inch128x32();
+module OLED0_91inch128x32(){
+  AADims=[22.384,5.584];
+  panelDims=[30,11.5,1.2];
+  //polarizer
+  polDims=[25.9,10,0.2];
+  polYOffset=-0.5;
+  flexDims=[10.5,9,0.1];
+  capDims=[26.6,11.5];
+  
+  //polarizer
+  color("darkGrey",0.5) translate([0,-polDims.y+polYOffset,panelDims.z]) cube(polDims);
+  //flex
+  color("orange") translate([capDims.x,-panelDims.y,panelDims.z/2-flexDims.z]) 
+    cube(flexDims+[panelDims.x-capDims.x,0,0]);
+  
+  //panel
+  color("white",0.5){
+  translate([0,-capDims.y,0]) linear_extrude(panelDims.z/2) square(capDims);
+  translate([0,-capDims.y,panelDims.z/2]) linear_extrude(panelDims.z/2) square([panelDims.x,panelDims.y]);
+  }
+}
+
 *OLED1_3inch4pin();
 module OLED1_3inch4pin(center=false){
   //chinese OLED display 4pin 1.3Inch
