@@ -1,5 +1,25 @@
 // http://dmccooey.com/polyhedra/DualGeodesicIcosahedron3.html
 
+$fn=20;
+
+/* [show] */
+showPentaTile=true;
+showHexTile=true;
+showVerts=true;
+showSurface=true;
+
+/* [Select] */
+pentaFaceIdx=60; //[60:71]
+hexFaceIdx=0; //[0:59]
+
+/* [Debug] */
+dbgVerts=false;
+dbgOrig=true;
+
+/* [Dimensions] */
+outerDia=60;
+innerDia=50;
+
 phi = (1 + sqrt(5)) / 2;
 x = cbrt((phi + sqrt(phi-5/27))/2) + cbrt((phi - sqrt(phi-5/27))/2);
 
@@ -253,7 +273,94 @@ F=[[  24,   0,  12,  60,  84,  72 ], //hexagons
    [  22,  44, 104, 118,  70 ],
    [  23,  45, 105, 119,  71 ]]; //71
 
-polyhedron(V,F);
+if (showSurface)
+  %scale(outerDia/2) polyhedron(V,F);
+
+if (showPentaTile)
+  pentagonTile(pentaFaceIdx);
+
+if (showHexTile)
+  hexagonTile(hexFaceIdx);
+
+module pentagonTile(inputFace=60){
+  //do one pentaGon as a tile
+  //get the verts from one pentagon
+  vertsInner= [for (vert=F[inputFace]) V[vert]*innerDia/2];
+  vertsOuter= [for (vert=F[inputFace]) V[vert]*outerDia/2];
+  verts=concat(vertsInner,vertsOuter);
+  echo(verts);
+  faces= [[0,1,2,3,4],
+          [0,4,9,5],
+          [4,3,8,9],
+          [3,2,7,8],
+          [1,2,7,6],
+          [0,1,6,5],
+          [5,6,7,8,9]];
+  
+  for (i=[0:len(vertsOuter)-1])
+    translate(vertsOuter[i]) indexSphere(outerDia/100,str(i),"red");
+  for (i=[0:len(vertsInner)-1])
+    translate(vertsInner[i]) indexSphere(outerDia/100,str(i+5),"green");
+  
+  polyhedron(verts,faces);
+}
+
+!hexagonTile(hexFaceIdx);
+module hexagonTile(inputFace=0){
+  //do one pentaGon as a tile
+  //get the verts from one pentagon
+  vertsInner= [for (vert=F[inputFace]) V[vert]*innerDia/2];
+  vertsOuter= [for (vert=F[inputFace]) V[vert]*outerDia/2];
+  verts=concat(vertsInner,vertsOuter);
+  
+  faces= [[0,1,2,3,4,5],
+          [0,5,11,6],
+          [5,4,10,11],
+          [4,3,9,10],
+          [3,2,8,9],
+          [2,1,7,8],
+          [1,0,6,7],
+          [6,7,8,9,10,11]];
+  
+  if (dbgVerts){
+    for (i=[0:len(vertsOuter)-1])
+      translate(vertsOuter[i]) indexSphere(outerDia/100,str(i),"red");
+    for (i=[0:len(vertsInner)-1])
+      translate(vertsInner[i]) indexSphere(outerDia/100,str(i+6),"green");
+  }
+  
+  if (dbgOrig)
+    %polyhedron(verts,faces);
+  
+  //calculate normal
+  vec1=verts[2]-verts[0];
+  vec2=verts[5]-verts[0];
+  v=cross(vec1,vec2);
+  
+  //longitude
+  phi=atan2(v.y,v.x);
+  //lattidute
+  theta=acos(v.z/norm(v));
+  //centroid
+  centroid=centroid(vertsInner);
+  
+  //height
+  height=norm(centroid);
+  
+  translate([0,0,-height]) rotate([0,-theta,0]) rotate([0,0,-phi]) polyhedron(verts,faces);
+  
+}
+
+module indexSphere(dia=1,txt="1",col="blue"){
+  difference(){
+    color(col) sphere(d=dia);
+    translate([0,0,dia/2-dia/5]) linear_extrude(dia/5) 
+      text(text=txt,size=dia/2,valign="center",halign="center");
+  }
+}
 
 //cube root
 function cbrt(x)=pow(x,1/3);
+
+function centroid(verts,sum=[0,0,0],iter=0)=
+  iter<len(verts) ? centroid(verts,sum+verts[iter]/len(verts),iter+1) : sum;
