@@ -1,8 +1,9 @@
 // http://dmccooey.com/polyhedra/DualGeodesicIcosahedron3.html
 
-$fn=20;
+
 
 /* [show] */
+quality=50; //[20:100]
 showPentaTile=true;
 showHexTile=true;
 showVerts=true;
@@ -15,10 +16,17 @@ hexFaceIdx=0; //[0:59]
 /* [Debug] */
 dbgVerts=false;
 dbgOrig=true;
+dbgStats=false;
 
 /* [Dimensions] */
+//incircle radius of faces touch this 
 outerDia=60;
 innerDia=50;
+
+/* [Hidden] */
+$fn=quality;
+fudge=0.1;
+
 
 phi = (1 + sqrt(5)) / 2;
 x = cbrt((phi + sqrt(phi-5/27))/2) + cbrt((phi - sqrt(phi-5/27))/2);
@@ -273,14 +281,37 @@ F=[[  24,   0,  12,  60,  84,  72 ], //hexagons
    [  22,  44, 104, 118,  70 ],
    [  23,  45, 105, 119,  71 ]]; //71
 
-if (showSurface)
-  %scale(outerDia/2) polyhedron(V,F);
+hexTileHght= norm(
+          centroid([for (vert=F[hexFaceIdx]) V[vert]*outerDia/2])-
+          centroid([for (vert=F[hexFaceIdx]) V[vert]*innerDia/2])
+            );
+          
+pentaTileHght= norm(
+          centroid([for (vert=F[pentaFaceIdx]) V[vert]*outerDia/2])-
+          centroid([for (vert=F[pentaFaceIdx]) V[vert]*innerDia/2])
+            );
+
+          
+if (showSurface){
+  scale(outerDia/2) polyhedron(V,F);
+  %sphere(d=outerDia);
+}
 
 if (showPentaTile)
   pentagonTile(pentaFaceIdx);
 
-if (showHexTile)
-  hexagonTile(hexFaceIdx);
+if (showHexTile){
+
+  difference(){
+    hexagonTile(hexFaceIdx);
+    translate([0,0,hexTileHght/2]){
+      sphere(2.9);
+      cylinder(d=5.2,h=5);
+    }
+    translate([0,0,-fudge]) cylinder(d=4,h=5);
+  }
+
+}
 
 module pentagonTile(inputFace=60){
   //do one pentaGon as a tile
@@ -302,10 +333,10 @@ module pentagonTile(inputFace=60){
   for (i=[0:len(vertsInner)-1])
     translate(vertsInner[i]) indexSphere(outerDia/100,str(i+5),"green");
   
-  polyhedron(verts,faces);
+  layFlat(vertsInner) polyhedron(verts,faces);
 }
 
-!hexagonTile(hexFaceIdx);
+*hexagonTile(hexFaceIdx);
 module hexagonTile(inputFace=0){
   //do one pentaGon as a tile
   //get the verts from one pentagon
@@ -313,28 +344,60 @@ module hexagonTile(inputFace=0){
   vertsOuter= [for (vert=F[inputFace]) V[vert]*outerDia/2];
   verts=concat(vertsInner,vertsOuter);
   
-  faces= [[0,1,2,3,4,5],
+  faces= [[0,1,2,3,4,5], //inner
           [0,5,11,6],
           [5,4,10,11],
           [4,3,9,10],
           [3,2,8,9],
           [2,1,7,8],
           [1,0,6,7],
-          [6,7,8,9,10,11]];
+          [11,10,9,8,7,6]]; //outer
   
   if (dbgVerts){
-    for (i=[0:len(vertsOuter)-1])
-      translate(vertsOuter[i]) indexSphere(outerDia/100,str(i),"red");
     for (i=[0:len(vertsInner)-1])
-      translate(vertsInner[i]) indexSphere(outerDia/100,str(i+6),"green");
+      translate(vertsInner[i]) indexSphere(outerDia/100,str(i),"red");
+    for (i=[0:len(vertsOuter)-1])
+      translate(vertsOuter[i]) indexSphere(outerDia/100,str(i+6),"green");
   }
   
   if (dbgOrig)
     %polyhedron(verts,faces);
   
+  if (dbgStats){
+    eLen= [for (i=[0:5]) norm(vertsInner[i]-vertsOuter[i])];
+    inVertsRad= [for (i=[0:5]) norm(centroid(vertsInner)-vertsInner[i])];
+    outVertsRad= [for (i=[0:5]) norm(centroid(vertsOuter)-vertsOuter[i])];
+    outInVertsRad= [for (i=[0:5]) outVertsRad[i]-inVertsRad[i]];
+    eAngles=[for (i=[0:5]) asin(outInVertsRad[i]/eLen[i])];
+    eHeights=[for (i=[0:5]) sqrt(eLen[i]^2-outInVertsRad[i]^2)];
+    echo(str("Edge Lengths:",eLen));
+    echo(str("innerVerts radii:",inVertsRad));
+    echo(str("outerVerts radii:",outVertsRad));
+    echo(str("outer- innerVerts radii:",outInVertsRad));
+    echo(str("Edge Angles:",eAngles));
+    echo(str("Edge Heights:",eHeights));
+    
+  }
+  
+  layFlat(vertsInner) polyhedron(verts,faces,convexity=5);;
+  
+}
+
+module indexSphere(dia=1,txt="1",col="blue"){
+  difference(){
+    color(col) sphere(d=dia);
+    for (m=[0,1])
+    rotate([m*180,0,0]) translate([0,0,dia/2-dia/5]) linear_extrude(dia/5) 
+      text(text=txt,size=dia/2,valign="center",halign="center");
+  }
+}
+
+//provides translation and rotation to lay a children flat on the ground
+module layFlat(vertices,vertsIdx=[0,1,2]){
+  
   //calculate normal
-  vec1=verts[2]-verts[0];
-  vec2=verts[5]-verts[0];
+  vec1=vertices[vertsIdx[1]]-vertices[vertsIdx[0]];
+  vec2=vertices[vertsIdx[2]]-vertices[vertsIdx[0]];
   v=cross(vec1,vec2);
   
   //longitude
@@ -342,21 +405,12 @@ module hexagonTile(inputFace=0){
   //lattidute
   theta=acos(v.z/norm(v));
   //centroid
-  centroid=centroid(vertsInner);
+  centroid=centroid(vertices);
   
-  //height
-  height=norm(centroid);
-  
-  translate([0,0,-height]) rotate([0,-theta,0]) rotate([0,0,-phi]) polyhedron(verts,faces);
-  
-}
-
-module indexSphere(dia=1,txt="1",col="blue"){
-  difference(){
-    color(col) sphere(d=dia);
-    translate([0,0,dia/2-dia/5]) linear_extrude(dia/5) 
-      text(text=txt,size=dia/2,valign="center",halign="center");
-  }
+  rotate([0,-theta,0]) 
+    rotate([0,0,-phi])
+      translate(-centroid)
+        children();
 }
 
 //cube root
