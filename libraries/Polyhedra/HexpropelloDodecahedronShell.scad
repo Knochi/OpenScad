@@ -297,10 +297,17 @@ if (showSurface){
 }
 
 if (showPentaTile)
-  pentagonTile(pentaFaceIdx);
+    difference(){
+    pentagonTile(pentaFaceIdx);
+    translate([0,0,pentaTileHght/2]){
+      sphere(2.9);
+      cylinder(d=5.2,h=5);
+    }
+    translate([0,0,-fudge]) cylinder(d=4,h=5);
+  }
+  
 
-if (showHexTile){
-
+if (showHexTile)
   difference(){
     hexagonTile(hexFaceIdx);
     translate([0,0,hexTileHght/2]){
@@ -310,7 +317,7 @@ if (showHexTile){
     translate([0,0,-fudge]) cylinder(d=4,h=5);
   }
 
-}
+
 
 module pentagonTile(inputFace=60){
   //do one pentaGon as a tile
@@ -323,16 +330,21 @@ module pentagonTile(inputFace=60){
           [0,4,9,5],
           [4,3,8,9],
           [3,2,7,8],
-          [1,2,7,6],
-          [0,1,6,5],
-          [5,6,7,8,9]];
+          [2,1,6,7],
+          [1,0,5,6],
+          [9,8,7,6,5]];
   
-  for (i=[0:len(vertsOuter)-1])
-    translate(vertsOuter[i]) indexSphere(outerDia/100,str(i),"red");
-  for (i=[0:len(vertsInner)-1])
-    translate(vertsInner[i]) indexSphere(outerDia/100,str(i+5),"green");
+  if (dbgOrig)
+    %polyhedron(verts,faces);
   
-  layFlat(vertsInner) polyhedron(verts,faces);
+  if (dbgVerts){
+    for (i=[0:len(vertsOuter)-1])
+      translate(vertsOuter[i]) indexSphere(outerDia/100,str(i+5),"red");
+    for (i=[0:len(vertsInner)-1])
+      translate(vertsInner[i]) indexSphere(outerDia/100,str(i),"green");
+  }
+  
+  layFlat(vertsInner) polyhedron(verts,faces,convexity=3);
 }
 
 *hexagonTile(hexFaceIdx);
