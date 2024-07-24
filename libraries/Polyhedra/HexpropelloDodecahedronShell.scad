@@ -6,8 +6,7 @@
 quality=50; //[20:100]
 showPentaTile=true;
 showHexTile=true;
-showVerts=true;
-showSurface=true;
+showSurface=false;
 
 /* [Select] */
 pentaFaceIdx=60; //[60:71]
