@@ -15,7 +15,7 @@ hexFaceIdx=0; //[0:59]
 
 /* [Debug] */
 dbgVerts=false;
-dbgOrig=true;
+dbgOrig=false;
 dbgStats=false;
 
 /* [Dimensions] */
