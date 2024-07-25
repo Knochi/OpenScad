@@ -280,6 +280,7 @@ F=[[  24,   0,  12,  60,  84,  72 ], //hexagons
    [  22,  44, 104, 118,  70 ],
    [  23,  45, 105, 119,  71 ]]; //71
 
+
 hexTileHght= norm(
           centroid([for (vert=F[hexFaceIdx]) V[vert]*outerDia/2])-
           centroid([for (vert=F[hexFaceIdx]) V[vert]*innerDia/2])
@@ -429,3 +430,6 @@ function cbrt(x)=pow(x,1/3);
 
 function centroid(verts,sum=[0,0,0],iter=0)=
   iter<len(verts) ? centroid(verts,sum+verts[iter]/len(verts),iter+1) : sum;
+
+function PonLine(start,end,pos)=start+norm(end-start)*pos*(v/norm(v));
+  
