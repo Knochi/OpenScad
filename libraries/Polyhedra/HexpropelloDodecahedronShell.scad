@@ -21,6 +21,8 @@ dbgStats=false;
 //incircle radius of faces touch this 
 outerDia=60;
 innerDia=50;
+coupleSphereDia=2.5;
+coupleSphereSpcng=0.1;
 
 /* [Hidden] */
 $fn=quality;
@@ -319,8 +321,8 @@ if (showHexTile)
   }
 
 
-
-module pentagonTile(inputFace=60){
+%pentagonTile(62,false);
+module pentagonTile(inputFace=60,layFlat=true){
   //do one pentaGon as a tile
   //get the verts from one pentagon
   vertsInner= [for (vert=F[inputFace]) V[vert]*innerDia/2];
@@ -345,11 +347,33 @@ module pentagonTile(inputFace=60){
       translate(vertsInner[i]) indexSphere(outerDia/100,str(i),"green");
   }
   
-  layFlat(vertsInner) polyhedron(verts,faces,convexity=3);
-}
+  if (layFlat)
+    layFlat(vertsInner) tile();
+  else
+    tile();
+  
+  module tile(){
+    difference(){
+      polyhedron(verts,faces,convexity=5);
+      for (i=[0:4]){
+        c0=centroid([vertsInner[i],vertsOuter[i]]);
+        c1=(i<4) ? centroid([vertsInner[i+1],vertsOuter[i+1]]) : centroid([vertsInner[0],vertsOuter[0]]) ;
+        left=pointOnLine(c0,c1,0.3);
+        translate(left) sphere(d=coupleSphereDia+coupleSphereSpcng);
+      }
+    }
+    for (i=[0:4]){
+      c0=centroid([vertsInner[i],vertsOuter[i]]);
+      c1=(i<4) ? centroid([vertsInner[i+1],vertsOuter[i+1]]) : centroid([vertsInner[0],vertsOuter[0]]) ;
+      right=pointOnLine(c0,c1,0.7);
+      translate(right) sphere(d=coupleSphereDia-coupleSphereSpcng);
+    }
+  }
+} 
 
-*hexagonTile(hexFaceIdx);
-module hexagonTile(inputFace=0){
+hexagonTile(1,false);
+hexagonTile(2,false);
+module hexagonTile(inputFace=0,layFlat=true){
   //do one pentaGon as a tile
   //get the verts from one pentagon
   vertsInner= [for (vert=F[inputFace]) V[vert]*innerDia/2];
@@ -391,7 +415,26 @@ module hexagonTile(inputFace=0){
     
   }
   
-  layFlat(vertsInner) polyhedron(verts,faces,convexity=5);;
+  if (layFlat) layFlat(vertsInner) tile();
+  else tile();
+    
+  module tile(){  
+    difference(){
+      polyhedron(verts,faces,convexity=5);
+      for (i=[0:5]){
+        c0=centroid([vertsInner[i],vertsOuter[i]]);
+        c1=(i<5) ? centroid([vertsInner[i+1],vertsOuter[i+1]]) : centroid([vertsInner[0],vertsOuter[0]]) ;
+        left=pointOnLine(c0,c1,0.3);
+        translate(left) sphere(d=coupleSphereDia+coupleSphereSpcng);
+      }
+    }
+    for (i=[0:5]){
+      c0=centroid([vertsInner[i],vertsOuter[i]]);
+      c1=(i<5) ? centroid([vertsInner[i+1],vertsOuter[i+1]]) : centroid([vertsInner[0],vertsOuter[0]]) ;
+      right=pointOnLine(c0,c1,0.7);
+      translate(right) sphere(d=coupleSphereDia-coupleSphereSpcng);
+    }
+  }
   
 }
 
@@ -431,5 +474,5 @@ function cbrt(x)=pow(x,1/3);
 function centroid(verts,sum=[0,0,0],iter=0)=
   iter<len(verts) ? centroid(verts,sum+verts[iter]/len(verts),iter+1) : sum;
 
-function PonLine(start,end,pos)=start+norm(end-start)*pos*(v/norm(v));
+function pointOnLine(start,end,pos)=start+norm(end-start)*pos*((end-start)/norm(end-start));
   

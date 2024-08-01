@@ -107,8 +107,16 @@ module body(){
     //cap
     cylinder(d=bdyDia,h=bdyBtmHght);
     //hole
-    cylinder(d=bdyBtmInDia,h=bdyBtmInHght-wallThck);
-    cylinder(d=bdyBtmInDia-wallThck*2,h=bdyBtmInHght);
+    linear_extrude(bdyBtmInHght-wallThck) difference(){
+      circle(d=bdyBtmInDia);
+      translate([0,-bdyBtmInDia*0.8]) square(bdyBtmInDia,true);
+    }
+    linear_extrude(bdyBtmInHght) difference(){
+      circle(d=bdyBtmInDia-wallThck*2);
+      translate([0,-bdyBtmInDia*0.8+wallThck*2]) square(bdyBtmInDia-wallThck*2,true);
+    }
+    
+    
     //cutouts for ears
     for (ix=[-1,1])
       translate([0,0,bdyZOffset]) rotate([0,ix*90,0]) sideDisc(true);
