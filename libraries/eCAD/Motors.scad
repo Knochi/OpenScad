@@ -7,7 +7,7 @@ include <KiCADColors.scad>
 translate([20,0,0]) SE0802();
 solenoid();
 
-*N20();
+
 module N20(){
   bdDims=[12,10,15];
   gbDims=[12,10,9];
@@ -49,7 +49,7 @@ module N20(){
           circle(gbRad);
 }
 
-!N20leadScrew();
+*N20leadScrew();
 module N20leadScrew(screwDia=3, screwLength=57.6, nutPos=5.5){
   bdDims=[12,10,15];
   gbDims=[12,10,9];

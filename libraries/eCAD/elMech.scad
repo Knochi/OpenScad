@@ -727,8 +727,88 @@ module PEL12D(){
   
 }
 
+!PEC09();
+module PEC09(L=20,S="S",cut=false){
+  //Bourns PEC12R https://www.bourns.com/pdfs/pec12R.pdf
+  //vertical, 15mm shaft, with switch (PEC9-2xLLF-Sxxxx)
+  
+  LB= (L<=15) ? 5.0 :
+      (L<=20) ? 7.0 : 10.0; //threat length
+  //flat length
+  L2= (L<=15) ? 7.0 :
+      (L<=20) ? 10.0 : 10.0; //threat length
+  
+  //switch stroke
+  strokeLen= (S=="N") ? 0 : 
+             (S=="S") ? 0.5 :
+             (S=="T") ? 1.5 : 0;
+  
+  C=0.5; //chamfer
+  
+  F= L2;
+  assert(F!=undef,"Length not Found");
+  threatDia=7;
+  shftDia=6;
+  shftZOffset=6.5;
+  fltnDia=4.5; //flattended Dia (D-Type)
+  
+  bodyDims= (S=="N") ? [9.7,7.05,11.35] : 
+            (S=="S") ? [9.7,13.3,11.35] :
+            (S=="T") ? [9.7,12.05,11.35] : [9.7,7.05,11.35];
+  bdyZOffset=0;
+  
+  //shaft length
+  L1=L;
+  
+  lugDims=[1.8,0.8,0.6];
+  
+  //pins
+  pitch=2.5;
+  pinDims=[0.9,0.2,3.5];
+  pinYDist= (S=="N") ? 0 :
+            (S=="S") ? 6.25 :
+            (S=="T") ? 5.0 : 0;
+  pinYOffset=5;
+  
+  if (cut)translate([0,6.5]) {
+    circle(d=7.2);
+    translate([0,-6]) square([2,0.8],true);
+  }
+    
+  else {
+    //body
+    color(blackBodyCol) translate([0,bodyDims.y/2,bodyDims.z/2+bdyZOffset]) 
+      cube([bodyDims.x,bodyDims.y,bodyDims.z],true);
+    *color(metalAluminiumCol) translate([0,bodyDims.y/6,shftZOffset]) 
+      cube([bodyDims.x,bodyDims.y/3,bodyDims.z],true);
+    //Lug
+    color(metalAluminiumCol) translate([0,-lugDims.y/2,lugDims.z/2]) cube(lugDims,true);
+      
+    //threat
+    color(metalAluminiumCol) translate([0,0,shftZOffset]) rotate([90,0,0]) cylinder(d=threatDia,h=LB);
+    
+    //shaft
+    color(metalAluminiumCol) translate([0,0,shftZOffset]) rotate([90,0,0])  difference(){
+      union(){
+        translate([0,0,LB]) cylinder(d=shftDia,h=L1-LB-C);
+        translate([0,0,L1-C]) cylinder(d1=shftDia,d2=shftDia-C*2,h=C);
+      }
+      translate([0,-shftDia/2+(shftDia-fltnDia)/2,-F/2+L1]) cube([shftDia+fudge,shftDia-fltnDia+fudge,F+fudge],true);
+    }
+    
+    //pins
+    spcng=shftZOffset-bodyDims.z/2+bdyZOffset;
+    //ABC pins
+    color(metalGreyPinCol) for (ix=[-1:1])
+      translate([ix*pitch,pinYOffset,-pinDims.z/2]) cube(pinDims,true);
+    //switch pins    
+    if (pinYDist) color(metalGreyPinCol) for (ix=[-1,1])
+      translate([ix*pitch,pinYOffset+pinYDist,-pinDims.z/2]) cube(pinDims,true);
+  }  
+}
 
-*PEC12R();
+
+!PEC12R();
 module PEC12R(L=20){
   //Bourns PEC12R https://www.bourns.com/pdfs/pec12R.pdf
   //vertical, 15mm shaft, with switch (PEC12R-2x15F-Sxxxx)
@@ -1190,7 +1270,7 @@ module snapActionSwitch(){
   }
 }
 
-!rocpuSideSwitch();
+*rocpuSideSwitch();
 module rocpuSideSwitch(){
   //https://www.lcsc.com/datasheet/lcsc_datasheet_2303211430_ROCPU-Switches-TP12422663_C5381383.pdf
   bdyDims=[6,3.6,3.5];
