@@ -25,8 +25,11 @@ translate([10,-4,0]) pinHeader(10,2,markPin1=true);
 translate([10,4,0]) pinHeader(5,1);
 translate([10,8,0]) pinHeaderRA(10);
 translate([10,24,0]) boxHeader(10);
-translate([35,0,0]) duraClik(4);
-translate([35,10,0]) duraClikRA(4);
+translate([35,20,0]) duraClik(2);
+translate([35,0,0]){ 
+  duraClikRA(4);
+  %rotate([90,0,0]) linear_extrude(0.5) duraClikRA(4,cut=true);
+}
 translate([55,0,0]) ETH();
 translate([70,0,0]) screwTerminal(2,false);
 translate([100,0,0]) DSub();
@@ -776,7 +779,7 @@ module usbCUpright(){
 }
 
 
-!usbC(plug=false);
+*usbC(plug=false);
 module usbC(center=false, pins=24, plug=false){
   //https://usb.org/document-library/usb-type-cr-cable-and-connector-specification-revision-21
   //rev 2.1 may 2021
@@ -999,7 +1002,8 @@ module boxHeader(pins=10,center=false){
     }
 }
 
-module duraClikRA(pos=2,diff="none"){
+
+module duraClikRA(pos=2,cut=false){
   //Molex DuraClik Right Angle
   A=4+2*pos; //ovWith
 
@@ -1010,13 +1014,15 @@ module duraClikRA(pos=2,diff="none"){
   plug=[1+2*pos,5+fudge,4.7];
   plugZ=0.7;
 
-
-  translate([0,ovDpth/2,0])
-  if (diff=="housing"){
-    translate([0,0,ovHght/2]) cube([A+fudge,ovDpth+fudge,ovHght+fudge],true);
+  if (cut) translate([0,ovHght/2,0]){
+    rad=0.5;
+    offset(rad){
+      square([A+0.8-rad,7-rad],true);
+      translate([0,(8.5-rad)/2-(7-rad)/2]) square([4-rad,8.5-rad],true);
+    }
   }
 
-  else {
+  else translate([0,ovDpth/2,0]){
    color(whiteBodyCol)
     difference(){
       translate([0,0,ovHght/2]) cube([A,ovDpth,ovHght],true);//body
@@ -1034,7 +1040,7 @@ module duraClikRA(pos=2,diff="none"){
 *duraClik(2);
 module duraClik(pos=2,givePoly=false){
   A= (pos>2) ? 6.6+2*pos : 10.9; 
-  B= (pos>2) ? 3.7+pos*2 : 8; 
+  B= (pos>2) ? 3.7+2*pos : 8; 
   C= (pos>6) ? pos*2-0.9 : 
      (pos>2) ? pos*2 : 0;
   D= (pos>5) ? 11.8 : 
