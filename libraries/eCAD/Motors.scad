@@ -4,10 +4,60 @@ fudge=0.1;
 use <bend.scad>
 include <KiCADColors.scad>
 
-translate([20,0,0]) SE0802();
-solenoid();
 
-*N20();
+
+
+N20();
+translate([20,0,0]) N20leadScrew();
+translate([40,0,0]) N20Angled();
+translate([60,0,0]) SE0802();
+translate([80,0,0]) solenoid();
+
+
+
+module N20Angled(){
+  bdDims=[12,10,15];
+  gbDims=[12,10,18];
+  gbRad=0.1;
+
+  cntcDist=7.3; //contact distance
+  cntcDims=[0.3,1.5,2.5];
+
+  shftDims=[3,2.5,10];
+  shftOffset=[0,-gbDims.y/2,-3.96];
+
+  //body
+  color(metalSilverCol) intersection(){
+    cylinder(d=bdDims.x,h=bdDims.z);
+    translate([0,0,(bdDims.z)/2]) cube([bdDims.x+fudge,bdDims.y,bdDims.z+fudge],true);
+  }
+
+  //cap bottom
+  color(blackBodyCol) translate([0,0,-1.2]) cylinder(d=5,h=1.2);
+  
+  //shaft
+  translate([0,0,bdDims.z+gbDims.z]+shftOffset){
+    //top cap
+    color(metalGoldPinCol) rotate([90,0,0]) cylinder(d=4,h=0.7);
+    //shaft top
+    color(metalSilverCol) rotate([90,0,0]) difference(){
+      cylinder(d=shftDims.x,h=shftDims.z);
+      translate([0,shftDims.y,shftDims.z/2]) cube([shftDims.x,shftDims.x,shftDims.z+fudge],true);
+    }
+  }
+
+  //contacts
+  color(metalGreyPinCol) for (ix=[-1,1]) translate([ix*cntcDist/2,0,-cntcDims.z/2]) cube(cntcDims,true);
+
+  //gearbox
+  color(metalGoldPinCol) translate([0,0,bdDims.z])
+    linear_extrude(gbDims.z)
+      hull() for(ix=[-1,1],iy=[-1,1])
+        translate([ix*(gbDims.x/2-gbRad),iy*(gbDims.y/2-gbRad)])
+          circle(gbRad);
+
+}
+
 module N20(){
   bdDims=[12,10,15];
   gbDims=[12,10,9];
@@ -49,7 +99,7 @@ module N20(){
           circle(gbRad);
 }
 
-!N20leadScrew();
+*N20leadScrew();
 module N20leadScrew(screwDia=3, screwLength=57.6, nutPos=5.5){
   bdDims=[12,10,15];
   gbDims=[12,10,9];
