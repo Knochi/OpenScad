@@ -1,4 +1,4 @@
-$fn=40;
+
 /* [Dimensions] */
 mtlPltDims=[51,63,1.8];
 mtlPltDrillOffset=7;
@@ -19,7 +19,7 @@ outBrm=10;
 inBrm=6; //must be multiple of rackDia
 rackDia=1.5;
 
-kerf=0.1;
+kerf=+0.1;
 fudge=0.1;
 
 minWdth=3;
@@ -40,6 +40,7 @@ export="none"; //["none","botFrame","midFrame","topFrame","rail","slider","carri
 carWdth=rackDia*floor((rackDia*2+pnchDim.x+minWdth*4)/rackDia);//rackDia*8*2;
 echo(carWdth);
 inWdth=baseDim.x-inBrm*2;
+$fn= (export=="none") ? 40 : 100;
 
 //specimen
 color("silver") linear_extrude(mtlPltDims.z) difference(){
@@ -56,7 +57,6 @@ if (showBase) color("grey") translate([0,0,-baseDim.z/2-0.01]) cube(baseDim,true
 if (showPunch) color("darkslategrey") translate([0,0,3]) nmbrPunch(pnchHex);
 
 
-
 //frame
   if (showTopFrame) translate([0,0,matThck*1]) topFrame();
   if (showMidFrame) translate([0,0,matThck*0.5]) midFrame();
@@ -67,8 +67,8 @@ if (showPunch) color("darkslategrey") translate([0,0,3]) nmbrPunch(pnchHex);
  if (export=="rail") !projection() rail();
  if (export=="slider") !projection() slider();
        
- if (showSlider) translate([0,0,matThck*1.5]) slider();
- if (showCarriage) translate([0,0,matThck*1.5]) carriage();
+ if (showSlider) translate([0,0,matThck*1]) slider();
+ if (showCarriage) translate([0,0,matThck*1]) carriage();
  if (showRail) translate([0,0,matThck*1.5]) rail();
  
  
@@ -79,20 +79,19 @@ if (showPunch) color("darkslategrey") translate([0,0,3]) nmbrPunch(pnchHex);
  
 //carriage
 module carriage(){
-  cutOutDims=[baseDim.x-inBrm*4,carWdth-minWdth*2-rackDia,matThck+fudge];
+  cutOutDims=[baseDim.x-inBrm*4,carWdth-minWdth*2-rackDia];
   cutOutRad=3;
   rackCnt=ceil((cutOutDims.x)/(rackDia*2));
   rackCnts=[ceil((cutOutDims.x)/(rackDia*2)),ceil((carWdth/(rackDia*2)))];
   
-  color("powderBlue"){ //carriage
+  color("powderBlue") linear_extrude(matThck){ //carriage
   difference(){
-    cube([baseDim.x-inBrm*2,carWdth,matThck+0.01],true);
+    square([baseDim.x-inBrm*2,carWdth],true);
     a=[-carWdth/2:rackDia*2:carWdth/2];
-    echo(a);
     //outer rack
     for (x=[-1,1],y=[-carWdth/2:rackDia*2:carWdth/2]){
       rackOffset = (x>0) ? rackDia : 0;
-      translate([x*(baseDim.x/2-inBrm),y+rackOffset,0]) cylinder(d=rackDia,h=matThck+fudge,center=true);
+      translate([x*(baseDim.x/2-inBrm),y+rackOffset]) circle(d=rackDia-kerf);
     }
     //cutout
     rndRect(cutOutDims,rackDia);
@@ -100,28 +99,28 @@ module carriage(){
     for (x=[-(rackCnt/2-1):(rackCnt/2-1)],y=[-1,1]){
       rackOffset = (y>0) ? rackDia : 0;
       if (x*rackDia*2+rackOffset<cutOutDims.x/2-0.5)
-      translate([x*rackDia*2+rackOffset,y*(cutOutDims.y/2),0]) cylinder(d=rackDia,h=matThck+fudge,center=true);
+      translate([x*rackDia*2+rackOffset,y*(cutOutDims.y/2)]) circle(d=rackDia-kerf);
     }
     //screw holes
     for (i=[-1,1],j=[-1,1])
-      translate([i*(baseDim.x/2-inBrm*1.5-rackDia),j*(carWdth/2-inBrm),0]) 
-        cylinder(d=2.0,h=matThck+fudge,center=true);
+      translate([i*(baseDim.x/2-inBrm*1.5-rackDia),j*(carWdth/2-inBrm)]) 
+        circle(d=2.0);
   }
   
   //outer teeth
   for (x=[-1,1],y=[-(carWdth/2-rackDia):rackDia*2:(carWdth/2-rackDia)]){
     rackOffset = (x>0) ? rackDia : 0;
     if (y<(carWdth/2-rackOffset))
-      translate([x*(baseDim.x/2-inBrm),y+rackOffset,0]) cylinder(d=rackDia,h=matThck,center=true);
+      translate([x*(baseDim.x/2-inBrm),y+rackOffset]) circle(d=rackDia+kerf);
   }
   //inner teeth
   for (x=[-(rackCnt/2-1.5):(rackCnt/2-1.5)],y=[-1,1]){
     rackOffset = (y>0) ? rackDia : 0;
-    translate([x*(rackDia*2)+rackOffset,y*(cutOutDims.y/2),0]) cylinder(d=rackDia,h=matThck,center=true);
+    translate([x*(rackDia*2)+rackOffset,y*(cutOutDims.y/2)]) circle(d=rackDia+kerf);
   }
     
   }
-  }
+}
   
 module rail(){
   //rail
@@ -139,31 +138,34 @@ module rail(){
 
 *slider();
 module slider(){
-  sliderDims=[carWdth-minWdth*2-rackDia,carWdth-minWdth*2-rackDia,matThck];
+  sliderDims=[carWdth-minWdth*2-rackDia,carWdth-minWdth*2-rackDia];
   ru=pnchHex ? pnchDim.x/2 : pnchDim.x*(1/sqrt(2));
   
-  difference(){
-    rndRect(sliderDims,innerRad);
-    if (pnchHex)
-      cylinder(r=ru,$fn=6,h=matThck+fudge,center=true);
-    else
-      cube([pnchDim.x,pnchDim.y,matThck+fudge],true);
-    //rack
-    for (ix=[-2.5:2.5],iy=[-1,1]){
+  linear_extrude(matThck){
+    difference(){
+      rndRect(sliderDims,innerRad);
+      if (pnchHex)
+        circle(r=ru,$fn=6);
+      else
+        square([pnchDim.x,pnchDim.y],true);
+      //rack
+      for (ix=[-2.5:2.5],iy=[-1,1]){
+        rackOffset = (iy>0) ? rackDia : 0;
+        translate([ix*rackDia*2+rackOffset,iy*sliderDims.y/2]) circle(d=rackDia-kerf);
+      }
+    }
+    
+    //teeth
+    for (ix=[-2:2],iy=[-1,1]){
       rackOffset = (iy>0) ? rackDia : 0;
-      translate([ix*rackDia*2+rackOffset,iy*sliderDims.y/2,0]) cylinder(d=rackDia,h=matThck+fudge,center=true);
+      if (abs(ix*rackDia*2+rackOffset)<(sliderDims.x/2-innerRad))
+        translate([ix*rackDia*2+rackOffset,iy*sliderDims.y/2]) circle(d=rackDia+kerf);
     }
   }
-  
+  //screws
   if ((export=="none") && showScrews) color("silver") for (i=[-1,1],j=[-1,1])
-      translate([i*(baseDim.x/2-inBrm*1.5-rackDia),j*(carWdth/2-inBrm),-matThck/2-3-fudge]) 
-        M25Screw();
-  //teeth
-  for (ix=[-2:2],iy=[-1,1]){
-    rackOffset = (iy>0) ? rackDia : 0;
-    if (abs(ix*rackDia*2+rackOffset)<(sliderDims.x/2-innerRad))
-      translate([ix*rackDia*2+rackOffset,iy*sliderDims.y/2,0]) cylinder(d=rackDia,h=matThck,center=true);
-  }
+        translate([i*(baseDim.x/2-inBrm*1.5-rackDia),j*(carWdth/2-inBrm),-matThck/2-3-fudge]) 
+          M25Screw();
 }
 
 *topFrame();
@@ -176,13 +178,13 @@ module topFrame(){
   module shape(){
     difference(){
       rndRect([baseDim.x+outBrm*2,baseDim.y+outBrm*2],frameRad);
-      offset(kerf/2) rndRect([inWdth,inWdth],frameRad);
+      rndRect([inWdth,inWdth],frameRad);
   
       //rack cutouts 
       for (i=[-inWdth/2+frameRad:rackDia*2:inWdth/2-frameRad],j=[-1,1]){
         rackOffset = (j>0) ? rackDia : 0;
         //front/back
-        translate([i+rackOffset,j*inWdth/2]) circle(d=rackDia-kerf);
+        translate([i+rackOffset,j*(inWdth/2)]) circle(d=rackDia-kerf);
         //left/right
         translate([j*inWdth/2,i+rackOffset]) circle(d=rackDia-kerf);
       }
