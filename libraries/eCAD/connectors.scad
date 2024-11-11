@@ -741,6 +741,54 @@ module XH(pins,center=false){
    }
 }
 
+
+!RJ14();
+module RJ14(center=false){
+  //Adamtech MTJ-642bx2
+  //https://app.adam-tech.com/products/download/data_sheet/203851/mtj-642bx2-data-sheet.pdf
+  bdyDims=[12.2,13.0,14.5];
+  pegDist=12;
+  pegDia=2.1;
+  pegLen=3.1;
+  pegSnapDia=2.5;
+  peg2Front=6;
+  pcbThck=1.6; //straight part of the pegs
+  plugPos=[0,11.3,3.5];
+  pitch=[3.06,2.54];
+  stagger=1.02;
+  pinDia=
+  color(greyBodyCol) difference(){
+    translate([0,0,bdyDims.z/2]) cube(bdyDims,true);
+    translate([0,-bdyDims.y/2+11.3,5]) plug();
+  }
+  //pegs
+  for (ix=[-1,1])
+    translate([ix*pegDist/2,-bdyDims.y/2+peg2Front,0]) peg();
+  
+  //pins
+  
+  module peg(){
+    color(greyBodyCol){
+      translate([0,0,-pcbThck]) cylinder(d=pegDia,h=pcbThck*2);
+      translate([0,0,-pegLen]) cylinder(d1=pegDia,d2=pegSnapDia,h=pegLen-pcbThck);
+      translate([0,0,pcbThck]) cylinder(d1=pegDia,d2=0.1,h=pegDia/2);
+    }
+  }
+  *plug();
+  module plug(){
+  //RJ11, RJ14, RJ25(RJ12) are the same
+    bdyDims=[9.6,12.3,6.6];
+    sprngDims=[3.25,bdyDims.y,2.77-1+fudge];
+    buckleDims=[6.04,bdyDims.y,7.80-bdyDims.z+fudge];
+    
+    translate([0,-bdyDims.y/2,bdyDims.z/2]){
+      cube(bdyDims,true);
+      translate([0,(bdyDims.y-sprngDims.y)/2,(bdyDims.z+sprngDims.z-fudge)/2]) cube(sprngDims,true);
+      translate([0,(bdyDims.y-buckleDims.y)/2,(bdyDims.z+buckleDims.z-fudge)/2]) cube(buckleDims,true);
+    }
+  }
+}
+
 *ETH();
 module ETH(){
   //e.g. HALO HFJ11-2450E-L12RL
