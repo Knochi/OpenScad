@@ -1,7 +1,12 @@
 // This is a remix of https://www.thingiverse.com/thing:3351902
 // Tolerances where to thight and want to have it customizable
 
-use <./Fonts/MorrisRomanBlack/MorrisRoman-Black.ttf>
+//This is the font used in the provided STLs
+//you can download it at: https://www.1001freefonts.com/de/morris-roman-black.font
+//put it in an subfolder "Fonts" to this project project and uncomment the following line
+//if you install the font to system, the following line is not needed
+//use <./Fonts/MorrisRomanBlack/MorrisRoman-Black.ttf>
+
 
 /* [General] */
 minWallThck=1.4;
@@ -36,7 +41,7 @@ revArrows=true;
 noSupportMod=false;
 
 /* [show] */
-showSTL=false; //show the original STL
+
 showRings=true;
 showSprings=true;
 showTube=true;
@@ -118,8 +123,6 @@ else if (isolate=="testMagnets")
 module clip(){
   tipDims=[4.4,4.5];
   tipPoly=[[-tipDims.x/2,0],[tipDims.x/2,0],[0,tipDims.y]];
-  if (showSTL)
-    %rotate(-90) translate([-12.54,43.9-6/2,0]) import("Life_Counter_clip.stl");
 
   linear_extrude(clipXYDims.y,convexity=3) difference(){
     union(){
@@ -147,8 +150,6 @@ module spring(){
   mainCutDia=tbDia/2+minWallThck+spcng;
   tipDia=2.5;
   tipAng=2*asin((tipDia/2)/sprDia); //angle from tip dia
-  if (showSTL)
-    %translate([0.2,-12.85-21.6/2,0]) import("Life_Counter_spring.stl");
   
   //spring arms
   difference(){
@@ -202,8 +203,6 @@ module tube(cut=false){
     }
 
   else{
-    if (showSTL)
-    %translate([-24-10.5/2,42.75-4.3/2,0]) import("Life_Counter_tube.stl");
 
     difference(){
       linear_extrude(height = tbLen,convexity=3){
@@ -234,8 +233,7 @@ module ring(){
   ro=ri*(1/cos(180/digits)); //works only for 10 digits! //TODO make it work for n-gons
   nudgeDia=3.6+fudge;
   //ro=ri*tan(180/digits)/(cos(180/digits));
-  if (showSTL)
-    %rotate(-18) translate([(15.08-14.93)/2,-41.11-31.55/2,0]) import("Life_Counter_ring.stl");
+
   //circle(ri);
   rotate(-36) difference(){
     //body
@@ -277,11 +275,6 @@ module side(isLeft=false){
 
   boxRot= isLeft ? 90-36 : 90+36;
 
-  if (showSTL)
-    if (isLeft)
-      %rotate(90) translate([-19.92+4.1/2,9.69+3,0]) import("Life_Counter_sides.stl");
-    else
-      %rotate(-90) translate([19.74-4.1/2,9.69+3,0]) import("Life_Counter_sides.stl");
 
   difference(){
     body();
@@ -459,14 +452,4 @@ module octahedron(r=10){
     [2,3,4]
   ];
   polyhedron(verts,faces);
-}
-
-translate([22,14,4]) rotate([0,90,0]) coinCell(type="V364");
-module coinCell(type="custom",dia=11.6,h=5.4){
-  coinDims= (type=="custom") ?  [dia,h] :
-            (type=="LR45") ? [11.6,5.4] :
-            (type=="V364") ? [6.8,2.2] :
-            (type=="LR41") ? [8,3] : [10,3];
-  
-  color("silver") cylinder(d=coinDims[0],h=coinDims[1]);
 }
