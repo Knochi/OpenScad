@@ -1,0 +1,19 @@
+{
+    "fileFormatVersion": "1",
+    "parameterSets": {
+        "New set 1": {
+            "export": "holder",
+            "hldrDims": "[16, 18, 10.1]",
+            "hldrWallThck": "4",
+            "holeDia": "4.2000000000000002",
+            "holeDist": "[45, 16]",
+            "plateDims": "[59, 30, 5]",
+            "plateRad": "5",
+            "sprngCutOut": "[9, 14, 7]",
+            "sprngCutOutDist": "15",
+            "sprngOffset": "[10.5, 0.5]",
+            "sprngOvDims": "[12, 25, 18]",
+            "sprngWallThck": "3.5"
+        }
+    }
+}
