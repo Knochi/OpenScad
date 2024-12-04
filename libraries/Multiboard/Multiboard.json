@@ -1,0 +1,13 @@
+{
+    "fileFormatVersion": "1",
+    "parameterSets": {
+        "New set 1": {
+            "pFbotHght": "1",
+            "pFbotIRad": "6.75",
+            "pFovHght": "8.4000000000000004",
+            "pFtopHght": "0.5",
+            "pFtopIRad": "6.6200000000000001",
+            "showPushFit": "true"
+        }
+    }
+}
