@@ -16,7 +16,7 @@ mntHght=100;//Height of the Mount
 mntThck=30;
 hngAxsDia=5;
 sprngWdth=3;
-sprngThck=0.5;
+sprngThck=0.4;
 starN=16;
 
 /* [show]  */
@@ -130,6 +130,5 @@ module plate(){
     }
   }
   
-
 
 

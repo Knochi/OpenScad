@@ -1,0 +1,49 @@
+{
+    "fileFormatVersion": "1",
+    "parameterSets": {
+        "New set 1": {
+            "$fn": "50",
+            "cntrOffset": "[0, 3.5, 3.5]",
+            "hngAxsDia": "5",
+            "lowerHolePos": "[0, -32, -32]",
+            "minWallThck": "5",
+            "mntHght": "100",
+            "mntThck": "30",
+            "prfDims": "[20, 20]",
+            "prfLen": "150",
+            "prfPos": "[10, 100, 0]",
+            "showFan": "false",
+            "showHinge": "true",
+            "showPlate": "true",
+            "showProfile": "false",
+            "showSection": "false",
+            "spcng": "[0.5, 0.5, 0.2]",
+            "sprngThck": "0.59999999999999998",
+            "sprngWdth": "3",
+            "starN": "16",
+            "upperHolePos": "[0, 39, 39]"
+        },
+        "New set 2": {
+            "$fn": "50",
+            "cntrOffset": "[0, 3.5, 3.5]",
+            "hngAxsDia": "5",
+            "lowerHolePos": "[0, -32, -32]",
+            "minWallThck": "5",
+            "mntHght": "100",
+            "mntThck": "30",
+            "prfDims": "[20, 20]",
+            "prfLen": "150",
+            "prfPos": "[10, 100, 0]",
+            "showFan": "true",
+            "showHinge": "true",
+            "showPlate": "true",
+            "showProfile": "false",
+            "showSection": "false",
+            "spcng": "[0.5, 0.5, 0.2]",
+            "sprngThck": "0.40000000000000002",
+            "sprngWdth": "3",
+            "starN": "16",
+            "upperHolePos": "[0, 39, 39]"
+        }
+    }
+}
