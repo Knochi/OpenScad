@@ -5,29 +5,45 @@ latSpcng=0.25;
 zSpcng=0.1;
 sectionCut=true;
 
+
+lid();
+
 //lid
-difference(){
-  intersection(){
-    solidSnap();
-    rotate(180/8) cylinder(d=21.6,h=3,$fn=8);
+module lid(){
+  sprngSlt=1;
+  difference(){
+    intersection(){
+      solidSnap();
+      rotate(180/8) cylinder(d=21.6,h=3,$fn=8);
+    }
+    //cutout for battery holder
+    translate([+0,0,1.5+fudge/2]) cube([4,20,1+fudge],true);
+    //cutout for PCB flats
+    translate([+0,0,2.5+fudge/2]) cube([18,20,1+fudge],true);
+    //cutout for PCB circlular
+    translate([0,0,1]) cylinder(d=pcbDia-1,h=1+fudge);
+    //cutout for snap springiness
+    for (ix=[-1,1])
+      translate([ix*(18/2-sprngSlt/2),0,2.5]) cube([sprngSlt,20,3],true);
+    //part cutouts
+    rotate(158) translate([8.4,0,1.5+fudge/2]) cube([1.4,3,1+fudge],true);
+    rotate(233) translate([8.4,0,1.5+fudge/2]) cube([1.4,3,1+fudge],true);
+    
   }
-  *translate([0,0,1])
-    rotate([180,0,0]) translate([-17.5/2,-18.6/2,-5.83]) 
-      import("D18X6.5MM KC012-13.STL",convexity=3);
-  translate([+0,0,1.5+fudge/2]) cube([4,20,1+fudge],true);
-  translate([+0,0,2.5+fudge/2]) cube([18,20,1+fudge],true);
-  translate([0,0,1]) cylinder(d=pcbDia-1,h=1+fudge);
-  rotate(158) translate([8.4,0,1.5+fudge/2]) cube([1.4,3,1+fudge],true);
-  rotate(233) translate([8.4,0,1.5+fudge/2]) cube([1.4,3,1+fudge],true);
+  //snaps
+  for (im=[0,1])
+    mirror([im,0,0]) translate([9.98,0,2.3]) snap();
 }
 
 //snap
 difference(){
   solidSnap();
-  translate([0,0,-fudge]) rotate(180/8) cylinder(d=21.6+latSpcng,h=3+fudge+latSpcng,$fn=8);
+  translate([0,0,-fudge]) rotate(180/8) cylinder(d=21.6+latSpcng*2,h=3+fudge+latSpcng,$fn=8);
   cylinder(d=16.6,h=10);
   for (iy=[-1,1])
     translate([0,iy*8,6.5/2]) cube([3,3,6.5],true);
+  for (im=[0,1])
+    mirror([im,0,0]) translate([9.98,0,2.3]) snap(width=6,spacing=latSpcng-0.08);
   if (sectionCut) color("darkRed") translate([0,(6+fudge/2),4.5]) cube([24+fudge,12+fudge,9+fudge],true);
 }
   
@@ -40,3 +56,15 @@ color("darkgreen") translate([0,0,1+fudge])
   rotate([180,0,0]) translate([-17.5/2,-18.6/2,-5.83]) 
     import("D18X6.5MM KC012-13.STL");
 
+*snap();
+module snap(spacing=0.0, width=5){
+  dia=1;
+  height=2.6;
+  rotate([90,0,0]) linear_extrude(width,center=true) difference(){
+    offset(spacing) hull(){
+      circle(d=dia+spacing);
+      translate([-fudge/2,-0.6]) square([fudge,height+spacing],true);
+    }
+    translate([-(fudge+dia)/2,-0.6]) square([fudge+dia,height+spacing*3],true);
+  }
+}
