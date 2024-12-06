@@ -1,7 +1,7 @@
 // Simple magnet holder by Knochi
 
 /* [Dimensions] */
-$fn=150;
+$fn=50;
 magnetDia=8;
 magnetThck=2.5;
 magnetBrim=1.2;
@@ -9,6 +9,7 @@ holeDia=8;
 holeBrim=5;
 length=40;
 spcng=0.2;
+
 
 /* [Label] */
 lblTopTxt="N";
@@ -21,12 +22,17 @@ lblThck=0.5;
 
 /* [Options] */
 roundOuterEdges=true;
+embeddMagnet=true;
+//how much material to add on each side
+embeddAddition=0.6;
+//how much spacing to add in Z
+embeddSpcng=0.2;
 
 
 /* [Hidden] */
 magnetDisc=magnetDia+magnetBrim*2;
 holeDisc=holeDia+holeBrim*2;
-ovThck=magnetThck;
+ovThck= embeddMagnet ? magnetThck+embeddAddition+embeddSpcng*2 : magnetThck;
 outerRndRad=min(magnetBrim,holeBrim);
 fontStyle=str(lblFont,":style=",lblStyle);
 fudge=0.1;
@@ -38,36 +44,34 @@ magnetKey();
 echo(outerRndRad);
 
 module magnetKey(){
-  if (roundOuterEdges)
+  
     difference(){
-      hull(){
+      //body
+      %hull(){
         translate([-(length-magnetDisc)/2,0,0]) 
-          roundedDisc(magnetDisc,ovThck,outerRndRad);
-        translate([(length-holeDisc)/2,0,0]) 
-          roundedDisc(holeDisc,ovThck,outerRndRad);
+          if (roundOuterEdges) roundedDisc(magnetDisc,ovThck,outerRndRad);
+          else cylinder(d=magnetDisc,h=ovThck,center=true);
+          
+        translate([(length-holeDisc)/2,0,0]){
+          if (roundOuterEdges) roundedDisc(holeDisc,ovThck,outerRndRad);
+          else cylinder(d=holeDisc,h=ovThck,center=true);
+          }
       }
+      //magnet hole
       translate([-(length-magnetDisc)/2,0,0]) 
-          cylinder(d=magnetDia+spcng,h=ovThck+fudge,center=true);
+          cylinder(d=magnetDia+embeddSpcng*2,h=magnetThck+fudge,center=true);
+      
+      //hole
         translate([(length-holeDisc)/2,0,0]) 
           cylinder(d=holeDia+ovThck,h=ovThck+fudge,center=true);
+      
+      //text
       translate([0,0,ovThck/2-lblThck]) linear_extrude(lblThck+fudge) 
         text(lblTopTxt,size=lblTopSize,valign="center",halign="center",font=fontStyle);
       translate([0,0,-ovThck/2-fudge]) linear_extrude(lblThck+fudge) 
         mirror([0,1]) text(lblBotTxt,size=lblBotSize,valign="center",halign="center",font=fontStyle);
     }
-  else
-    linear_extrude(magnetThck) difference(){
-      hull(){
-        translate([-(length-magnetDisc)/2,0]) 
-          circle(d=magnetDisc);
-        translate([(length-holeDisc)/2,0]) 
-          circle(d=holeDisc);
-      }
-      translate([-(length-magnetDisc)/2,0]) 
-          circle(d=magnetDia);
-      translate([(length-holeDisc)/2,0]) 
-          circle(d=holeDia+ovThck);
-    }
+    
   //round inner edge of hole
   translate([(length-holeDisc)/2,0,0])
     rotate_extrude() 
@@ -75,18 +79,19 @@ module magnetKey(){
         circle(d=ovThck);
 }
 
-*roundedDisc(holeDisc,ovThck,outerRndRad);
+*roundedDisc(holeDisc,ovThck,1);
 module roundedDisc(dia,thick,rad){
+  
   hull() for (m=[0,1]){
     mirror([0,0,m]) translate([0,0,thick/2-rad]) 
       halfDisc();
   }
   module halfDisc(){
-      rotate_extrude() 
-        translate([dia/2-rad,0]) 
-          intersection(){
-            circle(rad);
-            square(rad);
-          }
+    rotate_extrude() 
+      translate([dia/2-rad,0]) 
+        intersection(){
+          circle(rad);
+          square(rad);
         }
+  }
 }
