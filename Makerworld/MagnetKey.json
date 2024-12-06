@@ -1,0 +1,23 @@
+{
+    "fileFormatVersion": "1",
+    "parameterSets": {
+        "New set 1": {
+            "$fn": "150",
+            "holeBrim": "5",
+            "holeDia": "8",
+            "lblBotSize": "7",
+            "lblBotTxt": "S",
+            "lblFont": "Liberation Sans",
+            "lblStyle": "Regular",
+            "lblThck": "0.40000000000000002",
+            "lblTopSize": "6",
+            "lblTopTxt": "0.2",
+            "length": "40",
+            "magnetBrim": "1.2",
+            "magnetDia": "8",
+            "magnetThck": "2.5",
+            "roundOuterEdges": "true",
+            "spcng": "0.20000000000000001"
+        }
+    }
+}
