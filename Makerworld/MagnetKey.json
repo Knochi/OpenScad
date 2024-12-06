@@ -8,16 +8,16 @@
             "lblBotSize": "7",
             "lblBotTxt": "S",
             "lblFont": "Liberation Sans",
-            "lblStyle": "Regular",
-            "lblThck": "0.40000000000000002",
+            "lblStyle": "Bold",
+            "lblThck": "0.5",
             "lblTopSize": "6",
-            "lblTopTxt": "0.2",
+            "lblTopTxt": "0.1",
             "length": "40",
             "magnetBrim": "1.2",
             "magnetDia": "8",
             "magnetThck": "2.5",
             "roundOuterEdges": "true",
-            "spcng": "0.20000000000000001"
+            "spcng": "0.10000000000000001"
         }
     }
 }
