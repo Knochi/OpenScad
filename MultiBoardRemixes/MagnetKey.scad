@@ -1,7 +1,6 @@
 // Simple magnet holder by Knochi
 
 /* [Dimensions] */
-$fn=50;
 magnetDia=8;
 magnetThck=2.5;
 magnetBrim=1.2;
@@ -39,7 +38,7 @@ ovWdth= max(magnetDisc,holeDisc);
 outerRndRad=min(magnetBrim,holeBrim);
 fontStyle=str(lblFont,":style=",lblStyle);
 fudge=0.1;
-echo(ovThck);
+$fn=48; 
 
 if (export=="noSplit")
   magnetKey();
@@ -54,8 +53,6 @@ else if (export=="Bottom")
     translate([0,0,(ovThck/2+fudge)/2]) cube([length+fudge,ovWdth+fudge,ovThck/2+fudge],true);
   }
 
-
-echo(outerRndRad);
 
 module magnetKey(){
   
@@ -92,7 +89,7 @@ module magnetKey(){
       rotate_extrude() 
         translate([(holeDia+ovThck)/2,0])
           circle(d=ovThck);
-      cylinder(d=holeDia+ovThck+fudge,h=ovThck+fudge,center=true);
+      cylinder(d=holeDia+ovThck+fudge*+0,h=ovThck+fudge,center=true);
     }
 }
 
