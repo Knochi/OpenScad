@@ -27,18 +27,32 @@ embeddMagnet=true;
 embeddAddition=0.6;
 //how much spacing to add in Z
 embeddSpcng=0.2;
+//split in to halfes for coloring
+export="noSplit"; //["noSplit","Top","Bottom"]
 
 
 /* [Hidden] */
 magnetDisc=magnetDia+magnetBrim*2;
 holeDisc=holeDia+holeBrim*2;
-ovThck= embeddMagnet ? magnetThck+embeddAddition+embeddSpcng*2 : magnetThck;
+ovThck= embeddMagnet ? magnetThck+embeddAddition*2+embeddSpcng*2 : magnetThck;
+ovWdth= max(magnetDisc,holeDisc);
 outerRndRad=min(magnetBrim,holeBrim);
 fontStyle=str(lblFont,":style=",lblStyle);
 fudge=0.1;
-echo(fontStyle);
+echo(ovThck);
 
-magnetKey();
+if (export=="noSplit")
+  magnetKey();
+else if (export=="Top")
+  difference(){
+    magnetKey();
+    translate([0,0,-(ovThck/2+fudge)/2]) cube([length+fudge,ovWdth+fudge,ovThck/2+fudge],true);
+  }
+else if (export=="Bottom")
+  difference(){
+    magnetKey();
+    translate([0,0,(ovThck/2+fudge)/2]) cube([length+fudge,ovWdth+fudge,ovThck/2+fudge],true);
+  }
 
 
 echo(outerRndRad);
@@ -47,7 +61,7 @@ module magnetKey(){
   
     difference(){
       //body
-      %hull(){
+      hull(){
         translate([-(length-magnetDisc)/2,0,0]) 
           if (roundOuterEdges) roundedDisc(magnetDisc,ovThck,outerRndRad);
           else cylinder(d=magnetDisc,h=ovThck,center=true);
@@ -74,9 +88,12 @@ module magnetKey(){
     
   //round inner edge of hole
   translate([(length-holeDisc)/2,0,0])
-    rotate_extrude() 
-      translate([(holeDia+ovThck)/2,0])
-        circle(d=ovThck);
+    intersection(){
+      rotate_extrude() 
+        translate([(holeDia+ovThck)/2,0])
+          circle(d=ovThck);
+      cylinder(d=holeDia+ovThck+fudge,h=ovThck+fudge,center=true);
+    }
 }
 
 *roundedDisc(holeDisc,ovThck,1);
