@@ -9,7 +9,7 @@ magnetBrim=1.2;
 holeDia=8;
 holeBrim=5;
 length=40;
-spcng=0.2;
+spcng=0.1;
 
 /* [Label] */
 lblTopTxt="N";
