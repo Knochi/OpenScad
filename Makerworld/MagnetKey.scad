@@ -2,14 +2,14 @@
 
 /* [Dimensions] */
 //number of facets
-$fn=150;
+$fn=48;
 magnetDia=8;
 magnetThck=2.5;
 magnetBrim=1.2;
 holeDia=8;
 holeBrim=5;
 length=40;
-spcng=0.1;
+spcng=0.2;
 
 /* [Label] */
 lblTopTxt="N";
