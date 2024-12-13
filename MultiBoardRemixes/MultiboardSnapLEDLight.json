@@ -1,0 +1,19 @@
+{
+    "fileFormatVersion": "1",
+    "parameterSets": {
+        "New set 1": {
+            "$fn": "50",
+            "fudge": "0.10000000000000001",
+            "latSpcng": "0.25",
+            "lidDia": "21.600000000000001",
+            "lidLensThck": "0.59999999999999998",
+            "pcbDia": "18.600000000000001",
+            "pcbZOffset": "1.1000000000000001",
+            "sectionCut": "true",
+            "showLid": "false",
+            "showPCB": "true",
+            "showSnap": "true",
+            "zSpcng": "0.10000000000000001"
+        }
+    }
+}
