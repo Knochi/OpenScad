@@ -742,7 +742,7 @@ module XH(pins,center=false){
 }
 
 
-!RJ14();
+*RJ14();
 module RJ14(center=false){
   //Adamtech MTJ-642bx2
   //https://app.adam-tech.com/products/download/data_sheet/203851/mtj-642bx2-data-sheet.pdf
@@ -756,7 +756,8 @@ module RJ14(center=false){
   plugPos=[0,11.3,3.5];
   pitch=[3.06,2.54];
   stagger=1.02;
-  pinDia=
+  pinDia=1;
+  
   color(greyBodyCol) difference(){
     translate([0,0,bdyDims.z/2]) cube(bdyDims,true);
     translate([0,-bdyDims.y/2+11.3,5]) plug();
