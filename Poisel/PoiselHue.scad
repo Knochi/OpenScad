@@ -1,11 +1,11 @@
 ovDims=[82,178];
 layerHght=0.08;
-baseHght=0.2;
+baseHght=0.24;
 layers=4;
 
 /* [show] */
-showLayer="all"; //["all":0,1,2,3,4]
-layerColors=["black","red","blue","green","yellow"];
+showLayer="all"; //["all",0,1,2,3,4]
+layerColors=["#FFFFFF","red","blue","green","yellow"];
 
 if (showLayer=="all"){
   for (layer=[0:layers])

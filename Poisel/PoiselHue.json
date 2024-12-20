@@ -1,0 +1,12 @@
+{
+    "fileFormatVersion": "1",
+    "parameterSets": {
+        "New set 1": {
+            "baseHght": "0.20000000000000001",
+            "layerHght": "0.080000000000000002",
+            "layers": "4",
+            "ovDims": "[82, 178]",
+            "showLayer": "all"
+        }
+    }
+}
