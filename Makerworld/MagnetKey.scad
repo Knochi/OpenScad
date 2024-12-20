@@ -43,12 +43,12 @@ $fn=48;
 if (export=="noSplit")
   magnetKey();
 else if (export=="Top")
-  difference(){
+  color("darkred") difference(){
     magnetKey();
     translate([0,0,-(ovThck/2+fudge)/2]) cube([length+fudge,ovWdth+fudge,ovThck/2+fudge],true);
   }
 else if (export=="Bottom")
-  difference(){
+  color("darkgreen") difference(){
     magnetKey();
     translate([0,0,(ovThck/2+fudge)/2]) cube([length+fudge,ovWdth+fudge,ovThck/2+fudge],true);
   }

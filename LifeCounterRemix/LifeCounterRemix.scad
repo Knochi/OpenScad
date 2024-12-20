@@ -5,8 +5,7 @@
 //you can download it at: https://www.1001freefonts.com/de/morris-roman-black.font
 //put it in an subfolder "Fonts" to this project project and uncomment the following line
 //if you install the font to system, the following line is not needed
-//use <./Fonts/MorrisRomanBlack/MorrisRoman-Black.ttf>
-
+use <./Fonts/MorrisRomanBlack/MorrisRoman-Black.ttf>
 
 /* [General] */
 minWallThck=1.4;
@@ -22,9 +21,16 @@ sprDia=21.6; //outer Dia of spring
 rngWdth=8.33;
 rngSize=15; //inner radius of digitRing
 rngSpcng=0.2; //spacing between the rings and to sides
-revDigits=false; //reverse order of digits
-rngFont="Morris Roman:style=Bold";
-rngFntSz=9;
+
+
+/* [Digits] */
+digReverse=false; //reverse order of digits
+digFont="Morris Roman";
+digSize=9;
+//roof() needs to be enabled for this
+digChamfer=0.5;
+digRoof=false;
+
 
 /* [Tube] */
 tbDia=10.5;
@@ -41,15 +47,15 @@ revArrows=true;
 noSupportMod=false;
 
 /* [show] */
-
 showRings=true;
 showSprings=true;
 showTube=true;
 showClip=true;
 showSide=true;
+showDigits=true;
 showCut="none"; //["none","x-y","y-z","x-z"]
 cutOffset=0;
-isolate="none"; //["none","spring","clip","left side", "right side", "tube", "ring", "tuneSpring", "testMagnets"]
+isolate="none"; //["none","spring","clip","left side", "right side", "tube", "ring", "tuneSpring", "testMagnets", "digits"]
 
 
 /*[Hidden]*/
@@ -62,7 +68,6 @@ ovDims=[(sideXPos+sideWdth*(1+feetProtrude))*2,sideDia*(1+feetProtrude),tubeZPos
 //clipLen=tbLen+sideWdth+minWallThck;//was 40.16;
 clipLen=sideWdth+ringsCnt*rngWdth+(ringsCnt+1)*rngSpcng+minWallThck*2.5;
 $fn=100;
-
 
 // --- assembly ---
 difference(){
@@ -89,6 +94,11 @@ difference(){
 
     if (showClip)
       translate([-sideXPos-sideWdth,0,tubeZPos-clipXYDims.y/2]) rotate(-90) clip();
+    
+    if (showDigits)
+      for (ix=[-(ringsCnt-1)/2:(ringsCnt-1)/2])
+      translate([ix*(rngWdth+rngSpcng),0,tubeZPos]) 
+        rotate([0,-90,0]) translate([0,0,-rngWdth/2]) ring(true);
   }
   if (showCut=="x-y")
     color("darkred") translate([0,0,tubeZPos+ovDims.z/4+cutOffset]) cube([ovDims.x+fudge,ovDims.y+fudge-cutOffset*2,ovDims.z/2+fudge],true);
@@ -118,7 +128,10 @@ else if (isolate=="tuneSpring")
   }
 else if (isolate=="testMagnets")
   !magTest();
-
+  
+else if (isolate=="digits")
+  !ring(true);
+  
 *clip();
 module clip(){
   tipDims=[4.4,4.5];
@@ -225,39 +238,53 @@ module tube(cut=false){
 }
 
 *ring();
-module ring(){
+module ring(digitsOnly=false){
   ri=rngSize;
   chmfr=0.5;
   emboss=1;
   roChmf=(ri-chmfr)*(1/cos(180/digits));
   ro=ri*(1/cos(180/digits)); //works only for 10 digits! //TODO make it work for n-gons
   nudgeDia=3.6+fudge;
+  inc= digReverse ? 360/digits : -360/digits;
+  
   //ro=ri*tan(180/digits)/(cos(180/digits));
-
+  if (digitsOnly){
+    rotate(-36) digits();
+  }
+  else{
   //circle(ri);
-  rotate(-36) difference(){
-    //body
-    rotate(18){
-      cylinder(r1=roChmf,r2=ro,h=chmfr,$fn=digits);
-      translate([0,0,chmfr]) cylinder(r=ro,h=rngWdth-2*chmfr,$fn=digits);
-      translate([0,0,rngWdth-chmfr]) cylinder(r2=roChmf,r1=ro,h=chmfr,$fn=digits);
+    rotate(-36) difference(){
+      //body
+      rotate(18){
+        cylinder(r1=roChmf,r2=ro,h=chmfr,$fn=digits);
+        translate([0,0,chmfr]) cylinder(r=ro,h=rngWdth-2*chmfr,$fn=digits);
+        translate([0,0,rngWdth-chmfr]) cylinder(r2=roChmf,r1=ro,h=chmfr,$fn=digits);
+      }
+      //nudges for spring
+      translate([0,0,-fudge/2]) linear_extrude(rngWdth+fudge) {
+        circle(d=sprDia+spcng*2);
+        for (ir=[0:360/digits:360-(360/digits)]) rotate(ir) translate([sprDia/2-fudge,0]) circle(d=nudgeDia,$fn=4); //TODO needs tuning
+      }
+      //digits
+      digits(emboss+fudge);
+    
     }
-    //nudges for spring
-    translate([0,0,-fudge/2]) linear_extrude(rngWdth+fudge) {
-      circle(d=sprDia+spcng*2);
-      for (ir=[0:360/digits:360-(360/digits)]) rotate(ir) translate([sprDia/2-fudge,0]) circle(d=nudgeDia,$fn=4); //TODO needs tuning
-    }
-    //digits
+  } //else
+
+  
+  *digits();
+  module digits(hght=emboss){
     for (i=[0:(digits-1)]){
-      inc= revDigits ? 360/digits : -360/digits;
-      rotate(i*inc)
+      rotate(i*inc){
         translate([ri-emboss,0,rngWdth/2]) 
-          rotate([0,90,0]) linear_extrude(emboss+fudge) 
-            text(size=rngFntSz,str(i),valign="center",halign="center",font=rngFont);
+          rotate([0,90,0]) linear_extrude(hght) 
+            text(size=digSize,str(i),valign="center",halign="center",font=digFont);
+        if (digRoof) translate([ri,0,rngWdth/2]) 
+          rotate([0,90,0]) roof() 
+            text(size=digSize,str(i),valign="center",halign="center",font=digFont);
+      }
     }
   }
-  
-
 }
 
 *side();

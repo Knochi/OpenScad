@@ -1,0 +1,12 @@
+{
+    "fileFormatVersion": "1",
+    "parameterSets": {
+        "New set 1": {
+            "export": "buildLarge",
+            "showFace": "false",
+            "showLargeGauges": "false",
+            "showSmallGauges": "false",
+            "showTip": "false"
+        }
+    }
+}

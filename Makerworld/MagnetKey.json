@@ -2,7 +2,6 @@
     "fileFormatVersion": "1",
     "parameterSets": {
         "New set 1": {
-            "$fn": "150",
             "holeBrim": "5",
             "holeDia": "8",
             "lblBotSize": "7",
@@ -18,6 +17,48 @@
             "magnetThck": "2.5",
             "roundOuterEdges": "true",
             "spcng": "0.10000000000000001"
+        },
+        "New set 2": {
+            "embeddAddition": "0.59999999999999998",
+            "embeddMagnet": "true",
+            "embeddSpcng": "0.20000000000000001",
+            "export": "Bottom",
+            "holeBrim": "5",
+            "holeDia": "8",
+            "lblBotSize": "7",
+            "lblBotTxt": "S",
+            "lblFont": "Liberation Mono",
+            "lblStyle": "Bold",
+            "lblThck": "0.5",
+            "lblTopSize": "7",
+            "lblTopTxt": "N",
+            "length": "40",
+            "magnetBrim": "1.2",
+            "magnetDia": "8",
+            "magnetThck": "2.6000000000000001",
+            "roundOuterEdges": "true",
+            "spcng": "0.20000000000000001"
+        },
+        "New set 3": {
+            "embeddAddition": "0.79999999999999993",
+            "embeddMagnet": "true",
+            "embeddSpcng": "0.20000000000000001",
+            "export": "Bottom",
+            "holeBrim": "5",
+            "holeDia": "8",
+            "lblBotSize": "7",
+            "lblBotTxt": "S",
+            "lblFont": "Liberation Mono",
+            "lblStyle": "Bold",
+            "lblThck": "0.5",
+            "lblTopSize": "7",
+            "lblTopTxt": "N",
+            "length": "40",
+            "magnetBrim": "1.2",
+            "magnetDia": "8",
+            "magnetThck": "2.7000000000000002",
+            "roundOuterEdges": "true",
+            "spcng": "0.20000000000000001"
         }
     }
 }
