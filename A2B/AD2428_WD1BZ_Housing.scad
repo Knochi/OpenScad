@@ -16,10 +16,14 @@ M3ScrwHdDia=5.5;
 spcng=0.2;
 fudge=0.1;
 
+probePos=[65,34,21];
+probeRot=[0,-20,0];
+
 /* [show] */
 showHsngTop=true;
 showPCB=true;
 showHsngBot=true;
+showProbe=true;
 
 /* [Hidden] */
 drillDist=[pcbDims.x-drillOffset.x*2,pcbDims.y-drillOffset.y*2];
@@ -30,12 +34,13 @@ if (showHsngTop)
   housingTop();
 if (showPCB)
   WD1BZ_PCB();
-
+if (showProbe)
+  translate(probePos) rotate(probeRot) ZD1500();
 
 
 module housingTop(){
   chamf=1;
-  
+  hoodOffset=[40,34,pcbClrncTop+pcbDims.z-fudge/2];
   sFact=[(pcbDims.x+wallThck*2-chamf*2)/(pcbDims.x+wallThck*2),
          (pcbDims.y+wallThck*2-chamf*2)/(pcbDims.y+wallThck*2)];
   
@@ -54,10 +59,20 @@ module housingTop(){
         for (ix=[0,1],iy=[0,1])
           translate([drillOffset.x+ix*drillDist.x,drillOffset.x+iy*drillDist.y,pcbDims.z+pcbClrncTop]) 
             cylinder(d=6,h=wallThck+fudge);
+     
       }
+      //hood for probe
+      translate(hoodOffset) probeHood(false);
+      //stand
+      translate(hoodOffset+[38,+0,0]) probeStand();
     }
     //cutouts for PCB
     color("darkred") WD1BZ_PCB(true);
+    //cutout for probe
+      translate(hoodOffset) 
+        probeHood(true);
+    //cutout stand
+    translate(probePos) rotate(probeRot) ZD1500(0.2);
   }
   //screw studs
   scrwHdOffset=pcbClrncTop+wallThck-M3ScrwHdThck;
@@ -73,6 +88,41 @@ module housingTop(){
         circle(d=M3ScrwHdDia+spcng*2);
       }
     }
+  *probeHood();
+  module probeHood(cut=false){
+    
+    dia= cut ? 3 : 3+wallThck*2;
+    hoodLen= cut ? 25+fudge : 25;
+    hoodzOffset=-10; //before rotation
+    hoodWdth=7;
+    
+    difference(){
+      rotate([0,70,0]) 
+        translate([0,0,hoodzOffset]) 
+          linear_extrude(hoodLen) 
+            hull() for (iy=[-1,1])
+              translate([0,iy*(hoodWdth-3)/2]) circle(dia);
+      if (!cut) translate([3,0,-7.5+fudge/2]) cube([40,20,15],true);
+    }
+  }
+  *probeStand();
+  module probeStand(){
+    ovDims=[30,20,10];
+    crnrRad=2;
+    difference(){
+      translate([-ovDims.x/2,-ovDims.y/2,0]) hull(){
+        translate([0,0,ovDims.z-crnrRad]) rotate([0,-20,0]) hull(){
+          for (ix=[0,1],iy=[0,1])
+            translate([ix*(ovDims.x-crnrRad*2)+crnrRad,iy*(ovDims.y-crnrRad*2)+crnrRad]) sphere(crnrRad);
+        }
+        hull(){
+          for (ix=[0,1],iy=[0,1])
+            translate([ix*(ovDims.x-crnrRad*2)+crnrRad,iy*(ovDims.y-crnrRad*2)+crnrRad]) sphere(crnrRad);
+        }
+      }
+     translate([0,0,-(crnrRad)/2]) cube([ovDims.x,ovDims.y,crnrRad+fudge],true);
+    }
+  }
 }
 
 module housingBottom(){
@@ -199,8 +249,8 @@ module DCJack(cut=false){
 }
 
 
-!ZD1500();
-module ZD1500(){
+*ZD1500();
+module ZD1500(cutOffset=0){
   //LeCroy ZD1500 differential probe
   
   ovDims=[100,12,7]; //without gnd connection
@@ -236,7 +286,7 @@ module ZD1500(){
   difference(){
     hull(){
       translate([-tipLen+conLen+2,0,-ovDims.z/2+2.2]) rotate([0,90,0]) for (iy=[-1,1])
-        linear_extrude(0.1,scale=0.1) translate([0,iy*pitch/2,0]) circle(d=4);
+        linear_extrude(0.1,scale=0.1) translate([0,iy*pitch/2,0]) circle(d=4+cutOffset);
       rotate([90,0,90]) linear_extrude(0.1,scale=0.1) bodyShape();
     }
     translate([0,0,ovDims.z/2]) rotate([0,-90,0]) cylinder(d=gndDia,h=tipLen);
@@ -252,7 +302,7 @@ module ZD1500(){
     
   module bodyShape(){
     hull() for (ix=[-1,1], iy=[-1,1])
-    translate([ix*(ovDims.y/2-crnrRad),iy*(ovDims.z/2-crnrRad)]) circle(crnrRad);
+    translate([ix*(ovDims.y/2-crnrRad),iy*(ovDims.z/2-crnrRad)]) circle(crnrRad+cutOffset);
   }
 }
 
