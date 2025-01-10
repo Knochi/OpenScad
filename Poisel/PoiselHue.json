@@ -7,6 +7,13 @@
             "layers": "4",
             "ovDims": "[82, 178]",
             "showLayer": "all"
+        },
+        "New set 2": {
+            "baseHght": "0.23999999999999999",
+            "layerHght": "0.080000000000000002",
+            "layers": "4",
+            "ovDims": "[82, 178]",
+            "showLayer": "4"
         }
     }
 }

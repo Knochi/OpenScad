@@ -1,0 +1,29 @@
+{
+    "fileFormatVersion": "1",
+    "parameterSets": {
+        "New set 1": {
+            "brickCrnrRad": "4",
+            "brickOvDims": "[58, 27, 90.2]",
+            "screwDia": "3",
+            "screwHeadDia": "6",
+            "screwHeadThck": "1.8",
+            "showDummy": "false",
+            "showHolder": "true",
+            "slotWdth": "22",
+            "spcng": "0.29999999999999999",
+            "wallThck": "2.6000000000000001"
+        },
+        "New set 2": {
+            "brickCrnrRad": "1",
+            "brickOvDims": "[87, 29, 130]",
+            "screwDia": "3",
+            "screwHeadDia": "6",
+            "screwHeadThck": "1.8",
+            "showDummy": "false",
+            "showHolder": "true",
+            "slotWdth": "35",
+            "spcng": "0.29999999999999999",
+            "wallThck": "2"
+        }
+    }
+}
