@@ -5,7 +5,7 @@
 //you can download it at: https://www.1001freefonts.com/de/morris-roman-black.font
 //put it in an subfolder "Fonts" to this project project and uncomment the following line
 //if you install the font to system, the following line is not needed
-use <./Fonts/MorrisRomanBlack/MorrisRoman-Black.ttf>
+//use <./Fonts/MorrisRomanBlack/MorrisRoman-Black.ttf>
 
 /* [General] */
 minWallThck=1.4;
@@ -25,12 +25,13 @@ rngSpcng=0.2; //spacing between the rings and to sides
 
 /* [Digits] */
 digReverse=false; //reverse order of digits
-digFont="Morris Roman";
+digFont = "Nasa"; // [Inter, Inter Tight, Lora, Merriweather Sans, Montserrat, Noto Emoji, Noto Sans, Nunito, Nunito Sans, Noto Sans SC, Open Sans, Open Sans Condensed, Oswald, Playfair Display, Plus Jakarta Sans, Raleway, Roboto, Roboto Condensed, Roboto Flex, Roboto Mono, Roboto Serif, Roboto Slab, Rubik, Source Sans 3, Ubuntu Sans, Ubuntu Sans Mono, Work Sans]
+
+digStyle = "Regular"; // [Regular,Black,Bold,ExtraBol,ExtraLight,Light,Medium,SemiBold,Thin,Italic,Black Italic,Bold Italic,ExtraBold Italic,ExtraLight Italic,Light Italic,Medium Italic,SemiBold Italic,Thin Italic]
+
 digSize=9;
 //roof() needs to be enabled for this
-digChamfer=0.5;
 digRoof=false;
-
 
 /* [Tube] */
 tbDia=10.5;
@@ -52,10 +53,14 @@ showSprings=true;
 showTube=true;
 showClip=true;
 showSide=true;
-showDigits=true;
+//digits for 2-color
+showDigits=false; 
+//indicators for 2-color
+showIndicators=false;
+
 showCut="none"; //["none","x-y","y-z","x-z"]
 cutOffset=0;
-isolate="none"; //["none","spring","clip","left side", "right side", "tube", "ring", "tuneSpring", "testMagnets", "digits"]
+isolate="none"; //["none","spring","clip","left side", "right side", "tube", "ring", "tuneSpring", "testMagnets", "digits","arrow"]
 
 
 /*[Hidden]*/
@@ -67,6 +72,7 @@ sideXPos=ringsCnt/2*rngWdth+rngSpcng*(ringsCnt+1)/2;
 ovDims=[(sideXPos+sideWdth*(1+feetProtrude))*2,sideDia*(1+feetProtrude),tubeZPos*2];
 //clipLen=tbLen+sideWdth+minWallThck;//was 40.16;
 clipLen=sideWdth+ringsCnt*rngWdth+(ringsCnt+1)*rngSpcng+minWallThck*2.5;
+digFontStyle = str(digFont , ":style=", digStyle);
 $fn=100;
 
 // --- assembly ---
@@ -89,16 +95,16 @@ difference(){
 
     if (showRings)
       for (ix=[-(ringsCnt-1)/2:(ringsCnt-1)/2])
-      translate([ix*(rngWdth+rngSpcng),0,tubeZPos]) 
-        rotate([0,-90,0]) translate([0,0,-rngWdth/2]) ring();
+        translate([ix*(rngWdth+rngSpcng),0,tubeZPos]) 
+          rotate([0,-90,0]) translate([0,0,-rngWdth/2]) ring();
 
     if (showClip)
       translate([-sideXPos-sideWdth,0,tubeZPos-clipXYDims.y/2]) rotate(-90) clip();
     
     if (showDigits)
       for (ix=[-(ringsCnt-1)/2:(ringsCnt-1)/2])
-      translate([ix*(rngWdth+rngSpcng),0,tubeZPos]) 
-        rotate([0,-90,0]) translate([0,0,-rngWdth/2]) ring(true);
+        color("white") translate([ix*(rngWdth+rngSpcng),0,tubeZPos]) 
+          rotate([0,-90,0]) translate([0,0,-rngWdth/2]) ring(true);
   }
   if (showCut=="x-y")
     color("darkred") translate([0,0,tubeZPos+ovDims.z/4+cutOffset]) cube([ovDims.x+fudge,ovDims.y+fudge-cutOffset*2,ovDims.z/2+fudge],true);
@@ -131,6 +137,10 @@ else if (isolate=="testMagnets")
   
 else if (isolate=="digits")
   !ring(true);
+  
+else if (isolate=="arrow")
+  !side(isLeft=true,arrowOnly=true);
+  
   
 *clip();
 module clip(){
@@ -237,7 +247,7 @@ module tube(cut=false){
   }
 }
 
-*ring();
+
 module ring(digitsOnly=false){
   ri=rngSize;
   chmfr=0.5;
@@ -278,17 +288,17 @@ module ring(digitsOnly=false){
       rotate(i*inc){
         translate([ri-emboss,0,rngWdth/2]) 
           rotate([0,90,0]) linear_extrude(hght) 
-            text(size=digSize,str(i),valign="center",halign="center",font=digFont);
+            text(size=digSize,str(i),valign="center",halign="center",font=digFontStyle);
         if (digRoof) translate([ri,0,rngWdth/2]) 
           rotate([0,90,0]) roof() 
-            text(size=digSize,str(i),valign="center",halign="center",font=digFont);
+            text(size=digSize,str(i),valign="center",halign="center",font=digFontStyle);
       }
     }
   }
 }
 
 *side();
-module side(isLeft=false){
+module side(isLeft=false, arrowOnly=false){
   a=sideDia*sin(18); //decagon side length
   ri=0.5*sqrt(5+2*sqrt(5))*a; 
   foodDims=[a,minWallThck*2,sideWdth*(1+feetProtrude)];
@@ -301,53 +311,65 @@ module side(isLeft=false){
   chmfBig=sideWdth/3; //decorative outside
 
   boxRot= isLeft ? 90-36 : 90+36;
-
-
-  difference(){
-    body();
-    //recess for tube
-    if (noSupportMod)
-      tube(true);
-    else
-      translate([0,0,-fudge]) linear_extrude(minWallThck+fudge+spcng) {
-        circle(d=tbDia+spcng*2);
-        translate([0,-tbDia/2]) square([ndgDims.x+spcng,ndgDims.y*2+spcng],true);
-      }
-    translate([0,0,-fudge/2]) linear_extrude(sideWdth-minWallThck+fudge) {
-      square([clipXYDims.x,clipXYDims.y]+[spcng*2,spcng*2],true);
-    }
-    if (isLeft)
-    //recess for clip foot
-    translate([0,0,sideWdth-minWallThck*2-spcng]) linear_extrude(minWallThck*2+fudge+spcng) {
-      square([clipXYDims.x*2,clipXYDims.y]+[spcng*2,spcng*2],true);
-    }
-    //room for clip tip
-    else {  
-      translate([0,0,minWallThck*2.5-spcng]) rotate([90,0,0]) 
-        rotate_extrude(angle=180) translate([0,-clipXYDims.y/2-spcng]) square([tipRoomDia/2,clipXYDims.y+spcng*2]);
-    }
-    //arrows
-    arRot= revArrows ? [90,-90,90] : [90,90,90];
-    arZPos= revArrows ? sideWdth/2-chmfSmall : sideWdth/2 ; 
-    rotate(boxRot) 
-      translate([ri+fudge-emboss,0,arZPos]) 
-        rotate(arRot) linear_extrude(emboss+fudge) circle(d=a*0.8,$fn=3);
-  }
-  //feet
-  for (im=[0,1]) mirror([im,0,0])
-    hull(){
-      translate([sideDia*0.4,-ri+minWallThck,foodDims.z/2]) 
-        //cube(foodDims,true);
-        chamferedCube(foodDims, chmfSmall,true);
-      intersection(){
-        body();
-        translate([sideDia/2-foodDims.x/2,-clipXYDims.y/2-minWallThck-spcng*2,foodDims.z/2]) 
-          cube(foodDims,true);
-          
-      }
-  }
   
+  //arrow orientation
+  arRot= revArrows ? [90,-90,90] : [90,90,90];
+  arZPos= revArrows ? sideWdth/2-chmfSmall : sideWdth/2+chmfSmall ; 
+          
 
+  if (!arrowOnly) {
+    difference(){
+      body();
+      //recess for tube
+      if (noSupportMod)
+        tube(true);
+      else
+        translate([0,0,-fudge]) linear_extrude(minWallThck+fudge+spcng) {
+          circle(d=tbDia+spcng*2);
+          translate([0,-tbDia/2]) square([ndgDims.x+spcng,ndgDims.y*2+spcng],true);
+        }
+      translate([0,0,-fudge/2]) linear_extrude(sideWdth-minWallThck+fudge) {
+        square([clipXYDims.x,clipXYDims.y]+[spcng*2,spcng*2],true);
+      }
+      if (isLeft)
+      //recess for clip foot
+      translate([0,0,sideWdth-minWallThck*2-spcng]) linear_extrude(minWallThck*2+fudge+spcng) {
+        square([clipXYDims.x*2,clipXYDims.y]+[spcng*2,spcng*2],true);
+      }
+      //room for clip tip
+      else {  
+        translate([0,0,minWallThck*2.5-spcng]) rotate([90,0,0]) 
+          rotate_extrude(angle=180) translate([0,-clipXYDims.y/2-spcng]) square([tipRoomDia/2,clipXYDims.y+spcng*2]);
+      }
+      //recess for arrow
+      rotate(boxRot) 
+        translate([ri+fudge-emboss,0,arZPos]) 
+          rotate(arRot) linear_extrude(emboss+fudge) circle(d=a*0.8,$fn=3);
+    }
+    //feet
+    for (im=[0,1]) mirror([im,0,0])
+      hull(){
+        translate([sideDia*0.4,-ri+minWallThck,foodDims.z/2]) 
+          //cube(foodDims,true);
+          chamferedCube(foodDims, chmfSmall,true);
+        intersection(){
+          body();
+          translate([sideDia/2-foodDims.x/2,-clipXYDims.y/2-minWallThck-spcng*2,foodDims.z/2]) 
+            cube(foodDims,true);
+            
+        }
+    }
+    }
+    //arrow
+  if (showIndicators || arrowOnly) color("white")
+    rotate(boxRot) 
+      translate([ri-emboss,0,arZPos])
+        rotate(arRot){
+          linear_extrude(emboss) circle(d=a*0.8,$fn=3);
+          if (digRoof) translate([0,0,emboss]) linear_extrude(emboss,scale=0.7) circle(d=a*0.8,$fn=3);
+          }
+  
+        
   module body(){
     cylinder(d1=sideDia-chmfSmall*2,d2=sideDia,h=chmfSmall,$fn=digits);
     translate([0,0,chmfSmall]) cylinder(d=sideDia,h=sideWdth-chmfBig-chmfSmall,$fn=digits);
@@ -357,53 +379,6 @@ module side(isLeft=false){
   }
 }
 
-*magTest();
-module magTest(){
-  //just test dimensions for magnet detends
-  ri=rngSize;
-  chmfr=0.5;
-  emboss=1;
-  roChmf=(ri-chmfr)*(1/cos(180/digits));
-  ro=ri*(1/cos(180/digits)); //works only for 10 digits! //TODO make it work for n-gons
-  
-  axisDia=20;
-  rings=3;
-  axisLen=rings*(rngWdth+rngSpcng)+rngSpcng;
-  longMagDims=[20,4,2];
-  smallMagDims=[3,3,2];
-
-  for (iz=[0:rings-1])
-    translate([0,0,iz*(rngWdth+rngSpcng)+rngSpcng]) ring();
-  axis();
-
-  module ring(){
-    *rotate(-36) difference(){
-      //body
-      rotate(18){
-        cylinder(r1=roChmf,r2=ro,h=chmfr,$fn=digits);
-        translate([0,0,chmfr]) cylinder(r=ro,h=rngWdth-2*chmfr,$fn=digits);
-        translate([0,0,rngWdth-chmfr]) cylinder(r2=roChmf,r1=ro,h=chmfr,$fn=digits);
-      }
-      //center hole
-      translate([0,0,-fudge/2]) linear_extrude(rngWdth+fudge) {
-        circle(d=axisDia+spcng*2);
-      } 
-    }
-    //magnets
-    for (ix=[-1,1])
-      color("silver") translate([ix*(axisDia/2+spcng+smallMagDims.z/2),0,rngWdth/2]) rotate([0,90,0]) cylinder(d=smallMagDims.x,h=smallMagDims.z,center=true);
-  }
-
-  module axis(){
-    color("darkslategrey") linear_extrude(axisLen)
-      circle(d=axisDia);
-    //large Magnets
-    for (ir=[0:digits/2-1])
-    rotate(ir*360/digits)
-      color("silver") translate([(axisDia-longMagDims.z)/2,0,axisLen/2]) rotate([0,90,0]) cube(longMagDims,true);
-  }
-  
-}
 
 // --- functions and helpers ---
 

@@ -1,0 +1,15 @@
+{
+    "fileFormatVersion": "1",
+    "parameterSets": {
+        "New set 1": {
+            "fudge": "0.10000000000000001",
+            "lblDims": "[29.6, 1.2, 15]",
+            "lblSpcng": "0.10000000000000001",
+            "ovDims": "[74, 150, 35]",
+            "showCut": "false",
+            "showLabel": "false",
+            "showStand": "true",
+            "showSwatch": "false"
+        }
+    }
+}

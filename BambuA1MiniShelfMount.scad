@@ -1,4 +1,5 @@
 rbFtDims=[52.5,14.5,1.5];
+rbFtSpcng=0.2;
 rbFtSpcng=0.5;
 shlfDist=30;
 shlfThck=15;

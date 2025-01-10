@@ -1,0 +1,17 @@
+{
+    "fileFormatVersion": "1",
+    "parameterSets": {
+        "New set 1": {
+            "$fn": "100",
+            "adaptDia": "34.25",
+            "adaptHght": "4.9500000000000002",
+            "adaptStpDia": "37",
+            "adaptStpHght": "2.4500000000000002",
+            "fudge": "0.10000000000000001",
+            "showAdapter": "true",
+            "showCut": "false",
+            "showRubber": "false",
+            "wallThck": "3"
+        }
+    }
+}

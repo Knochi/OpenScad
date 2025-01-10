@@ -1,0 +1,1 @@
+Magnetic Gunstock (Modified & Optimized) for Meta Quest 2 and 3 by robiwan303 on Thingiverse: https://www.thingiverse.com/thing:5902359

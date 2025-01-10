@@ -1,0 +1,17 @@
+{
+    "fileFormatVersion": "1",
+    "parameterSets": {
+        "New set 1": {
+            "$fn": "50",
+            "pipeDia": "21.600000000000001",
+            "showBarrel": "false",
+            "showBody": "false",
+            "showCoupler": "false",
+            "showStock": "true",
+            "spcng": "0.20000000000000001",
+            "stockLen": "120",
+            "stockOuterDia": "36",
+            "threadLen": "16.5"
+        }
+    }
+}
