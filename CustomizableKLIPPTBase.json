@@ -1,0 +1,16 @@
+{
+    "fileFormatVersion": "1",
+    "parameterSets": {
+        "New set 1": {
+            "$fn": "64",
+            "baseHght": "2",
+            "corners": "8",
+            "crnrRad": "1",
+            "hexBaseInDia": "18",
+            "hexTopInDia": "20",
+            "ovHght": "3",
+            "recessHght": "0",
+            "wallThck": "1"
+        }
+    }
+}
