@@ -1,4 +1,4 @@
-//remodelling MultiBoard Remix Components to produce consitent models
+//remodelling MultiBoard Remix Components to produce consistent models
 
 /* [push Fit Dimensions] */
 pFbotIRad=6.75;
@@ -67,6 +67,54 @@ module MBpushFit(isPositive=true, isHorizontal=true, extend=0, center=false){
 *import("./Multipoints/Lite Multipoint - Negative.stl");
 *import("./Multipoints/Lite Multipoint - Horizontal, Negative.stl");
 *import("./Multipoints/Multipoint - Horizontal, Negative.stl");
+*import("./Multipoints/Multipoint - Negative.stl");
+
+
+MultiPointRail();
+module MultiPointRail(lite=true){
+  %import("./Multipoints/Lite Multipoint Rail - Negative.stl");  
+  botRad=ri2ro(7,8);
+  botHght=0.4;
+  topRad=ri2ro(8.5,8);
+  topHght=0.3;
+  midHght=1.5;
+  ovHght=botHght+midHght+topHght;
+  topSideLen= ri2a(8.5,8);
+  
+  rotate(180/8){
+    cylinder(r=botRad,h=botHght,$fn=8);
+    translate([0,0,botHght]) cylinder(r1=botRad,r2=topRad,h=midHght,$fn=8);
+    translate([0,0,botHght+midHght]) cylinder(r=topRad,h=topHght,$fn=8);
+  }
+  
+}
+
+*MultiPointSlot();
+module MultiPointSlot(){
+  *import("./Multipoints/Multipoint Slot - Negative.stl");
+  botRad=ri2ro(6,8);
+  botHght=0.4;
+  topRad=ri2ro(8.5,8);
+  topHght=0.3;
+  midHght=2.5;
+  ovHght=botHght+midHght+topHght;
+  topSideLen= ri2a(8.5,8);
+  echo(topSideLen);
+  //slot
+  rotate(180/8){
+    cylinder(r=botRad,h=botHght,$fn=8);
+    translate([0,0,botHght]) cylinder(r1=botRad,r2=topRad,h=midHght,$fn=8);
+    translate([0,0,botHght+midHght]) cylinder(r=topRad,h=topHght,$fn=8);
+  }
+  //opening
+  translate([0,-6,0]) rotate(180/8){
+     cylinder(r=topRad,h=ovHght,$fn=8);
+  }
+  translate([0,-14.5,3.2]) 
+    rotate([90,180,0]) linear_extrude(0.4,scale=[0.887,0.715]) 
+      translate([-topSideLen/2,0]) square([topSideLen,1.4]);
+  
+}
 
 // -- Multibin Drawers --
 // Units width x hght x dpth
@@ -149,3 +197,4 @@ module printDir(){
 
 // -- helper Functions -- 
 function ri2ro(ri,N)=ri/cos(180/N);
+function ri2a(ri,N)=2*ri*tan(180/N);
