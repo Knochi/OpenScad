@@ -47,6 +47,7 @@ module handToolRubber(){
   difference(){
     union(){
       cylinder(d1=23,d2=28.5,h=3.75);
+      cylinder(d1=23,,d2=28.5,h=3.75);
       cylinder(d=10,h=19);
       translate([0,0,5+3.75]) cylinder(d1=11.5,d2=10,h=2);
     }
