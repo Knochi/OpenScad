@@ -13,12 +13,15 @@ clnrHoleDia=2.5;
 clnrHoleHght=9.75;
 
 /* [Stand Dims] */
+standOffset=20;
 crnrRad=1;
 wallThck=2;
 spcng=0.2;
 
 /* [show] */
 showCleaner=true;
+showBase=true;
+showStand=true;
 
 /*[General] */
 layerHght=0.2;
@@ -27,20 +30,35 @@ $fn=50;
 /* [Hidden] */
 fudge=0.1;
 
-
-color("red") base();
+module stand(){
+  translate([0,0,-6]) rotate(48.2) intersection(){
+    translate([-67.16-10/2,-10.7-10/2,0]) import("TS80PHolder.stl",convexity=3);
+    union(){
+    translate([0,0,6]) cylinder(d=20,h=20);
+    translate([0,0,26]) cylinder(d=40,h=35);
+    }
+  }
+}
+if (showBase) color("red") base();
 if (showCleaner) clnrDummy();
+
   
 module base(){
   baseDia=clnrBaseDia+spcng*2+wallThck*2;
   baseHght=clnrBaseHght+wallThck+spcng;
   springDims=[(baseDia-(clnrBotDia+spcng*2))/2-wallThck,8,(clnrHoleHght-baseHght)*2-layerHght*2];
+  
+  //body
   difference(){
-    cylinderTopFillet(d=baseDia,h=baseHght,rad=crnrRad);
+    hull(){
+      cylinderTopFillet(d=baseDia,h=baseHght,rad=crnrRad);
+      translate([baseDia/2+standOffset,0,0]) cylinderTopFillet(d=30,h=baseHght,rad=crnrRad);
+    }
     translate([0,0,-fudge])
       cylinder(d=clnrBaseDia+spcng*2,h=clnrBaseHght+spcng+fudge);
     cylinder(d=clnrBotDia+spcng*2,h=clnrBaseHght+wallThck+spcng+fudge*2);
   }
+  
   //spring snaps
   for (ix=[0,1]) mirror([ix,0,0]){
     translate([clnrBotDia/2,0,clnrHoleHght]){
@@ -53,6 +71,7 @@ module base(){
         flatSpring(size=springDims,t=clnrHoleDia/2,n=3);
     }
   }
+  //spring housings
   translate([0,0,baseHght-crnrRad]) linear_extrude(springDims.z+layerHght+crnrRad) intersection(convexity=3){
     { 
       difference(){
@@ -65,6 +84,8 @@ module base(){
       }
     }
   }
+  //stand
+  if (showStand) translate([baseDia/2+standOffset,0,baseHght]) stand();
 }
 
 module clnrDummy(){
