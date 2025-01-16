@@ -28,21 +28,24 @@
 /* [Dimensions] */
 $fn=50;
 plateThck=2;
-plateMinDims=[180,50];
+plateMinDims=[50,15];
 //Elevation of the embossing
 embossThck=0.6;
 //Width of the embossing
-embossWdth=+2;
+embossWdth=1;
 //Embossing offset from edge
-embossOffset=1;
-cornerRad=5;
+embossOffset=0.5;
+cornerRad=3;
 //Layer thickness
 layerThick=0.2;
 euBandLayers=3;
+keyRingHole=4;
+keyRingDia=8;
 
 /* [Positioning] */
-cntryPosRel=0.25; //[0:0.01:1]
+cntryPosRel=0.29; //[0:0.01:1]
 starsPosRel=0.71; //[0:0.01:1]
+keyRingPos="left"; //["left","right","none"]
 
 /* [Colors] */
 colBack="white";
@@ -52,14 +55,14 @@ colCntry="white";
 colStars="yellow";
 
 /* [Text] */
-txtString="Shoooooooooooooooogen";
+txtString="Shogen";
 txtFont="Liberation Sans";
-txtSize=24;
+txtSize=7;
 txtMargin=7;
 txtThck=0.6;
 cntryString="NL";
 cntryFont="Liberation Sans";
-cntrySize=10;
+cntrySize=3;
 
 
 /* [Show] */
@@ -69,7 +72,7 @@ showBand=true;
 showFrame=true;
 
 
-export="none"; //["colBack","colText","colEU","colCntry","colStars"]
+export="all"; //["colBack","colText","colEU","colCntry","colStars"]
 
 /* [Hidden] */ 
 plateDims=plateMinDims;
@@ -94,28 +97,28 @@ echo("grow",plateGrow);
 
 if (export=="colBack")
   !plate();
-if (export=="colText")
-  !plateTxt();
-if (export=="colEU")
-  !euBand(false,true);
-if (export=="colCntry")
-  !translate(euBandOffset) color(colCntry) linear_extrude(euBandLayers*layerThick) country();
-if (export=="colStars")
-  !translate(euBandOffset) color(colStars) linear_extrude(euBandLayers*layerThick) stars();
-  
-
-
-  
-
-//show
-if (showPlate)
-  plate();
-if (showFrame)
-  plateFrame();
-if (showBand)
-  euBand();
-if (showText)
+else if (export=="colText"){
   plateTxt();
+  plateFrame();
+  }
+else if (export=="colEU")
+  !euBand(false,true);
+else if (export=="colCntry")
+  !translate(euBandOffset) color(colCntry) linear_extrude(euBandLayers*layerThick) country();
+else if (export=="colStars")
+  !translate(euBandOffset) color(colStars) linear_extrude(euBandLayers*layerThick) stars();
+
+else{
+  //show
+  if (showPlate)
+    plate();
+  if (showFrame)
+    plateFrame();
+  if (showBand)
+    euBand();
+  if (showText)
+    plateTxt();
+    }
   
 
  
@@ -129,12 +132,22 @@ if (showText)
  }
  
  module plate(){
+  keyRingOffset= keyRingPos=="left" ? [-keyRingDia/2,plateDims.y/2] : [plateMinDims.x+plateGrow.x+keyRingDia/2,plateDims.y/2];
+  keyRingRot= keyRingPos=="left" ? 90 : -90;
    //plate
   color(colBack) difference(){
     linear_extrude(plateThck) rndRect(plateMinDims+[plateGrow.x,0,0]);
     euBand(true);
   }
-  }
+  if (keyRingPos!="none") 
+    color(colBack) translate(keyRingOffset) linear_extrude(plateThck) rotate(keyRingRot) difference(){
+      union(){
+        circle(d=keyRingDia);
+        translate([0,-keyRingDia/4]) square([keyRingDia,keyRingDia/2],true);
+        }
+        circle(d=keyRingHole);
+      }
+}
  
  module plateTxt(){
   color(colText) translate([(euBandWdth+euBandOffset.x+plateMinDims.x+plateGrow.x)/2,plateDims.y/2,plateThck]) linear_extrude(txtThck) text(txtString, size=txtSize, font=txtFont,halign="center",valign="center");

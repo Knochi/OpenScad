@@ -24,6 +24,19 @@
             "slotWdth": "35",
             "spcng": "0.29999999999999999",
             "wallThck": "2"
+        },
+        "New set 3": {
+            "brickCrnrRad": "1",
+            "brickOvDims": "[68.6, 25.6, 150]",
+            "mountRelHeight": "0.59999999999999998",
+            "screwDia": "4",
+            "screwHeadDia": "7.5",
+            "screwHeadThck": "2.2000000000000002",
+            "showDummy": "false",
+            "showHolder": "true",
+            "slotWdth": "35",
+            "spcng": "0.29999999999999999",
+            "wallThck": "2"
         }
     }
 }
