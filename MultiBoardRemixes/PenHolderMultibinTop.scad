@@ -49,12 +49,11 @@ module filletBeam(size=[10,2,2],fillet=1,center=false){
 
 module cell(){
   rotate(180/8) difference(){
-    offset(wallThck) circle(d=ri2ro(penDia),$fn=8);
-    circle(d=ri2ro(penDia),$fn=8);
+    offset(wallThck) circle(d=ri2ro(penDia,8),$fn=8);
+    circle(d=ri2ro(penDia,8),$fn=8);
   }
 }
  
 
-
-function ri2ro(r=1,n=$fn)=r/cos(180/n);
-function ro2ri(r=1,n=$fn)=r*cos(180/n);
+function ri2ro(r=1,n=8)=r/cos(180/n);
+function ro2ri(r=1,n=8)=r*cos(180/n);
