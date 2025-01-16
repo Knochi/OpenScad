@@ -121,3 +121,8 @@ function translatePoints(pointsIn,vector,pointsOut=[],iter=0)=
   iter<len(pointsIn) ? 
     translatePoints(pointsIn,vector,pointsOut=concat(pointsOut,[pointsIn[iter]+vector]),iter=iter+1) : 
     pointsOut;
+    
+    
+//calculate inner radius from outer or vice versa for regular polygons
+function ri2ro(r=1,n=$fn)=r/cos(180/n);
+function ro2ri(r=1,n=$fn)=r*cos(180/n);

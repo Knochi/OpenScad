@@ -24,13 +24,15 @@ showHsngTop=true;
 showPCB=true;
 showHsngBot=true;
 showProbe=true;
+showHood=true;
+showStand=true;
 
 /* [Hidden] */
 drillDist=[pcbDims.x-drillOffset.x*2,pcbDims.y-drillOffset.y*2];
 
 if (showHsngBot)
   housingBottom();
-if (showHsngTop)
+if (showHsngTop || showStand || showHood)
   housingTop();
 if (showPCB)
   WD1BZ_PCB();
@@ -40,9 +42,10 @@ if (showProbe)
 
 module housingTop(){
   chamf=1;
-  hoodOffset=[40,34,pcbClrncTop+pcbDims.z-fudge/2];
+  hoodOffset=[40,34,pcbClrncTop+pcbDims.z];
   sFact=[(pcbDims.x+wallThck*2-chamf*2)/(pcbDims.x+wallThck*2),
          (pcbDims.y+wallThck*2-chamf*2)/(pcbDims.y+wallThck*2)];
+  
   
   difference(){
     union(){
@@ -59,20 +62,26 @@ module housingTop(){
         for (ix=[0,1],iy=[0,1])
           translate([drillOffset.x+ix*drillDist.x,drillOffset.x+iy*drillDist.y,pcbDims.z+pcbClrncTop]) 
             cylinder(d=6,h=wallThck+fudge);
-     
+      //recess for hood
+        *translate(hoodOffset) 
+          probeHood(false);
+      //hole for hood
+        translate(hoodOffset) 
+        standHood(true);
+        
       }
       //hood for probe
-      translate(hoodOffset) probeHood(false);
+      *if (showHood) translate(hoodOffset) probeHood(false);
       //stand
-      translate(hoodOffset+[38,+0,0]) probeStand();
+      *if (showStand) translate(hoodOffset) probeStand();
     }
     //cutouts for PCB
     color("darkred") WD1BZ_PCB(true);
-    //cutout for probe
-      translate(hoodOffset) 
-        probeHood(true);
-    //cutout stand
-    translate(probePos) rotate(probeRot) ZD1500(0.2);
+    //cutout for probe hood
+
+    
+    //carve probe out of probe stand
+    *translate(probePos) rotate(probeRot) ZD1500(0.2);
   }
   //screw studs
   scrwHdOffset=pcbClrncTop+wallThck-M3ScrwHdThck;
@@ -88,40 +97,106 @@ module housingTop(){
         circle(d=M3ScrwHdDia+spcng*2);
       }
     }
-  *probeHood();
-  module probeHood(cut=false){
+  
+  
+  *standHood(false);
+  module standHood(cut=false){
+    //combine the probe hood and stand into one assembly
+    standOvDims=[30,20,10];
+    stand2HoodDist=38;
     
-    dia= cut ? 3 : 3+wallThck*2;
-    hoodLen= cut ? 25+fudge : 25;
+    if (cut){
+      probeHood(true);
+      translate([0,0,wallThck/2]) linear_extrude(wallThck/2+fudge) offset(spcng) projection() subAsy();
+      translate([stand2HoodDist,0,-wallThck/2-fudge/2]) linear_extrude(wallThck+fudge,convexity=3) probeStand(true);
+      translate([stand2HoodDist,0,wallThck/2]) linear_extrude(wallThck) offset(2) probeStand(true);
+      translate([-12.5,0,wallThck/2])
+        rotate([90,0,0]) linear_extrude(5,center=true) 
+          polygon([[0,0],[wallThck/2,wallThck/2],[wallThck,wallThck/2],[wallThck,0]]);
+      
+    }
+    else{
+     subAsy();
+      //hook
+      translate([-12.5,0,wallThck/2])
+        rotate([90,0,0]) linear_extrude(5,center=true) 
+          polygon([[0,0],[wallThck/2,wallThck/2],[wallThck,wallThck/2],[wallThck,0]]);
+    }
+    
+    module subAsy(){
+      //hood
+      difference(){
+        probeHood();
+        probeHood(true);
+      }
+      
+      //probe
+      difference(){
+        translate([stand2HoodDist,0,0]) probeStand();
+        //carve probe out of probe stand
+        translate(probePos-hoodOffset) rotate(probeRot) ZD1500(0.2);
+      }
+    }
+    
+    *probeHood(true);
+  module probeHood(cutHole=false,cutHood=false){
+    
+    dia= cutHole ? 3 : 3+wallThck*2;
+    hoodLen= cutHole ? 25+fudge : 25;
     hoodzOffset=-10; //before rotation
     hoodWdth=7;
+    hoodOvWdth=hoodWdth*2+dia-3;
+    hood2StandFac=standOvDims.y/hoodOvWdth;
     
     difference(){
       rotate([0,70,0]) 
         translate([0,0,hoodzOffset]) 
-          linear_extrude(hoodLen) 
+          linear_extrude(hoodLen){
             hull() for (iy=[-1,1])
               translate([0,iy*(hoodWdth-3)/2]) circle(dia);
-      if (!cut) translate([3,0,-7.5+fudge/2]) cube([40,20,15],true);
+            if (!cutHole) translate([dia/2,0,0]) square([dia,hoodOvWdth],true);
+          }
+      //trimm bottom
+      if (!cutHole) translate([3,0,-7.5+wallThck/4]) cube([40,20,15+wallThck/2],true);
     }
+    
+    if (!cutHole){
+      //connect to holder
+      translate([standOvDims.x/2,0,wallThck*0.75]) 
+        rotate([0,90,0]) 
+          linear_extrude(stand2HoodDist-hoodLen/2-standOvDims.y/2-5.7,scale=[1,hood2StandFac]) 
+            square([wallThck/2,hoodOvWdth],true);
+    }
+    
+    
   }
-  *probeStand();
-  module probeStand(){
-    ovDims=[30,20,10];
+  *probeStand(true);
+  module probeStand(cut=false){
+    
     crnrRad=2;
-    difference(){
-      translate([-ovDims.x/2,-ovDims.y/2,0]) hull(){
-        translate([0,0,ovDims.z-crnrRad]) rotate([0,-20,0]) hull(){
-          for (ix=[0,1],iy=[0,1])
-            translate([ix*(ovDims.x-crnrRad*2)+crnrRad,iy*(ovDims.y-crnrRad*2)+crnrRad]) sphere(crnrRad);
+    if (cut)
+      for (ix=[-1,1])
+          translate([ix*standOvDims.x/3,0]) circle(d=3.5);
+    else
+      difference(){
+        translate([-standOvDims.x/2,-standOvDims.y/2,0]) hull(){
+          translate([0,0,standOvDims.z-crnrRad]) rotate([0,-20,0]) hull(){
+            for (ix=[0,1],iy=[0,1])
+              translate([ix*(standOvDims.x-crnrRad*2)+crnrRad,iy*(standOvDims.y-crnrRad*2)+crnrRad]) sphere(crnrRad);
+          }
+          hull(){
+            for (ix=[0,1],iy=[0,1])
+              translate([ix*(standOvDims.x-crnrRad*2)+crnrRad,iy*(standOvDims.y-crnrRad*2)+crnrRad]) sphere(crnrRad);
+          }
         }
-        hull(){
-          for (ix=[0,1],iy=[0,1])
-            translate([ix*(ovDims.x-crnrRad*2)+crnrRad,iy*(ovDims.y-crnrRad*2)+crnrRad]) sphere(crnrRad);
-        }
+        //trim bottom
+        translate([0,0,-(crnrRad-wallThck/2+fudge)/2]) 
+          cube([standOvDims.x+fudge,standOvDims.y+fudge,crnrRad+wallThck/2+fudge],true);
+        //cutouts for rivets
+        for (ix=[-1,1])
+          translate([ix*standOvDims.x/3,0,-(crnrRad-wallThck)/2]) cylinder(d=4.1,h=5+wallThck);
       }
-     translate([0,0,-(crnrRad)/2]) cube([ovDims.x,ovDims.y,crnrRad+fudge],true);
-    }
+  } //stand
   }
 }
 
@@ -169,20 +244,22 @@ module hsngShape(center=false){
       translate([-wallThck+crnrRad+ix*(pcbDims.x+wallThck-crnrRad),-wallThck+crnrRad+iy*(pcbDims.y+wallThck-crnrRad)]) 
         circle(crnrRad);
   }
-  
+
+*WD1BZ_PCB(cut=true);
 module WD1BZ_PCB(cut=false){
   //Analog Devices AD2428WD1BZ Eval Board  
   pads2scadMil=[-250,250]; //Offset from pads Origin to openscad origin
   ovDims=pcbDims;
   
   
-  dClickPosMil=[[1200,3675],[1775,3675]];
+  dClickPosMil=[[1200,3675]]; //A-Port: [1775,3675]
   boxHdrPosMil=[3100,2225];
   probePointPosMil=[1200,2487.5];
   audioJackPosMil=[[1250,-250],[2025,-250]];
   SPDIFPosMil=[[2725,-250],[3250,-250]];
   DCJackPosMil=[3300,3675];
   
+  boxHdrCntrOffset=[-50,200];
   
   translate([0,0,ovDims.z]){
         
@@ -196,10 +273,10 @@ module WD1BZ_PCB(cut=false){
     for (pos=SPDIFPosMil)
       color(blackBodyCol) translate(mil2mm(pos+pads2scadMil)) rotate(0) SPDIFCon(cut);
     if (cut)
-      translate(mil2mm(boxHdrPosMil+pads2scadMil)) 
+      translate(mil2mm(boxHdrPosMil+pads2scadMil+boxHdrCntrOffset)) 
         translate([0,0,(pcbClrncTop+wallThck+fudge)/2]) cube([10,21.6,pcbClrncTop+wallThck+fudge],true);
     else
-      translate(mil2mm(boxHdrPosMil+pads2scadMil)) rotate(90) boxHeader(10,center=true);
+      translate(mil2mm(boxHdrPosMil+pads2scadMil)) rotate(90) boxHeader(10,center=false);
     color(blackBodyCol) translate(mil2mm(DCJackPosMil+pads2scadMil)) rotate(180) DCJack(cut);
     
     if (!cut)
@@ -225,12 +302,13 @@ module audioJack(cut=false){
   }
 }
 
+*SPDIFCon(true);
 module SPDIFCon(cut=false){
   cutSpcng= cut ? spcng : 0;
   if (cut)
-    translate([0,-(wallThck+fudge)/2,5]) cube([9.7+cutSpcng*2,wallThck+fudge,10],true);
- 
-  translate([0,13.4/2+cutSpcng,5+cutSpcng/2]) cube([9.7+cutSpcng*2,13.4+cutSpcng*2,10+cutSpcng],true);
+    translate([0,-(wallThck+fudge)/2,5-fudge]) cube([9.7+cutSpcng*2,wallThck+fudge,10+fudge],true);
+  
+    translate([0,13.4/2+cutSpcng,5+cutSpcng/2]) cube([9.7+cutSpcng*2,13.4+cutSpcng*2,10+cutSpcng],true);
 }
 
 *DCJack(true);
@@ -238,7 +316,7 @@ module DCJack(cut=false){
   cutSpcng= cut ? spcng : 0;
   
   if (cut){
-    translate([0,-(wallThck+fudge)/2,11/2]) cube([9,wallThck+fudge,11],true);
+    translate([0,-(wallThck-fudge)/2,11/2]) cube([9,wallThck+fudge,11+fudge],true);
   }
   
   translate([0,3.5/2+cutSpcng,(11+cutSpcng)/2]) 
