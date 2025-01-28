@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   version="1.1"
+   id="svg1"
+   width="39.171844"
+   height="41.209095"
+   viewBox="0 0 39.171844 41.209095"
+   sodipodi:docname="UnderDogsLogo_Dog.svg"
+   inkscape:version="1.4 (e7c3feb100, 2024-10-09)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs1" />
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#999999"
+     borderopacity="1"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:zoom="97.796562"
+     inkscape:cx="34.239445"
+     inkscape:cy="33.360068"
+     inkscape:window-width="3840"
+     inkscape:window-height="2082"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="g1" />
+  <g
+     inkscape:groupmode="layer"
+     inkscape:label="Image"
+     id="g1"
+     transform="translate(-60.172103,-46.573217)">
+    <path
+       id="path32"
+       style="fill:none;stroke:#ff2a2a;stroke-width:0.0755906;stroke-linecap:square;stroke-dasharray:none"
+       d="m 91.410156,50.75 0.679688,6.449219 c -1.615251,-1.559691 -2.970374,-3.834236 -4.41211,-5.871094 l -0.90039,-0.341797 c -0.431252,2.730736 0.08778,5.649398 1.554687,8.759766 -1.49173,0.351355 -2.818963,1.035069 -3.978515,2.050781 -0.96064,0.841475 -1.661464,1.946323 -2.777344,2.705078 l -0.236328,1.986328 -7.566406,4.421875 c -0.203062,-0.07759 -0.724657,0.214612 -1.101563,0.271485 0.125372,2.657146 1.058065,4.695798 2.796875,6.11914 -0.033,0.087 5.819552,0.129497 9.134766,-0.03125 0.988638,0.07845 1.926988,1.003252 2.671875,2.050781 0.613775,1.101979 2.088051,1.682924 2.794921,2.330079 0.706695,0.646995 0.837161,2.362391 0.652344,2.765625 -0.399864,0.872423 -1.252684,3.113675 -1.189453,3.183593 3.080667,-0.414298 6.348153,-1.839349 8.671875,-5.521484 -0.36591,0.214208 -2.752253,-4.346105 -1.640625,-7.822266 0.420768,-1.315778 1.495768,-3.820516 1.398438,-5.654297 0.60186,-2.816927 1.67612,-5.186326 1.242187,-8.388671 -0.916286,-0.76788 -1.707064,-1.030016 -2.671875,-2.392579 C 95.5777,56.470895 94.640829,55.129334 93.488281,53.84375 92.475222,52.713756 92.094915,51.777841 91.410156,50.75 Z"
+       sodipodi:nodetypes="cccccscccccccssccsccssc" />
+  </g>
+</svg>

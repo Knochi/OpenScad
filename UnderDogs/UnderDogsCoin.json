@@ -1,0 +1,28 @@
+{
+    "fileFormatVersion": "1",
+    "parameterSets": {
+        "New set 1": {
+            "$fn": "100",
+            "layerThck": "0.16",
+            "recessLayers": "3",
+            "showCoin": "true",
+            "showDog": "true",
+            "showEdge": "true",
+            "showHead": "true"
+        },
+        "New set 2": {
+            "$fn": "100",
+            "coinDia": "23.199999999999999",
+            "edgeWdth": "0.80000000000000004",
+            "layerThck": "0.16",
+            "logoOffset": "[-7.7, -7]",
+            "recessLayers": "3",
+            "showCoin": "true",
+            "showDog": "true",
+            "showEdge": "true",
+            "showHead": "true",
+            "showSupport": "true",
+            "supportOffset": "0.20000000000000001"
+        }
+    }
+}

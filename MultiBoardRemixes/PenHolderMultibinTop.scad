@@ -1,5 +1,5 @@
 /* [Dimensions] */
-penDia=14;
+penDia=15;
 spcng=0.2;
 wallThck=1;
 ovHght=10;
@@ -11,17 +11,20 @@ innerWdth=39.95;
 innerChamfer=4.4;
 lidThck=2;
 fudge=0.1;
+
 *import("1x1 - Multibin Top - STL Remixing File.stl");
+//template
 *import("1x1 - Sharpie Holder - Multibin Top.stl");
 
 penHolder();
 
 module penHolder(){
+  //cut out the remixing file
   difference(){
     import("1x1 - Multibin Top - STL Remixing File.stl",convexity=4);
     for (ix=[-1,1],iy=[-1,1])
       translate([ix*((innerWdth-penDia)/2-wallThck-edgeOffset),iy*((innerWdth-penDia)/2-wallThck-edgeOffset),-fudge/2])
-        linear_extrude(ovHght+fudge) rotate(180/8) circle(d=ri2ro(penDia,8),$fn=8);
+        linear_extrude(ovHght+fudge) rotate(180/8) circle(d=ri2ro(penDia+spcng*2,8),$fn=8);
   }
   beamDims=[innerWdth-penDia*2-wallThck*4,wallThck,ovHght-lidThck,];
   linear_extrude(ovHght) for (ix=[-1,1],iy=[-1,1])
@@ -49,8 +52,8 @@ module filletBeam(size=[10,2,2],fillet=1,center=false){
 
 module cell(){
   rotate(180/8) difference(){
-    offset(wallThck) circle(d=ri2ro(penDia,8),$fn=8);
-    circle(d=ri2ro(penDia,8),$fn=8);
+    offset(wallThck) circle(d=ri2ro(penDia+spcng*2,8),$fn=8);
+    circle(d=ri2ro(penDia+spcng*2,8),$fn=8);
   }
 }
  
