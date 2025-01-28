@@ -13,6 +13,7 @@ crnrRad=2;
 M3RivetDia=4.1;
 M3ScrwHdThck=3;
 M3ScrwHdDia=5.5;
+layerHght=0.15;
 spcng=0.2;
 fudge=0.1;
 
@@ -26,6 +27,7 @@ showHsngBot=true;
 showProbe=true;
 showHood=true;
 showStand=true;
+showSupport=true;
 
 /* [Hidden] */
 drillDist=[pcbDims.x-drillOffset.x*2,pcbDims.y-drillOffset.y*2];
@@ -39,6 +41,7 @@ if (showPCB)
 if (showProbe)
   translate(probePos) rotate(probeRot) ZD1500();
 
+  
 
 module housingTop(){
   chamf=1;
@@ -67,7 +70,7 @@ module housingTop(){
           probeHood(false);
       //hole for hood
         translate(hoodOffset) 
-        standHood(true);
+          standHood(true);
         
       }
       //hood for probe
@@ -83,6 +86,9 @@ module housingTop(){
     //carve probe out of probe stand
     *translate(probePos) rotate(probeRot) ZD1500(0.2);
   }
+  if (showSupport)
+    translate(hoodOffset) standHood(support=true);
+
   //screw studs
   scrwHdOffset=pcbClrncTop+wallThck-M3ScrwHdThck;
   
@@ -98,9 +104,8 @@ module housingTop(){
       }
     }
   
-  
   *standHood(false);
-  module standHood(cut=false){
+  module standHood(cut=false,support=false){
     //combine the probe hood and stand into one assembly
     standOvDims=[30,20,10];
     stand2HoodDist=38;
@@ -115,6 +120,9 @@ module housingTop(){
           polygon([[0,0],[wallThck/2,wallThck/2],[wallThck,wallThck/2],[wallThck,0]]);
       
     }
+    else if (support){
+      translate([0,0,wallThck/2+layerHght]) linear_extrude(wallThck/2-layerHght) projection() subAsy();
+    }
     else{
      subAsy();
       //hook
@@ -124,6 +132,7 @@ module housingTop(){
     }
     
     module subAsy(){
+      //combine the hood and the stand
       //hood
       difference(){
         probeHood();
@@ -194,7 +203,7 @@ module housingTop(){
           cube([standOvDims.x+fudge,standOvDims.y+fudge,crnrRad+wallThck/2+fudge],true);
         //cutouts for rivets
         for (ix=[-1,1])
-          translate([ix*standOvDims.x/3,0,-(crnrRad-wallThck)/2]) cylinder(d=4.1,h=5+wallThck);
+          translate([ix*standOvDims.x/3,0,-(crnrRad-wallThck)/2]) cylinder(d=4.1,h=5);
       }
   } //stand
   }

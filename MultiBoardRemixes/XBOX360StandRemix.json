@@ -1,0 +1,11 @@
+{
+    "fileFormatVersion": "1",
+    "parameterSets": {
+        "Neue Parameter Liste1": {
+            "sectionCut": "false",
+            "sectionOffset": "25",
+            "showPeg": "false",
+            "showStand": "true"
+        }
+    }
+}
