@@ -50,10 +50,7 @@ module base(){
   
   //body
   difference(){
-    hull(){
-      cylinderTopFillet(d=baseDia,h=baseHght,rad=crnrRad);
-      if (showStand) translate([baseDia/2+standOffset,0,0]) cylinderTopFillet(d=30,h=baseHght,rad=crnrRad);
-    }
+    cylinderTopFillet(d=baseDia,h=baseHght,rad=crnrRad);
     translate([0,0,-fudge])
       cylinder(d=clnrBaseDia+spcng*2,h=clnrBaseHght+spcng+fudge);
     cylinder(d=clnrBotDia+spcng*2,h=clnrBaseHght+wallThck+spcng+fudge*2);
