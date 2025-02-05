@@ -1,0 +1,12 @@
+{
+    "fileFormatVersion": "1",
+    "parameterSets": {
+        "New set 1": "",
+        "New set 2": {
+            "Text_Color": "#333333",
+            "Text_Depth": "0.40000000000000002",
+            "Text_Size": "8",
+            "Text_Style": "Inset"
+        }
+    }
+}
