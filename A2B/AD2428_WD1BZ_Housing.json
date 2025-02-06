@@ -1,0 +1,53 @@
+{
+    "fileFormatVersion": "1",
+    "parameterSets": {
+        "Neue Parameter Liste1": {
+            "$fn": "50",
+            "M3RivetDia": "4.0999999999999996",
+            "M3ScrwHdDia": "5.5",
+            "M3ScrwHdThck": "3",
+            "crnrRad": "2",
+            "drillDia": "3.1749999999999998",
+            "drillOffset": "[3.175, 3.175]",
+            "fudge": "0.10000000000000001",
+            "layerHght": "0.14999999999999999",
+            "pcbClrncBot": "3",
+            "pcbClrncTop": "9",
+            "probePos": "[65, 34, 21]",
+            "probeRot": "[0, -20, 0]",
+            "showHood": "true",
+            "showHsngBot": "true",
+            "showHsngTop": "true",
+            "showPCB": "true",
+            "showProbe": "true",
+            "showStand": "false",
+            "showSupport": "false",
+            "spcng": "0.20000000000000001",
+            "wallThck": "2"
+        },
+        "Neue Parameter Liste2": {
+            "$fn": "50",
+            "M3RivetDia": "4.0999999999999996",
+            "M3ScrwHdDia": "5.5",
+            "M3ScrwHdThck": "3",
+            "crnrRad": "2",
+            "drillDia": "3.1749999999999998",
+            "drillOffset": "[3.175, 3.175]",
+            "fudge": "0.10000000000000001",
+            "layerHght": "0.14999999999999999",
+            "pcbClrncBot": "3",
+            "pcbClrncTop": "9",
+            "probePos": "[65, 34, 20.6]",
+            "probeRot": "[0, -20, 0]",
+            "showHood": "true",
+            "showHsngBot": "true",
+            "showHsngTop": "true",
+            "showPCB": "true",
+            "showProbe": "true",
+            "showStand": "true",
+            "showSupport": "false",
+            "spcng": "0.20000000000000001",
+            "wallThck": "2"
+        }
+    }
+}

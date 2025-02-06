@@ -17,7 +17,7 @@ layerHght=0.15;
 spcng=0.2;
 fudge=0.1;
 
-probePos=[65,34,21];
+probePos=[65,34,20.6];
 probeRot=[0,-20,0];
 
 /* [show] */
@@ -74,9 +74,8 @@ module housingTop(){
         
       }
       //hood for probe
-      *if (showHood) translate(hoodOffset) probeHood(false);
-      //stand
-      *if (showStand) translate(hoodOffset) probeStand();
+      if (showHood || showStand) translate(hoodOffset) standHood(false,false);
+      
     }
     //cutouts for PCB
     color("darkred") WD1BZ_PCB(true);
@@ -104,7 +103,10 @@ module housingTop(){
       }
     }
   
-  *standHood(false);
+  !union(){
+    %standHood(true,true);
+    standHood(false,false);
+  }
   module standHood(cut=false,support=false){
     //combine the probe hood and stand into one assembly
     standOvDims=[30,20,10];
@@ -115,20 +117,12 @@ module housingTop(){
       translate([0,0,wallThck/2]) linear_extrude(wallThck/2+fudge) offset(spcng) projection() subAsy();
       translate([stand2HoodDist,0,-wallThck/2-fudge/2]) linear_extrude(wallThck+fudge,convexity=3) probeStand(true);
       translate([stand2HoodDist,0,wallThck/2]) linear_extrude(wallThck) offset(2) probeStand(true);
-      translate([-12.5,0,wallThck/2])
-        rotate([90,0,0]) linear_extrude(5,center=true) 
-          polygon([[0,0],[wallThck/2,wallThck/2],[wallThck,wallThck/2],[wallThck,0]]);
-      
     }
     else if (support){
       translate([0,0,wallThck/2+layerHght]) linear_extrude(wallThck/2-layerHght) projection() subAsy();
     }
     else{
      subAsy();
-      //hook
-      translate([-12.5,0,wallThck/2])
-        rotate([90,0,0]) linear_extrude(5,center=true) 
-          polygon([[0,0],[wallThck/2,wallThck/2],[wallThck,wallThck/2],[wallThck,0]]);
     }
     
     module subAsy(){
@@ -147,22 +141,22 @@ module housingTop(){
       }
     }
     
-    *probeHood(true);
+    *probeHood(false);
   module probeHood(cutHole=false,cutHood=false){
     
     dia= cutHole ? 3 : 3+wallThck*2;
     hoodLen= cutHole ? 25+fudge : 25;
     hoodzOffset=-10; //before rotation
-    hoodWdth=7;
-    hoodOvWdth=hoodWdth*2+dia-3;
+    hoodWdth=4;
+    hoodOvWdth=hoodWdth+dia;
     hood2StandFac=standOvDims.y/hoodOvWdth;
     
     difference(){
-      rotate([0,70,0]) 
+      rotate([0,90+probeRot.y,0]) 
         translate([0,0,hoodzOffset]) 
-          linear_extrude(hoodLen){
+          linear_extrude(hoodLen,convexity=3){
             hull() for (iy=[-1,1])
-              translate([0,iy*(hoodWdth-3)/2]) circle(dia);
+              translate([0,iy*(hoodWdth)/2]) circle(d=dia);
             if (!cutHole) translate([dia/2,0,0]) square([dia,hoodOvWdth],true);
           }
       //trimm bottom
@@ -348,7 +342,7 @@ module ZD1500(cutOffset=0){
   pitch=2.54;
   conDia=1.6;
   conLen=0.5;
-  
+  tipOffset=2.7;
   
   //body
   rotate([90,0,90]) linear_extrude(bdyLen) bodyShape();
@@ -361,18 +355,18 @@ module ZD1500(cutOffset=0){
   }
   
   //tip
-  translate([-tipLen,0,-ovDims.z/2+2.2]) rotate([0,90,0])
+  translate([-tipLen,0,-ovDims.z/2+tipOffset]) rotate([0,90,0])
     for (iy=[-1,1])
       linear_extrude(conLen) translate([0,iy*pitch/2,0]) circle(d=conDia);
     
-  translate([-tipLen+conLen,0,-ovDims.z/2+2.2]) rotate([0,90,0])
+  translate([-tipLen+conLen,0,-ovDims.z/2+tipOffset]) rotate([0,90,0])
     hull() for (iy=[-1,1])
       linear_extrude(2) translate([0,iy*pitch/2,0]) circle(d=4);
     
   //body to tip
   difference(){
     hull(){
-      translate([-tipLen+conLen+2,0,-ovDims.z/2+2.2]) rotate([0,90,0]) for (iy=[-1,1])
+      translate([-tipLen+conLen+2,0,-ovDims.z/2+tipOffset]) rotate([0,90,0]) for (iy=[-1,1])
         linear_extrude(0.1,scale=0.1) translate([0,iy*pitch/2,0]) circle(d=4+cutOffset);
       rotate([90,0,90]) linear_extrude(0.1,scale=0.1) bodyShape();
     }

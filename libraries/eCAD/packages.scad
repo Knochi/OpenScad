@@ -291,9 +291,12 @@ module DHVQFN(pos=20){
       linear_extrude(A3) square(pSize,true);
 }
 
-
+*SOIC(14);
 module SOIC(pins=8, label=""){
   //https://www.jedec.org/system/files/docs/MS-012G.pdf (max. values)
+  //MicroChip SOIC-14
+  //  https://ww1.microchip.com/downloads/aemDocuments/documents/package-outline-drawings/c04-00065d.pdf
+  
   
   b= (pins>8) ? 0.46 : 0.51; //lead width //JEDEC b: 0.31-0.51
   pitch=1.27;
@@ -1009,7 +1012,7 @@ module miniTOPLED(){
     color("silver") for (i=[-1,1]) translate([0,i*(2.3-0.5)/2,0.3]) cube([1,0.5,0.6],true);
 }
 
-!LED1206rev();
+*LED1206rev();
 //reverse Mount 1206 LED
 module LED1206rev(){
 //https://datasheet.lcsc.com/lcsc/1810231522_Lite-On-LTST-C230KGKT_C125106.pdf
@@ -1234,13 +1237,17 @@ module bendLeg(){
   
 }
 
-module lead(dims=[1.04,0.51,0.7],thick=0.2){
+!lead();
+module lead(dims=[1.04,0.51,0.7],thick=0.2,rad=0.13){
   
   b=dims.x*0.7; //lead length tip //JEDEC: 0.835 +-0.435
   a=dims.x-b; //JEDEC SOIC total length=1.04;
+ 
   
   translate([0,-dims.y/2,dims.z]){
     translate([-fudge,0,0]) cube([a+fudge,dims.y,thick]);
+    *translate([0.182,0,-rad+thick/2]) 
+      rotate([90,0,0]) rotate_extrude(angle=90) translate([rad-thick/2,-dims.y]) square([thick,dims.y]);
     translate([a,0,thick/2]) rotate([-90,0,0]) cylinder(d=thick,h=dims.y);
     translate([a-thick/2,0,-dims.z+thick/2]) cube([thick,dims.y,dims.z]);
     translate([a,0,-dims.z+thick/2]) rotate([-90,0,0]) cylinder(d=thick,h=dims.y);

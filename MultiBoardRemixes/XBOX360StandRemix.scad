@@ -4,12 +4,18 @@
 addHook=true;
 addRail=true;
 
+/* [Dimensions] */
+standRad=0.5;
+standDims=[124.62,46.5332,71.3515];
+
 /* [show] */
 showStand=true;
 showPeg=true;
-
 sectionCut=true;
-sectionOffset=25;
+sectionOffset=25.1;
+
+/* [hidden] */
+fudge=0.1;
 
 if (showStand)
   stand();
@@ -18,18 +24,11 @@ if (showPeg)
   for (ix=[-1,1])
       translate([ix*25,0,50]) rotate([90,0,-90]) 
         peg();
-  
+*peg();
 
 module stand(){
   difference(){
-  union(){
-    difference(){
-      import("XBOX360StandMinimal.stl",convexity=3);
-      translate([0,-13/2+0.5,35-0.1/2]) cube([50,15,70+0.1],true);
-    }
-    //fill the old cavities
-    translate([0,-13.5/2,35]) cube([50,13.5,70],true);
-  }
+    cleanStand();
     if (sectionCut)
       color("darkRed") translate([sectionOffset,-47,-0.1]) cube([65,48,72]);
     if (addHook)
@@ -63,9 +62,47 @@ module peg(cut=false){
     for (im=[0,1]){
       translate([0,0.5,0]) mirror([0,im,0]) translate([4.5,-7.75-0.5,0]) 
         linear_extrude(pegThck,center=true) rotate(-90) polygon(hookPoly);
-      *translate([-10.0,0,0]) import("XBOX360PegboardMinimal.stl");
       translate([-2.6,0,-0.5]) import("Pegboard Click.stl");
       }
-  
-  
   }
+
+
+module cleanStand(){
+    difference(){
+      translate([-standDims.x/2,-standDims.y,0]) 
+        import("XBOX360Stand_Decimated.stl",convexity=3);
+      translate([0,-13/2+0.5,35-0.1/2]) cube([50,15,70+0.1],true);
+    }
+    //fill the old cavities
+    translate([0,-13.5/2,35]) cube([51,13.5,70],true);
+}
+*standModifier();
+module standModifier(standExtrude=2){
+  block=standDims.y-standRad+fudge;
+  //tilt and extrude stand in Y
+  //slice the radii
+  intersection(){
+    cleanStand();
+    translate([0,-(standRad-fudge)/2,standDims.z/2]) 
+      cube([standDims.x+fudge,standRad+fudge,standDims.z+fudge],true);
+  }
+  //slice and translate the rest
+  translate([0,-standExtrude,0]) intersection(){
+    cleanStand();
+    translate([0,-standRad-(standDims.y-standRad+fudge)/2,standDims.z/2]) cube([standDims.x+fudge,standDims.y-standRad+fudge,standDims.z+fudge],true);
+  }
+  //insert the extrusion
+  translate([0,-standRad-standExtrude,0]) rotate([-90,0,0]) 
+    linear_extrude(standExtrude) standShape();
+  *standShape();  
+  module standShape(){
+    projection()
+      rotate([90,0,0]) 
+        intersection(){
+        cleanStand();
+        translate([0,-standRad,standDims.z/2]) 
+          cube([standDims.x+fudge,fudge,standDims.z+fudge],true);
+      }
+    
+  }
+}

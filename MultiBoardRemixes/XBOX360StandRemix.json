@@ -2,10 +2,21 @@
     "fileFormatVersion": "1",
     "parameterSets": {
         "Neue Parameter Liste1": {
-            "sectionCut": "false",
+            "sectionCut": "true",
             "sectionOffset": "25",
-            "showPeg": "false",
+            "showPeg": "true",
             "showStand": "true"
+        },
+        "Neue Parameter Liste2": {
+            "addHook": "true",
+            "addRail": "true",
+            "fudge": "0.10000000000000001",
+            "sectionCut": "true",
+            "sectionOffset": "25.100000000000001",
+            "showPeg": "false",
+            "showStand": "true",
+            "standDims": "[124.62, 46.5332, 71.3515]",
+            "standRad": "0.5"
         }
     }
 }
