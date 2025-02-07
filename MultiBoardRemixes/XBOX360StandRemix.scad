@@ -28,7 +28,8 @@ if (showPeg)
 
 module stand(){
   difference(){
-    cleanStand();
+    standModifier();
+    *cleanStand();
     if (sectionCut)
       color("darkRed") translate([sectionOffset,-47,-0.1]) cube([65,48,72]);
     if (addHook)
@@ -76,24 +77,34 @@ module cleanStand(){
     //fill the old cavities
     translate([0,-13.5/2,35]) cube([51,13.5,70],true);
 }
+
+
 *standModifier();
-module standModifier(standExtrude=2){
+module standModifier(extrude=0, tilt=10){
   block=standDims.y-standRad+fudge;
   //tilt and extrude stand in Y
+  
   //slice the radii
   intersection(){
     cleanStand();
     translate([0,-(standRad-fudge)/2,standDims.z/2]) 
       cube([standDims.x+fudge,standRad+fudge,standDims.z+fudge],true);
   }
-  //slice and translate the rest
-  translate([0,-standExtrude,0]) intersection(){
+  //slice,tilt and translate the rest
+  translate([0,-extrude,standDims.z-0.1]) rotate([-tilt,0,0]) translate([0,0,-standDims.z])  intersection(){
     cleanStand();
     translate([0,-standRad-(standDims.y-standRad+fudge)/2,standDims.z/2]) cube([standDims.x+fudge,standDims.y-standRad+fudge,standDims.z+fudge],true);
   }
   //insert the extrusion
-  translate([0,-standRad-standExtrude,0]) rotate([-90,0,0]) 
-    linear_extrude(standExtrude) standShape();
+  translate([0,-standRad-extrude,0]) rotate([-90,0,0]) 
+    linear_extrude(extrude) standShape();
+  //insert the wedge for tilt
+  translate([0,-standRad-extrude,standDims.z])
+    rotate([0,90,0]) 
+        rotate_extrude(angle=-10) 
+        translate([standDims.z,0]) rotate(-90) 
+            standShape();
+    
   *standShape();  
   module standShape(){
     projection()
