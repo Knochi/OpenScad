@@ -1,7 +1,7 @@
 /* 
   Custom tap handle 
   use the latest openSCAD development snapshot from https://openscad.org/downloads.html#snapshots
-  enable "textmetrics" from Edit-->Preferencs-->advanced
+  enable "textmetrics" from Edit-->Preferencs-->Features
   it is recommended to set the Backend to "manifold" as well
  
 */
@@ -25,21 +25,24 @@ txtThickness=2;
 /* [Text] */
 txtString="Delirium Tremens";
 txtSize=21;
-txtDirection="left"; //["left","right"]
-txtFont="Arial"; //["Liberation Sans", "Arial"]
-txtStyle1=""; //["","Narrow","Condensed"]
+txtFont="Avenir Next Condensed"; //["Avenir Next Condensed","Liberation Sans", "Arial"]
+txtStyle1="None"; //["None","Narrow","Condensed"]
 txtStyle2="Bold"; //["Regular", "Light", "Medium", "Bold", "ExtraBold"]
+txtContour=0.5; //[0:0.1:2]
 txtVertOffsetFront=+0;
 txtVertOffsetSide=+0;
+
 /* [Colors] */
 txtColor="#f28a9f"; //color
 bodyColor="#5493d0"; //color
 
 /* [show] */
 quality=50; //[20:4:100]
+showBody=true;
+showText=true;
 
 /* [Hidden] */
-txtStyle= txtStyle1 ? str(txtStyle1," ",txtStyle2) : txtStyle2;
+txtStyle= txtStyle1=="None" ? txtStyle2 : str(txtStyle1," ",txtStyle2);
 txtDims=textmetrics(txtString,txtSize,str(txtFont, ":style=", txtStyle),
                 valign = "center",
                 halign = "center").size;
@@ -51,8 +54,10 @@ echo(txtStyle);
 $fn=quality;
 fudge=0.1;
 
-body();
-attachText();
+if (showBody) 
+  body();
+if (showText)
+  attachText();
 
 module body(){
   sFac=baseTopWidth/baseBottomWidth;
@@ -77,9 +82,9 @@ module body(){
 
 module attachText(){
   color(txtColor) translate([txtVertOffsetFront,-poleWidth/2,baseHeight+txtBaseSpacing]) 
-    rotate([90,-90,0]) linear_extrude(txtThickness) txtLine();
+    rotate([90,-90,0]) linear_extrude(txtThickness) offset(txtContour) txtLine();
   color(txtColor) rotate(90) translate([txtVertOffsetSide,-poleWidth/2,baseHeight+txtBaseSpacing]) 
-    rotate([90,-90,0]) linear_extrude(txtThickness) txtLine();
+    rotate([90,-90,0]) linear_extrude(txtThickness) offset(txtContour) txtLine();
 }
 
 

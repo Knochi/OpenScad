@@ -17,6 +17,17 @@
             "showStand": "true",
             "standDims": "[124.62, 46.5332, 71.3515]",
             "standRad": "0.5"
+        },
+        "New set 1": {
+            "addHook": "true",
+            "addRail": "true",
+            "fudge": "0.10000000000000001",
+            "sectionCut": "false",
+            "sectionOffset": "25.100000000000001",
+            "showPeg": "false",
+            "showStand": "true",
+            "standDims": "[124.62, 46.5332, 71.3515]",
+            "standRad": "0.5"
         }
     }
 }
