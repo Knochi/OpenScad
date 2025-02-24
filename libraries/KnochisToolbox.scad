@@ -5,14 +5,14 @@ module twoByTwo(size=[5,5]){
 
 *polygon(concat([[0,0]],arc(r=10,angle=45)));
 //return an arc polygon
-function arc(r=1,angle=45,poly=[],iter=0)=let(
+function arc(r=1,angle=45,startAngle=0, poly=[],iter=0)=let(
   facets= fragFromR(r,angle),
   iter = iter ? iter-1 : facets,
   aSeg=angle/facets,
-  x= r * cos(aSeg*iter),
-  y= r * sin(aSeg*iter),
+  x= r * cos(aSeg*iter+startAngle),
+  y= r * sin(aSeg*iter+startAngle),
   poly = concat(poly,[[x,y]])) (iter>0) ?
-    arc(r,angle,poly,iter) : poly;
+    arc(r,angle,startAngle,poly,iter) : poly;
 
 
 // a lathe tool that accepts diameters and offsets
@@ -116,12 +116,19 @@ function roundVec(Vec,digits)= let(
 ) (len(Vec) > 2) ? [x,y,z] : [x,y];
 
 
-//translate points in 2D space
+//translate points in 2D space (3D might work as well?)
 function translatePoints(pointsIn,vector,pointsOut=[],iter=0)=
   iter<len(pointsIn) ? 
     translatePoints(pointsIn,vector,pointsOut=concat(pointsOut,[pointsIn[iter]+vector]),iter=iter+1) : 
     pointsOut;
-    
+
+// alternative function (tested)    
+function translate_poly(vec=[0,0],inPoly=[],outPoly=[],iter=0)=let(
+  x=inPoly[iter].x+vec.x,
+  y=inPoly[iter].y+vec.y,
+  outPoly = concat(outPoly,[[x,y]])
+) (iter<len(inPoly)-1) ? translate_poly(vec,inPoly,outPoly,iter+1) : outPoly;
+
     
 //calculate inner radius from outer or vice versa for regular polygons
 function ri2ro(r=1,n=$fn)=r/cos(180/n);
