@@ -12,13 +12,17 @@ keyDias=[4.4,3.26,2.7,1.69];
 keyHghts=[56.8,56.8,53.2,46.8];
 keyWdths=[21.3,21.3,18.9,15.7];
 
+/* [show] */
+showMagnets=true;
+
 translate(axisOffset) rotate([90,0,0]) cylinder(d=3,h=ovDims.y-wallThck*2,center=true);
 
 difference(){
   import("2x1x0.5 - Multibin Insert - STL Remixing File.stl",convexity=4);
   translate([(ovDims.x-ovDims.y)/2,0,ovDims.z-maxDeep])
     linear_extrude(maxDeep) 
-      offset(delta=chamfer-wallThck,chamfer=true) square([ovDims.x-chamfer*2,ovDims.y-chamfer*2],true);
+      offset(delta=chamfer-wallThck,chamfer=true) 
+        square([ovDims.x-chamfer*2,ovDims.y-chamfer*2],true);
 }
 
 
@@ -26,7 +30,7 @@ difference(){
     translate([keyPos[i].x,keyPos[i].y,axisOffset.z]) rotate([90,0,90]){ 
       color("darkSlateGrey") hexKey(dia=keyDias[i],height=keyHghts[i],width=keyWdths[i]);
       //magnet d5 x 1 CA002
-      translate([0,+0,-1-wallThc k]) cylinder(d=5,h=1);
+      if(showMagnets) translate([0,+0,-1-wallThck]) cylinder(d=5,h=1);
     }
 
 
