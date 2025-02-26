@@ -1,0 +1,32 @@
+{
+    "fileFormatVersion": "1",
+    "parameterSets": {
+        "New set 1": {
+            "contHght": "24",
+            "contInDia": "24",
+            "flrThck": "1.6000000000000001",
+            "lidHght": "4",
+            "showContainer": "true",
+            "showLid": "false",
+            "wallThck": "1.2"
+        },
+        "New set 2": {
+            "contHght": "24",
+            "contInDia": "24",
+            "flrThck": "1.6000000000000001",
+            "lidHght": "4",
+            "showContainer": "false",
+            "showLid": "true",
+            "wallThck": "1.2"
+        },
+        "New set 3": {
+            "contHght": "24",
+            "contInDia": "24",
+            "flrThck": "1.6000000000000001",
+            "lidHght": "4",
+            "showContainer": "true",
+            "showLid": "true",
+            "wallThck": "1.2"
+        }
+    }
+}
