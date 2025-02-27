@@ -8,8 +8,8 @@
 /* [Dimensions] */
 nozzleDia=0.8; //[0.2,0.4,0.6,0.8]
 layerHght=0.4; //[0.2,0.24,0.32,0.4,0.48]
-innerDia=24;
-innerHght=23*5+2.3;
+innerDia=40;
+innerHght=40;
 botLayers=3;
 lidSpcng=0.2; //spacing between lit and container
 lidHght=10;
@@ -18,6 +18,15 @@ lidHght=10;
 snapThck=0.5;
 snapRad=2;
 snapFillet=3;
+
+/* [Dents] */
+dentCircCount=12;
+dentHghtCount=6;
+dentThck=2;
+dentHght=4;
+dentStagger=true;
+dentRad=2;
+dentFilletRad=2;
 
 /*[Show]*/
 showContainer=true;
@@ -31,12 +40,14 @@ ovDia=innerDia+nozzleDia*2;
 lidDia=innerDia+nozzleDia*4+lidSpcng*2;
 botHght=botLayers*layerHght;
 fudge=0.1;
+dentAng=360/dentCircCount;
+dentRowHght=dentHghtCount ? (innerHght-lidHght-dentHght)/(dentHghtCount-1) : 0;
 
 $fn=64;
 
 
-if (export=="container")
-  container();
+if (export=="container")  
+    container();
 else if (export=="lid")
   translate([0,0,lidHght]) mirror([0,0,1]) lid();
   
@@ -44,11 +55,19 @@ else {
   
       if (showContainer) difference(){
         container();
-        if (showCut) color("darkGreen") translate([-(lidDia/4+snapThck/2),0,(ovHght+botHght)/2]) cube([lidDia/2+snapThck+fudge,lidDia+snapThck*2+fudge,ovHght+botHght*2+fudge],true);
+        if (showCut) color("darkGreen") translate([-(lidDia/4+snapThck/2),0,(ovHght+botHght)/2]) 
+          cube([lidDia/2+snapThck+fudge,lidDia+snapThck*2+fudge,ovHght+botHght*2+fudge],true);
+        //dents
+        if (dentHghtCount && dentCircCount) for (ir=[0:dentAng:360-dentAng],iz=[0:dentHghtCount-1]){
+          stagAng= dentStagger && (iz%2) ? dentAng/2 : 0;
+          rotate(ir+stagAng) translate([ovDia/2,0,botHght+4+iz*dentRowHght]) 
+            halfDent(thick=dentThck,height=dentHght, rad=dentRad,filletRad=dentFilletRad);
+            }
         }
       if (showLid) difference(){
         translate([0,0,ovHght-lidHght+lidSpcng+botHght]) lid();
-        if (showCut) color("darkRed") translate([-(lidDia/4+snapThck/2)+fudge,0,(ovHght+botHght)/2]) cube([lidDia/2+snapThck+fudge,lidDia+snapThck*2+fudge,ovHght+botHght*2+fudge],true);
+        if (showCut) color("darkRed") translate([-(lidDia/4+snapThck/2)+fudge,0,(ovHght+botHght)/2]) 
+          cube([lidDia/2+snapThck+fudge,lidDia+snapThck*2+fudge,ovHght+botHght*2+fudge],true);
         }
     }
     
@@ -110,8 +129,9 @@ module snap(dia=ovDia,thick=snapThck,rad=snapRad,filletRad=snapFillet, segments=
   
 }
 
+
 *halfDent();
-module halfDent(thick=snapThck,rad=snapRad,filletRad=snapFillet){
+module halfDent(thick=2,height=4,rad=2,filletRad=0.8){
 //make nice dents
   debug=true;
 //fillet y-Offset
@@ -133,10 +153,13 @@ module halfDent(thick=snapThck,rad=snapRad,filletRad=snapFillet){
     [[0,0]],
     translate_poly([0,xOffset],outArcPoly),
     [[0,0]]
+
     );
     
-    rotate_extrude(angle=180)
-    polygon(poly);
+    rotate([180,0,-90]) linear_extrude(height,scale=0){
+      polygon(poly);
+      mirror([1,0]) polygon(poly);
+    }
     
 
 }
@@ -162,3 +185,6 @@ function translate_poly(vec=[0,0],inPoly=[],outPoly=[],iter=0)=let(
 function fragFromR(r,ang=360)=$fn>0 ? ($fn>=3 ? $fn : 3) : ceil(max(min(360/$fa,r*2*PI*ang/(360*$fs)),5));
 function framFromA()=360/$fa;
 function fragFromS()=r*2*PI/$fs;
+
+function ri2ro(r=1,n=$fn)=r/cos(180/n);
+function ro2ri(r=1,n=$fn)=r*cos(180/n);
