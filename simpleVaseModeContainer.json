@@ -89,6 +89,48 @@
             "snapFillet": "3",
             "snapRad": "2",
             "snapThck": "0.5"
+        },
+        "Neue Parameter Liste1": {
+            "botLayers": "3",
+            "dentCircCount": "12",
+            "dentHght": "4",
+            "dentHghtCount": "6",
+            "dentStagger": "true",
+            "dentThck": "2",
+            "export": "none",
+            "innerDia": "40",
+            "innerHght": "40",
+            "layerHght": "0.40000000000000002",
+            "lidHght": "10",
+            "lidSpcng": "0.20000000000000001",
+            "nozzleDia": "0.80000000000000004",
+            "showContainer": "true",
+            "showCut": "false",
+            "showLid": "false",
+            "snapFillet": "3",
+            "snapRad": "2",
+            "snapThck": "0.5"
+        },
+        "Neue Parameter Liste2": {
+            "botLayers": "3",
+            "dentCircCount": "12",
+            "dentHght": "4",
+            "dentHghtCount": "6",
+            "dentStagger": "true",
+            "dentThck": "2",
+            "export": "none",
+            "innerDia": "40",
+            "innerHght": "40",
+            "layerHght": "0.40000000000000002",
+            "lidHght": "10",
+            "lidSpcng": "0.20000000000000001",
+            "nozzleDia": "0.80000000000000004",
+            "showContainer": "true",
+            "showCut": "false",
+            "showLid": "false",
+            "snapFillet": "3",
+            "snapRad": "2",
+            "snapThck": "0.5"
         }
     }
 }
