@@ -3,13 +3,14 @@
   Print in Vase mode 
   - Others-->Special Modes-->Spiral Vase
   - set Nozzle Dia, layerHght and bottom Shell Layers accordingly
+  - if print multiple choose Others-->Special Modes--> Print Sequence--> by Object
 */
 
 /* [Dimensions] */
-nozzleDia=0.8; //[0.2,0.4,0.6,0.8]
-layerHght=0.4; //[0.2,0.24,0.32,0.4,0.48]
-innerDia=40;
-innerHght=40;
+nozzleDia=0.4; //[0.2,0.4,0.6,0.8]
+layerHght=0.2; //[0.2,0.24,0.32,0.4,0.48]
+innerDia=20;
+innerHght=15;
 botLayers=3;
 lidSpcng=0.2; //spacing between lit and container
 lidHght=10;
@@ -42,7 +43,7 @@ botHght=botLayers*layerHght;
 fudge=0.1;
 dentAng=360/dentCircCount;
 dentRowHght=dentHghtCount ? (innerHght-lidHght-dentHght)/(dentHghtCount-1) : 0;
-
+echo(dentRowHght,innerHght-lidHght-dentHght);
 $fn=64;
 
 
@@ -57,12 +58,6 @@ else {
         container();
         if (showCut) color("darkGreen") translate([-(lidDia/4+snapThck/2),0,(ovHght+botHght)/2]) 
           cube([lidDia/2+snapThck+fudge,lidDia+snapThck*2+fudge,ovHght+botHght*2+fudge],true);
-        //dents
-        if (dentHghtCount && dentCircCount) for (ir=[0:dentAng:360-dentAng],iz=[0:dentHghtCount-1]){
-          stagAng= dentStagger && (iz%2) ? dentAng/2 : 0;
-          rotate(ir+stagAng) translate([ovDia/2,0,botHght+4+iz*dentRowHght]) 
-            halfDent(thick=dentThck,height=dentHght, rad=dentRad,filletRad=dentFilletRad);
-            }
         }
       if (showLid) difference(){
         translate([0,0,ovHght-lidHght+lidSpcng+botHght]) lid();
@@ -76,8 +71,18 @@ else {
 
 //container
 module container(){
-  cylinder(d=ovDia,h=ovHght);
-  translate([0,0,ovHght-lidHght/2]) snap(segments=6);
+  difference(){
+    union(){
+      cylinder(d=ovDia,h=ovHght);
+      translate([0,0,ovHght-lidHght/2]) snap(segments=6);
+    }
+   //dents
+    if (dentHghtCount && dentCircCount) for (ir=[0:dentAng:360-dentAng],iz=[0:dentHghtCount-1]){
+      stagAng= dentStagger && (iz%2) ? dentAng/2 : 0;
+      rotate(ir+stagAng) translate([ovDia/2,0,botHght+dentHght+iz*dentRowHght]) 
+        halfDent(thick=dentThck,height=dentHght, rad=dentRad,filletRad=dentFilletRad);
+        }
+  }
 }
 
 //lid
@@ -87,7 +92,7 @@ module lid(){
 }
 
 *snap();
-module snap(dia=ovDia,thick=snapThck,rad=snapRad,filletRad=snapFillet, segments=1){
+module snap(dia=ovDia,thick=snapThck,rad=snapRad,filletRad=snapFillet, segments=1, leadIn=false){
   
   debug=false;
   segAng=segments>2 ? 360/segments/2 : 360;
@@ -103,11 +108,12 @@ module snap(dia=ovDia,thick=snapThck,rad=snapRad,filletRad=snapFillet, segments=
   
   //angle at which the circles/arcs are tangential
   angle=acos((filletRad-xOffset)/(filletRad+rad)); //cos(alpha)=GK/HYP
+  botAngle = leadIn ? angle*2 : angle;
   
   //calculate the arc polys
   filletArcPolyTop=arc(r=filletRad,angle=angle,startAngle=180);
   outArcPoly=arc(r=rad,angle=angle*2,startAngle=-angle);
-  filletArcPolyBot=arc(r=filletRad,angle=angle,startAngle=180-angle);
+  filletArcPolyBot=arc(r=filletRad,angle=botAngle,startAngle=180-angle);
   
   poly=concat(
     [[0,-yOffset]],
@@ -116,16 +122,20 @@ module snap(dia=ovDia,thick=snapThck,rad=snapRad,filletRad=snapFillet, segments=
     translate_poly([dia/2+filletRad,yOffset],filletArcPolyTop),
     [[0,yOffset]]
     );
-  for (i=[1:segCount])
-    rotate(segAng*i*2)
-      rotate_extrude(angle=segAng)
-        polygon(poly);
-    
+  
   if (debug){
     #translate([dia/2+filletRad,-yOffset]) circle(filletRad);
     #translate([dia/2+xOffset,0]) circle(rad);
     #translate([dia/2+filletRad,yOffset]) circle(filletRad);
+    polygon(poly);
     }
+  else
+    for (i=[1:segCount])
+      rotate(segAng*i*2)
+        rotate_extrude(angle=segAng)
+          polygon(poly);
+    
+  
   
 }
 
