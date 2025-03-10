@@ -13,7 +13,7 @@ innerDia=20;
 innerHght=15;
 botLayers=3;
 lidSpcng=0.2; //spacing between lit and container
-lidHght=10;
+lidHght=5;
 
 /* [Snap] */
 snapThck=0.5;
@@ -22,12 +22,12 @@ snapFillet=3;
 
 /* [Dents] */
 dentCircCount=12;
-dentHghtCount=6;
-dentThck=2;
-dentHght=4;
+dentHghtCount=4;
+dentThck=1;
+dentHght=2;
 dentStagger=true;
-dentRad=2;
-dentFilletRad=2;
+dentRad=1.5;
+dentFilletRad=1.8;
 
 /*[Show]*/
 showContainer=true;
