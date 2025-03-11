@@ -1,0 +1,25 @@
+{
+    "fileFormatVersion": "1",
+    "parameterSets": {
+        "Neue Parameter Liste1": {
+            "backColor": "blue",
+            "backContour": "1.5",
+            "backThck": "1",
+            "outlineOffset": "0",
+            "outlineWdth": "1",
+            "quality": "50",
+            "showBack": "true",
+            "txtFillColor": "orange",
+            "txtFont": "Comic Sans MS",
+            "txtLine1": "MR",
+            "txtLine2": "TORRES",
+            "txtOutlineColor": "white",
+            "txtSize1": "12",
+            "txtSize2": "12",
+            "txtStyle": "Regular",
+            "txtThck": "1",
+            "txtXOffset": "-5",
+            "txtYSpacing": "0"
+        }
+    }
+}
