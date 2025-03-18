@@ -1,0 +1,70 @@
+{
+    "fileFormatVersion": "1",
+    "parameterSets": {
+        "Neue Parameter Liste1": {
+            "layerWdth": "2",
+            "maxSize": "[120, 100, 100]",
+            "showOriginal": "true",
+            "showVolume": "false",
+            "stlCntrOffset": "[117, 0, 0]",
+            "stlRotate": "[0, 0, 0]",
+            "stlScale": "0.40000000000000002",
+            "stlTranslate": "[0, 0, 40]"
+        },
+        "Neue Parameter Liste2": {
+            "fileName": "default.stl",
+            "layerWdth": "2",
+            "maxSize": "[120, 100, 100]",
+            "showOriginal": "true",
+            "showVolume": "false",
+            "stlCntrOffset": "[117, 127, 18]",
+            "stlRotate": "[0, 0, 0]",
+            "stlScale": "0.40000000000000002",
+            "stlTranslate": "[0, 0, 40]"
+        },
+        "Neue Parameter Liste3": {
+            "fileName": "default.stl",
+            "layerWdth": "2",
+            "maxSize": "[120, 100, 100]",
+            "showOriginal": "false",
+            "showVolume": "false",
+            "stlCntrOffset": "[-117, -127, -100]",
+            "stlRotate": "[0, 0, -90]",
+            "stlScale": "0.70000000000000007",
+            "stlTranslate": "[0, 0, 70]"
+        },
+        "Neue Parameter Liste4": {
+            "fileName": "default.stl",
+            "layerWdth": "2",
+            "maxSize": "[120, 100, 100]",
+            "showOriginal": "true",
+            "showVolume": "false",
+            "stlCntrOffset": "[-117, -127, -100]",
+            "stlRotate": "[0, 0, -90]",
+            "stlScale": "0.70000000000000007",
+            "stlTranslate": "[0, 0, 70]"
+        },
+        "Neue Parameter Liste5": {
+            "fileName": "default.stl",
+            "layerWdth": "2",
+            "maxSize": "[120, 100, 100]",
+            "showOriginal": "true",
+            "showVolume": "false",
+            "stlCntrOffset": "[-117, -127, -100]",
+            "stlRotate": "[0, 0, -90]",
+            "stlScale": "1",
+            "stlTranslate": "[0, 0, 70]"
+        },
+        "Neue Parameter Liste6": {
+            "fileName": "default.stl",
+            "layerWdth": "2",
+            "maxSize": "[120, 100, 100]",
+            "showOriginal": "false",
+            "showVolume": "false",
+            "stlCntrOffset": "[-117, -127, -100]",
+            "stlRotate": "[0, 0, -90]",
+            "stlScale": "1",
+            "stlTranslate": "[0, 0, 100]"
+        }
+    }
+}
