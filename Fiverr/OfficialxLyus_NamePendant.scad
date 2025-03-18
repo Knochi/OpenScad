@@ -1,8 +1,8 @@
 /* [Dimensions] */
-//thickness of the backpkate
-backThck=1;
+//thickness of the backplate set to "0" for none
+backThck=0;
 //thickness of the text
-txtThck=1;
+txtThck=3;
 //contour Width of the backplate
 backContour=1.5;
 
@@ -12,18 +12,18 @@ outlineWdth=1;
 outlineOffset=0;
  
 /* [Text] */
-txtLine1="MR";
+txtLine1="MR.";
 txtSize1=11;
 txtXOffset=-5;
-txtYSpacing=0;
-txtLine2="TORRES";
+txtYSpacing=0.8;
+txtLine2="WERNER";
 txtSize2=12;
-txtFont="Comic Sans MS"; //font
+txtFont="Noto Sans"; //font
 txtStyle="Regular"; //["regular","bold","italic"]
 
 /* [Colors] */
 backColor="blue"; //color
-txtOutlineColor="white"; //color
+txtOutlineColor="black"; //color
 txtFillColor="orange"; //color
 
 /* [show] */
