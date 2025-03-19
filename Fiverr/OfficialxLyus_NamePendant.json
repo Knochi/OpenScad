@@ -20,6 +20,28 @@
             "txtThck": "1",
             "txtXOffset": "-5",
             "txtYSpacing": "0"
+        },
+        "New set 1": {
+            "backColor": "#660000",
+            "backContour": "3",
+            "backThck": "2",
+            "outlineOffset": "-1",
+            "outlineWdth": "1",
+            "quality": "50",
+            "showBack": "true",
+            "showTextFill": "true",
+            "showTextOutline": "true",
+            "txtFillColor": "#000066",
+            "txtFont": "Noto Sans",
+            "txtLine1": "MR.",
+            "txtLine2": "WERNER",
+            "txtOutlineColor": "#006600",
+            "txtSize1": "11",
+            "txtSize2": "12",
+            "txtStyle": "Regular",
+            "txtThck": "3",
+            "txtXOffset": "-5",
+            "txtYSpacing": "0.80000000000000004"
         }
     }
 }
