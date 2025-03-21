@@ -7,6 +7,7 @@ baseDims=[100,50,30];
 lidHght=5;
 cornerRadius=3;
 wallThck=2;
+spcng=0.1;
 
 /* [PCB Screw Bosses] */
 addPCBBosses=true;
@@ -28,7 +29,8 @@ screwHeadSpcng=0.2;
 /* [Seal] */
 addSeal=true;
 sealDia=1;
-sealCompression=0.8;
+//how much the seal should be compressed
+sealCompression=0.2;
 
 /* [Connector] */
 sideCutout="left";//["none","left","right"]
@@ -57,6 +59,8 @@ bracketDrillDia=4;
 quality=50;
 showBase=true;
 showLid=true;
+showTest=true;
+showSeal=true;
 export="none"; //["none","base","lid"]
 
 /* [Hidden] */
@@ -65,71 +69,51 @@ fudge=0.1;
 baseColor="grey";
 bracketColor="grey";
 //screw hole offset from corners
-screwCrnrOffset= max(screwHeadDia/2,domeDrillDiaThrough/2,wallThck);
+maxDia=max(screwHeadDia,domeDrillDiaThrough, domeDrillDiaScrew, wallThck*2);
+screwCrnrOffset= maxDia/2;
 
+testDims=[maxDia+wallThck*2+fudge,maxDia+wallThck*2+fudge,baseDims.z+lidHght+fudge];
 
 //ASY
 if (export=="none"){
-  if (showBase)
-    base();
-  if (showLid)
-    translate([0,0,baseDims.z+lidHght]) rotate([180,0,0]) lid();
-}
-else if (export=="base")
-  base();
-else if (export=="lid")
-  lid();
-
-
-module base(){
-  difference(){
+  intersection(convexity){
     union(){
-      box();
-      // screw Domes
-      for (mx=[0,1],my=[0,1])
-        mirror([0,my]) mirror([mx,0]) 
-          translate([-baseDims.x/2+wallThck,-baseDims.y/2+wallThck,baseDims.z-domeBaseLen]) 
-            cornerDome(height=domeBaseLen, float=true);
+      if (showBase)
+        base();
+      if (showLid)
+        translate([0,0,baseDims.z+lidHght+spcng]) rotate([180,0,0]) lid();
     }
-    if (addSeal)
-      translate([0,0,baseDims.z-sealDia*sealCompression+sealDia/2]) seal();
-    if (sideCutout != "none"){
-      pos= sideCutout=="left" ? [-(baseDims.x-wallThck)/2,sideCutCenterOffset.x,baseDims.z/2+sideCutCenterOffset.y] : 
-            [(baseDims.x-wallThck)/2,sideCutCenterOffset.x,baseDims.z/2+sideCutCenterOffset.y];
-           
-      translate(pos) rotate([90,0,90]) cutOut([sideCutDims.x,sideCutDims.y,wallThck+fudge],sideCutRad);
+    if (showTest){
+      color("darkRed") testBody();
     }
   }
-  // screw bosses
-  if (addPCBBosses)
-    for (ix=[-1,1],iy=[-1,1])
-      translate([ix*bossDist.x/2+bossCntrOffset.x,iy*bossDist.y/2+bossCntrOffset.y,wallThck]) boss();
-  // wall bracket
-  if (addBracket)
-    color(bracketColor) bracket();
+  if (showSeal){
+    intersection(){
+      color("#222222") translate([0,0,baseDims.z]) rotate([180,0,0]) seal(showSeal=true);
+      if (showTest)
+        color("#333333") translate([fudge,fudge,0]) testBody();
+    }
+  }
 }
 
-module bracket(){
-  linear_extrude(bracketDims.z) 
-    difference(){ 
-      hull() for (ix=[-1,1],iy=[-1,1]){
-        translate([ix*(baseDims.x/2-cornerRadius),
-                   iy*(baseDims.y/2-cornerRadius)]) 
-          circle(cornerRadius);
-        translate([ix*(bracketDims.x/2-cornerRadius),
-                   iy*(bracketDims.y/2-cornerRadius)]) 
-          circle(d=bracketDrillDia+wallThck*2);
-        }
-        //remove the center
-        offset(-wallThck) offset(cornerRadius+fudge) 
-          square([baseDims.x-cornerRadius*2,baseDims.y-cornerRadius*2],true);
-        //and the screw holes
-        for (ix=[-1,1],iy=[-1,1]){
-        translate([ix*(bracketDims.x/2-cornerRadius),
-                   iy*(bracketDims.y/2-cornerRadius)]) 
-          circle(d=bracketDrillDia);
-          }
-    }
+else if (export=="base")
+  intersection(){
+    base();
+    if (showTest)
+      color("darkRed") testBody();
+  }
+    
+    
+else if (export=="lid")
+  intersection(){
+    lid();
+    if (showTest)
+      color("darkRed") testBody();
+  }
+
+module testBody(){
+  //a body to intersect with for test prints
+  translate([baseDims.x/2-testDims.x+fudge,baseDims.y/2-testDims.x+fudge,-fudge/2]) cube(testDims);
 }
 
 *lid();
@@ -166,9 +150,61 @@ module lid(){
   }
   
   if (addSeal)
-    translate([0,0,lidHght]) seal([sealDia*sealCompression*0.8,sealDia*(1-sealCompression)*2]);
-  
+    translate([0,0,lidHght]) seal([sealDia-spcng*2,sealDia*sealCompression/2*2]);
 }
+
+module base(){
+  difference(){
+    union(){
+      box();
+      // screw Domes
+      for (mx=[0,1],my=[0,1])
+        mirror([0,my]) mirror([mx,0]) 
+          translate([-baseDims.x/2+wallThck,-baseDims.y/2+wallThck,baseDims.z-domeBaseLen]) 
+            cornerDome(height=domeBaseLen, float=true);
+    }
+    if (addSeal)
+      translate([0,0,baseDims.z]) seal([sealDia,sealDia*(1-sealCompression/2)*2]);
+    if (sideCutout != "none"){
+      pos= sideCutout=="left" ? [-(baseDims.x-wallThck)/2,sideCutCenterOffset.x,baseDims.z/2+sideCutCenterOffset.y] : 
+            [(baseDims.x-wallThck)/2,sideCutCenterOffset.x,baseDims.z/2+sideCutCenterOffset.y];
+           
+      translate(pos) rotate([90,0,90]) cutOut([sideCutDims.x,sideCutDims.y,wallThck+fudge],sideCutRad);
+    }
+  }
+  // screw bosses
+  if (addPCBBosses)
+    for (ix=[-1,1],iy=[-1,1])
+      translate([ix*bossDist.x/2+bossCntrOffset.x,iy*bossDist.y/2+bossCntrOffset.y,wallThck]) boss();
+  // wall bracket
+  if (addBracket)
+    color(bracketColor) bracket();
+}
+
+module bracket(){
+  linear_extrude(bracketDims.z, ,convexity=3) 
+    difference(){ 
+      hull() for (ix=[-1,1],iy=[-1,1]){
+        translate([ix*(baseDims.x/2-cornerRadius),
+                   iy*(baseDims.y/2-cornerRadius)]) 
+          circle(cornerRadius);
+        translate([ix*(bracketDims.x/2-cornerRadius),
+                   iy*(bracketDims.y/2-cornerRadius)]) 
+          circle(d=bracketDrillDia+wallThck*2);
+        }
+        //remove the center
+        offset(-wallThck) offset(cornerRadius+fudge) 
+          square([baseDims.x-cornerRadius*2,baseDims.y-cornerRadius*2],true);
+        //and the screw holes
+        for (ix=[-1,1],iy=[-1,1]){
+        translate([ix*(bracketDims.x/2-cornerRadius),
+                   iy*(bracketDims.y/2-cornerRadius)]) 
+          circle(d=bracketDrillDia);
+          }
+    }
+}
+
+
 
 *cutOut();
 module cutOut(size=[10,5,wallThck+fudge],rad=2){
@@ -176,23 +212,38 @@ module cutOut(size=[10,5,wallThck+fudge],rad=2){
 }
 
 *seal();
-module seal(size=[sealDia,sealDia]){
+module seal(crossSection=[sealDia,sealDia],showSeal=false){
   //create a circumfence ring with square crosssection
+  zOffset= showSeal ? crossSection.y/2 : 0;
   for (im=[0,1]) {
         //front and back
         mirror([0,im]) translate([0,(baseDims.y-wallThck)/2,0])
-          cube([baseDims.x-cornerRadius*2,size.x,size.y],true);
+          if (showSeal)
+            translate([0,0,crossSection.y/2]) rotate([90,0,90]) 
+              cylinder(h=baseDims.x-cornerRadius*2,d=crossSection.x,center=true);
+          else 
+            cube([baseDims.x-cornerRadius*2,crossSection.x,crossSection.y],true);
         //left and right
         mirror([im,0]) translate([(baseDims.x-wallThck)/2,0,0])
-          cube([size.x,baseDims.y-cornerRadius*2,size.y],true);
+          if (showSeal)
+            translate([0,0,crossSection.y/2]) rotate([90,0,0])
+              cylinder(h=baseDims.y-cornerRadius*2,d=crossSection.x,center=true);
+          else
+            cube([crossSection.x,baseDims.y-cornerRadius*2,crossSection.y],true);
         //front cornes
-        mirror([im,0]) translate([(baseDims.x/2-cornerRadius),(baseDims.y/2-cornerRadius),0])
+        mirror([im,0]) translate([(baseDims.x/2-cornerRadius),(baseDims.y/2-cornerRadius),zOffset])
             rotate_extrude(angle=90) translate([cornerRadius-wallThck/2,0]) 
-              square(size,true);
+              if (showSeal)
+                translate([0,0,crossSection.y/2]) circle(d=crossSection.x);
+              else
+                square(crossSection,true);
         //back corners
-        mirror([im,0]) translate([(baseDims.x/2-cornerRadius),-(baseDims.y/2-cornerRadius),0])
+        mirror([im,0]) translate([(baseDims.x/2-cornerRadius),-(baseDims.y/2-cornerRadius),zOffset])
             rotate(-90) rotate_extrude(angle=90) translate([cornerRadius-wallThck/2,0]) 
-              square(size,true);
+              if (showSeal)
+                circle(d=crossSection.x);
+              else
+                square(crossSection,true);
       }
 }
 
@@ -216,7 +267,7 @@ module boss(drillDia=bossDrillDia, wallThck=wallThck, height=bossHeight ){
     translate([filletRad,filletRad]) circle(filletRad);
   }
   //boss
-  linear_extrude(height) difference(){
+  linear_extrude(height,convexity=3) difference(){
     circle(d=dia);
     circle(d=drillDia);
   }
