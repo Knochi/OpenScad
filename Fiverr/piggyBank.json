@@ -1,0 +1,31 @@
+{
+    "fileFormatVersion": "1",
+    "parameterSets": {
+        "New set 1": {
+            "baseWidth": "1.5",
+            "boxColor": "#9DC7C8",
+            "coinHoleXOffset": "0",
+            "coinHoleYOffset": "0",
+            "coinLidBaseExtraRadius": "5",
+            "coinLidBaseWidth": "0.5",
+            "coinLidHoleDiameter": "30",
+            "coinLidTolerance": "0.14999999999999999",
+            "coinSlotLength": "35",
+            "coinSlotWidth": "5",
+            "coinSlotYOffset": "0",
+            "extrudeHeight": "40",
+            "fillGaps": "true",
+            "flatBase": "false",
+            "font": "Shrikhand",
+            "fontColor": "#F39237",
+            "lidSecureClipLength": "5",
+            "lidSecureClipWidth": "10",
+            "lidStep": "5",
+            "mode": "preview",
+            "name": "Paris",
+            "nameLayerHeight": "0.80000000000000004",
+            "notchHeight": "4",
+            "textSize": "40"
+        }
+    }
+}
