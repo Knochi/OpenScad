@@ -1,0 +1,34 @@
+{
+    "fileFormatVersion": "1",
+    "parameterSets": {
+        "Neue Parameter Liste1": {
+            "$fn": "150",
+            "bdyMinThck": "15.800000000000001",
+            "crnrRad": "3",
+            "curveRad": "140",
+            "edgeRad": "1",
+            "frntAng": "45",
+            "frntHght": "5",
+            "frntWdth": "15",
+            "ledCnt": "10",
+            "ledRad": "0.90000000000000002",
+            "minWallThck": "0.80000000000000004",
+            "ovDims": "[52, 70, 20]"
+        },
+        "Neue Parameter Liste2": {
+            "$fn": "100",
+            "bdyMinThck": "15.800000000000001",
+            "crnrRad": "3",
+            "curveRad": "70",
+            "edgeRad": "0.5",
+            "frntAng": "45",
+            "frntHght": "5",
+            "frntWdth": "15",
+            "ledCnt": "10",
+            "ledRad": "0.90000000000000002",
+            "minWallThck": "0.80000000000000004",
+            "ovDims": "[52, 70, 20]",
+            "showLCD": "true"
+        }
+    }
+}
