@@ -1,0 +1,4 @@
+linear_extrude(height = 1, $fn = 0, $fa = 12, $fs = 2) {
+	text(text = "ON", size = 12, spacing = 1, font = "", direction = "ltr", language = "en", script = "Latn", halign = "default", valign = "default", $fn = 0, $fa = 12, $fs = 2);
+}
+
