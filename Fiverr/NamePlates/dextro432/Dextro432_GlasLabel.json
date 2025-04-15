@@ -1,0 +1,27 @@
+{
+    "fileFormatVersion": "1",
+    "parameterSets": {
+        "New set 1": {
+            "clipMinLength": "50",
+            "clipRad": "5",
+            "clipSpringLength": "20",
+            "clipSprngAngle": "26",
+            "clipThck": "2",
+            "clipWdth": "2",
+            "colClip": "orange",
+            "colTxt": "darkRed",
+            "quality": "50",
+            "roundEnds": "true",
+            "showClip": "true",
+            "showTxt": "true",
+            "txtFont": "Anton",
+            "txtMargin": "5",
+            "txtRotation": "0",
+            "txtSize": "14.699999999999999",
+            "txtString": "Dextro",
+            "txtThck": "2.5",
+            "txtXOffset": "0",
+            "txtYOffset": "-0.69999999999999996"
+        }
+    }
+}
