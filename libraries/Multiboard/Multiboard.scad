@@ -70,7 +70,7 @@ module MBpushFit(isPositive=true, isHorizontal=true, extend=0, center=false){
 *import("./Multipoints/Multipoint - Negative.stl");
 
 
-MultiPointRail();
+*MultiPointRail();
 module MultiPointRail(lite=true){
   %import("./Multipoints/Lite Multipoint Rail - Negative.stl");  
   botRad=ri2ro(7,8);
