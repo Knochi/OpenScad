@@ -2,13 +2,13 @@
 //thickness of the text
 txtThck=3;
 //width of the outline of the text
-outlineWdth=1;
+outlineWdth=0.8;
 //shift the outline outwards (+) or inwards (-)
 outlineOffset=0.2;
  //thickness of the backplate set to "0" for none
 backThck=2;
 //contour Width of the backplate
-backContour=3;
+backContour=3.1;
 
 /* [Eyelet] */
 holeDia=3;

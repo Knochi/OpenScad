@@ -1,16 +1,16 @@
 {
     "fileFormatVersion": "1",
     "parameterSets": {
-        "Neue Parameter Liste1": {
+        "New set 1": {
             "annularWdth": "2",
-            "backColor": "#111111",
-            "backContour": "3",
+            "backColor": "#660000",
+            "backContour": "2.5",
             "backThck": "2",
             "eyeletXOffset": "-4",
             "eyeletYOffset": "-4",
             "holeDia": "3",
-            "outlineOffset": "0",
-            "outlineWdth": "1",
+            "outlineOffset": "0.20000000000000001",
+            "outlineWdth": "0.80000000000000004",
             "quality": "50",
             "showBack": "true",
             "showEyeLet": "false",
@@ -20,8 +20,8 @@
             "txtFont": "Consolas",
             "txtLine1": "u\/Knochi77",
             "txtLine2": "",
-            "txtOutlineColor": "#664000",
-            "txtSize1": "11",
+            "txtOutlineColor": "#006600",
+            "txtSize1": "7",
             "txtSize2": "12",
             "txtStyle": "Regular",
             "txtThck": "2",
