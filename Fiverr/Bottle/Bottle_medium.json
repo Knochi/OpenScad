@@ -1,0 +1,21 @@
+{
+    "fileFormatVersion": "1",
+    "parameterSets": {
+        "New set 1": {
+            "baseDia": "80",
+            "baseHght": "90",
+            "capHght": "12",
+            "capSpcng": "0.5",
+            "gripRad": "9",
+            "gripXOffset": "5",
+            "gripZPos": "75",
+            "height": "150",
+            "neckDia": "50",
+            "neckHght": "18",
+            "showBottle": "true",
+            "showCap": "true",
+            "showSectionCut": "true",
+            "wallThck": "1.2"
+        }
+    }
+}
