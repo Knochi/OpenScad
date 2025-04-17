@@ -1,4 +1,5 @@
 /* Simple pliers holder for Multiboard 
+
 ---
 This object is part of Multiboard, a FREE "all in one" organization system with 3000+ parts, that combines pegboard holes, honeycomb snaps, Gridfinity like bins, threads, brakes, and much more.
 
@@ -8,18 +9,24 @@ Explore and build the coolest, most adaptable workshop at https://multiboard.io
 
 
 /* [Dimensions] */
-thck=11;
-height=15;
-brim=6;
-wallThck=2;
-rad=2;
-ang=55;
+sattleWdth=11;
+sattleHght=15;
+sattleBrim=6;
+sattleWallWdth=2;
+sattleCount=3;
+cornerRad=2;
+sattleAng=55;
 $fn=20;
 
-rotate([90,0,0]) linear_extrude(wallThck) tri(h=height+brim,a=ang,r=rad);
-translate([0,-wallThck,0]) rotate([90,0,0]) linear_extrude(thck) tri(h=height,a=ang,r=rad);
-translate([0,-wallThck-thck]) rotate([90,0,0]) linear_extrude(wallThck) tri(h=height+brim,a=ang,r=rad);
 rotate(180) MBpushFit();
+rotate([90,0,0]) linear_extrude(sattleWallWdth) tri(h=sattleHght+sattleBrim,a=sattleAng,r=cornerRad);
+
+for (i=[0:sattleCount-1]){
+  translate([0,-sattleWallWdth*(i+1)-sattleWdth*i,0]) rotate([90,0,0]) linear_extrude(sattleWdth) tri(h=sattleHght,a=sattleAng,r=cornerRad);
+  translate([0,-(sattleWallWdth+sattleWdth)*(i+1)]) rotate([90,0,0]) linear_extrude(sattleWallWdth) tri(h=sattleHght+sattleBrim,a=sattleAng,r=cornerRad);
+}
+
+
 
 
 
@@ -60,12 +67,12 @@ module MBpushFit(isPositive=true, isHorizontal=true, extend=0, center=false){
     difference(){        
       translate([0,pFtopIRad-pFbotIRad,pFovHght-pFtopHght])
         linear_extrude(pFtopHght,scale=0.93) rotate(180/8) circle(r=pFtopORad,$fn=8);
-      translate([0,-4.55,pFovHght-0.1]) linear_extrude(0.2) printDir();
+      translate([0,-4.55,pFovHght-0.1]) linear_extrude(0.2) printDirIcon();
       }
     }
 }
 
-module printDir(){
+module printDirIcon(){
   square([1.6,0.4],true);
   translate([0,1.29]) rotate(30) circle(d=1.4,$fn=3);
 }
