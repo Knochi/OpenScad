@@ -1,0 +1,44 @@
+{
+    "fileFormatVersion": "1",
+    "parameterSets": {
+        "Neue Parameter Liste1": {
+            "baseWdth": "10",
+            "tineCount": "30",
+            "tineGapWdth": "1.75",
+            "tineLengthVariation": "alternating",
+            "tineMaxLen": "20",
+            "tineMinLen": "15",
+            "tineRad": "1",
+            "tineSharpTips": "true",
+            "tineThck": "4.5",
+            "tineTipLen": "2.2000000000000002",
+            "tineWdth": "2.5"
+        },
+        "Neue Parameter Liste2": {
+            "baseWdth": "10",
+            "tineCount": "31",
+            "tineGapWdth": "1.75",
+            "tineLengthVariation": "alternating",
+            "tineMaxLen": "20",
+            "tineMinLen": "15",
+            "tineRad": "1",
+            "tineSharpTips": "true",
+            "tineThck": "4.5",
+            "tineTipLen": "2.2000000000000002",
+            "tineWdth": "2.5"
+        },
+        "Neue Parameter Liste3": {
+            "baseWdth": "10",
+            "tineCount": "30",
+            "tineGapWdth": "1.75",
+            "tineLengthVariation": "none",
+            "tineMaxLen": "20",
+            "tineMinLen": "15",
+            "tineRad": "1",
+            "tineSharpTips": "true",
+            "tineThck": "4.5",
+            "tineTipLen": "2.2000000000000002",
+            "tineWdth": "2.5"
+        }
+    }
+}
