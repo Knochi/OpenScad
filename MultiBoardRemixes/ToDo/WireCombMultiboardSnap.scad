@@ -1,5 +1,5 @@
 /* Skadis Collection
-
+Remixed from 
 https://www.thingiverse.com/thing:2853261 */
 
 // Cable Holder
@@ -7,11 +7,11 @@ https://www.thingiverse.com/thing:2853261 */
 tineGapWdth=1.75;
 tineWdth=2.5;
 tineThck=4.5;
-tineMaxLen=20;
+tineMaxLen=19;
 tineMinLen=15;
 tineTipLen=2.2;
 tineRad=1;
-tineCount=30;
+tineCount=17; //big: 37, small:27, tiny: 17
 tineSharpTips=true;
 /* [Options] */
 tineLengthVariation="outer"; //["none","outer","alternating"]
@@ -27,11 +27,11 @@ conHght=15;
 fudge=0.1;
 
 //the widest possible distance without protruding and in the grid
-conDist=conPitch*floor((ovWdth-conWdth)/conPitch);
+conDist=conPitch*floor((ovWdth-conWdth-tineRad*2)/conPitch);
 
 echo(conDist);
 $fn=32;
-*translate([-183.27-0.59-155.5/2,-848.9]) import("Skadis_Universal_Cable_big.stl");
+
 
 //base
 body();
