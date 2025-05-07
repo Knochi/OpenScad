@@ -67,7 +67,7 @@ color(txtFillColor) translate([0,0,txtZOffset])
   
 *outlineTxt();
 module outlineTxt(){
-  inOffset=outlineWdth+outlineOffset;
+ 
   outOffset=outlineWdth+outlineOffset;
   
   difference(){
