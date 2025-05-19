@@ -6,6 +6,8 @@
 wallThck=2;
 btmThck=3;
 topThck=3;
+lipWdth=2;
+
 //lateral (X-Y) spacing
 latSpcng=0.3;
 //z-Spacing
@@ -85,12 +87,12 @@ module bottom(){
 
 module shell(){
   linear_extrude(totalHeight, convexity=4) outlineTxt(wallThck,wallThck+latSpcng);
-  translate([0,0,totalHeight-topThck/2]) linear_extrude(topThck/2, convexity=4) outlineTxt(wallThck+latSpcng,latSpcng );
+  translate([0,0,totalHeight-topThck/2]) linear_extrude(topThck/2, convexity=4) outlineTxt(lipWdth+latSpcng,latSpcng );
 }
 
 module top(){
   linear_extrude(topThck/2, convexity=4) txtLine();
-  linear_extrude(topThck, convexity=4) offset(-wallThck-latSpcng) txtLine();
+  linear_extrude(topThck, convexity=4) offset(-lipWdth-latSpcng) txtLine();
 }
 
 

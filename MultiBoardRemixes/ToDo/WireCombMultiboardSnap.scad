@@ -30,7 +30,7 @@ fudge=0.1;
 conDist=conPitch*floor((ovWdth-conWdth-tineRad*2)/conPitch);
 
 echo(conDist);
-$fn=32;
+$fn=64;
 
 
 //base

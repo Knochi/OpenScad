@@ -39,6 +39,19 @@
             "tineThck": "4.5",
             "tineTipLen": "2.2000000000000002",
             "tineWdth": "2.5"
+        },
+        "New set 1": {
+            "baseWdth": "10",
+            "tineCount": "17",
+            "tineGapWdth": "1.75",
+            "tineLengthVariation": "outer",
+            "tineMaxLen": "19",
+            "tineMinLen": "15",
+            "tineRad": "1",
+            "tineSharpTips": "true",
+            "tineThck": "4.5",
+            "tineTipLen": "2.2000000000000002",
+            "tineWdth": "2.5"
         }
     }
 }

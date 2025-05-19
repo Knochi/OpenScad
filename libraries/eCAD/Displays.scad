@@ -5,8 +5,10 @@ $fn=50;
 /* [Dimensions]  */
 fudge=0.1;
 
+translate([-100,0,0]) OLED1_3inch4pin();
 Midas96x16();
 translate([0,100,0]) EA_W128032(center=true);
+translate([0,30,0]) OLED0_91inch128x32();
 translate([100,0,0]) LCD_20x4();
 translate([100,60,0]) LCD_16x2();
 translate([100,120,0]) FutabaVFD();
@@ -14,6 +16,7 @@ translate([200,0,0]) Adafruit128x128TFT();
 translate([300,0,0]) AdafruitOLED23();
 translate([500,0,0]) raspBerry7Inch();
 translate([100,180,0]) EA_DOGS164_A();
+
 
 
 //double 7-segment display
@@ -91,7 +94,7 @@ module OLED0_91inch128x32(){
   }
 }
 
-!OLED0_96inch4pin();
+*OLED0_96inch4pin();
 module OLED0_96inch4pin(center=true){
   //chinese OLED display 4pin 1.3Inch
   //like: https://de.aliexpress.com/item/1005006950166152.html
@@ -159,7 +162,7 @@ module OLED0_96inch4pin(center=true){
           }
           
     //pinHeader
-    *translate([-2.54*1.5,PCBDims.y/2+hdrYOffset,0]) rotate([180,0,0]) MPE_087(rows=1,pins=4,A=11.3,markPin1=false);
+    translate([-2.54*1.5,PCBDims.y/2+hdrYOffset,0]) rotate([180,0,0]) MPE_087(rows=1,pins=4,A=11.3,markPin1=false);
    
   }
   
@@ -198,7 +201,7 @@ module OLED1_3inch4pin(center=false){
   cntrOffset= center ? [0,0,0] : [2.54*1.5,-PCBDims.y/2-hdrYOffset,2.5];
   
   translate(cntrOffset){
-    *color(pcbBlueCol) linear_extrude(PCBDims.z)
+    color(pcbBlueCol) linear_extrude(PCBDims.z)
       difference(){
         square([PCBDims.x,PCBDims.y],true);
         //screwholes
