@@ -57,8 +57,7 @@ module  shovel() {
   wallThck=2;
   slotWdth=3;
   slotCnt= floor((dims.y-wallThck)/(slotWdth+wallThck));
-  attAngle=-25;
-  echo(slotCnt);
+  attAngle=-5;
   slotDist= (dims.y-wallThck*2)/slotCnt+wallThck/(slotCnt-1);
 
 *rotate(17) translate([15.9,-33.6,0]) import("loeffel.stl");
@@ -79,8 +78,9 @@ module  shovel() {
     //slots
     for (i=[0:slotCnt-1])
       translate([0,0,wallThck+i*slotDist]){
-        rotate(180) rotate_extrude(angle=80) translate([dims.x/2-wallThck-fudge/2,0]) square([wallThck+fudge,slotWdth]);
-        translate([0,radius+dims.x/2,0]) rotate(-90) rotate_extrude(angle=extAng-5) translate([radius+dims.x-wallThck*1.5,0]) square([wallThck*2,slotWdth]);
+        rotate(200) rotate_extrude(angle=60) translate([dims.x/2-wallThck-fudge/2,0]) square([wallThck+fudge,slotWdth]);
+        translate([0,radius+dims.x/2,0]) rotate(-90) rotate_extrude(angle=extAng-5) 
+          translate([radius+dims.x-wallThck*1.5,0]) square([wallThck*2,slotWdth]);
     }
   }
   //attach interface
