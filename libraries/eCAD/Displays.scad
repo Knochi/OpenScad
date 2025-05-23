@@ -5,8 +5,10 @@ $fn=50;
 /* [Dimensions]  */
 fudge=0.1;
 
+translate([-100,0,0]) OLED1_3inch4pin();
 Midas96x16();
 translate([0,100,0]) EA_W128032(center=true);
+translate([0,30,0]) OLED0_91inch128x32();
 translate([100,0,0]) LCD_20x4();
 translate([100,60,0]) LCD_16x2();
 translate([100,120,0]) FutabaVFD();
@@ -14,6 +16,7 @@ translate([200,0,0]) Adafruit128x128TFT();
 translate([300,0,0]) AdafruitOLED23();
 translate([500,0,0]) raspBerry7Inch();
 translate([100,180,0]) EA_DOGS164_A();
+
 
 
 //double 7-segment display
@@ -91,7 +94,7 @@ module OLED0_91inch128x32(){
   }
 }
 
-!OLED0_96inch4pin();
+*OLED0_96inch4pin();
 module OLED0_96inch4pin(center=true){
   //chinese OLED display 4pin 1.3Inch
   //like: https://de.aliexpress.com/item/1005006950166152.html
@@ -159,7 +162,7 @@ module OLED0_96inch4pin(center=true){
           }
           
     //pinHeader
-    *translate([-2.54*1.5,PCBDims.y/2+hdrYOffset,0]) rotate([180,0,0]) MPE_087(rows=1,pins=4,A=11.3,markPin1=false);
+    translate([-2.54*1.5,PCBDims.y/2+hdrYOffset,0]) rotate([180,0,0]) MPE_087(rows=1,pins=4,A=11.3,markPin1=false);
    
   }
   
@@ -198,7 +201,7 @@ module OLED1_3inch4pin(center=false){
   cntrOffset= center ? [0,0,0] : [2.54*1.5,-PCBDims.y/2-hdrYOffset,2.5];
   
   translate(cntrOffset){
-    *color(pcbBlueCol) linear_extrude(PCBDims.z)
+    color(pcbBlueCol) linear_extrude(PCBDims.z)
       difference(){
         square([PCBDims.x,PCBDims.y],true);
         //screwholes
@@ -234,9 +237,48 @@ module OLED1_3inch4pin(center=false){
   function cntrOffset(yOffset,yDim)=(PCBDims.y-yDim)/2+yOffset;
   
 }
+*DisplayRound_1_28();
+module DisplayRound_1_28(){
+  //TFT 1.28"
+  //e.g. https://de.aliexpress.com/item/1005007702290129.html
+  //ZHONGJINGYUAN - ZJY_IPS128_8P
+  //display
+  AADia=32.4;
+  BLDia=35.6;
+  pcbDims=[36,44,1.2];
+  chmfr=6;
+  holeDia=2;
+  holeDist=[30,30];
+  holeOffset=[0,-0.7];
+  AAOffset=[0,-0.7];
+  pinCount=8;
+  pinOffset=20.5;
+  pitch=2.54;
+  
+  translate([0,AAOffset.y,pcbDims.z]){
+    color(glassGreyCol) cylinder(d=AADia,h=1.5);
+    color(metalGreyCol) cylinder(d=BLDia,h=1.4);
+  }
+  
+  poly=[[-pcbDims.x/2,pcbDims.y/2-chmfr],
+        [-pcbDims.x/2+chmfr,pcbDims.y/2],
+        [pcbDims.x/2-chmfr,pcbDims.y/2],
+        [pcbDims.x/2,pcbDims.y/2-chmfr],
+        [pcbDims.x/2,-pcbDims.y/2+chmfr],
+        [pcbDims.x/2-chmfr,-pcbDims.y/2],
+        [-pcbDims.x/2+chmfr,-pcbDims.y/2],
+        [-pcbDims.x/2,-pcbDims.y/2+chmfr]];
+        
+  color(pcbBlueCol) linear_extrude(pcbDims.z) difference(){
+    polygon(poly);
+    for (ix=[-1,1],iy=[-1,1])
+      translate([ix*holeDist.x/2,iy*holeDist.y/2+holeOffset.y]) circle(d=holeDia);
+    for (ix=[-(pinCount-1)/2:(pinCount-1)/2])
+      translate([ix*pitch,pinOffset]) circle(d=0.71);
+    }
+}
 
-
-module roundDisplayWS(showPlug=false, cut=false, spcng=0.1){
+module ESP32RoundDisplay(showPlug=false, cut=false, spcng=0.1){
   // Waveshare ESP32-S3 round 1.28" IPS display with headers
   // https://www.waveshare.com/wiki/ESP32-S3-LCD-1.28
   pcbRad=18.25;
@@ -296,7 +338,8 @@ module roundDisplayWS(showPlug=false, cut=false, spcng=0.1){
   }
 }
 
-*roundDisplay();
+
+*roundDisplayAE();
 module roundDisplayAE(){
  //https://de.aliexpress.com/item/1005006306530830.html
   studDist=[24.85,19.0767];

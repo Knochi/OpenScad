@@ -1,0 +1,13 @@
+{
+    "fileFormatVersion": "1",
+    "parameterSets": {
+        "Neue Parameter Liste1": {
+            "$fn": "50",
+            "ballDia": "12.699999999999999",
+            "binDims": "[50, 50]",
+            "binFloorHght": "6",
+            "showBin": "true",
+            "wallThck": "2"
+        }
+    }
+}
