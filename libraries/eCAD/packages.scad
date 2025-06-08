@@ -762,14 +762,14 @@ module LED_5mm(lightConeAng=15,lightConeHght=50){
     %translate([0,0,ovHght-bdDia/2]) cylinder(d1=0.1,d2=c,h=lightConeHght);
   }
 }
-
+!LED5050();
 module LED5050(pins=6){
   // e.g. WS2812(B)
   dims=[5,5,1.5];
   pitch= (pins==6) ? 0.9 : 1.8;
   grvHght=1;
   marking=[0.7,0.2]; //width,height
-  
+  fudge=0.1;
   //body
   color("ivory")
     difference(){
@@ -781,13 +781,29 @@ module LED5050(pins=6){
     }
   color("grey",0.6)
     translate([0,0,dims.z-grvHght]) cylinder(d1=3.2,d2=4,h=grvHght);
+  
   //leads
   color("silver")
     for (i=[-pins/2+1:2:pins/2],r=[-90,90])
-      rotate([0,0,r]) translate([dims.x/2,i*pitch,0]){
-        translate([-1.1/2+0.2,0,0.1]) cube([1.1,1.0,0.2],true);
-        translate([0.1,0,0.45]) cube([0.2,1.0,0.9],true);
-      }
+      rotate([0,0,r]) translate([dims.x/2-0.8,i*pitch,0.3])
+        jLead();
+        //translate([-1.1/2+0.2,0,0.1]) cube([1.1,1.0,0.2],true);
+        //translate([0.1,0,0.45]) cube([0.2,1.0,0.9],true);
+      
+  *color("silver") jLead();
+  module jLead(size=[1,1,0.6]){
+    leadThck=0.10;
+    bendRad=0.17;
+    //top & bottom
+    for (iz=[-1,1]){
+      translate([(size.x-bendRad)/2,0,iz*(size.z-leadThck)/2]) 
+        cube([size.x-bendRad,size.y,leadThck],true);
+      translate([size.x-bendRad,0,iz*(size.z/2-bendRad)]) 
+      rotate([iz*90,0,0]) rotate_extrude(angle=90) 
+        translate([bendRad-leadThck/2,0]) #square([leadThck,size.y],true);
+        }
+    translate([size.x-leadThck/2,0,0]) cube([leadThck,size.y,size.z-bendRad*2],true);
+  }
 }
 *PLCC6();
 module PLCC6(){
@@ -1237,7 +1253,7 @@ module bendLeg(){
   
 }
 
-!lead();
+*lead();
 module lead(dims=[1.04,0.51,0.7],thick=0.2,rad=0.13){
   
   b=dims.x*0.7; //lead length tip //JEDEC: 0.835 +-0.435

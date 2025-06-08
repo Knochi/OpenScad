@@ -1,0 +1,12 @@
+{
+    "fileFormatVersion": "1",
+    "parameterSets": {
+        "Neue Parameter Liste1": {
+            "$fn": "50",
+            "binPosition": "0.30000000000000004",
+            "modulus": "1",
+            "pinTeeth": "30",
+            "rackLen": "150"
+        }
+    }
+}

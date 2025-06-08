@@ -122,7 +122,7 @@ module zahnstange(modul, laenge, hoehe, breite, eingriffswinkel = 20, schraegung
 	translate([-pi*mx*(nz-1)/2-a-b/2,-modul,0]){
 		intersection(){											// Erzeugt ein Prisma, das in eine Quadergeometrie eingepasst wird
 			kopiere([1,0,0], nz, pi*mx, 0){
-				polyhedron(
+				polyhedron(convexity=3,
 					points=[[0,-c,0], [a,2*modul,0], [a+b,2*modul,0], [2*a+b,-c,0], [pi*mx,-c,0], [pi*mx,modul-hoehe,0], [0,modul-hoehe,0],	// Unterseite
 						[0+x,-c,breite], [a+x,2*modul,breite], [a+b+x,2*modul,breite], [2*a+b+x,-c,breite], [pi*mx+x,-c,breite], [pi*mx+x,modul-hoehe,breite], [0+x,modul-hoehe,breite]],	// Oberseite
 					faces=[[6,5,4,3,2,1,0],						// Unterseite
@@ -900,7 +900,7 @@ module schneckenradsatz(modul, zahnzahl, gangzahl, breite, laenge, bohrung_schne
 
 // pfeilrad (modul=1, zahnzahl=30, breite=5, bohrung=4, eingriffswinkel=20, schraegungswinkel=30, optimiert=true);
 
-// zahnstange_und_rad (modul=1, laenge_stange=50, zahnzahl_rad=30, hoehe_stange=4, bohrung_rad=4, breite=5, eingriffswinkel=20, schraegungswinkel=0, zusammen_gebaut=true, optimiert=true);
+zahnstange_und_rad (modul=1, laenge_stange=50, zahnzahl_rad=30, hoehe_stange=4, bohrung_rad=4, breite=5, eingriffswinkel=20, schraegungswinkel=0, zusammen_gebaut=true, optimiert=true);
 
 // hohlrad (modul=1, zahnzahl=30, breite=5, randbreite=3, eingriffswinkel=20, schraegungswinkel=20);
 

@@ -10,3 +10,6 @@
 [submodule "libraries/MCAD"]
 	path = libraries/MCAD
 	url = https://github.com/openscad/MCAD.git
+[submodule "libraries/BOSL2"]
+	path = libraries/BOSL2
+	url = https://github.com/BelfrySCAD/BOSL2.git
