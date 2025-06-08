@@ -4,11 +4,11 @@
 
 /* [Text] */
 txtString="Moesaadii";
-txtSize=8;
+txtSize=10;
 txtFont="Liberation Sans";
 
 /* [Dimensions] */
-holeDia=3;
+holeDia=4;
 minWallThck=0.8;
 topBtmSpcng=0.1;
 txtEmbossThck=1;
@@ -26,12 +26,14 @@ bdyColor="grey";
 /* [DoveTail] */
 dvSpcng=0.1;
 dvAngle=20;
-dvThck=2;
+dvSmooth=true;
+dv2BdyWidth=0.4; //[0.2:0.01:0.7]
 
 /* [show] */
 quality=100; //[16:16:96]
 showTop=true;
 showBottom=true;
+showSection=false;
 bdyStyle="txtOffset"; //["box","txtOffset"]
 export="none"; //["none","topTxt","topBody","btmBody","btmTxt"]
 
@@ -39,6 +41,8 @@ export="none"; //["none","topTxt","topBody","btmBody","btmTxt"]
 tm=textmetrics(text=txtString,size=txtSize,font=txtFont,valign="center");
 fudge=0.1;
 dvXOffset= (bdyStyle=="box") ? 0 : -txtOffset-txtOutline;
+
+dvThck=max(holeDia/2,minWallThck*2);
 
 //body without text
 bdyDims= (bdyStyle=="box") ? [tm.size.x+txtOutline*2,tm.size.y+txtOutline*2,dvThck+holeDia/2+minWallThck] :
@@ -49,10 +53,17 @@ bdyDims= (bdyStyle=="box") ? [tm.size.x+txtOutline*2,tm.size.y+txtOutline*2,dvTh
 $fn=quality;
 
 if (export=="none"){
-  if (showTop)
-    top();
-  if (showBottom)
-    bottom();
+  difference(){
+    union(){
+      if (showTop)
+        top();
+      if (showBottom)
+        bottom();
+      }
+    if (showSection)
+      color("darkRed") translate([bdyDims.x/2-txtOutline-txtOffset,0,bdyDims.z/2]) 
+        cube(bdyDims,true);
+    }
 }
 
 else {
@@ -103,7 +114,7 @@ module top(){
     translate([dvXOffset-fudge/2,0,0]) rotate([0,90,0]) 
       linear_extrude(bdyDims.x+fudge,convexity=6){
         circle(d=holeDia);
-        offset(dvSpcng) rotate(90) trapezoid();
+        offset(dvSpcng) rotate(90) trapezoid(smooth=dvSmooth);
       }
   }
 }
@@ -162,11 +173,15 @@ module bottom(){
 
 
 *trapezoid();
-module trapezoid(width=bdyDims.y/2, height=dvThck,angle=dvAngle){
+module trapezoid(width=bdyDims.y*dv2BdyWidth, height=dvThck,angle=dvAngle, smooth=false){
   btmWdth=width-tan(dvAngle)*height*2;
   poly=[[-btmWdth/2,0],[-width/2,height],[width/2,height],[btmWdth/2,0]];
-  //rotate([90,0,0]) linear_extrude(size.y,center=true) 
+  
+  hull(){   
     translate([0,-height]) polygon(poly);
+    if (smooth)
+      circle(d=holeDia);
+    }
   
 }
 
