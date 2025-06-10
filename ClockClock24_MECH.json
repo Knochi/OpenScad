@@ -1,0 +1,17 @@
+{
+    "fileFormatVersion": "1",
+    "parameterSets": {
+        "Neue Parameter Liste1": {
+            "$fn": "64",
+            "clock2HandSpcng": "1",
+            "clockCount": "[8, 3]",
+            "clockDia": "96",
+            "clockDist": "100",
+            "fudge": "0.10000000000000001",
+            "handBotAng": "90",
+            "handThck": "2",
+            "handTopAng": "-97",
+            "handWidth": "10"
+        }
+    }
+}
