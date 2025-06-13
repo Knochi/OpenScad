@@ -1,0 +1,15 @@
+{
+    "fileFormatVersion": "1",
+    "parameterSets": {
+        "New set 1": {
+            "cableDia": "2.3999999999999999",
+            "cornerRad": "0.5",
+            "gapHeight": "1.5",
+            "headHeight": "1.5",
+            "holeDia": "5",
+            "showSectionCut": "true",
+            "totalDia": "8",
+            "totalHeight": "6"
+        }
+    }
+}
