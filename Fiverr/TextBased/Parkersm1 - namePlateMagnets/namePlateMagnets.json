@@ -57,6 +57,31 @@
             "txtStyle": "bold",
             "txtThck": "3",
             "txtYSpacing": "0.80000000000000004"
+        },
+        "New set 2": {
+            "backColor": "#0F0F0F",
+            "backContour": "3.1000000000000001",
+            "backThck": "3",
+            "export": "none",
+            "magDia": "6",
+            "magLatSpcng": "0.10000000000000001",
+            "magMinLayerThck": "0.59999999999999998",
+            "magThck": "2",
+            "magXPosRel": "[0.2, 0.8]",
+            "magZSpcng": "0.10000000000000001",
+            "outlineWdth": "0",
+            "quality": "50",
+            "showBack": "true",
+            "showMagnets": "true",
+            "showSectionCut": "false",
+            "showText": "true",
+            "txtColor": "#DDDDDD",
+            "txtFont": "Noto Sans",
+            "txtLine": "Parker",
+            "txtSize": "11",
+            "txtStyle": "bold",
+            "txtThck": "3",
+            "txtYSpacing": "0.80000000000000004"
         }
     }
 }
