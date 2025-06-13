@@ -2,7 +2,6 @@
     "fileFormatVersion": "1",
     "parameterSets": {
         "New set 1": {
-            "cableDia": "2.3999999999999999",
             "cornerRad": "0.5",
             "gapHeight": "1.5",
             "headHeight": "1.5",
@@ -10,6 +9,49 @@
             "showSectionCut": "true",
             "totalDia": "8",
             "totalHeight": "6"
+        },
+        "Neue Parameter Liste1": {
+            "cableHeight": "2.7999999999999998",
+            "cableWidth": "2.3999999999999999",
+            "cornerRad": "0.5",
+            "gapHeight": "1.5",
+            "headHeight": "1.5",
+            "holeDia": "5",
+            "quality": "100",
+            "ringIndent": "0.20000000000000001",
+            "showSectionCut": "true",
+            "topIndent": "0.20000000000000001",
+            "totalDia": "8",
+            "totalHeight": "6"
+        },
+        "Neue Parameter Liste2": {
+            "cableHeight": "2.7999999999999998",
+            "cableWidth": "2.3999999999999999",
+            "cornerRad": "0.5",
+            "gapHeight": "1.5",
+            "headHeight": "1.5",
+            "holeDia": "6",
+            "quality": "100",
+            "ringIndent": "0.20000000000000001",
+            "showSectionCut": "true",
+            "topIndent": "0.20000000000000001",
+            "totalDia": "8",
+            "totalHeight": "6"
+        },
+        "Neue Parameter Liste3": {
+            "cableHeight": "5",
+            "cableWidth": "2",
+            "cornerRad": "0.5",
+            "gapHeight": "1.5",
+            "headHeight": "1.5",
+            "holeDia": "6",
+            "minWallThck": "0.80000000000000004",
+            "quality": "100",
+            "ringIndent": "0.20000000000000001",
+            "showSectionCut": "true",
+            "topIndent": "0.20000000000000001",
+            "totalDia": "12",
+            "totalHeight": "8"
         }
     }
 }
