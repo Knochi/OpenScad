@@ -18,7 +18,7 @@ showHolder=true;
 
 /* [Hidden] */
 fudge=0.1;
-$fn=20;
+$fn=100;
 
 powerBrickWallMount();
 
@@ -79,7 +79,7 @@ module powerBrickWallMount(){
   }
 }
 
-!horizontalHole(dia=10);
+!linear_extrude(27.2) horizontalHole(dia=15.4);
 module horizontalHole(dia=1){
 //https://www.hydraresearch3d.com/design-rules#holes-horizontal
 a=0.3; //change to 0.6 for >0.1 layer thickness
@@ -103,8 +103,6 @@ botPoly=[[-px3,py3],[0,-r-a],[px3,py3]];
   polygon(botPoly);  
   
   circle(d=dia,$fn=36);
-    
-  
 
 }
 
