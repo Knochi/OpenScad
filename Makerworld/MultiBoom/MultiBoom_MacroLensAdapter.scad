@@ -2,16 +2,27 @@ ovDims=[26,27.2,0];
 beamWdth=13.6;
 beamThck=10.6;
 beamChamfer=[0.35,0.35,0.5];
+shoeDist=5;
 $fn=50;
 
 //original parts
 *translate([-115.05-25.9/2,-114.4-27.2/2,-35.85]) import("MultiBOOM_Phone_A.stl",convexity=3);
 *translate([-0.2-27.2/2,34.07,0]) import("MultiBOOM_Arm_Female_150mm.stl",convexity=3);
-
+*translate([85.38+beamWdth,-33.7+beamWdth,-10.5]) import("MultiBOOM_Arm_Male_100mm.stl");
  
+ coldShoeAdapter();
+ 
+ //sleeve
+ *linear_extrude(47) difference(){
+  circle(d=15);
+  circle(d=14);
+ }
 
-translate([0,0,-3]) coldShoe();
-translate([0,0,beamWdth]) rotate([90,0,0]) femaleJoint();
+module coldShoeAdapter(){
+
+  translate([0,0,-shoeDist]) coldShoe(height=shoeDist);
+  translate([0,0,beamWdth]) rotate([90,0,0]) femaleJoint();
+}
 
 module femaleJoint(height=beamThck,doubleSided=false, horizontal=true, center=true){
   bumpCount=8;
@@ -23,7 +34,7 @@ module femaleJoint(height=beamThck,doubleSided=false, horizontal=true, center=tr
   translate(cntrOffset){
     hexNut(height=height,horizontal=horizontal,center=true);
     //bumps
-    for (ang=[0:bumpAng:360-bumpAng],iz= doubleSided ? [0] : [1,-1])
+    for (ang=[0:bumpAng:360-bumpAng],iz= doubleSided ? [1,-1] : [1])
       rotate(ang) translate([bumpRad,0,iz*height/2]) rotate([0,90,0]) pill();
   }
   
@@ -63,15 +74,33 @@ module hexNut(ri=13.6,height=10.6, chamfer=beamChamfer, holeDia=14.6, holeChamfe
   }
 }
 
-
-module coldShoe(){
-  chamfer=1;
-  dims=[18,18,1.5];
+*coldShoe();
+module coldShoe(height=5){
+  //coldShoe Spec
+  //https://cdn.standards.iteh.ai/samples/36330/0f7a221b5b7647cc972f7403f522191a/ISO-518-2006.pdf
+  slotWdth=12.5;
+  internalDims=[18.6,16,2]; //Tolerances: 0|+2; -2|+3; 0|+1.5
+  teethThck=1.5; //<=
+  chamfer=1.0;
+  spcngLat=0.3;
+  spcngZ=0.2;
+  dims=[15,18,1.8];
+  sprngSlotDims=[dims.x-2,1];
+  sprngThck=0.8;
   
   //plate
-  linear_extrude(dims.z) offset(chamfer=true,delta=chamfer) square([dims.x-chamfer*2,dims.y-chamfer*2],true);
+  linear_extrude(dims.z) difference(){
+    offset(chamfer=true,delta=chamfer) 
+      square([dims.x-chamfer*2,dims.y-chamfer*2],true);
+    //slots for springs
+    for (iy=[-1,1])
+      hull() for (ix=[-1,1])
+        translate([ix*(sprngSlotDims.x-sprngSlotDims.y)/2,iy*((dims.y-sprngSlotDims.y)/2-sprngThck),0]) 
+          circle(d=sprngSlotDims.y);
+      
+  }
   
-  translate([0,0,1.5]) linear_extrude(dims.z+beamChamfer.z)
+  translate([0,0,dims.z]) linear_extrude(height+beamChamfer.z)
     offset(chamfer=true,delta=chamfer) square([12-chamfer*2,beamThck-chamfer*2],true);
 }
 
