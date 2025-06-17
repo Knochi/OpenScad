@@ -1,5 +1,6 @@
 ledAlpha=0.1;
 glassAlpha=0.39;
+//https://gitlab.com/kicad/libraries/kicad-packages3D/-/blob/master/Vrml_materials_doc/KiCad_3D-Viewer_component-materials-reference-list_MarioLuzeiro.pdf
 
 metalGreyPinCol=    [0.824, 0.820,  0.781];
 metalGreyCol=       [0.298, 0.298,  0.298]; //metal Grey
@@ -37,7 +38,7 @@ glassGreenCol=      [0.000000, 0.75, 0.44, glassAlpha];
 glassOrangeCol=     [0.75, 0.44, 0.000000, glassAlpha];
 pcbGreenCol=        [0.07,  0.3,    0.12]; //pcb green
 pcbBlackCol=        [0.16,  0.16,   0.16]; //pcb black
-pcbBlueCol=            [0.07,  0.12,   0.3];
+pcbBlueCol=         [0.07,  0.12,   0.3];
 FR4darkCol=         [0.2,   0.17,   0.087]; //?
 FR4Col=             [0.43,  0.46,   0.295]; //?
 //non VRML cols

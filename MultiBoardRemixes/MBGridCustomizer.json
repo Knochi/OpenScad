@@ -1,0 +1,9 @@
+{
+    "fileFormatVersion": "1",
+    "parameterSets": {
+        "Neue Parameter Liste1": {
+            "count": "[5, 5]",
+            "tileVariant": "core"
+        }
+    }
+}

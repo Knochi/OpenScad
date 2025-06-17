@@ -1,8 +1,11 @@
+use <eCAD/connectors.scad>
+include <eCAD/KiCADColors.scad>
+
 // new parametric housing for LCR meter
 $fn=20;
 fudge=0.1;
 
-//Dimensions
+/* [Meter Dimensions] */
 pcbDims=[72.9,59.8,1.6];
 holeDia=3.2;
 holeDist=[67.5,37.6];
@@ -19,13 +22,18 @@ padsDims=[8.2,11,0.05];
 padsPos=[pcbDims.x/2-27.75,-pcbDims.y/2+14.9-padsDims.y/2,pcbDims.z];
   
 
+/* [case Dimensions] */
+minWallThck=1.2;
+cornerRad=3;
+
 
 LCRmeter();
+translate([37,57,0]) rotate(180) LX_LCBST();
 
 module LCRmeter(){
  
   //pcb
-  color("orange") linear_extrude(pcbDims.z) difference(){
+  color(yellowBodyCol) linear_extrude(pcbDims.z) difference(){
     square([pcbDims.x,pcbDims.y],true);
     for (ix=[-1,1],iy=[-1,1])
       translate([ix*holeDist.x/2+holeOffset.x,iy*holeDist.y/2+holeOffset.y]) circle(d=holeDia);
@@ -33,7 +41,7 @@ module LCRmeter(){
   }
   
   //display
-  color("white") translate(displayPos) cube(displayDims,true);
+  color(whiteBodyCol) translate(displayPos) cube(displayDims,true);
   
   //display Flex
   translate([displayPos.x,pcbDims.y/2+displayDims.z/2,displayPos.z])
@@ -48,7 +56,7 @@ module LCRmeter(){
   translate(btnPos) button();
   
   //pads
-  color("silver") translate(padsPos) linear_extrude(padsDims.z) square([padsDims.x,padsDims.y],true);
+  color(metalSilverCol) translate(padsPos) linear_extrude(padsDims.z) square([padsDims.x,padsDims.y],true);
   
   //battery wires
   for (ix=[-1,1])
@@ -59,7 +67,7 @@ module LCRmeter(){
     //stem
     color("grey") cylinder(d=6.9,h=6.75);
     //cap
-    translate([0,0,6.75]) color("blue"){
+    translate([0,0,6.75]) color(blueBodyCol){
       cylinder(d=12.9,h=1.4);
       cylinder(d=11.4,h=5.8);
       }
@@ -78,3 +86,23 @@ module LCRmeter(){
     }
   }
 }
+
+module caseBot(){
+  
+}
+
+
+module LX_LCBST(){
+  //https://de.aliexpress.com/item/1005005656423941.html
+  // Charger/Boost Module 
+  pcbDims=[18,23,1.6];
+  linear_extrude(pcbDims.z) difference(){
+    square([pcbDims.x,pcbDims.y]);
+    //mount
+    translate([pcbDims.x-14.8,pcbDims.y]) circle(d=2);
+    translate([pcbDims.x-14.8,0]) circle(d=2);
+    }
+    //USB-C
+    translate([0,6.25,pcbDims.z]) rotate(-90) usbC();
+}
+
