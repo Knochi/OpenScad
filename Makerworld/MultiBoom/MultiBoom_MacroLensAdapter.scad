@@ -85,13 +85,20 @@ module coldShoe(height=5){
   spcngLat=0.3;
   spcngZ=0.2;
   dims=[15,18,1.8];
-  sprngSlotDims=[dims.x-2,1];
+  sprngSlotDims=[dims.x-2,2];
   sprngThck=0.8;
   
   //plate
   linear_extrude(dims.z) difference(){
-    offset(chamfer=true,delta=chamfer) 
-      square([dims.x-chamfer*2,dims.y-chamfer*2],true);
+    union(){
+      offset(chamfer=true,delta=chamfer) 
+        square([dims.x-chamfer*2,dims.y-chamfer*2],true);
+      //contact points
+      for (iy=[-1,1])
+        hull() for (ix=[-1,1])
+          translate([ix*(sprngSlotDims.x-sprngSlotDims.y)/4,iy*(dims.y/2),0]) 
+            circle(d=sprngSlotDims.y);
+    }
     //slots for springs
     for (iy=[-1,1])
       hull() for (ix=[-1,1])
@@ -99,6 +106,7 @@ module coldShoe(height=5){
           circle(d=sprngSlotDims.y);
       
   }
+  
   
   translate([0,0,dims.z]) linear_extrude(height+beamChamfer.z)
     offset(chamfer=true,delta=chamfer) square([12-chamfer*2,beamThck-chamfer*2],true);
