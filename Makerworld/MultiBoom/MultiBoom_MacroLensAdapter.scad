@@ -84,7 +84,7 @@ module coldShoe(height=5){
   chamfer=1.0;
   spcngLat=0.3;
   spcngZ=0.2;
-  dims=[15,18,1.8];
+  dims=[15,20,1.8];
   sprngSlotDims=[dims.x-2,2];
   sprngThck=0.8;
   
