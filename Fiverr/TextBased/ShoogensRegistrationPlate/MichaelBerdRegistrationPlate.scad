@@ -39,6 +39,8 @@ cornerRad=3;
 //Layer thickness
 layerThick=0.2;
 euBandLayers=3;
+keyRingHole=4;
+keyRingDia=8;
 
 /* [Positioning] */
 //Country Part
@@ -49,7 +51,7 @@ starsPosRel=0.71; //[0:0.01:1]
 txtXPosRel=0; //[-1:0.01:1]
 //Text Y-Offset
 txtYPosRel=0; //[-1:0.01:1]
-
+keyRingPos="left"; //["left","right","none"]
 
 /* [Colors] */
 colBack="white";
@@ -136,13 +138,21 @@ else{
  }
  
  module plate(){
-  
+  keyRingOffset= keyRingPos=="left" ? [-keyRingDia/2,plateDims.y/2] : [plateMinDims.x+plateGrow.x+keyRingDia/2,plateDims.y/2];
+  keyRingRot= keyRingPos=="left" ? 90 : -90;
    //plate
   color(colBack) difference(){
     linear_extrude(plateThck) rndRect(plateMinDims+[plateGrow.x,0,0]);
     euBand(true);
   }
- 
+  if (keyRingPos!="none") 
+    color(colBack) translate(keyRingOffset) linear_extrude(plateThck) rotate(keyRingRot) difference(){
+      union(){
+        circle(d=keyRingDia);
+        translate([0,-keyRingDia/4]) square([keyRingDia,keyRingDia/2],true);
+        }
+        circle(d=keyRingHole);
+      }
 }
  
  module plateTxt(){
