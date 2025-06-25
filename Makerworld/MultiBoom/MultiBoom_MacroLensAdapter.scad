@@ -88,6 +88,7 @@ module coldShoe(height=5){
   sprngSlotDims=[dims.x-2,2];
   sprngThck=0.8;
   
+  
   //plate
   linear_extrude(dims.z) difference(){
     union(){
@@ -96,7 +97,7 @@ module coldShoe(height=5){
       //contact points
       for (iy=[-1,1])
         hull() for (ix=[-1,1])
-          translate([ix*(sprngSlotDims.x-sprngSlotDims.y)/4,iy*(dims.y/2),0]) 
+          translate([ix*(sprngSlotDims.x-sprngSlotDims.y)/6,iy*(dims.y/2),0]) 
             circle(d=sprngSlotDims.y);
     }
     //slots for springs
