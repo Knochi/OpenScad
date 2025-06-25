@@ -1,0 +1,44 @@
+{
+    "fileFormatVersion": "1",
+    "parameterSets": {
+        "New set 1": {
+            "$fa": "5",
+            "$fs": "0.01",
+            "bend_distance": "0.70899999999999996",
+            "bend_radius_factor": "0.5",
+            "border_overhang": "0",
+            "connector_length": "0.5",
+            "divider_length": "2.835",
+            "gap": "0.0060000000000000001",
+            "gap_top": "0.031",
+            "height": "3",
+            "line_up_space": "1.575",
+            "lowered_radius1_factor": "0.40000000000000002",
+            "lowered_radius2_factor": "0.080000000000000002",
+            "part": "divider_lowered",
+            "snap_connection_size": "0.039",
+            "width_bottom": "0.19700000000000001",
+            "width_top": "0.19700000000000001"
+        },
+        "New set 2": {
+            "$fa": "5",
+            "$fs": "0.01",
+            "bend_distance": "0.70899999999999996",
+            "bend_radius_factor": "0.5",
+            "border_overhang": "0",
+            "connector_length": "0.5",
+            "divider_length": "2.835",
+            "gap": "0.0060000000000000001",
+            "gap_top": "0.031",
+            "height": "3",
+            "line_up_space": "1.575",
+            "lower_height": "1.5",
+            "lowered_radius1_factor": "0.40000000000000002",
+            "lowered_radius2_factor": "0.080000000000000002",
+            "part": "divider_slope",
+            "snap_connection_size": "0.039",
+            "width_bottom": "0.19700000000000001",
+            "width_top": "0.19700000000000001"
+        }
+    }
+}
