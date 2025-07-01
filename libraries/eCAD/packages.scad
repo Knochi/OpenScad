@@ -762,7 +762,7 @@ module LED_5mm(lightConeAng=15,lightConeHght=50){
     %translate([0,0,ovHght-bdDia/2]) cylinder(d1=0.1,d2=c,h=lightConeHght);
   }
 }
-!LED5050();
+*LED5050();
 module LED5050(pins=6){
   // e.g. WS2812(B)
   dims=[5,5,1.5];

@@ -64,7 +64,7 @@ translate([140,0,0]) slideSwitch();
 translate([180,0,0]) arcadeButton();
 translate([220,0,0]) toggleSwitch();
 
-!DIPSwitch();
+*DIPSwitch();
 module DIPSwitch(digits=6){
   //https://www.lcsc.com/product-detail/DIP-Switches_ROCPU-Switches-THS106J_C2758168.html
   //THS Series J-Hook

@@ -14,8 +14,10 @@ translate([100,60,0]) LCD_16x2();
 translate([100,120,0]) FutabaVFD();
 translate([200,0,0]) Adafruit128x128TFT();
 translate([300,0,0]) AdafruitOLED23();
+translate([300,100,0]) VIM_878_DP();
 translate([500,0,0]) raspBerry7Inch();
 translate([100,180,0]) EA_DOGS164_A();
+
 
 
 
