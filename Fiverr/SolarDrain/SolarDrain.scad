@@ -48,9 +48,10 @@ quality=24; //[24:4:120]
 showBody=true;
 showSolarTop=true;
 showSolarSides=true;
-showSectionCut=true;
+showSectionCut="none"; //["none","Y-Z","X-Z"]
 
 /* [Hidden] */
+debug=false;
 $fn=quality;
 fudge=0.1;
 //Difference between top and bottom square
@@ -64,8 +65,10 @@ slpLen = [(totalHght-bottomThck-edgeRad)/sin(90-slpAnglesCalc.x),(totalHght-bott
 //the offset of the slope due to the edgeRadius
 slpOffset=[sin(90-slpAnglesCalc.x)*edgeRad,cos(90-slpAnglesCalc.x)*edgeRad];
 
-echo("angle:",slpAnglesCalc);
-echo("len:",slpLen);
+if (debug){
+  echo("angle:",slpAnglesCalc);
+  echo("len:",slpLen);
+}
 
 
 
@@ -75,9 +78,17 @@ difference(){
       body();
     if (showSolarTop)
       translate([0,0,totalHght-topSolarDims.z+fudge]) solarModule(topSolarDims,topSolarPCBThck,topSolarCrnrRad);
+    if (showSolarSides){
+      placeOnSlope([0,0],"left") rotate([180,0,0]) translate([0,0,-2]) 
+        solarModule(size=sideSolarDims,rad=sideSolarCrnrRad);
+      placeOnSlope([0,0],"right") rotate([180,0,0]) translate([0,0,-2]) 
+        solarModule(size=sideSolarDims,rad=sideSolarCrnrRad);
+      }
   }
-  if (showSectionCut)
-    translate([bottomSquareDims.x/4+fudge/2,0,totalHght/2]) cube([bottomSquareDims.x/2+fudge,bottomSquareDims.y+fudge,totalHght+5],true);
+  if (showSectionCut=="Y-Z")
+    translate([bottomSquareDims.x/4+fudge/2,0,totalHght/2]) color("darkRed") cube([bottomSquareDims.x/2+fudge,bottomSquareDims.y+fudge,totalHght+5],true);
+  if (showSectionCut=="X-Z")
+    translate([0,bottomSquareDims.y/4+fudge/2,totalHght/2]) color("darkRed") cube([bottomSquareDims.x+fudge,bottomSquareDims.y/2+fudge,totalHght+5],true);
 }
 
 module body(){
@@ -110,10 +121,7 @@ module body(){
       placeOnSlope([dotHoleXPosRel,dotHoleYPosRel]) 
         linear_extrude(minWallThck*2,convexity=4) dotHole();
       //place on sides
-      placeOnSlope([0,0],"left") rotate([180,0,0]) translate([0,0,-2]) 
-        solarModule(size=sideSolarDims,rad=sideSolarCrnrRad);
-      placeOnSlope([0,0],"right") rotate([180,0,0]) translate([0,0,-2]) 
-        solarModule(size=sideSolarDims,rad=sideSolarCrnrRad);
+      
     }
     //cut away inner excess since wall thickness is not calculated properly at the moment
     pyramid(cut=true);
@@ -144,7 +152,6 @@ module pyramid(flatBottom=bottomThck, cut=false){
   pyOffset= cut ? [0,0,-fudge] : [0,0,0];
   
   
-  echo(botDims,bottomSquareDims,eRad,cRad);
   difference(){
     hull(){
       translate([0,0,bottomThck]) 
