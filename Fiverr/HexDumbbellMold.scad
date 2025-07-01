@@ -48,6 +48,7 @@ if (showTopMold)
   color("lightGrey") translate([0,0,dBellHexInDia+moldMinWallThck*2]) rotate([180,0,0]) mold(true);
   
 module mold(topMold=true){
+  stemDia=moldAlignmentHoleDia+moldMinWallThck*2;
   difference(){
     linear_extrude(dBellHexInDia/2+moldMinWallThck,convexity=3){ 
       difference(){
@@ -55,15 +56,19 @@ module mold(topMold=true){
           offset(moldMinWallThck) projection(cut=true) dumbbell();
           //alignment Holes stems
           for (ix=[-1,1],iy=[-1,1]){
-            translate([ix*(dBellOvLngth/2+moldMinWallThck),iy*(dBellHexOutDia/2+moldMinWallThck),0]) 
-              circle(d=moldAlignmentHoleDia+moldMinWallThck*2);
+            rot = (iy <0) ? 45 : 135;
+            translate([ix*(dBellOvLngth/2+moldMinWallThck),iy*(dBellHexOutDia/2+moldMinWallThck),0]){ 
+              circle(d=stemDia);
+              rotate(ix*rot) translate([-stemDia/2,0]) square(stemDia);
+              }
             //add additional holes
             if (moldAddAlignmentHoles)
               translate([ix*(dBellHndlLngth/2-moldMinWallThck-moldAlignmentHoleDia/2),
                          iy*(dBellHndlDia/2+moldMinWallThck+moldAlignmentHoleDia/2),0]) 
-                circle(d=moldAlignmentHoleDia+moldMinWallThck*2);
+                circle(d=stemDia);
           }
         }
+        //mounting holes
         for (ix=[-1,1],iy=[-1,1]){
           translate([ix*(dBellOvLngth/2+moldMinWallThck),iy*(dBellHexOutDia/2+moldMinWallThck),0]) 
             circle(d=moldAlignmentHoleDia);
