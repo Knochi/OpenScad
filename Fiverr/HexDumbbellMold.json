@@ -10,6 +10,21 @@
             "filletRad": "2",
             "showDumbBell": "true",
             "showTopMold": "true"
+        },
+        "New set 1": {
+            "dBellHexInDia": "105",
+            "dBellHexWdth": "125",
+            "dBellHndlDia": "20",
+            "dBellOvLngth": "390",
+            "export": "none",
+            "filletRad": "2",
+            "moldAddAlignmentHoles": "true",
+            "moldAlignmentHoleDia": "8",
+            "moldMinWallThck": "7",
+            "moldPourHoleDia": "20",
+            "showBotMold": "true",
+            "showDumbBell": "true",
+            "showTopMold": "false"
         }
     }
 }
