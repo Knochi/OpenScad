@@ -11,7 +11,7 @@ $fn=50;
 
 translate([0,0,20]) sharkAdapter(50);
 vaccumBagAdapter();
-tube(shrkODia,shrkIDia,20);
+tube(shrkODia,shrkIDia,20.1);
 
 module sharkAdapter(h=60){
   
@@ -69,8 +69,8 @@ module vaccumBagAdapter(anchor=[0,0,-1]){
     //adapter
     translate([0,0,-ovLen/2+threadLen]) 
       difference(){
-        cylinder(d1=threadDia,d2=shrkODia,h=ovLen-threadLen);
-        translate([0,0,0]) cylinder(d1=iDia,d2=shrkIDia,h=ovLen-threadLen);
+        cylinder(d1=20.33,d2=shrkODia,h=ovLen-threadLen);
+        translate([0,0,-fudge/2]) cylinder(d1=iDia,d2=shrkIDia,h=ovLen-threadLen+fudge);
       }
   }  
 }
