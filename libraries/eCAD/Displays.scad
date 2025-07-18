@@ -1213,7 +1213,7 @@ module rndRect(size, rad, drill=0, center=true){
 
 *sevenSegment();
 module sevenSegment(size=[4.22,7.62], width=0.8, tilt=10, dot=true){
-  *translate([-size.x/2-0.6,-size.y/2]) %import("./sources/ACDA03-41SEKWA-F01.svg");
+  translate([-size.x/2-0.6,-size.y/2]) %import("./sources/ACDA03-41SEKWA-F01.svg");
   gap=0.2;
   gapOffset=sqrt(2)*gap/2; //for 45°
   xTiltOffset=tan(tilt)*(size.y-width)/2;
