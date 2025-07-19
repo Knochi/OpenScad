@@ -1065,7 +1065,7 @@ module duraClikRA(pos=2,cut=false){
 
   if (cut) translate([0,ovHght/2,0]){
     rad=0.5;
-    offset(rad){
+    offset(rad) union(){
       square([A+0.8-rad,7-rad],true);
       translate([0,(8.5-rad)/2-(7-rad)/2]) square([4-rad,8.5-rad],true);
     }

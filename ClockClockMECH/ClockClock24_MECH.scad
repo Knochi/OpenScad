@@ -1,13 +1,11 @@
-// VID28-05 double shaft Motor
+ // VID28-05 double shaft Motor
 // information from https://blog.drorgluska.com/2019/03/a-million-times.html
 
 /* [Dimensions] */
 
 minWallThck=1.2;
 minRoofThck=0.6;
-
 brimWidth=50;
-
 
 //distance between the shafts in x and y
 clockDist=100; 
@@ -22,16 +20,30 @@ handTopAng=-90;
 handBotAng=120;
 handIdleAng=-135;
 handShortOffset=4;
+
 //spacing between moving parts
 handSpcng=0.2;
 //spacing between top and bottom hand
 handZDist=1;
+
+mountHolesDia=5.6; //Ruthex M4 short is 5.6 for plastic parts
+
+/* [Sensors] */
+sensorXOffsets=[-20,-35];
+//embedd metal pins to strenghten the field
+sensorMagPins=true;
+sensorMagPinDia=2;
 
 /* [show] */
 showTopHand=true;
 showBotHand=true;
 showMotor=true;
 showPCB=true;
+showLayer0=true;
+showLayer1=true;
+showLayer2=true;
+showLayer3=true;
+export="none";//["none","Layer0","Layer1","Layer2","Layer3"]
 
 /* [options] */
 roundedHands=false;
@@ -104,39 +116,51 @@ echo(handPosTopBot);
 
 layerFrame();
 
-module layerFrame(){
+module layerFrame(layer="all"){
   layerThck=[12,3,3,12];
   layerCol=["RosyBrown","Tan","BurlyWood","Wheat"];
   //layered frame
   
   ovDims=[clockDist*(clockCount.x)+brimWidth*2,clockDist*(clockCount.y)+brimWidth*2];
   
-  //layer 0
-  color(layerCol[0]) translate([0,0,pcbDims.z-layerThck[0]]) linear_extrude(layerThck[0]) difference(){
-    baseShape();
-    translate([-clockDist/2,-clockDist/2]) square(ovDims+[-brimWidth*2,-brimWidth*2]);
-  }
-  
-  color(layerCol[1]) translate([0,0,pcbDims.z]) linear_extrude(layerThck[1]) difference(){
-    baseShape();
-    for(ix=[0:clockCount.x-1],iy=[0:clockCount.y-1])
-      translate([ix*clockDist,iy*clockDist]) offset(0.5) VID28_05(true);
+  //layer 0 Bottom "Frame"
+  if (showLayer0)
+    color(layerCol[0]) translate([0,0,pcbDims.z-layerThck[0]]) linear_extrude(layerThck[0]) 
+      difference(){
+        baseShape();
+        translate([-clockDist/2,-clockDist/2]) square(ovDims+[-brimWidth*2,-brimWidth*2]);
       }
+  
+  //layer 1 PCB Interface
+  if (showLayer1)
+    color(layerCol[1]) translate([0,0,pcbDims.z]) linear_extrude(layerThck[1]) 
+      difference(){
+        baseShape();
+        for(ix=[0:clockCount.x-1],iy=[0:clockCount.y-1])
+          translate([ix*clockDist,iy*clockDist]) offset(0.5) VID28_05(true);
+        for (ix=[0:clockCount.x-1]) translate([ix*clockDist,clockDist]) PCB(true);
+          }
       
-  //layer 1
-  color(layerCol[2]) translate([0,0,pcbDims.z+layerThck[1]]) linear_extrude(layerThck[2]) difference(){
-    baseShape();
-    for(ix=[0:clockCount.x-1],iy=[0:clockCount.y-1])
-      translate([ix*clockDist,iy*clockDist]) circle(d=7);
-    }
-    
-  //layer 2
-  color(layerCol[3]) translate([0,0,pcbDims.z+layerThck[1]+layerThck[2]]) linear_extrude(layerThck[3]) difference(){
-    baseShape();
-    for(ix=[0:clockCount.x-1],iy=[0:clockCount.y-1])
-      translate([ix*clockDist,iy*clockDist]) circle(d=clockDia);
-    }
-    
+  //layer 2 clocks Background
+  if (showLayer2)
+    color(layerCol[2]) translate([0,0,pcbDims.z+layerThck[1]]) linear_extrude(layerThck[2]) 
+      difference(){
+        baseShape();
+        for(ix=[0:clockCount.x-1],iy=[0:clockCount.y-1])
+          translate([ix*clockDist,iy*clockDist]) circle(d=7);
+        for (ix=[0:clockCount.x-1],iy=[0:clockCount.y-1],px=sensorXOffsets)
+          translate([ix*clockDist,iy*clockDist]+[px,0]) circle(d=sensorMagPinDia);
+        }
+      
+  //layer 3 clocks frames
+  if (showLayer3)
+    color(layerCol[3]) translate([0,0,pcbDims.z+layerThck[1]+layerThck[2]]) linear_extrude(layerThck[3]) 
+      difference(){
+        baseShape();
+        for(ix=[0:clockCount.x-1],iy=[0:clockCount.y-1])
+          translate([ix*clockDist,iy*clockDist]) circle(d=clockDia);
+        }
+      
   module baseShape(){
     translate([-clockDist/2-brimWidth+cornerRad,-clockDist/2-brimWidth+cornerRad])
       offset(cornerRad) square(ovDims+[-cornerRad*2,-cornerRad*2]);
@@ -145,10 +169,46 @@ module layerFrame(){
 
 
 
-if (showPCB)
-  color("darkGreen")
-  for (ix=[0:clockCount.x-1])
-    translate([ix*clockDist,clockDist,1.6]) rotate([0,180,0]) import("ClockClock24.stl");
+if (showPCB) color("darkGreen") for (ix=[0:clockCount.x-1]) translate([ix*clockDist,clockDist,1.6]) PCB();
+
+*PCB();
+module PCB(cut=false){
+  sensorDia=5;
+  D1MiniPos=[1,33];
+  swtchPos=[-32.0,-60.9];
+  pwrPos=[-34.5,60];
+  i2cPos=[[-34.54,75.35],[14.34,75.35]];
+  holesPos=[[-30,15],[50,-50]];
+  if (cut){
+    //sensors
+    for (px=sensorXOffsets,py=[-clockDist,0,clockDist])
+      translate([px,py]) circle(d=sensorDia);
+    //D1 Mini
+    for (iy=[-1,1])
+      translate([D1MiniPos.x,D1MiniPos.y+iy*22.86/2]) 
+        hull() for (ix=[-1,1]) translate([ix*17.78/2,0]) circle(d=3);
+    //DIP Switch
+    for (ix=[-1,1])
+      translate([swtchPos.x+ix*7.62/2,swtchPos.y]) 
+        hull() for (iy=[-1,1]) translate([0,iy*7.62/2]) circle(d=2);
+    //Power Con
+    for (iy=[-1,1])
+      translate([pwrPos.x,pwrPos.y+iy*5.08/2]) 
+        circle(d=3);
+    //I2C Con
+    for (pos=i2cPos)
+      translate([pos.x,pos.y]) 
+        hull() for (iy=[-1,1])
+          translate([0,iy*7.62/2])
+            circle(d=3);
+    //Mounting holes
+    for (px=holesPos.x,py=holesPos.y)
+      translate([px,py]) circle(d=mountHolesDia);
+  }
+  else
+    rotate([0,180,0]) import("ClockClock24.stl");
+
+}
 
 //clocks
 for(ix=[0:clockCount.x-1],iy=[0:clockCount.y-1]){
