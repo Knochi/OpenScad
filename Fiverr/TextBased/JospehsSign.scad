@@ -20,6 +20,7 @@ txtOutline=+6;
 
 txtString="JOSEPH";
 txtSize=400;
+txtSpacing=1.0; //[0.8:0.01:1.2]
 txtFont="Anton"; //font
 txtStyle="Regular"; //["regular","bold","italic"]
 
@@ -115,6 +116,7 @@ module txtLine() {
             font = str(txtFont, ":style=", txtStyle),
             size = txtNewSize,
             valign = "bottom",
-            halign = "left"
+            halign = "left",
+            spacing = txtSpacing
         );
 }

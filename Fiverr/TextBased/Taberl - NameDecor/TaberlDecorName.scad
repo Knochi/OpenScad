@@ -1,38 +1,49 @@
-/* Name Pendant with decor for Fiverr User Taberl, order #FO527F2A237C7
+/* Name Pendant with decor for Fiverr User Taberl, order #FO527F2A237C7 */
 
 use <fonts/Pacifico-Regular.ttf>
 
-/* [1. Setup Decor] */
-//File Name
+/* [Setup Decor Anchor] */
+//1. File Name
 decorFileName="default.svg"; //file
-//Scale the Decor
-decorScale=1; //[0:0.1:2]
-//Doubleclick on the anchor and enter pos here
-decorAnchor=[36.3,16.6];
-//Shift in X position
-decorXPosRel=0.98; //[0.8:0.005:1] 
-//Shift in Y position
-decorYPosRel=0.17; //[0:0.01:1]
-//set the Anchor of the decor to the Origin and uncheck
+//2.  Set to Zero, render (F5), doubleclick on the anchor and enter viewport translate, from the bottom status bar.
+decorAnchor=[72.3,33.57];
+//3. uncheck when done
 setDecorAnchor=false;
+
+/* [Tune Decor (ignored when "setDecor" is checked)] */
+//Scale the Decor 
+decorScale=1.0; //[0:0.1:2]
+//Shift in X position
+decorXPosRel=0.990; //[0.8:0.005:1] 
+//Shift in Y position
+decorYPosRel=0.220; //[0:0.01:1]
+//rotate around anchor
+decorRotate=0; //[-10:0.1:10]
 
 /* [Dimensions] */
 //thickness of the text
 txtThck=3;
-fillThck=2;
+//thickness of the text infill
+fillThck=3;
 //width of the outline of the text
-outlineWdth=0.8;
+outlineWdth=0.1;
 //shift the outline outwards (+) or inwards (-)
-outlineOffset=0.2;
+outlineOffset=0.0;
+//enter desired dimensions of the text
+txtTargetDims=[75,30];
+//enable text scaling in X
+enTxtScaleX=true;
+//enable text scaling in Y
+enTxtScaleY=true;
 
 /* [Text] */
-txtLine1="Alexander";
-txtSize1=8;
+//basic, unscaled text size
+txtSize1=10;
+txtLine1="Alex";
 txtFont="Pacifico"; //font
-txtStyle="Regular"; //["regular","bold","italic"]
-txtFillColor="darkRed"; //color
+txtStyle="regular"; //["regular","bold","italic"]
+txtFillColor="Orange"; //color
 txtOutlineColor="orange"; //color
-
 
 /* [show] */
 quality=50; //[20:4:100]
@@ -40,17 +51,26 @@ showTextOutline=true;
 showTextFill=true;
 showDecor=true;
 
-
 /* [Hidden] */
 $fn=quality;
 fudge=0.1;
+
 tm1 = textmetrics(txtLine1, size=txtSize1, font=txtFont);
-txtSize= tm1.size + [outlineWdth+outlineOffset+tm1.position.x,outlineWdth+outlineOffset+tm1.position.y];
+txtDimsFromSize= tm1.size + [outlineWdth+outlineOffset+tm1.position.x,outlineWdth+outlineOffset+tm1.position.y];
+
+txtScaleXFac=enTxtScaleX ? txtTargetDims.x/txtDimsFromSize.x : 1;
+txtScaleYFac=enTxtScaleY ? txtTargetDims.y/txtDimsFromSize.y : 1;
+
+txtDims=[txtDimsFromSize.x*txtScaleXFac,txtDimsFromSize.y*txtScaleYFac];
+
+echo([txtScaleXFac,txtScaleYFac]);
+
 echo(tm1);
-decorPos= setDecorAnchor ? -decorAnchor : 
-  [txtSize.x*decorXPosRel-decorAnchor.x,txtSize.y*decorYPosRel-decorAnchor.y,0];
-
-
+decorPos= setDecorAnchor ? -[decorAnchor.x*decorScale,decorAnchor.y*decorScale] : 
+  [txtDims.x*decorXPosRel-decorAnchor.x,txtDims.y*decorYPosRel-decorAnchor.y,0];
+  
+decorScl = setDecorAnchor ? 1 : decorScale;
+decorRot = setDecorAnchor ? 0 : decorRotate;
 
 if (showTextOutline && !setDecorAnchor)  
 //outlineText
@@ -67,9 +87,13 @@ if (showDecor)
     
 module decor(){
   //translate([tm1.size.x*decorXPosRel,tm1.size.y*decorYPosRel,0]) 
+  
   translate(decorPos)
-    color(txtOutlineColor) linear_extrude(txtThck) 
-      scale(decorScale) import(decorFileName);
+    translate(decorAnchor)
+      rotate(decorRot)
+        translate(-decorAnchor)
+          color(txtOutlineColor) linear_extrude(txtThck) 
+            scale(decorScl) import(decorFileName);
 }
   
 *outlineTxt();
@@ -84,19 +108,11 @@ module outlineTxt(){
 }  
 
 module txtLine(txt=txtLine1, size=txtSize1) {
-        text(
+   scale([txtScaleXFac,txtScaleYFac]) text(
             text = txt,
             font = str(txtFont, ":style=", txtStyle),
             size = size,
             valign = "baseline",
             halign = "left"
         );
-}
-
-module eyeLet(){
-  translate([eyeletXOffset,eyeletYOffset,0]) 
-    linear_extrude(backThck) difference(){
-      circle(d=holeDia+2*annularWdth);
-      circle(d=holeDia);
-    }
 }

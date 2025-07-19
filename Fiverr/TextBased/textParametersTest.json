@@ -1,0 +1,40 @@
+{
+    "fileFormatVersion": "1",
+    "parameterSets": {
+        "New set 1": {
+            "txtDir": "ltr",
+            "txtFont": "Noto Sans",
+            "txtLang": "en",
+            "txtScript": "latin",
+            "txtSize": "10",
+            "txtString": "Test1234"
+        },
+        "New set 2": {
+            "txtDir": "ltr",
+            "txtFont": "Noto Sans",
+            "txtLang": "ar",
+            "txtScript": "latin",
+            "txtSize": "10",
+            "txtString": "Test1234",
+            "txtStyle": "italic"
+        },
+        "New set 3": {
+            "txtDir": "ltr",
+            "txtFont": "Noto Sans",
+            "txtLang": "en",
+            "txtScript": "latin",
+            "txtSize": "10",
+            "txtString": "Test1234",
+            "txtStyle": "bold"
+        },
+        "New set 4": {
+            "txtDir": "ltr",
+            "txtFont": "Noto Sans",
+            "txtLang": "en",
+            "txtScript": "latin",
+            "txtSize": "10",
+            "txtString": "Test1234",
+            "txtStyle": "italic"
+        }
+    }
+}

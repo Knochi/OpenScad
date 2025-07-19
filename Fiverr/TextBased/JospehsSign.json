@@ -170,6 +170,31 @@
             "txtStyle": "Regular",
             "wallThck": "2",
             "zSpcng": "0.10000000000000001"
+        },
+        "New set 9": {
+            "botColor": "#EEEEEE",
+            "btmThck": "3",
+            "export": "none",
+            "latSpcng": "0.29999999999999999",
+            "lipWdth": "2",
+            "quality": "50",
+            "selectLetter": "0",
+            "shellColor": "#444444",
+            "showBottom": "true",
+            "showSectionCut": "false",
+            "showShell": "true",
+            "showTop": "true",
+            "topColor": "#FFFFFF88",
+            "topThck": "3",
+            "totalHeight": "38",
+            "txtFont": "Anton",
+            "txtOutline": "6",
+            "txtSize": "600",
+            "txtSpacing": "1",
+            "txtString": "JOSEPH",
+            "txtStyle": "Regular",
+            "wallThck": "2",
+            "zSpcng": "0.10000000000000001"
         }
     }
 }
