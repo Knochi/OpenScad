@@ -43,7 +43,7 @@ showLayer0=true;
 showLayer1=true;
 showLayer2=true;
 showLayer3=true;
-export="none";//["none","Layer0","Layer1","Layer2","Layer3"]
+export="none";//["none","Layer0","Layer1","Layer2","Layer3","topHand":"Top Hand","botHand":"Bottom hand"]
 
 /* [options] */
 roundedHands=false;
@@ -57,11 +57,11 @@ pcbDims=[0,0,1.6];
 topHandLngth=clockDia/2-clock2TopHandSpcng;
 botHandLngth=clockDia/2-clock2BotHandSpcng;
 
-topShaftDia=1.5;
+topShaftDia=1.6;
 topShaftLngth=6.2;
 topShaftZOffset=17.4;
 
-botShaftDia=4;
+botShaftDia=4.1;
 botShaftLngth=4.8;
 botShaftZOffset=11.2;
 
@@ -114,7 +114,34 @@ echo(handPosTopBot);
 ]
 */
 
+if (export=="topHand")
+  !topHand();
+if (export=="botHand")
+  !bottomHand();
+    
 layerFrame();
+if (showPCB) color("darkGreen") for (ix=[0:clockCount.x-1]) translate([ix*clockDist,clockDist,1.6]) PCB();
+
+clocks();
+
+module clocks(){
+  for(ix=[0:clockCount.x-1],iy=[0:clockCount.y-1]){
+    translate([ix*clockDist,iy*clockDist]){
+      //motors
+      if (showMotor)
+        VID28_05();
+      topAngle= handPosTopBot[iy][ix][0] != undef ? time2Deg(handPosTopBot[iy][ix][0]) : handTopAng;
+      botAngle= handPosTopBot[iy][ix][1] != undef ? time2Deg(handPosTopBot[iy][ix][1]) : handBotAng;
+
+      //hands
+      if (showTopHand)
+        color("white") translate([0,0,topShaftZOffset]) rotate(topAngle) topHand();
+      if (showBotHand)
+        color("white") translate([0,0,botShaftZOffset]) rotate(botAngle) bottomHand();
+      
+    }
+    }
+}
 
 module layerFrame(layer="all"){
   layerThck=[12,3,3,12];
@@ -169,7 +196,7 @@ module layerFrame(layer="all"){
 
 
 
-if (showPCB) color("darkGreen") for (ix=[0:clockCount.x-1]) translate([ix*clockDist,clockDist,1.6]) PCB();
+
 
 *PCB();
 module PCB(cut=false){
@@ -210,24 +237,7 @@ module PCB(cut=false){
 
 }
 
-//clocks
-for(ix=[0:clockCount.x-1],iy=[0:clockCount.y-1]){
-  
-  translate([ix*clockDist,iy*clockDist]){
-    //motors
-    if (showMotor)
-      VID28_05();
-    topAngle= handPosTopBot[iy][ix][0] != undef ? time2Deg(handPosTopBot[iy][ix][0]) : handTopAng;
-    botAngle= handPosTopBot[iy][ix][1] != undef ? time2Deg(handPosTopBot[iy][ix][1]) : handBotAng;
 
-    //hands
-    if (showTopHand)
-      color("white") translate([0,0,topShaftZOffset]) rotate(topAngle) topHand();
-    if (showBotHand)
-      color("white") translate([0,0,botShaftZOffset]) rotate(botAngle) bottomHand();
-    
-  }
-}
 
 
 *topHand();
