@@ -1,11 +1,13 @@
 /* customizable PCB support 
    remix of the AmpRipper support from DDD at https://www.thingiverse.com/thing:6625456
 */
-*translate([16-55/2,2.5+38.5/2,0]) import("ampripper_support.stl");
 
 /* [Dimensions] */
 pcbHoleSpcng=[49,33.6];
-blockDims=[3,5,4]; //small support blocks from base to top
+//small support blocks from base to top
+blockDims=[3,5,4]; 
+//show the Original Design as a Ghost
+showOriginal=false;
 
 /* [Beams] */
 beamWdth=6;
@@ -51,6 +53,9 @@ echo(cntrSnkDpth);
 
 $fn=50;
 
+if (showOriginal)
+  %translate([16-55/2,2.5+38.5/2,0]) import("ampripper_support.stl");
+  
 support();
 
 module support(){
