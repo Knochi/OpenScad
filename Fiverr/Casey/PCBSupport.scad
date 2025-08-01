@@ -32,12 +32,12 @@ mntXBeamSpcng=28;
 mntHoleDia=3.5;
 
 /* [Countersink Tool]*/
-//Countersunks max. Dia will be beamWdth
 enableCounterSunks=true;
 //the angle of the countersink
 counterSunkAngle=90;
 //how deep to do the countersunks
 counterSinkDepth=3.5;
+counterSinkHeadDia=6;
 
 
 /* [Hidden] */
@@ -48,7 +48,7 @@ xBeamsLen=max(pcbHoleSpcng.x,mntXBeamSpcng+beamWdth);
 
 //countersink dimensions
 cntrSnkDpth=beamHght-counterSinkDepth;
-cntrSnkHght=(beamWdth/2)/tan(counterSunkAngle/2);
+cntrSnkHght=(counterSinkHeadDia/2)/tan(counterSunkAngle/2);
 echo(cntrSnkDpth);
 
 $fn=50;
@@ -114,10 +114,11 @@ module snap(){
   
 }
 
+*counterSink();
 module counterSink(){
-  ovHght=cntrSnkDpth+beamHght*3;
-  translate([0,0,cntrSnkHght-0.01]) cylinder(d=beamWdth,h=ovHght-cntrSnkHght+fudge);
-  cylinder(d1=0,d2=beamWdth,h=cntrSnkHght);
+  ovHght=beamHght-cntrSnkDpth;
+  translate([0,0,cntrSnkHght-0.01]) cylinder(d=counterSinkHeadDia,h=ovHght-cntrSnkHght+fudge);
+  cylinder(d1=0,d2=counterSinkHeadDia,h=cntrSnkHght);
   
 }
 
