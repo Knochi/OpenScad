@@ -36,6 +36,48 @@
             "snapSlotDepthRel": "0.90000000000000002",
             "snapSlotWdth": "1",
             "xBeamSpcng": "19"
+        },
+        "Neue Parameter Liste1": {
+            "beamHght": "2",
+            "beamWdth": "6",
+            "blockDims": "[3, 5, 4]",
+            "counterSinkDepth": "0",
+            "counterSinkHeadDia": "6",
+            "counterSunkAngle": "90",
+            "enableCounterSunks": "true",
+            "enableMntSideBeams": "true",
+            "enableMntXBeams": "true",
+            "mntHoleDia": "3.5",
+            "mntSideBeamSpcng": "47",
+            "mntXBeamSpcng": "28",
+            "pcbHoleSpcng": "[49, 33.6]",
+            "snapHeadDims": "[3, 4, 2]",
+            "snapPinDia": "2.8999999999999999",
+            "snapPinHght": "3",
+            "snapSlotDepthRel": "0.90000000000000002",
+            "snapSlotWdth": "1",
+            "xBeamSpcng": "19"
+        },
+        "Neue Parameter Liste2": {
+            "beamHght": "2",
+            "beamWdth": "8",
+            "blockDims": "[3, 5, 4]",
+            "counterSinkDepth": "3.5",
+            "counterSinkHeadDia": "6",
+            "counterSunkAngle": "90",
+            "enableCounterSunks": "true",
+            "enableMntSideBeams": "true",
+            "enableMntXBeams": "true",
+            "mntHoleDia": "3.5",
+            "mntSideBeamSpcng": "47",
+            "mntXBeamSpcng": "28",
+            "pcbHoleSpcng": "[49, 33.6]",
+            "snapHeadDims": "[3, 4, 2]",
+            "snapPinDia": "2.8999999999999999",
+            "snapPinHght": "3",
+            "snapSlotDepthRel": "0.90000000000000002",
+            "snapSlotWdth": "1",
+            "xBeamSpcng": "19"
         }
     }
 }
