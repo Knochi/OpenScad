@@ -3,6 +3,7 @@
 /* [General] */
 minWallThck=2;
 cornerRad=3;
+layerThck=0.2; //printing layer thickness
 
 /* [Plate] */
 pltThck=5.1;
@@ -59,7 +60,7 @@ module testPlate(){
 
 
 
-*switch();
+*switch("center",true);
 module switch(pos="left", cut=false){
 
   poly=[[-swtchOvWdth/2,0],[-swtchHght/2,swtchThck/2],[swtchHght/2,swtchThck/2],
@@ -70,6 +71,8 @@ module switch(pos="left", cut=false){
         
   if (cut){
     rotate([90,0,90]) linear_extrude(swtchCompLen,center=true) offset(swtch2PltSpcng) polygon(poly);
+    translate([0,0,-swtchThck/4-swtch2PltSpcng]) 
+      cube([swtchCompLen,swtchHght+swtch2PltSpcng*2+0.4*2,swtchThck/2],true);
     spring(cut=true);
     //knob opening
     hull() for (ix=[-1,1]) 
