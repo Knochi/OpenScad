@@ -1,0 +1,49 @@
+{
+    "fileFormatVersion": "1",
+    "parameterSets": {
+        "New set 1": {
+            "annularWdth": "2",
+            "backColor": "#660000",
+            "backContour": "2.5",
+            "backThck": "2",
+            "eyeletXOffset": "-4",
+            "eyeletYOffset": "-4",
+            "holeDia": "3",
+            "outlineOffset": "0.20000000000000001",
+            "outlineWdth": "0.80000000000000004",
+            "quality": "50",
+            "showBack": "true",
+            "showEyeLet": "false",
+            "showTextFill": "false",
+            "showTextOutline": "true",
+            "txtFillColor": "#000066",
+            "txtOutlineColor": "#006600",
+            "txtStyle": "Regular"
+        },
+        "New set 2": {
+            "annularWdth": "2",
+            "backColor": "#660000",
+            "backContour": "3.1000000000000001",
+            "backThck": "2",
+            "eyeletXOffset": "-4",
+            "eyeletYOffset": "0",
+            "holeDia": "3",
+            "outlineOffset": "0.20000000000000001",
+            "outlineWdth": "0.80000000000000004",
+            "quality": "50",
+            "showBack": "true",
+            "showEyeLet": "true",
+            "showTextFill": "true",
+            "showTextOutline": "true",
+            "txtDir": "ltr",
+            "txtFillColor": "#000066",
+            "txtFont": "Gill Sans Ultra Bold",
+            "txtLang": "en",
+            "txtLine": "Faisal",
+            "txtOutlineColor": "#006600",
+            "txtScript": "latin",
+            "txtSpacing": "1",
+            "txtStyle": "Regular"
+        }
+    }
+}
