@@ -10,13 +10,15 @@ use <gill-sans-ultra-bold.ttf>
 
 /* [Dimensions] */
 //thickness of the text
-txtThckMin=3;
-txtThckMax=4;
+txtThckOdd=3;
+txtThckEven=4;
 //width of the outline of the text
 outlineWdth=0.8;
 //shift the outline outwards (+) or inwards (-)
 outlineOffset=0.2;
- //thickness of the backplate set to "0" for none
+//thickness of the outline relative to text thickness
+outlineThckRel=0;
+//thickness of the backplate set to "0" for none
 backThck=2;
 //contour Width of the backplate
 backContour=3.1;
@@ -28,7 +30,7 @@ eyeletXOffset=-4;
 eyeletYOffset=0;
 
 /* [Text] */
-txtLine="AVAVAV";
+txtLine="AVAVAVAV";
 txtSize=11;
 txtSpacing=1; //[0.8:0.05:1.2]
 txtFont="Gill Sans Ultra Bold"; //["Gill Sans Ultra Bold","Noto Sans"]
@@ -56,10 +58,10 @@ $fn=quality;
 fudge=0.1;
 
 tm1 = textmetrics(txtLine, size=txtSize, font=txtFont);
-//echo(tm1);
+echo(tm1);
 
 
-txtThck=txtThckMin;
+txtThck=txtThckOdd;
 
 //eyeLet
 if (showEyeLet)
@@ -83,15 +85,12 @@ if (showTextFill)
   
 *outlineTxt();
 module outlineTxt(){
- 
   outOffset=outlineWdth+outlineOffset;
-  
   difference(){
     offset(outOffset) txtLine();
     offset(outlineOffset) txtLine();
     }
 }  
-
 
 module txtLine(txt=txtLine, size=txtSize) {
         text(
@@ -102,7 +101,6 @@ module txtLine(txt=txtLine, size=txtSize) {
             halign = "left",
             spacing = txtSpacing,
             direction = txtDir,
-            
         );
 }
 
@@ -117,29 +115,19 @@ module eyeLet(){
 
 !charByChar();
 module charByChar(string=txtLine,sum=0,iter=0){
-
-  cm=textmetrics(string[iter],size=txtSize, font=txtFont);
-  
-  echo(string[iter],cm.size.x);
-  
-  if (iter<len(string)-1){
-    translate([sum,0,0]) txtLine(string[iter]);
-    //metrics of this and next char together
-    tm2=textmetrics(str(string[iter],string[iter+1]),size=txtSize, font=txtFont);
-    //metrics of next char alone
-    cmNxt=textmetrics(string[iter+1],size=txtSize, font=txtFont);
-    spcng=tm2.size.x
-          //-(cm.advance.x-cm.size.x)
-          //-(cmNxt.advance.x-cmNxt.size.x)
-          //-cmNxt.position.x
-          -cm.size.x-cmNxt.size.x;
-    charByChar(string,sum+cm.size.x+spcng,iter+1);
-    }
-  else{
-    tm=textmetrics(string,size=txtSize, font=txtFont);
-    echo(tm);
-    echo(sum+cm.size.x);
-    translate([0,tm.size.y,0]) txtLine();
-    translate([sum,0,0]) txtLine(string[iter]);
-    }
+  charOffsets=getCharSpacings(string,txtSize,txtFont,txtSpacing);
+  echo(charOffsets);
+  translate([0,tm1.size.y*1.2,0]) txtLine();
+  for (i=[0:len(txtLine)-2])
+    translate([charOffsets[i],0,0]) txtLine(string[i]);
 }
+
+*echo(getCharSpacings("Test",11));
+function getCharSpacings(string,size,font="",spacing=1,spcngs=[],iter=0)=let(
+  tmString=textmetrics(text=string,size=size,font=font,spacing=spacing),
+  tmTwoChars=textmetrics(str(string[iter],string[iter+1]),size=size,font=font,spacing=spacing),
+  tmThisChar=textmetrics(string[iter],size=size,font=font,spacing=spacing),
+  tmNxtChar=textmetrics(string[iter+1],size=size,font=font,spacing=spacing),
+  tmPrvChar= iter ? textmetrics(string[iter-1],size=size,font=font,spacing=spacing) : 0,
+  chrSpcng= (iter==0) ? tmString.position.x : tmTwoChars.size.x-tmThisChar.size.x-tmNxtChar.size.x
+) iter<(len(string)-1) ? getCharSpacings(string,size,font,spacing,concat(spcngs,chrSpcng),iter=iter+1) : spcngs;
