@@ -64,8 +64,47 @@ if (export == "C32")
 else if (export =="3D2H306KLMB0420400200")
   !boxCapacitor(size=[42.0,20.0,40.0], leads=[1.2,20], pitch=[37.5,10.2]);
 else
-  echo("Nothing to render!")
+  echo("Nothing to render!");
 
+SMDJhook();
+module SMDJhook(){
+//https://www.lcsc.com/datasheet/C42393559.pdf
+  
+  spcng=0.15;
+  bdyDims=[6,5.55,2.38-spcng];
+  leadThck=0.15;
+  leadRad=0.2;//bending radius
+  leadAng=10;
+  leadLengths=[0.73,0.13];
+  
+  //body
+  color(blackBodyCol)
+    translate([0,0,bdyDims.z/2+spcng]){
+      pillow(size=[bdyDims.x,bdyDims.y,bdyDims.z/2]);
+      mirror([0,0,1]) pillow(size=[bdyDims.x,bdyDims.y,bdyDims.z/2]);
+    }
+  //leads
+  for (m=[0,1])
+  mirror([m,0,0])
+    translate([0,0,spcng+bdyDims.z/2-leadThck/2]) color(metalGreyPinCol){
+      translate([bdyDims.x/4,0,0]) cube([bdyDims.x/2,2.5,leadThck],true);
+      translate([bdyDims.x/2,0,-leadRad]) 
+        rotate([90,-90,0]) 
+          rotate_extrude(angle=-90+leadAng) translate([leadRad,0]) square([leadThck,2.5],true);
+      translate([bdyDims.x/2,0,-leadRad]) 
+        rotate([0,90-leadAng,0]) 
+          translate([leadLengths[0]/2,0,leadRad]){
+            cube([leadLengths[0],2.5,leadThck],true);
+            translate([leadLengths[0]/2,0,-leadRad]){
+              rotate([90,-90,0])
+                rotate_extrude(angle=-90-leadAng) translate([leadRad,0]) square([leadThck,2.5],true);
+              rotate([0,90+leadAng,0]) translate([leadLengths[1]/2,0,leadRad]) cube([leadLengths[1],2.5,leadThck],true);
+            }
+          }
+    }
+}  
+  
+  
 *capacitorTHT();
 module capacitorTHT(D=16,L=30,axial=true){
   showMarking=true;
@@ -121,7 +160,6 @@ module capacitorTHT(D=16,L=30,axial=true){
     }
   }
 }
-
 *boxCapacitor();
 module boxCapacitor(size=[57,35,50], leads=[1.2,5.5], pitch=[52.5,20.3], center=false){
   //e.g. https://www.alfatec.de/fileadmin/Webdata/Datenblaetter/Faratronic/C3D_Specification_alfatec.pdf
@@ -152,7 +190,7 @@ module boxCapacitor(size=[57,35,50], leads=[1.2,5.5], pitch=[52.5,20.3], center=
   }
 
 }
-
+*SMDpassive();
 module SMDpassive(size="0805", thick=0, label=""){
   // SMD chip resistors, capacitors and other passives by EIA standard
   // e.g. 0805 means 0.08" by 0.05"
@@ -191,7 +229,7 @@ module SMDpassive(size="0805", thick=0, label=""){
 
 
 // -- helper modules --
-
+*rndRectInt();
 module rndRectInt(size=[5,5,2],rad=1,center=false, method=""){
   
   cntrOffset= (center) ? [0,0,0] : [size.x/2,size.y/2,size.z/2];
@@ -201,4 +239,17 @@ module rndRectInt(size=[5,5,2],rad=1,center=false, method=""){
   else
     translate(cntrOffset) hull() for (ix=[-1,1],iy=[-1,1])
       translate([ix*(size.x/2-rad),iy*(size.y/2-rad),0]) cylinder(r=rad,h=size.z,center=true);
+}
+
+*pillow();
+module pillow(size=[6,5.55,1.2],rad=0.2,angle=5){
+  //half pillow
+  flankOffset=tan(angle)*(size.z-rad);
+  echo(flankOffset);
+  hull(){
+    linear_extrude(0.1,scale=0) for (ix=[-1,1],iy=[-1,1])
+      translate([ix*(size.x/2-rad),iy*(size.y/2-rad),0]) circle(rad);
+    for (ix=[-1,1],iy=[-1,1])
+      translate([ix*(size.x/2-rad-flankOffset),iy*(size.y/2-rad-flankOffset),size.z-rad]) sphere(rad);
+  }
 }
