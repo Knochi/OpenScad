@@ -9,9 +9,9 @@ brimWidth=50;
 
 //distance between the shafts in x and y
 clockDist=100; 
-clockDia=96; 
-clock2TopHandSpcng=1;
-clock2BotHandSpcng=4;
+clockDia=94;          //from screenshot
+clock2TopHandSpcng=2; //from screenshot
+clock2BotHandSpcng=8; //from screenshot
 clockCount=[8,3];
 
 handWidth=10;
@@ -19,7 +19,6 @@ handThck=2;
 handTopAng=-90;
 handBotAng=120;
 handIdleAng=-135;
-handShortOffset=4;
 
 //spacing between moving parts
 handSpcng=0.2;

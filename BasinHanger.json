@@ -1,0 +1,25 @@
+{
+    "fileFormatVersion": "1",
+    "parameterSets": {
+        "Pump": {
+            "floorThck": "3",
+            "hoseOuterDia": "8",
+            "minWallThck": "2",
+            "potBrimHght": "5",
+            "potHght": "80",
+            "potPos": "[-158, 0, -80]",
+            "potTopWdth": "70",
+            "potUpperWdth": "63",
+            "pumpPos": "[-150, 0, -80]",
+            "showBasin": "true",
+            "showPump": "true",
+            "spcng": "0.5",
+            "sphereRad": "250",
+            "strutThck": "5",
+            "variant": "waterfall",
+            "wallThck": "1",
+            "wfDims": "[40, 80, 7]",
+            "wfPos": "[-150, 0, -60]"
+        }
+    }
+}
