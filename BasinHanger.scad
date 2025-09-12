@@ -66,8 +66,10 @@ module potHolder(){
 module pumpHolder(){
   holderArm(pumpPos);
   mirror([0,1,0]) holderArm(pumpPos);
+  translate(pumpPos+[0,0,-strutThck/2]) cube([pumpDims.y,wfDims.y,strutThck],true);
   if (showPump)
     translate(pumpPos) rotate(90) pump();
+    
 }
 
 //half sphere basin
@@ -83,13 +85,14 @@ module basin(radius=sphereRad, wallThck=wallThck, angle=180){
     }
     translate([radius,0]) circle(d=wallThck);
   }
+  
 }
 
 
 //arm
 module holderArm(position=potPos){
-  yOffset= variant=="pot" ? -potUpperWdth/2-strutThck : wfDims.y/2-strutThck/2;
-  armLen= variant=="pot" ? sphereRad+position.x+strutThck : sphereRad+strutThck+wfPos.x+pumpDims.y/2;
+  yOffset= variant=="pot" ? -potUpperWdth/2-strutThck : wfDims.y/2-strutThck;
+  armLen= variant=="pot" ? sphereRad+position.x+strutThck : sphereRad+strutThck+pumpPos.x+pumpDims.y/2;
   
   //connect to holder ring
   difference(){
@@ -104,7 +107,7 @@ module holderArm(position=potPos){
         }
     }
     intersection(){
-      translate([-sphereRad,-yOffset-strutThck-fudge/2,position.z]) cube([armLen,strutThck+fudge,abs(position.z)+strutThck+fudge]);
+      translate([-sphereRad+(armLen+strutThck)/2,0,position.z/2+strutThck/2]) cube([armLen-strutThck,abs(yOffset*2)+strutThck*2+fudge,abs(position.z)+strutThck+fudge],true);
       sphere(sphereRad-spcng-strutThck);
     }
     basin(sphereRad,wallThck+2*spcng,360);
@@ -163,13 +166,14 @@ module pump(){
   
    
    //body centered at outlet base
-  translate([-outletPos.x,bdyDims.y/2-outletPos.y,-bdyDims.z/2]) rotate([90,0,90]) linear_extrude(bdyDims.x) intersection(){
-    translate([rad-bdyDims.y/2,0]) circle(rad);
-    translate([-rad+bdyDims.y/2,0]) circle(rad);
-    square([bdyDims.y,bdyDims.z],true);
-  }
+  translate([-outletPos.x,bdyDims.y/2-outletPos.y,bdyDims.z/2]) 
+    rotate([90,0,90]) linear_extrude(bdyDims.x) intersection(){
+      translate([rad-bdyDims.y/2,0]) circle(rad);
+      translate([-rad+bdyDims.y/2,0]) circle(rad);
+      square([bdyDims.y,bdyDims.z],true);
+    }
   //outlet
-  cylinder(d=8.5,h=13);
+  translate([0,0,bdyDims.z]) cylinder(d=8.5,h=13);
     
 }
   
