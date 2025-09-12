@@ -1,6 +1,8 @@
  // VID28-05 double shaft Motor
 // information from https://blog.drorgluska.com/2019/03/a-million-times.html
 
+//Speedy 360 Working area (W x D)	813 x 508 mm
+
 /* [Dimensions] */
 
 minWallThck=1.2;
@@ -25,7 +27,9 @@ handSpcng=0.2;
 //spacing between top and bottom hand
 handZDist=1;
 
-mountHolesDia=5.6; //Ruthex M4 short is 5.6 for plastic parts
+//Diameter of the stem to hold threated insert
+mountStemDia=8; 
+mountInsertDia=5.6; //Ruthex M4 short is 5.6 for plastic parts
 
 /* [Sensors] */
 sensorXOffsets=[-20,-35];
@@ -42,11 +46,22 @@ showLayer0=true;
 showLayer1=true;
 showLayer2=true;
 showLayer3=true;
+//Front Layer
+showLayer4=true;
+
 export="none";//["none","Layer0","Layer1","Layer2","Layer3","topHand":"Top Hand","botHand":"Bottom hand"]
 
 /* [options] */
 roundedHands=false;
 roundedCorners=false;
+//metal pins for hall sensors
+metalPins=false;
+//split the design in the middle
+splitDesign=true; 
+//show which halves
+splitShow="all"; //["all","left","center","right"]
+//compensate kerf
+kerf=0.1;
 
 /* [Hidden] */
 fudge=0.1;
@@ -143,8 +158,9 @@ module clocks(){
 }
 
 module layerFrame(layer="all"){
-  layerThck=[12,3,3,12];
-  layerCol=["RosyBrown","Tan","BurlyWood","Wheat"];
+  //bottom to top
+  layerThck=[12,3,3,3,9];
+  layerCol=["RosyBrown","Tan","BurlyWood","Wheat","NavajoWhite"];
   //layered frame
   
   ovDims=[clockDist*(clockCount.x)+brimWidth*2,clockDist*(clockCount.y)+brimWidth*2];
@@ -161,35 +177,72 @@ module layerFrame(layer="all"){
   if (showLayer1)
     color(layerCol[1]) translate([0,0,pcbDims.z]) linear_extrude(layerThck[1]) 
       difference(){
-        baseShape();
+        baseShape(splits=2);
         for(ix=[0:clockCount.x-1],iy=[0:clockCount.y-1])
           translate([ix*clockDist,iy*clockDist]) offset(0.5) VID28_05(true);
         for (ix=[0:clockCount.x-1]) translate([ix*clockDist,clockDist]) PCB(true);
           }
-      
-  //layer 2 clocks Background
+          
+  //layer 2 threated inserts
   if (showLayer2)
     color(layerCol[2]) translate([0,0,pcbDims.z+layerThck[1]]) linear_extrude(layerThck[2]) 
       difference(){
-        baseShape();
+        baseShape(splits=1);
         for(ix=[0:clockCount.x-1],iy=[0:clockCount.y-1])
           translate([ix*clockDist,iy*clockDist]) circle(d=7);
-        for (ix=[0:clockCount.x-1],iy=[0:clockCount.y-1],px=sensorXOffsets)
-          translate([ix*clockDist,iy*clockDist]+[px,0]) circle(d=sensorMagPinDia);
+        if (metalPins) //metal pins to improve hall sensor performance
+          for (ix=[0:clockCount.x-1],iy=[0:clockCount.y-1],px=sensorXOffsets)
+            translate([ix*clockDist,iy*clockDist]+[px,0]) circle(d=sensorMagPinDia);
         }
-      
-  //layer 3 clocks frames
+  
+  //layer 3 clocks Background
   if (showLayer3)
     color(layerCol[3]) translate([0,0,pcbDims.z+layerThck[1]+layerThck[2]]) linear_extrude(layerThck[3]) 
+      !difference(){
+        baseShape(splits=2);
+        for(ix=[0:clockCount.x-1],iy=[0:clockCount.y-1])
+          translate([ix*clockDist,iy*clockDist]) circle(d=7);
+        if (metalPins) //metal pins to improve hall sensor performance
+          for (ix=[0:clockCount.x-1],iy=[0:clockCount.y-1],px=sensorXOffsets)
+            translate([ix*clockDist,iy*clockDist]+[px,0]) circle(d=sensorMagPinDia);
+        }
+      
+  //layer 4 clocks frames
+  if (showLayer4)
+    color(layerCol[4]) translate([0,0,pcbDims.z+layerThck[1]+layerThck[2]+layerThck[3]]) linear_extrude(layerThck[4]) 
       difference(){
-        baseShape();
+        baseShape(splits=1);
         for(ix=[0:clockCount.x-1],iy=[0:clockCount.y-1])
           translate([ix*clockDist,iy*clockDist]) circle(d=clockDia);
         }
       
-  module baseShape(){
-    translate([-clockDist/2-brimWidth+cornerRad,-clockDist/2-brimWidth+cornerRad])
-      offset(cornerRad) square(ovDims+[-cornerRad*2,-cornerRad*2]);
+  module baseShape(splits=2){
+    //show either the actual design with gaps or compensate for kerf
+    
+    thisKerf = splitDesign ? (splitShow == "all") ? -kerf*3 : kerf/2 : 0;
+    //split always between clocks
+    dims= splitDesign ? [ovDims.x/(splits+1)+thisKerf,ovDims.y] : ovDims;
+    sideDims= splitDesign ? (splits>1) ? [brimWidth+floor(clockCount.x/3)*clockDist+thisKerf,ovDims.y] : 
+                                        [ovDims.x/2+thisKerf,ovDims.y] :
+                           ovDims;
+    cntrDims= [(clockCount.x/2)*clockDist+thisKerf,ovDims.y];
+    rightOffset= (splits>1) ? sideDims.x+cntrDims.x-thisKerf*2 : ovDims.x/2;
+    
+    
+    //one piece or leftmost one 
+    if (!splitDesign || (splitShow=="left") || (splitShow=="all"))
+      translate([-clockDist/2-brimWidth+cornerRad,-clockDist/2-brimWidth+cornerRad])
+        offset(cornerRad) square(sideDims+[-cornerRad*2,-cornerRad*2]);
+        
+    //center one 
+    if (splitDesign && ((splitShow=="center")|| (splitShow=="all")) && (splits==2) ) //always show split design
+      translate([sideDims.x-brimWidth-clockDist/2-thisKerf,-clockDist/2-brimWidth+cornerRad])
+        offset(cornerRad) square(cntrDims+[-cornerRad*2,-cornerRad*2]);
+        
+    //rightmost one 
+    if (splitDesign && ((splitShow=="right")|| (splitShow=="all"))) //always show split design
+      translate([rightOffset-clockDist/2-brimWidth,-clockDist/2-brimWidth+cornerRad])
+        offset(cornerRad) square(sideDims+[-cornerRad*2,-cornerRad*2]);
   }
 }
 
@@ -229,7 +282,7 @@ module PCB(cut=false){
             circle(d=3);
     //Mounting holes
     for (px=holesPos.x,py=holesPos.y)
-      translate([px,py]) circle(d=mountHolesDia);
+      translate([px,py]) circle(d=mountStemDia);
   }
   else
     rotate([0,180,0]) import("ClockClock24.stl");
@@ -307,6 +360,10 @@ module handShape(radius=clockDia/2){
     circle(d=handWidth);
     translate([0,-handWidth/2]) square([length,handWidth]);
   }
+}
+
+module threadInsertHolder(){
+  //3Dprinted holder for threated inserts
 }
 
 *VID28_05();
