@@ -1,6 +1,4 @@
-include </eCAD/KiCADColors.scad>
-
-
+include <eCAD/KiCADColors.scad>
 
 $fn=100;
 
@@ -10,11 +8,12 @@ tiltAng=58;
 baseLineDist=8.5;//about 11.34
 cptlHghtInput=13.5;
 tiltBoneThck=5; //thickness of the "bone =="
-strBoneThck=5;
+straightBoneThck=5;
 ltrSpcInput=0.5;
 stroke=1.5;
-fillOffset= 0.12; //gap between shapes
+fillOffset= +0.20; //gap between shapes
 inDia=oDia-stroke*2;
+pcbRad=3;
 fudge=0.1;
 
 /* [Calc] */
@@ -30,16 +29,20 @@ bridgeTE=true;
 showFill=true;
 showStroke=true;
 showtiltBone=false;
+showPCB=true;
+
 debug=false;
 
 /* [Colors] */
-strokeColor=blackBodyCol;//[0.07,  0.3,    0.12];//"#b0a998";
-boneColor=FR4Col;//6[0.2,   0.17,   0.087];//"#4c4c4c";
-fillColor=metalGoldPinCol;//[0.859, 0.738,  0.496];//"#dbbc7e";
+textColor="black"; //["black","white"]
+boneColor=FR4Col; //
+fillColor=metalGoldPinCol; //
+pcbColor=pcbGreenCol;
 
 /* [Hidden] */
-
-
+pcbDims=[90,26];
+pcbOffset=[26,1,-1];
+strokeColor = textColor=="black" ? blackBodyCol : whiteBodyCol;
 
 /* -- ltrSpcInput from baseLineDist Calculations--
  tan(tiltAng)=(B.x-P.x)/(B.y-P.y)
@@ -80,9 +83,15 @@ B=[oDia/2-cos(tiltAng)*(cptlHght-oDia),
    
 //echo(str("PtoBAng: ",atan2(B.x-P.x,B.y-P.y)));
 if (showtiltBone) color(boneColor) tiltBone();
-color(boneColor) strBone();
+
+color(boneColor) straightBone();
+
 translate(prodOffset) ProductionsStr();
+
 BoneStr();
+
+if (showPCB)
+  color(pcbColor) translate(pcbOffset) PCB();
 
 
 
@@ -95,13 +104,17 @@ if (debug)
     translate(B) circle(0.5);
 }
 
+module PCB(){
+  hull() for (ix=[-1,1],iy=[-1,1])
+    translate([ix*(pcbDims.x/2-pcbRad),iy*(pcbDims.y/2-pcbRad)]) circle(pcbRad);
+}
 
-module strBone(){
+module straightBone(){
   //straight bone behind the bone string
   difference(){
     union(){
-      translate([oDia/2,oDia-stroke-strBoneThck/2]) 
-        square([(oDia+ltrSpc)*3,strBoneThck]);
+      translate([oDia/2,oDia-stroke-straightBoneThck/2]) 
+        square([(oDia+ltrSpc)*3,straightBoneThck]);
       translate([oDia/2+(oDia+ltrSpc)*3+oDia*0.1/2,oDia]) 
         circle(d=oDia*0.9);
     }
