@@ -198,7 +198,7 @@ module layerFrame(layer="all"){
   //layer 3 clocks Background
   if (showLayer3)
     color(layerCol[3]) translate([0,0,pcbDims.z+layerThck[1]+layerThck[2]]) linear_extrude(layerThck[3]) 
-      !difference(){
+      difference(){
         baseShape(splits=2);
         for(ix=[0:clockCount.x-1],iy=[0:clockCount.y-1])
           translate([ix*clockDist,iy*clockDist]) circle(d=7);
