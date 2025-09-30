@@ -1,26 +1,45 @@
-use <eCad/Displays.scad>
+use <eCAD/Displays.scad>
 
 $fn=50;
 
+
+/* [Dimensions] */
+magDia=5;
+magThck=1;
+magYZPos=[[0,9,100],[0,29.6,37],[0,-19.5,37]];
+magSpcng=0.1;
+feetSpcng=0.2;
+
+/* [Colors] */
+silverColor="silver";
+mainColor="white";
+accentColor="orange";
+
 /* -- [show] -- */
-showSTL=true;
+showSTL=false;
 showBody=true;
 showEars=true;
 showSensor=true;
+showMagnets=true;
 showDisplay=true;
 showCamera=true;
 showPlug=true;
+showFeet=false;
 chainHull=true;
-mode="reModel"; //["reModel","result"]
+mode="result"; //["reModel","result"]
 showSection="none"; //["none","Y-Z","X-Y"]
 sectionOffset=0.5; //[0:0.05:1]
+sectionInvert=false;
+
 /* -- [Remix-Dimension] -- */
 bdyDiaRmx=15.48;
+
 /* -- [Model-Dimensions] -- */
 bdyDiaMdl=80;
 wallThck=2;
 displayOffset=[0,-30,0];
 glueSpcng=0.1;
+lcdSpcng=0.3;
 
 
 /* -- [Hidden] -- */
@@ -34,6 +53,19 @@ bdyBtmInDia=bdyDia*0.65;
 sensorOffset=scaleList2BdyDia([2.7,-7.2,4.5]);
 camPos=[0,+3.5,bdyZOffset+46];
 camTiltAng=-12;
+secXOffset= sectionInvert ? -(bdyDia*sectionOffset*2) : bdyDia*sectionOffset*2;
+
+if (showSTL && mode=="result")
+  %difference(){
+    scale(scale2BdyDia(1))
+      translate([-1.47,+2.414,0]) rotate([9.7,-11.1,-11.6+90]) 
+        scale(100) import("C3_BB_PrintModel_redox.stl",convexity=3);
+    if (showSection=="Y-Z")
+      translate([bdyDia,0,bdyZOffset]) cube(bdyDia*2,true);
+    if (showSection=="X-Y")
+      translate([0,0,bdyZOffset+bdyDia*sectionOffset*2]) cube(bdyDia*2,true);
+  }
+      
 
 if (showCamera && mode=="result")
  translate(camPos) rotate([camTiltAng,0,0]) rotate([90,90,0]) OV2640(length=75);
@@ -47,24 +79,38 @@ if (showSTL && mode!="result")
     if (showSection=="X-Y")
       translate([0,0,bdyZOffset+bdyDia*sectionOffset*2]) cube(bdyDia*2,true);
   }
-  
+ 
+ //cut the original feet to fit into bottom
+ if (showFeet)
+   intersection(){
+      scale(scale2BdyDia(1))
+        translate([-1.47,+2.414,0]) rotate([9.7,-11.1,-11.6+90]) 
+          scale(100) import("C3_BB_PrintModel_redox.stl",convexity=3);
+    union(){
+      translate([0,0,-14]) cylinder(d=120,h=bdyBtmHght-0.8+14);
+        linear_extrude(bdyBtmInHght-wallThck) difference(){
+          circle(d=bdyBtmInDia-feetSpcng*2);
+          translate([0,-bdyBtmInDia*0.8]) square(bdyBtmInDia+feetSpcng*2,true);
+        }
+      }
+  }
 
 //outer sphere
 if (showBody){
   difference(){
     body();
     if (showSection=="Y-Z")
-     mirror([1,0,0]) color("darkred") translate([bdyDia*sectionOffset*2,0,bdyZOffset]) cube(bdyDia*2,true);
+     mirror([1,0,0]) color("darkred") translate([secXOffset,0,bdyZOffset]) cube(bdyDia*2,true);
     if (showSection=="X-Y")
       color("darkRed") translate([0,0,bdyZOffset+bdyDia*sectionOffset*2]) cube(bdyDia*2,true);
   }
 }
 
 if (showDisplay && mode!="reModel")
-  translate(displayOffset+[0,0,bdyZOffset]) rotate([90,0,180]) roundDisplayWS(showPlug=showPlug);
+  translate(displayOffset+[0,0,bdyZOffset]) rotate([90,0,180]) ESP32RoundDisplay(showPlug=showPlug);
 
 if (showEars)
-  difference(){
+  color(silverColor) difference(){
     for (ix=[-1,1])
       translate([0,0,bdyZOffset]) rotate([0,ix*90,0]) sideDisc();
     if (showSection=="Y-Z")
@@ -75,10 +121,14 @@ if (showSensor)
   translate(sensorOffset+[0,0,bdyZOffset]) 
     rotate([-90,0,0]) sensor();
 
-
+if (showMagnets)
+  for (pos=magYZPos)
+  color("silver") translate([magThck/2,pos.y,pos.z]) rotate([0,90,0]) cylinder(d=magDia,h=magThck,center=true);
+  
 module body(){
-  difference(){
-    
+
+  //--- main body ---
+  color(mainColor) difference(){
     union(){ //main body + hood
       translate([0,0,bdyZOffset]) sphere(d=bdyDia); 
       translate([0,0,scale2BdyDia(20)]) rotate([0,-78,90]) topHood();   
@@ -99,7 +149,7 @@ module body(){
       //hollow Out bottom
         *sphere(d=bdyInDia);
       //Display compartment
-       translate(displayOffset) rotate([90,0,180]) roundDisplayWS(cut=true,spcng=glueSpcng);
+       translate(displayOffset) rotate([90,0,180]) ESP32RoundDisplay(cut=true,spcng=lcdSpcng);
       //Sensor
       translate(sensorOffset) rotate([-90,0,0]) sensor(true);
     }
@@ -125,14 +175,14 @@ module body(){
     //USBplug
     translate([0,0,bdyBtmHght-0.1]) linear_extrude(4.5) hull() for (ix=[-1,1]) 
       translate([ix*(6.2-6.5/2),displayOffset.y+3.18]) circle(d=6.5+0.5);
-  } //diff
-  
-  //bottom sphere
-  *difference(){
-    translate([0,0,bdyZOffset]) sphere(d=bdyInDia);    
-    translate([0,0,bdyZOffset]) sphere(d=bdyInDia-wallThck*2);    
-    translate([0,0,bdyZOffset-frntHoleDia/2]) cylinder(d=bdyInDia,h=bdyInDia);
-  }
+    //magnets
+    for (pos=magYZPos)
+      translate([0,pos.y,pos.z]) rotate([0,90,0]){
+        cylinder(d=magDia+magSpcng*2,h=magThck*2+magSpcng*3,center=true);
+        rotate_extrude() translate([magDia/2+magSpcng,0]) circle(magSpcng*2,$fn=4);
+      }
+    
+  } //diff main
   
   //front ring
   difference(){
@@ -229,7 +279,8 @@ module sideDisc(cut=false){
 *frntRing();
 module frntRing(){
   //main ring
-  rotate_extrude() hull(){
+  
+  color(silverColor) rotate_extrude() hull(){
     translate(scaleList2BdyDia([4.45,0.61])) circle(d=scale2BdyDia(0.2));
     translate(scaleList2BdyDia([3.52,0   ])) circle(d=scale2BdyDia(0.3));
     translate(scaleList2BdyDia([3.23,-0.1])) circle(d=scale2BdyDia(0.1));
@@ -240,7 +291,7 @@ module frntRing(){
   //body
   polyRmx=[[3.98,0.74],[3.98,-0.03],[4.1,-0.14],[4.85,0.36],[5,0.62],[5,1.3]];
   poly=[ for (i=[0:len(polyRmx)-1]) scaleList2BdyDia(polyRmx[i]) ];
-    rotate_extrude(angle=48) polygon(poly);
+  color(accentColor) rotate_extrude(angle=48) polygon(poly);
   
 }
 
@@ -252,14 +303,15 @@ module sensor(cut=false){
   
   cutOffset = (cut) ? glueSpcng : 0 ;
   
-  difference(){  
-    union(){
-      rotate_extrude() polygon(poly);
-        hull(){
-          cylinder(r1=scale2BdyDia(1.31)+cutOffset,r2=0.1,h=0.1);
-          translate([0,0,scale2BdyDia(4)]) sphere(scale2BdyDia(1.9)+cutOffset*2);
-        }
+  color(accentColor) rotate_extrude() polygon(poly);
+  
+  color(silverColor) difference(){  
+
+    hull(){
+      cylinder(r1=scale2BdyDia(1.31)+cutOffset,r2=0.1,h=0.1);
+      translate([0,0,scale2BdyDia(4)]) sphere(scale2BdyDia(1.9)+cutOffset*2);
     }
+
     //substract the main body sphere
     difference(){
       translate([-sensorOffset.x,-bdyZOffset+sensorOffset.z+bdyZOffset,-sensorOffset.y]) sphere(d=bdyDia+glueSpcng*2);
