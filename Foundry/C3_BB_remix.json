@@ -155,6 +155,37 @@
             "showSensor": "true",
             "silverColor": "silver",
             "wallThck": "2"
+        },
+        "Neue Parameter Liste1": {
+            "$fn": "50",
+            "accentColor": "orange",
+            "bdyDiaMdl": "80",
+            "bdyDiaRmx": "15.48",
+            "chainHull": "true",
+            "displayOffset": "[0, -30, 0]",
+            "feetSpcng": "0.20000000000000001",
+            "glueSpcng": "0.10000000000000001",
+            "lcdSpcng": "0.29999999999999999",
+            "magDia": "5",
+            "magSpcng": "0.10000000000000001",
+            "magThck": "1",
+            "mainColor": "white",
+            "mode": "result",
+            "sectionInvert": "false",
+            "sectionOffset": "0.5",
+            "showAntenna": "true",
+            "showBody": "true",
+            "showCamera": "false",
+            "showDisplay": "false",
+            "showEars": "false",
+            "showFeet": "false",
+            "showMagnets": "false",
+            "showPlug": "true",
+            "showSTL": "false",
+            "showSection": "Y-Z",
+            "showSensor": "true",
+            "silverColor": "silver",
+            "wallThck": "2"
         }
     }
 }
