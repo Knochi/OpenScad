@@ -1,0 +1,30 @@
+{
+    "fileFormatVersion": "1",
+    "parameterSets": {
+        "Neue Parameter Liste1": {
+            "cornerRad": "5.5",
+            "modelVar": "2432s028",
+            "showBack": "true",
+            "showFront": "false",
+            "showOriginal": "true",
+            "wallThck": "1.6000000000000001"
+        },
+        "Neue Parameter Liste2": {
+            "AADimsCstm": "[59.9, 45.7]",
+            "AAOffsetCstm": "[12.4, 4.6]",
+            "cornerRad": "5.5",
+            "displayDimsCstm": "[69.5, 50.1, 4.2]",
+            "displayOffsetCstm": "[9.7, 1.6]",
+            "frontThck": "0.40000000000000002",
+            "modelVar": "2432s028",
+            "pcbBackClrnc": "6",
+            "pcbDimsCstm": "[85.85, 50.2, 1.6]",
+            "pcbHoleDistCstm": "[78.4, 42]",
+            "pcbSpcng": "0.40000000000000002",
+            "showBack": "true",
+            "showFront": "true",
+            "showOriginal": "true",
+            "wallThck": "1.6000000000000001"
+        }
+    }
+}

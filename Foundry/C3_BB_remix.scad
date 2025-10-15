@@ -20,6 +20,7 @@ showSTL=false;
 showBody=true;
 showEars=true;
 showSensor=true;
+showAntenna=true;
 showMagnets=true;
 showDisplay=true;
 showCamera=true;
@@ -54,6 +55,7 @@ sensorOffset=scaleList2BdyDia([2.7,-7.2,4.5]);
 camPos=[0,+3.5,bdyZOffset+46];
 camTiltAng=-12;
 secXOffset= sectionInvert ? -(bdyDia*sectionOffset*2) : bdyDia*sectionOffset*2;
+fudge=0.1;
 
 if (showSTL && mode=="result")
   %difference(){
@@ -124,6 +126,9 @@ if (showSensor)
 if (showMagnets)
   for (pos=magYZPos)
   color("silver") translate([magThck/2,pos.y,pos.z]) rotate([0,90,0]) cylinder(d=magDia,h=magThck,center=true);
+
+if (showAntenna)
+  antenna();
   
 module body(){
 
@@ -321,9 +326,35 @@ module sensor(cut=false){
   
   *rotate([90,0,0]) import("CUI_DEVICES_SP-3541.stl");
 }
-
+*antenna();
 module antenna(){
-  //socket
+  topRad=1.4;
+  minWallThck=1.6;
+  topOpnDia=10;
+  botOpnDia=14;
+  
+  translate([0,0,bdyZOffset]) rotate([-43.5,00,0]) 
+    translate([0,0,bdyDia/2-wallThck]) socket();
+    
+    
+  module socket(){
+    difference(){
+      hull(){
+        cylinder(d=16.3,h=0.1);
+        translate([0,0,7.8+wallThck]) rotate_extrude() 
+          intersection(){
+            offset(topRad) polygon([[0,0],[0,3],[5.9-topRad,3],[7.0-topRad,1.5-topRad/2],[14.3/2-topRad,0]]);
+            square([8,2.7]);
+          }
+      }
+     translate([0,0,-fudge]){
+      cylinder(d=topOpnDia,h=14);
+      cylinder(d1=botOpnDia,d2=12,h=9);
+    }
+     translate([0,0,9]) sphere(d=12);
+     
+    }
+  }
   //antenna
 }
 
