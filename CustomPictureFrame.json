@@ -1,0 +1,19 @@
+{
+    "fileFormatVersion": "1",
+    "parameterSets": {
+        "New set 1": {
+            "brimWidth": "2",
+            "clipCount": "[3, 2]",
+            "clipSpcng": "0.30000000000000004",
+            "clipWdth": "10",
+            "cornerRadius": "3",
+            "minFloorThck": "2.5",
+            "minWallThck": "2",
+            "pictureHeight": "102",
+            "pictureThick": "0.20000000000000001",
+            "pictureWidth": "152",
+            "pictureXYSpcng": "0.5",
+            "pictureZSpcng": "0.10000000000000001"
+        }
+    }
+}

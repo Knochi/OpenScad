@@ -1,8 +1,8 @@
 /* [Dimensions] */
 //width of picture in mm
-pictureWidth=150;
+pictureWidth=152;
 //height of picture in mm
-pictureHeight=100;
+pictureHeight=102;
 //thickness of picture in mm
 pictureThick=0.2;
 //minimum wall Thickness for printing
@@ -21,7 +21,11 @@ clipWdth=10;
 /* [Spacings] */
 pictureXYSpcng=0.5;
 pictureZSpcng=0.1;
-clipSpcng=0.1;
+clipSpcng=0.3;
+
+/* [show] */
+showFront=true;
+showClip=true;
 
 /* [Hidden] */
 fudge=0.1;
@@ -33,7 +37,11 @@ ovDims=[pictureWidth+pictureXYSpcng*2+max(minWallThck*2,cornerRadius*2),
         pictureThick+pictureZSpcng+minFloorThck*2];
         
 clipDist=[(pictureWidth-clipWdth*2)/(clipCount.x-1),(pictureHeight-clipWdth*2)/(clipCount.y-1)];
-frontFrame();
+
+if (showFront)
+  frontFrame();
+if (showClip)
+  clipFrame();
 
 module frontFrame(){
   difference(){
