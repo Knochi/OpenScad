@@ -114,6 +114,78 @@ module WAGO_2601(poles=5,release=false){
 
 }
 
+!color("grey") screwClampRA();
+module  screwClampRA(){
+  ovHght=11.2;
+  ovLen=11.5;
+  ovWdth=8.5;
+  bdyHght=7;
+  sheetThck=0.8;
+  sheetBendRad=1;
+  screwDia=3;
+  nutThck=2.8-sheetThck;
+  
+  pinLen=3.4;
+  pinWdth=1.6;
+  pinDist=5;
+  pinBendOvWdth=9.2; //width of the part at the bend of the pins >ovWdth
+  
+  baseOvWdth=8.05; //overall width of the base
+  baseHght=ovHght-bdyHght-pinLen;
+  baseWdth=(baseOvWdth-pinDist+pinWdth)/2; //width of the two base parts
+  
+  //body
+  translate([0,-baseOvWdth/2,-pinLen])
+  difference(){
+    translate([0,0,ovHght-bdyHght]) body();
+    translate([0,0,ovHght-bdyHght/2]) rotate([-90,0,0]) cylinder(d=screwDia,h=ovLen+fudge);
+  } 
+  
+  module body(){
+    difference(){
+      linear_extrude(bdyHght,convexity=3) difference(){
+        translate([-ovWdth/2+sheetBendRad,0]) offset(sheetBendRad) square([ovWdth-sheetBendRad*2,ovLen-sheetBendRad]);
+        translate([-ovWdth/2+sheetThck,-sheetThck]) square([ovWdth-sheetThck*2,ovLen]);
+        translate([0,-sheetBendRad/2]) square([ovWdth+fudge,sheetBendRad],true);
+        }
+      for (ix=[-1,1])
+        translate([ix*(ovWdth+-sheetThck+fudge)/2,ovLen-(nutThck+sheetThck-fudge)/2,bdyHght/2]) cube([sheetThck+fudge,nutThck+sheetThck+fudge,bdyHght*0.4],true);
+      }
+    translate([0,ovLen-sheetThck-nutThck/2]) linear_extrude(bdyHght,convexity=3) square([ovWdth-sheetThck*2-fudge,nutThck-fudge],true);
+    //base and pins
+    for (ix=[-1,1],iy=[0,1]){
+      translate([ix*(ovWdth-sheetThck)/2,baseWdth/2+iy*(baseOvWdth-baseWdth),-baseHght/2]) cube([sheetThck,baseWdth,baseHght],true);
+      translate([ix*(ovWdth-sheetThck)/2,baseWdth-pinWdth/2+iy*pinDist,-baseHght]) rotate(ix*-90) pin();
+    }
+    
+  }
+  *pin();  
+  module pin(){
+    bendRad=1.6;
+    bendWdth=(pinBendOvWdth-ovWdth)/2;
+    bendHght=2*sqrt(2*bendRad*bendWdth-pow(bendWdth,2)); //s=2*sqrt(2rh-h²)
+    
+    difference(){
+      rotate([-90,0,0])
+        linear_extrude(sheetThck,center=true){
+          translate([-pinWdth/2,0])  square([pinWdth,pinLen-pinWdth/2]);
+          translate([0,pinLen-pinWdth/2]) circle(d=pinWdth);
+        }
+      translate([0,0,-pinLen/2]) cube([pinWdth+fudge,sheetThck+bendWdth,bendHght],true);
+    }
+      
+     translate([0,-bendRad+sheetThck/2+bendWdth,-pinLen/2]) rotate([90,0,90]) linear_extrude(pinWdth,center=true) 
+      intersection(){
+        difference(){
+          circle(bendRad);
+          circle(bendRad-sheetThck);
+        }
+        translate([bendRad-(bendWdth+sheetThck)/2,0]) square([bendWdth+sheetThck,bendHght],true);
+      }
+      
+  }
+}
+
 *microMatch();
 module microMatch(pos=10){
   // TE Micro-Match connector line (also available from other manufacturers)

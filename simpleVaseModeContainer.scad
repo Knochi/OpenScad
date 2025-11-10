@@ -9,8 +9,8 @@
 /* [Dimensions] */
 nozzleDia=0.4; //[0.2,0.4,0.6,0.8]
 layerHght=0.2; //[0.2,0.24,0.32,0.4,0.48]
-innerDia=20;
-innerHght=15;
+innerDia=36;
+innerHght=27;
 botLayers=3;
 lidSpcng=0.2; //spacing between lit and container
 lidHght=5;
@@ -21,9 +21,9 @@ snapRad=2;
 snapFillet=3;
 
 /* [Dents] */
-dentCircCount=12;
-dentHghtCount=4;
-dentThck=1;
+dentCircCount=14;
+dentHghtCount=8;
+dentThck=1.4;
 dentHght=2;
 dentStagger=true;
 dentRad=1.5;

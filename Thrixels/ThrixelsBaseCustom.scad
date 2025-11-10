@@ -5,6 +5,11 @@ frameCornerRad=2;
 thxCountX=16;
 thxCountY=16;
 
+/* [show] */
+showOriginal=false;
+showFrame=true;
+showField=true;
+
 /* [ThrixelGeometry] */
 thxCellSize=[4,4,3.5];
 thxHoleDia=2.5;
@@ -19,11 +24,6 @@ thxTopChnlSlpAng=125;
 thxTopHght=0.5;
 thxWallThck=0.15;
 thxTopChnlBase=0.042;
-
-/* [show] */
-showOriginal=false;
-showFrame=true;
-showField=true;
 
 $fn=50;
 

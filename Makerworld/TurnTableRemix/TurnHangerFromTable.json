@@ -1,0 +1,28 @@
+{
+    "fileFormatVersion": "1",
+    "parameterSets": {
+        "Neue Parameter Liste1": {
+            "baseOffset": "[306, 90, 0]",
+            "bearingDims": "[8, 22, 7]",
+            "bearingSpcng": "0.10000000000000001",
+            "boltDistance": "0",
+            "centerPostDia": "14",
+            "conVariant": "tunnel",
+            "gearPitch": "3.1499999999999999",
+            "lGearShorten": "0.10000000000000001",
+            "lGearTeeth": "100",
+            "largeSpacing": "0.5",
+            "mBracketDims": "[91.35, 81, 24.85]",
+            "minWallThck": "1.2",
+            "platformCornerRad": "3",
+            "platformDims": "[140, 60, 7]",
+            "rimCrossSection": "[2, 3.5]",
+            "rimDist": "141",
+            "showBearing": "true",
+            "tRodHght": "15",
+            "ttMotorPos": "[-28, 47.3, 21.8]",
+            "wireCrossSection": "2.5",
+            "wirePostDims": "[20, 10, 5]"
+        }
+    }
+}

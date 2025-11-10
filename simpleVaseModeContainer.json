@@ -23,6 +23,29 @@
             "snapFillet": "3",
             "snapRad": "2",
             "snapThck": "0.5"
+        },
+        "New set 2": {
+            "botLayers": "3",
+            "dentCircCount": "14",
+            "dentFilletRad": "1.8",
+            "dentHght": "2",
+            "dentHghtCount": "8",
+            "dentRad": "1.5",
+            "dentStagger": "true",
+            "dentThck": "1.3999999999999999",
+            "export": "lid",
+            "innerDia": "36",
+            "innerHght": "27",
+            "layerHght": "0.20000000000000001",
+            "lidHght": "5",
+            "lidSpcng": "0.20000000000000001",
+            "nozzleDia": "0.40000000000000002",
+            "showContainer": "true",
+            "showCut": "false",
+            "showLid": "false",
+            "snapFillet": "3",
+            "snapRad": "2",
+            "snapThck": "0.5"
         }
     }
 }
