@@ -1,0 +1,12 @@
+{
+    "fileFormatVersion": "1",
+    "parameterSets": {
+        "Neue Parameter Liste1": {
+            "cubeCornerRad": "3",
+            "cubeFrameWdth": "3",
+            "cubeRecess": "1",
+            "cubeSize": "40",
+            "letterSizeRel": "0.65000000000000002"
+        }
+    }
+}
