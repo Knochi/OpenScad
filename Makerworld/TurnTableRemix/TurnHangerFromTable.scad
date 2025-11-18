@@ -45,6 +45,7 @@ rimCrossSection=[2,3.5];
 
 /* [show] */
 showBearing=true;
+showWire=true;
 
 /* [Hidden] */
 lGearZPos=platformDims.z+mBracketDims.z+largeSpacing;
@@ -59,7 +60,8 @@ $fn=200;
 
 //--- imports ---
 translate([0,0,platformDims.z]){
-  color("ivory") translate(ttMotorPos+[+18.3,12.5,-24.8]) rotate(-66.9) translate([-110,120,3]) import("MotorBracket.stl");
+  color("ivory") translate(ttMotorPos+[+18.3,12.5,-24.8]) 
+    rotate(-66.9) translate([-110,120,3]) import("MotorBracket.stl");
   translate([-70.9,79.35,0]+ttMotorPos) import("tTableGear-10.stl");
   translate(ttMotorPos) TTMotor();
   }
@@ -70,7 +72,15 @@ color("grey") platform();
 color("darkSlateGrey") translate([0,0,lGearZPos]) lSpurGear();
 if (showBearing) 
   color("silver") translate([0,0,lGearZPos]) bearing(bearingDims);
-
+if (showWire)
+  color("red") cylinder(d=wireDia,h=100,center=true);
+  
+  
+//a slip contact to contact the vertical wire running down to specimen 
+module slipContact(){
+  
+}  
+  
 //large spur gear with bearing
 module lSpurGear(){ 
   translate([0,0,gearThck/2]) spur_gear(circ_pitch=gearPitch, teeth=lGearTeeth, thickness=gearThck, spin=1.3, backlash=0.2, shorten=lGearShorten, clearance=0.5, shaft_diam=centerDia);
