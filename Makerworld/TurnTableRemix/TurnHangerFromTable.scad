@@ -34,9 +34,10 @@ lGearShorten=0.1;
 largeSpacing=0.5;
 
 /* [Connection] */
-conVariant="cutAway"; //["tunnel"]
-solderWickThick=0.5;
-solderWickWidth=4;
+conVariant="tunnel"; //["cutAway","tunnel"]
+solderWickThck=0.3;
+solderWickWdth=2.5;
+solderWickSpcng=0.2;
 
 /* [box] */
 rimDist=141;
@@ -49,7 +50,8 @@ showBearing=true;
 lGearZPos=platformDims.z+mBracketDims.z+largeSpacing;
 lGearOd=outer_radius(gearPitch, lGearTeeth, shorten=lGearShorten)*2;
 wireDia=sqrt((4/PI)*wireCrossSection);
-
+postInnerDia=bearingDims[0]-minWallThck*2;
+  
 
 fudge=0.1;
 
@@ -65,7 +67,7 @@ translate([0,0,platformDims.z]){
 // --- construction ---
 
 color("grey") platform();
-color("darkSlateGrey") translate([0,0,lGearZPos]) !lSpurGear();
+color("darkSlateGrey") translate([0,0,lGearZPos]) lSpurGear();
 if (showBearing) 
   color("silver") translate([0,0,lGearZPos]) bearing(bearingDims);
 
@@ -87,6 +89,38 @@ module lSpurGear(){
   }
 }
 
+!wireConnector();
+module wireConnector(){
+  slotWdth=0.8;
+  springWdth=0.8;
+  
+  difference(){
+    linear_extrude(platformDims.z,convexity=4) difference(){
+      union(){
+        square([centerPostDia,postInnerDia],true);
+        translate([centerPostDia/2,0]) circle(d=postInnerDia);
+        translate([-(centerPostDia+postInnerDia)/2,0]) square([postInnerDia,2],true);
+      }
+      for (iy=[-1,0,1])
+        translate([0,iy*(slotWdth+springWdth)]) hull() 
+          for (ix=[-1,1])
+            translate([ix*centerPostDia*0.4,0]) circle(d=1);
+    }
+    //solderwick
+    for(iy=[-1,1])
+      translate([0,iy*wireDia/4,platformDims.z/2]) cube([centerPostDia,solderWickThck+solderWickSpcng*2,solderWickWdth+solderWickSpcng*2],true);
+    //openings
+    for (ix=[-1,1])
+      translate([ix*(centerPostDia+postInnerDia/2)/2,0,platformDims.z/2]) cube([postInnerDia/2.0,postInnerDia/2,solderWickWdth+solderWickSpcng*2],true);
+    translate([0,0,platformDims.z]) sphere(d=wireDia);
+    translate([centerPostDia/2,0,platformDims.z/2]) cylinder(d=postInnerDia/2,h=solderWickWdth+solderWickSpcng*2,center=true);
+  }
+  //post 
+    translate([centerPostDia/2,0,0]) cylinder(d=wireDia,h=platformDims.z);
+    
+  
+  
+}
 
 module platform(){
   //threaded rods 
@@ -132,7 +166,7 @@ module TTMotor(){
 *centerPost();
 module centerPost(test=false){
   hght = test ? platformDims.z : lGearZPos;
-  postInnerDia=bearingDims[0]-minWallThck*2;
+
   
   //bearing fitting
   translate([0,0,hght]) linear_extrude(bearingDims.z) difference(){
