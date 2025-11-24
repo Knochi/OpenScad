@@ -10,40 +10,61 @@ letterSizeRel=0.7; //[0:0.05:1]
 /* [Cube 1] */
 //position in cube units
 cube1Pos=[0,0,0];
-cube1FgCol="red"; //color
-cube1BgCol="ivory"; //color
+cube1FgCol="red"; //["black","white","red","green","blue","yellow"]
+cube1BgCol="white"; //["black","white","red","green","blue","yellow"]
 cube1Letter= "A";
-cube1CstmTxt= "Tap Here!";
 cube1QRFace= "none"; //["none","front","back","left","right","top","bottom"]
 cube1LtrFace= "front"; //["none","front","back","left","right","top","bottom"]
 cube1TxtFace= "none"; //["none","front","back","left","right","top","bottom"]
+cube1NFCFace= "none"; //["none","front","back","left","right","top","bottom"]
+cube1GoogleFace= "none"; //["none","front","back","left","right","top","bottom"]
 
 /* [Cube 2] */
 //position in cube units
 cube2Pos=[1,0,0];
-cube2FgCol="blue"; //color
-cube2BgCol="ivory"; //color
+cube2FgCol="blue"; //["black","white","red","green","blue","yellow"]
+cube2BgCol="white"; //["black","white","red","green","blue","yellow"]
 cube2Letter= "B";
-cube2CstmTxt= "Tap Here!";
 cube2QRFace= "none"; //["none","front","back","left","right","top","bottom"]
 cube2LtrFace= "front"; //["none","front","back","left","right","top","bottom"]
 cube2TxtFace= "none"; //["none","front","back","left","right","top","bottom"]
+cube2NFCFace= "right"; //["none","front","back","left","right","top","bottom"]
+cube2GoogleFace= "none"; //["none","front","back","left","right","top","bottom"]
 
 /* [Cube 3] */
 //position in cube units
 cube3Pos=[0.5,0,1];
-cube3FgCol="green"; //color
-cube3BgCol="ivory"; //color
+cube3FgCol="green"; //["black","white","red","green","blue","yellow"]
+cube3BgCol="white"; //["black","white","red","green","blue","yellow"]
 cube3Letter= "C";
-cube3CstmTxt= "Tap Here!";
 cube3QRFace= "top"; //["none","front","back","left","right","top","bottom"]
 cube3LtrFace= "front"; //["none","front","back","left","right","top","bottom"]
-cube3TxtFace= "none"; //["none","front","back","left","right","top","bottom"]
+cube3TxtFace= "right"; //["none","front","back","left","right","top","bottom"]
+cube3NFCFace= "none"; //["none","front","back","left","right","top","bottom"]
+cube3GoogleFace= "left"; //["none","front","back","left","right","top","bottom"]
 
-/* [Text] */
-txtColor="black";
+/* [Decorations] */
+txtSize=9;
+txtLineSpcng=1; //[0.5:0.1:1.5]
+txtFont="Liberation Sans";
+txtColor="black"; ////["black","white","red","green","blue","yellow"]
 placeID="ChIJDfMq1yrquEcRLeQOW6q4Vo0"; 
-codeColor="black";
+codeColor="black"; //["black","white","red","green","blue","yellow"]
+cstmTextLn1="Rate";
+cstmTextLn2="Us!";
+NFCIconSize=0.5; //[0:0.05:1]
+NFCIconColor="black"; //["black","white","red","green","blue","yellow"]
+GoogleSize=0.8; //[0:0.05:1]
+
+/* [NFC Tag] */
+tagDia=15;
+//thickness of the pocket
+tagThick=1;
+//distance of the pocket from surface
+tagDist=1;
+
+/* [show] */
+export="none"; //["black","white","red","green","blue","yellow"]
 
 /* [Hidden] */
 linkText=str("search.google.com/local/writereview?placeid=",placeID);
@@ -56,8 +77,11 @@ cubePos=[cubeUnits2mm(cube1Pos),cubeUnits2mm(cube2Pos),cubeUnits2mm(cube3Pos)];
 cubeQRs=[cube1QRFace,cube2QRFace,cube3QRFace];
 cubeLtrsFc=[cube1LtrFace,cube2LtrFace,cube3LtrFace];
 cubeLtrs=[cube1Letter,cube2Letter,cube3Letter];
-cubeTxts=[cube1CstmTxt,cube2CstmTxt,cube3CstmTxt];
 cubeTxtsFc=[cube1TxtFace,cube2TxtFace,cube3TxtFace];
+cubeNFCFc=[cube1NFCFace,cube2NFCFace,cube3NFCFace];
+cubeGoogleFc=[cube1GoogleFace,cube2GoogleFace,cube3GoogleFace];
+
+faceSize=cubeSize-cubeCornerRad*2-cubeFrameWdth;
 
 echo(linkText);
 
@@ -65,31 +89,69 @@ $fn=50;
 
 
 for (i=[0:2]){
-  // place cubes
-  translate(cubePos[i]){
-    kidsCube(bgColors[i],fgColors[i]);
-    // place QR code(s)
-    color(codeColor) placeOnFace(cubeQRs[i]) 
-      qr(linkText, error_correction="M", width=qrSize, height=qrSize, thickness=0, center=true, mask_pattern=0, encoding="UTF-8");
-    // place Letters
-    color(fgColors[i]) placeOnFace(cubeLtrsFc[i])
-      text(cubeLtrs[i],size=cubeSize*letterSizeRel,halign="center",valign="center");
-    // place Cstm Text
-    color(txtColor) placeOnFace(cubeTxtsFc[i])
-      text(cubeTxts[i],size=cubeSize*letterSizeRel,halign="center",valign="center");
+    // place cubes
+    translate(cubePos[i]){
+      //substract NFC tag compartment below tap symbol
+      difference(){
+        kidsCube(bgColors[i],fgColors[i]);
+        placeOnFace(cubeNFCFc[i], zOffset=-tagDist-tagThick-cubeRecess, extrude=tagThick) square(tagDia,true);
+      }
+      // place QR code(s)
+      if ((export==codeColor)||(export=="none")) 
+        color(codeColor) placeOnFace(cubeQRs[i]) 
+          qr(linkText, error_correction="M", width=qrSize, height=qrSize, thickness=0, center=true, mask_pattern=0, encoding="UTF-8");
+      // place Letters
+      if ((export==fgColors[i])||(export=="none")) 
+        color(fgColors[i]) placeOnFace(cubeLtrsFc[i])
+          text(cubeLtrs[i],size=cubeSize*letterSizeRel,halign="center",valign="center");
+      // place Cstm Text
+      if ((export==txtColor)||(export=="none")) 
+        color(txtColor) placeOnFace(cubeTxtsFc[i])
+          twoLineTxt();
+      //place NFC icon
+      if ((export==NFCIconColor)||(export=="none")) 
+        color(NFCIconColor) placeOnFace(cubeNFCFc[i])
+          scale(faceSize*NFCIconSize*0.1) translate([-5,-5]) import("NFCIcon.svg");
+      //place Google icon
+      placeGoogleLogo(cubeGoogleFc[i]);
+    }
+   
+   
+
+}
+
+module placeGoogleLogo(face="none"){
+  if ((export=="red")||(export=="none")) 
+    color("red") placeOnFace(face) scale(faceSize*GoogleSize*0.1) translate([0,1.5]) scale(0.7) translate([-5,-5]) import("Google_G_logo_rd.svg");
+  if ((export=="green")||(export=="none")) 
+    color("green") placeOnFace(face) scale(faceSize*GoogleSize*0.1) translate([0,1.5]) scale(0.7) translate([-5,-5]) import("Google_G_logo_gn.svg");
+  if ((export=="blue")||(export=="none")) 
+    color("blue") placeOnFace(face) scale(faceSize*GoogleSize*0.1) translate([0,1.5]) scale(0.7) translate([-5,-5]) import("Google_G_logo_bl.svg");
+  if ((export=="yellow")||(export=="none")){
+    color("yellow") placeOnFace(face) scale(faceSize*GoogleSize*0.1) translate([0,1.5]) scale(0.7) translate([-5,-5]) import("Google_G_logo_ye.svg");
+    color("yellow") placeOnFace(face) scale(faceSize*GoogleSize*0.1) for (ix=[-2:2]) translate([ix*2,-4]) scale(0.2) rotate(360/4) star(N=5,od=10,id=3.82);
+    }
+}  
+    
+module star(N=6,od=10,id=7,iter=0,poly=[]){
+  if (iter<N){
+    xo=od/2*cos((iter*360)/N);
+    yo=od/2*sin((iter*360)/N);
+    xi=id/2*cos((iter*360+180)/N);
+    yi=id/2*sin((iter*360+180)/N);
+    poly=concat(poly,[[xo,yo],[xi,yi]]);
+    star(N,od,id,iter+1,poly);
+  }
+  else{
+    polygon(poly);
   }
 }
 
-
-  
-    
-
-module kidsCube(bgColor="ivory", fgColor="red",center=false){
+module kidsCube(bgColor="white", fgColor="red",center=false){
   cntrOffset= center ? [0,0,0] : [cubeSize/2,cubeSize/2,cubeSize/2];
-  faceSize=cubeSize-cubeCornerRad*2-cubeFrameWdth;
   
   translate(cntrOffset){
-    color(fgColor) difference(){
+    if ((export==fgColor)||(export=="none")) color(fgColor) difference(){
       roundedCube(cubeSize,cubeCornerRad);
       for (i=[0:2]){
         inSize = (i==0) ? [cubeSize+fudge,faceSize,faceSize] : 
@@ -98,9 +160,9 @@ module kidsCube(bgColor="ivory", fgColor="red",center=false){
         cube(inSize,true);
         }
     }
-    color(bgColor) roundedCube(cubeSize-cubeRecess*2,cubeCornerRad-cubeRecess*2);
-    *color(fgColor) rotate([90,0,0]) translate([0,0,cubeSize/2-cubeRecess]) linear_extrude(cubeRecess) 
-      text(letter,size=cubeSize*letterSizeRel,halign="center",valign="center");
+    if ((export==bgColor)||(export=="none")) 
+      color(bgColor) 
+        roundedCube(cubeSize-cubeRecess*2,cubeCornerRad-cubeRecess*2);
     }
 }
 
@@ -112,7 +174,7 @@ module roundedCube(size=50, cornerRad=3){
 //place a child depending on face left,right,top,.. etc.
 //child is expected a 2D object, centered, flat on X-Y plane
 *placeOnFace("back") text("TEST",valign="center",halign="center");
-module placeOnFace(face="none",center=false){
+module placeOnFace(face="none", extrude=cubeRecess, zOffset=cubeRecess, center=false){
 
   cntrOffset= center ? [0,0,0] : [cubeSize/2,cubeSize/2,cubeSize/2];
   
@@ -126,7 +188,7 @@ module placeOnFace(face="none",center=false){
     );
   if (face!="none")
     translate(cntrOffset)
-      rotate(dict[face]) translate([0,0,cubeSize/2-cubeRecess]) linear_extrude(cubeRecess) children();
+      rotate(dict[face]) translate([0,0,cubeSize/2+zOffset]) linear_extrude(extrude) children();
 }
 
 function cubeUnits2mm(cubeUnits)=let(
@@ -135,6 +197,15 @@ function cubeUnits2mm(cubeUnits)=let(
   z= cubeUnits.z * cubeSize,
 ) [x,y,z];
 
+//creates a 2line text that fits into the frame
+module twoLineTxt(){
+  translate([0,txtSize/2*txtLineSpcng]) txtLine(cstmTextLn1);
+  translate([0,-txtSize/2*txtLineSpcng]) txtLine(cstmTextLn2);
+}
+
+module txtLine(txt=test){
+  text(txt,size=txtSize,font=txtFont,valign="center",halign="center");
+}
 
 //
 // Automatically generated by generate.py.
