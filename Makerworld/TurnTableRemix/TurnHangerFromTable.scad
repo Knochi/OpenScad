@@ -12,7 +12,7 @@ platformDims=[140,60,7];
 minWallThck=1.2;
 platformCornerRad=3;
 wirePostDims=[20,10,5];
-wireCrossSection = 2.5; //in mm²
+wireCrossSection = 1.5; //in mm²
 
 /* [MotorBracket] */
 boltDistance=0;
@@ -101,34 +101,37 @@ module lSpurGear(){
 
 !wireConnector();
 module wireConnector(){
-  slotWdth=0.8;
+  slotWdth=wireDia*0.8;
   springWdth=0.8;
+  roundingRad=10;
   
   difference(){
     linear_extrude(platformDims.z,convexity=4) difference(){
-      union(){
-        square([centerPostDia,postInnerDia],true);
-        translate([centerPostDia/2,0]) circle(d=postInnerDia);
-        translate([-(centerPostDia+postInnerDia)/2,0]) square([postInnerDia,2],true);
-      }
-      for (iy=[-1,0,1])
-        translate([0,iy*(slotWdth+springWdth)]) hull() 
-          for (ix=[-1,1])
-            translate([ix*centerPostDia*0.4,0]) circle(d=1);
+      shoeShape();
+      offset(-springWdth) shoeShape();
     }
     //solderwick
-    for(iy=[-1,1])
-      translate([0,iy*wireDia/4,platformDims.z/2]) cube([centerPostDia,solderWickThck+solderWickSpcng*2,solderWickWdth+solderWickSpcng*2],true);
-    //openings
-    for (ix=[-1,1])
-      translate([ix*(centerPostDia+postInnerDia/2)/2,0,platformDims.z/2]) cube([postInnerDia/2.0,postInnerDia/2,solderWickWdth+solderWickSpcng*2],true);
-    translate([0,0,platformDims.z]) sphere(d=wireDia);
-    translate([centerPostDia/2,0,platformDims.z/2]) cylinder(d=postInnerDia/2,h=solderWickWdth+solderWickSpcng*2,center=true);
-  }
-  //post 
-    translate([centerPostDia/2,0,0]) cylinder(d=wireDia,h=platformDims.z);
     
+    translate([0,0,platformDims.z/2]) cube([centerPostDia,solderWickThck+solderWickSpcng*2+slotWdth,solderWickWdth+solderWickSpcng*2],true);
+    translate([0,0,platformDims.z]) sphere(d=wireDia);
+    
+  }
   
+  *shoeShape();
+  module shoeShape(){
+    for (i=[0,1]) mirror([0,i]){
+      translate([-centerPostDia/2,slotWdth/2]) square([centerPostDia/2,postInnerDia/2-slotWdth/2]);
+      intersection(){
+        square([centerPostDia/2,postInnerDia/2]);
+        translate([0,roundingRad+slotWdth/2])
+          circle(roundingRad);
+       }
+     }
+    difference(){
+      translate([-centerPostDia/4,0]) square([centerPostDia/2,postInnerDia],true);
+      circle(d=slotWdth);
+    }
+  }
   
 }
 
