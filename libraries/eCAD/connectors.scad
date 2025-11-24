@@ -42,6 +42,116 @@ translate([230,0,0]) PJ398SM();
 
 *rotate([0,0,-90]) femHeaderSMD(20,2,center=true);
 
+
+!KFR208R(pitch=5.08, poles=4);
+module KFR208R(pitch=5.08,poles=4){
+  bdyDims=[pitch*poles+1.5,16.8,16];
+  pin1Offset=[2.98,bdyDims.y-2.6-8.2,0];
+  pinDims=[1,0.8,4];
+  lvrDims=[4,12,3.1];
+  
+  //body
+  color(greenBodyCol) difference(){
+    translate(-pin1Offset) 
+      rotate([90,0,90]) linear_extrude(bdyDims.x) bdyShape();
+    for (ix=[0:(poles-1)]){
+      translate([ix*pitch,-pin1Offset.y-fudge,4.3]) rotate([-90,0,0]) linear_extrude(3) holeShape();
+      translate([ix*pitch,-pin1Offset.y,bdyDims.z-lvrDims.z/2]) rotate([-90,0,0]) 
+        linear_extrude(lvrDims.y) offset(0.05) square([lvrDims.x,lvrDims.z],true);
+      }
+    }
+  //levers
+  color(orangeBodyCol)
+    for (ix=[0:poles-1],iy=[0,1])
+      translate([ix*pitch,-pin1Offset.y,bdyDims.z]) rotate([90,0,90]) 
+        linear_extrude(lvrDims.x,center=true) lvrShape();
+      
+  //pins    
+  color(metalGreyPinCol)
+    for (ix=[0:poles-1],iy=[0,1])
+      translate([ix*pitch,iy*8.2,0]) pin();
+      
+  module bdyShape(){
+    poly=[[0,0],[0,12.5],[3.7,bdyDims.z],[bdyDims.y,bdyDims.z],[bdyDims.y,0]];
+    polygon(poly);
+  }
+  
+  module pin(){
+    tipLngth=pinDims.z*0.25;
+    tipDia=pinDims.x*0.25;
+    
+    color() translate([0,0,-(pinDims.z-tipLngth)/2]) cube(pinDims-[0,0,tipLngth],true);
+    hull(){
+      translate([0,0,-pinDims.z+tipLngth]) rotate([-90,0,0]) cylinder(d=pinDims.x,h=pinDims.y,center=true);
+      translate([0,0,-pinDims.z+tipDia/2]) rotate([-90,0,0]) cylinder(d=tipDia,h=pinDims.y,center=true);
+    }
+  }
+  
+  module holeShape(){
+    holeDia=5.8;
+    intersection(){
+      
+      circle(d=holeDia);
+      square([4.2,holeDia],true);
+    }
+  }
+  
+  module lvrShape(){
+    hull(){
+      translate([0,-0.2]) circle(d=1);
+      translate([3.5,-lvrDims.z/2]) circle(d=lvrDims.z);
+    }
+    translate([3.5,-lvrDims.z]) square([lvrDims.y-3.5,lvrDims.z]);
+  }
+}
+
+*MX142V();
+module MX142V(pitch=5.08, poles=12){
+  
+  // aka KF208
+  bdyDims=[pitch*poles+2.54,10.6,14.1];
+  pin1Offset=[bdyDims.x-2.28-pitch*(poles-1),1.6,0];
+  pinDims=[1,0.5,3.7];
+  lvrDims=[4.7,13.3-bdyDims.y,7];
+  holeDia=2.6;
+  holeOffset=[0.2,-pin1Offset.y+2.6,bdyDims.z/2]; //from pin
+  
+  //body
+  color(greenBodyCol) 
+    difference(){
+      translate(-pin1Offset) cube(bdyDims);
+      for(ix=[0:poles-1])
+        translate([ix*pitch,0,0]+holeOffset) cylinder(d=holeDia,h=bdyDims.z/2+fudge);
+    }
+  
+  //pins
+  color(metalGreyPinCol)
+    for (ix=[0:poles-1],iy=[0,1])
+      translate([ix*pitch,iy*7.62,0]) pin();
+      
+  //levers
+  color(orangeBodyCol)
+    for (ix=[0:poles-1],iy=[0,1])
+      translate([ix*pitch,0,0]+[-pitch/2,-lvrDims.y-pin1Offset.y,bdyDims.z-lvrDims.z]) 
+        difference(){ 
+          cube(lvrDims);
+          translate([1,lvrDims.y/2-lvrDims.y/6,lvrDims.z-1.5]) cube([lvrDims.x,lvrDims.y/3,1.6]);
+        }
+      
+  module pin(){
+    tipLngth=pinDims.z*0.25;
+    tipDia=pinDims.x*0.25;
+    
+    color() translate([0,0,-(pinDims.z-tipLngth)/2]) cube(pinDims-[0,0,tipLngth],true);
+    hull(){
+      translate([0,0,-pinDims.z+tipLngth]) rotate([-90,0,0]) cylinder(d=pinDims.x,h=pinDims.y,center=true);
+      translate([0,0,-pinDims.z+tipDia/2]) rotate([-90,0,0]) cylinder(d=tipDia,h=pinDims.y,center=true);
+    }
+  }
+  
+
+}
+
 *WAGO_2601();
 module WAGO_2601(poles=5,release=false){
   //vertical WAGO PCB terminal block; CAGE-CLAMP; 3.5mm pitch; 1.5mm²
@@ -114,7 +224,7 @@ module WAGO_2601(poles=5,release=false){
 
 }
 
-!color("grey") screwClampRA();
+*color("grey") screwClampRA();
 module  screwClampRA(){
   ovHght=11.2;
   ovLen=11.5;
