@@ -37,6 +37,11 @@ sensorXOffsets=[-20,-35];
 sensorMagPins=true;
 sensorMagPinDia=2;
 
+/* [Sanding Jig] */
+jigProtrude=0.5;
+jigCount=5;
+jigSpcng=0.1;
+
 /* [show] */
 showTopHand=true;
 showBotHand=true;
@@ -289,15 +294,34 @@ module PCB(cut=false){
 
 }
 
+!sandingJigFaces();
+module sandingJigFaces(){
+  botHandZOffset=topShaftLngth+minRoofThck-handThck*2-handZDist;
+  botShaftOvLen=botHandZOffset+botShaftLngth+handThck;
+  #mirror([0,0,1]){
+    translate([handWidth,0,-0.6+jigProtrude]) topHand();
+    translate([-handWidth,0,-3.8+jigProtrude]) rotate(180) bottomHand();
+  }
 
+  for (iy=[-(jigCount-1)/2:(jigCount-1)/2]){
+    translate([handWidth,iy*handWidth*1.5,0]){ 
+      linear_extrude(height = handThck-jigProtrude+jigSpcng) offset(jigSpcng) handShape(topHandLngth);
+      linear_extrude(height = topShaftLngth-jigProtrude) circle(d = topShaftDia+2*minWallThck);;
+    }
+    translate([-handWidth,iy*handWidth*1.5,0]) rotate(180){
+      linear_extrude(height = handThck-jigProtrude+jigSpcng) offset(jigSpcng) handShape(botHandLngth); 
+      linear_extrude(height = botShaftOvLen+jigSpcng) circle(d = botShaftDia+2*minWallThck);;
+    }
+  }
+}
 
 
 *topHand();
 module topHand(){
   shaftLen=topShaftLngth-handThck-handSpcng;
   ovThck=handThck+shaftLen;
-  
-  translate([0,0,-handThck+minRoofThck]) difference(){
+  handOffset= [0,0,-handThck+minRoofThck];
+  translate(handOffset) difference(){
     union(){
       linear_extrude(handThck) 
         handShape(topHandLngth);
@@ -311,13 +335,11 @@ module topHand(){
   
 }
 
-*bottomHand();
+*mirror([0,0,1]) bottomHand();
 module bottomHand(){
     shaftLen=botShaftLngth;
     shaftDia=botShaftDia+2*minWallThck;
-    handZOffset=topShaftLngth+minRoofThck-handThck*2-handZDist;
-    
-    
+    handZOffset=topShaftLngth+minRoofThck-handThck*2-handZDist;  
     
     //shaftAdapter
     translate([0,0,-shaftLen]) linear_extrude(shaftLen) difference(){
