@@ -1,0 +1,18 @@
+{
+    "fileFormatVersion": "1",
+    "parameterSets": {
+        "Neue Parameter Liste1": {
+            "$fn": "100",
+            "alignOffset": "0.40000000000000002",
+            "alignRot": "45",
+            "alignWdth": "1",
+            "showClip": "false",
+            "showNumber": "true",
+            "spcng": "-0.10000000000000001",
+            "textChamf": "0.5",
+            "textThck": "2",
+            "txtSize": "30",
+            "txtStr": "8"
+        }
+    }
+}
