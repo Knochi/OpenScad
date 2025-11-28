@@ -1,0 +1,25 @@
+{
+    "fileFormatVersion": "1",
+    "parameterSets": {
+        "Neue Parameter Liste1": {
+            "$fn": "48",
+            "capDims": "[14.35, 6.75, 6.15]",
+            "capFont": "Arial:style=Bold",
+            "capRad": "0.29999999999999999",
+            "capRecessDpth": "0.5",
+            "capRecessWdth": "1",
+            "capTxt": "KNOCHI",
+            "capTxtDpth": "0.40000000000000002",
+            "capTxtSize": "2.2000000000000002",
+            "capTxtThck": "0",
+            "magnetDia": "5",
+            "magnetSpcng": "0.20000000000000001",
+            "magnetThck": "1",
+            "showCap": "true",
+            "showContacts": "true",
+            "showPlastics": "true",
+            "showSheet": "true",
+            "showText": "true"
+        }
+    }
+}
