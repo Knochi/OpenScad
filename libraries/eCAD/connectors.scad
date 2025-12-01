@@ -43,28 +43,30 @@ translate([230,0,0]) PJ398SM();
 *rotate([0,0,-90]) femHeaderSMD(20,2,center=true);
 
 
-!KFR208R(pitch=5.08, poles=4);
-module KFR208R(pitch=5.08,poles=4){
+!KFR208R(pitch=5.08, poles=2);
+module KFR208R(pitch=5.08,poles=2){
   bdyDims=[pitch*poles+1.5,16.8,16];
   pin1Offset=[2.98,bdyDims.y-2.6-8.2,0];
   pinDims=[1,0.8,4];
   lvrDims=[4,12,3.1];
+  echo(pin1Offset,bdyDims);
   
   //body
   color(greenBodyCol) difference(){
     translate(-pin1Offset) 
       rotate([90,0,90]) linear_extrude(bdyDims.x) bdyShape();
+    //compartments for levers and holes
     for (ix=[0:(poles-1)]){
       translate([ix*pitch,-pin1Offset.y-fudge,4.3]) rotate([-90,0,0]) linear_extrude(3) holeShape();
       translate([ix*pitch,-pin1Offset.y,bdyDims.z-lvrDims.z/2]) rotate([-90,0,0]) 
-        linear_extrude(lvrDims.y) offset(0.05) square([lvrDims.x,lvrDims.z],true);
+        linear_extrude(lvrDims.y+0.05) offset(0.05) square([lvrDims.x,lvrDims.z],true);
       }
     }
   //levers
   color(orangeBodyCol)
     for (ix=[0:poles-1],iy=[0,1])
       translate([ix*pitch,-pin1Offset.y,bdyDims.z]) rotate([90,0,90]) 
-        linear_extrude(lvrDims.x,center=true) lvrShape();
+        lvrShape();
       
   //pins    
   color(metalGreyPinCol)
@@ -90,7 +92,6 @@ module KFR208R(pitch=5.08,poles=4){
   module holeShape(){
     holeDia=5.8;
     intersection(){
-      
       circle(d=holeDia);
       square([4.2,holeDia],true);
     }
@@ -98,14 +99,61 @@ module KFR208R(pitch=5.08,poles=4){
   
   module lvrShape(){
     hull(){
-      translate([0,-0.2]) circle(d=1);
-      translate([3.5,-lvrDims.z/2]) circle(d=lvrDims.z);
+      translate([0,-0.2,0]) cylinder(d=1,h=lvrDims.x,center=true);
+      translate([3.5,-lvrDims.z/2,0]) cylinder(d=lvrDims.z,h=lvrDims.x,center=true);
     }
-    translate([3.5,-lvrDims.z]) square([lvrDims.y-3.5,lvrDims.z]);
+    translate([3.5,-lvrDims.z,-lvrDims.x/2]) cube([lvrDims.y-3.5,lvrDims.z,lvrDims.x]);
   }
 }
 
-*MX142V();
+*MX142R(poles=3);
+module MX142R(pitch=5.08, poles=12){
+  
+  // aka KF208
+  bdyDims=[pitch*poles+2.54,14.1,10.6];
+  pin1Offset=[2.68,bdyDims.y-7.62-1.8,0];
+  pinDims=[1,0.5,3.5];
+  pinRot=90;
+  lvrDims=[4.8,8.8,2.5];
+  holeDia=2.6;
+  holeOffset=[-0.6,-pin1Offset.y,8]; //from pin1
+  echo(pin1Offset,bdyDims);
+  //body
+  color(greenBodyCol) 
+    difference(){
+      translate(-pin1Offset) cube(bdyDims);
+      for(ix=[0:poles-1])
+        translate([ix*pitch,-fudge,0]+holeOffset) rotate([-90,0,0]) cylinder(d=holeDia,h=bdyDims.y/2+fudge);
+    }
+  
+  //pins
+  color(metalGreyPinCol)
+    for (ix=[0:poles-1],iy=[0,1])
+      translate([ix*pitch,iy*7.62,0]) rotate(pinRot) pin();
+      
+  //levers
+  color(orangeBodyCol) 
+    for (ix=[0:poles-1],iy=[0,1])
+      translate([ix*pitch,0,0]+[-pitch/2,-pin1Offset.y+fudge,bdyDims.z])
+        difference(){ 
+          cube(lvrDims);
+          translate([1,-fudge,lvrDims.z/2-0.5]) cube([lvrDims.x,1.5,1]);
+        }
+      
+  module pin(){
+    tipLngth=pinDims.z*0.25;
+    tipDia=pinDims.x*0.25;
+    
+    color() translate([0,0,-(pinDims.z-tipLngth)/2]) cube(pinDims-[0,0,tipLngth],true);
+    hull(){
+      translate([0,0,-pinDims.z+tipLngth]) rotate([-90,0,0]) cylinder(d=pinDims.x,h=pinDims.y,center=true);
+      translate([0,0,-pinDims.z+tipDia/2]) rotate([-90,0,0]) cylinder(d=tipDia,h=pinDims.y,center=true);
+    }
+  }
+}
+
+
+*MX142V(poles=12);
 module MX142V(pitch=5.08, poles=12){
   
   // aka KF208
@@ -115,7 +163,7 @@ module MX142V(pitch=5.08, poles=12){
   lvrDims=[4.7,13.3-bdyDims.y,7];
   holeDia=2.6;
   holeOffset=[0.2,-pin1Offset.y+2.6,bdyDims.z/2]; //from pin
-  
+  echo(pin1Offset,bdyDims); 
   //body
   color(greenBodyCol) 
     difference(){
@@ -132,7 +180,7 @@ module MX142V(pitch=5.08, poles=12){
   //levers
   color(orangeBodyCol)
     for (ix=[0:poles-1],iy=[0,1])
-      translate([ix*pitch,0,0]+[-pitch/2,-lvrDims.y-pin1Offset.y,bdyDims.z-lvrDims.z]) 
+      translate([ix*pitch,0,0]+[-pitch/2,-lvrDims.y-pin1Offset.y,bdyDims.z-lvrDims.z-0.05]) 
         difference(){ 
           cube(lvrDims);
           translate([1,lvrDims.y/2-lvrDims.y/6,lvrDims.z-1.5]) cube([lvrDims.x,lvrDims.y/3,1.6]);
@@ -148,8 +196,6 @@ module MX142V(pitch=5.08, poles=12){
       translate([0,0,-pinDims.z+tipDia/2]) rotate([-90,0,0]) cylinder(d=tipDia,h=pinDims.y,center=true);
     }
   }
-  
-
 }
 
 *WAGO_2601();

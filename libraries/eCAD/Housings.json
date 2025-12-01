@@ -1,0 +1,11 @@
+{
+    "fileFormatVersion": "1",
+    "parameterSets": {
+        "Neue Parameter Liste1": {
+            "$fn": "20",
+            "fudge": "0.10000000000000001",
+            "showBottoms": "true",
+            "showTops": "false"
+        }
+    }
+}
