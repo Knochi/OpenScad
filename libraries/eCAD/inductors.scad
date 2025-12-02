@@ -9,7 +9,7 @@ fudge=0.1;
 
 
 /* [Select] */
-export= "SNR"; //["PDUUAT","ACT1210","SumidaCR43","TY6028","TMPC","CKCS","SNR","none"]
+export= "SNR"; //["PDUUAT","ACT1210","SumidaCR43","TY6028","TMPC","CKCS","SNR","PDSQAT","none"]
 
 /* [configure] */
 PDUUATseries= "UU16"; //["UU9.8","UU10.5","UU16"]
@@ -73,6 +73,8 @@ else if (export == "CKCS")
   !wwCoil();
 else if (export == "SNR")
   !wwCoil([10,10,5],[1.8,4.2],rad=1.5, chamfer=0);
+else if (export == "PDSQAT")
+  !PDSQAT();
 else
     echo("Nothing to render!");
 
@@ -107,7 +109,7 @@ module boxInductor(dims=[13.5,12.5,6.2],pads=[2.3,4.7]){
   }
 }
 
-!PDSQAT();
+*PDSQAT();
 module PDSQAT(center=false){
   ovDims=[24,15,31.5];
   cornerRad=1;
