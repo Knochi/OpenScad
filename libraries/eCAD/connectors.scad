@@ -43,7 +43,7 @@ translate([230,0,0]) PJ398SM();
 *rotate([0,0,-90]) femHeaderSMD(20,2,center=true);
 
 
-!KFR208R(pitch=5.08, poles=2);
+!KFR208R(pitch=5.08, poles=8);
 module KFR208R(pitch=5.08,poles=2){
   bdyDims=[pitch*poles+1.5,16.8,16];
   pin1Offset=[2.98,bdyDims.y-2.6-8.2,0];
