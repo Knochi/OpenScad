@@ -41,6 +41,11 @@ fudge=0.1;
 donglePos=[0,+9.0,+4.0];
 dongleSpcng=0.2;
 
+grabDia=12;
+grabWidth=1;
+grabZOffset=3;
+
+
 intersection(){
   difference(){
     scale(3.5){
@@ -51,7 +56,7 @@ intersection(){
       linear_extrude(capDims.y+dongleSpcng+fudge) 
         offset(dongleSpcng) square([capDims.x,capDims.z],true);
       //grab sphere
-      translate([0,0,capDims.y]) sphere(d=11);
+      for (iy=[-1,1]) translate([0,iy*grabWidth,capDims.y+grabZOffset]) sphere(d=12);
       //plug
       translate([0,0,-usbPlugDims.y]) 
         linear_extrude(usbPlugDims.y+dongleSpcng+fudge) 

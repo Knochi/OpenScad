@@ -41,6 +41,9 @@ sensorMagPinDia=2;
 jigProtrude=0.5;
 jigCount=5;
 jigSpcng=0.1;
+jigTopHands=true;
+jigBotHands=true;
+jigLvrSpcng=0.1;
 
 /* [show] */
 showTopHand=true;
@@ -54,7 +57,7 @@ showLayer3=true;
 //Front Layer
 showLayer4=true;
 
-export="none";//["none","Layer0","Layer1","Layer2","Layer3","topHand":"Top Hand","botHand":"Bottom hand"]
+export="none";//["none","Layer0","Layer1","Layer2","Layer3","topHand":"Top Hand","botHand":"Bottom hand", "sandJig":"Sanding Jig"]
 
 /* [options] */
 roundedHands=false;
@@ -137,6 +140,8 @@ if (export=="topHand")
   !topHand();
 if (export=="botHand")
   !bottomHand();
+if (export=="sandJig")
+  !sandingJigFaces();
     
 layerFrame();
 if (showPCB) color("darkGreen") for (ix=[0:clockCount.x-1]) translate([ix*clockDist,clockDist,1.6]) PCB();
@@ -164,7 +169,7 @@ module clocks(){
 
 module layerFrame(layer="all"){
   //bottom to top
-  layerThck=[12,3,3,3,9];
+  layerThck=[12,3,3,3,8];
   layerCol=["RosyBrown","Tan","BurlyWood","Wheat","NavajoWhite"];
   //layered frame
   
@@ -294,23 +299,67 @@ module PCB(cut=false){
 
 }
 
-!sandingJigFaces();
+*sandingJigFaces();
 module sandingJigFaces(){
   botHandZOffset=topShaftLngth+minRoofThck-handThck*2-handZDist;
   botShaftOvLen=botHandZOffset+botShaftLngth+handThck;
-  #mirror([0,0,1]){
-    translate([handWidth,0,-0.6+jigProtrude]) topHand();
-    translate([-handWidth,0,-3.8+jigProtrude]) rotate(180) bottomHand();
+  lvrThck=min(botShaftOvLen,topShaftLngth)-jigProtrude-handThck-minRoofThck;
+  lvrZOffset=handThck-jigProtrude+lvrThck/2+minRoofThck;
+  jigHandsYOffsetRel=1.8;
+  
+  xDim = (jigTopHands && jigBotHands) ? botHandLngth + topHandLngth + handWidth * 3 :
+         jigTopHands ? topHandLngth + handWidth * 1.5 :
+         botHandLngth + handWidth * 1.5;
+         
+  yDim = handWidth*jigHandsYOffsetRel*jigCount;
+  
+  bodyDims=[xDim,yDim,max(botShaftOvLen+jigSpcng,topShaftLngth+jigSpcng)];
+  
+  difference(){
+    body();
+    cutOuts();
   }
-
-  for (iy=[-(jigCount-1)/2:(jigCount-1)/2]){
-    translate([handWidth,iy*handWidth*1.5,0]){ 
-      linear_extrude(height = handThck-jigProtrude+jigSpcng) offset(jigSpcng) handShape(topHandLngth);
-      linear_extrude(height = topShaftLngth-jigProtrude) circle(d = topShaftDia+2*minWallThck);;
+  
+  translate([handWidth*1.5,0,lvrZOffset]) lever();
+  mirror([1,0,0]) translate([handWidth*1.5,0,lvrZOffset]) lever(botShaftDia+2*minWallThck);
+  
+  module body(){
+    xOffset=(jigTopHands && jigBotHands)? (topHandLngth-botHandLngth)/2 :
+            jigTopHands ? bodyDims.x/2 : -bodyDims.x/2;
+    
+    difference(){
+      translate([xOffset,0,bodyDims.z/2]) linear_extrude(bodyDims.z,center=true) offset(3)
+        square([bodyDims.x-6,bodyDims.y-6],true);
+      //lever
+      for (ix=[-1,1]) 
+        translate([ix*handWidth*1.5,0,lvrZOffset]) 
+          cube([handWidth,yDim+fudge,lvrThck],true);
     }
-    translate([-handWidth,iy*handWidth*1.5,0]) rotate(180){
-      linear_extrude(height = handThck-jigProtrude+jigSpcng) offset(jigSpcng) handShape(botHandLngth); 
-      linear_extrude(height = botShaftOvLen+jigSpcng) circle(d = botShaftDia+2*minWallThck);;
+    
+  }
+  *lever();
+  module lever(snapDia=topShaftDia+2*minWallThck){
+    linear_extrude(lvrThck-jigLvrSpcng*2,center=true) difference(){
+      translate([0,handWidth/2]) offset(-jigLvrSpcng) square([handWidth,yDim+handWidth],true);
+      for (iy=[-(jigCount-1)/2:(jigCount-1)/2]) hull(){
+        translate([-handWidth/2,iy*handWidth*jigHandsYOffsetRel,-fudge]) circle(d=snapDia);
+        translate([-handWidth/2,iy*handWidth*jigHandsYOffsetRel+handWidth,-fudge]) circle(d=snapDia-jigLvrSpcng*3);
+      }
+      }
+  }
+  
+  module cutOuts(){
+    for (iy=[-(jigCount-1)/2:(jigCount-1)/2]){
+      if (jigTopHands)
+        translate([handWidth,iy*handWidth*jigHandsYOffsetRel,-fudge]){ 
+          linear_extrude(height = handThck-jigProtrude+jigSpcng+fudge) offset(jigSpcng) handShape(topHandLngth);
+          linear_extrude(height = bodyDims.z+fudge*2) circle(d = topShaftDia+2*minWallThck);;
+        }
+      if (jigBotHands)
+        translate([-handWidth,iy*handWidth*jigHandsYOffsetRel,-fudge]) rotate(180){
+          linear_extrude(height = handThck-jigProtrude+jigSpcng+fudge) offset(jigSpcng) handShape(botHandLngth); 
+          linear_extrude(height = bodyDims.z+fudge*2) circle(d = botShaftDia+2*minWallThck);;
+        }
     }
   }
 }
@@ -321,6 +370,7 @@ module topHand(){
   shaftLen=topShaftLngth-handThck-handSpcng;
   ovThck=handThck+shaftLen;
   handOffset= [0,0,-handThck+minRoofThck];
+  
   translate(handOffset) difference(){
     union(){
       linear_extrude(handThck) 
@@ -364,7 +414,8 @@ module bottomHand(){
       circle(d=topShaftDia+(minWallThck+handSpcng)*2);
     }
 }
-    
+
+*handShape();    
 module handShape(radius=clockDia/2){
   
   if (roundedHands)
