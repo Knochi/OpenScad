@@ -107,6 +107,72 @@ module boxInductor(dims=[13.5,12.5,6.2],pads=[2.3,4.7]){
   }
 }
 
+!PDSQAT();
+module PDSQAT(center=false){
+  ovDims=[24,15,31.5];
+  cornerRad=1;
+  coilDia=10;
+  coilHght=20;
+  beamWdth=2.4;
+  coreDia=5;
+  coreBeamThck=2.5;
+  //bottom part
+  socketThck=3;
+  socketWdth=ovDims.y/2-coreDia/2;
+  baseThck=2;
+  botCrossThck=3;
+  baseOvThck=socketThck+baseThck+botCrossThck;
+  //pins
+  pinDia=0.8; //D
+  pinLen=3; //L
+  pinDist=[12.8,10]; //D1,D2
+  
+  cntrOffset= center ? [0,0,0] : [pinDist.x/2,-pinDist.y/2];
+  translate(cntrOffset){
+    //coils
+    for (ix=[-1,1]) 
+      color(metalCopperCol) translate([ix*(ovDims.x-coilDia)/2,0,baseOvThck]) cylinder(d=coilDia,h=coilHght);
+    //bot cross
+    color (blackBodyCol)
+      linear_extrude(botCrossThck){
+        square([ovDims.x,beamWdth],true);
+        square([beamWdth,ovDims.y],true);
+      }
+    //base
+    color (blackBodyCol)
+      translate([0,0,botCrossThck]) linear_extrude(baseThck) offset(cornerRad) 
+        square([ovDims.x-cornerRad*2,ovDims.y-cornerRad*2],true);
+    //socket
+    color (blackBodyCol)
+      translate([0,(ovDims.y-socketWdth)/2,botCrossThck+baseThck]) linear_extrude(socketThck) offset(cornerRad)
+        square([ovDims.x-cornerRad*2,socketWdth-cornerRad*2],true);
+    //core
+    color(greenBodyCol)
+      for (ix=[-1,1],iz=[0,1]) 
+        translate([0,0,baseOvThck+coilHght/2]) mirror([0,0,iz])
+          translate([0,0,coilHght/2+socketThck/2])
+            rotate([-90,0,0]) linear_extrude(coreDia,center=true){ 
+              translate([ix*(ovDims.x-coilDia+coreDia-socketThck/2)/2,0]) circle(d=socketThck);
+              square([ovDims.x-coilDia+coreDia-socketThck/2,socketThck],true);
+              translate([0,socketThck/4]) square([ovDims.x-coilDia+coreDia+socketThck/2,socketThck/2],true);
+            }
+     //back beams
+    color(blackBodyCol){
+      for (ix=[-1:1])
+        translate([ix*beamWdth*2,(ovDims.y-beamWdth)/2,baseOvThck]) 
+          linear_extrude(ovDims.z-baseOvThck) square([beamWdth,beamWdth],true);
+      translate([0,(ovDims.y-beamWdth/2)/2-beamWdth/2,baseOvThck])
+        linear_extrude(coilHght) square([beamWdth*5,beamWdth/2],true);
+      translate([0,ovDims.y/4,baseOvThck+coilHght/2])
+        linear_extrude(coilHght*0.8,center=true) square([beamWdth,ovDims.y/2],true);
+    }
+    //pins
+    color(metalGreyPinCol)
+    for (ix=[-1,1],iy=[-1,1])
+      translate([ix*pinDist.x/2,iy*pinDist.y/2,-pinLen]) cylinder(d=pinDia,h=pinLen+botCrossThck);
+  }
+}
+
 *PDUU("UU9.8",center=false);
 module PDUU(series="UU16", center=true){
   //https://datasheet.lcsc.com/lcsc/2201121530_PROD-Tech-PDUUAT16-503MLN_C2932169.pdf
