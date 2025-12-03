@@ -6,7 +6,7 @@
 /* [Dimensions] */
 
 minWallThck=1.2;
-minRoofThck=0.6;
+minFloorThck=0.6;
 brimWidth=50;
 
 //distance between the shafts in x and y
@@ -56,6 +56,7 @@ showLayer2=true;
 showLayer3=true;
 //Front Layer
 showLayer4=true;
+showJigLever=true;
 
 export="none";//["none","Layer0","Layer1","Layer2","Layer3","topHand":"Top Hand","botHand":"Bottom hand", "sandJig":"Sanding Jig"]
 
@@ -301,10 +302,10 @@ module PCB(cut=false){
 
 *sandingJigFaces();
 module sandingJigFaces(){
-  botHandZOffset=topShaftLngth+minRoofThck-handThck*2-handZDist;
+  botHandZOffset=topShaftLngth+minFloorThck-handThck*2-handZDist;
   botShaftOvLen=botHandZOffset+botShaftLngth+handThck;
-  lvrThck=min(botShaftOvLen,topShaftLngth)-jigProtrude-handThck-minRoofThck;
-  lvrZOffset=handThck-jigProtrude+lvrThck/2+minRoofThck;
+  lvrThck=min(botShaftOvLen,topShaftLngth)-jigProtrude-handThck-minFloorThck;
+  lvrZOffset=handThck-jigProtrude+lvrThck/2+minFloorThck;
   jigHandsYOffsetRel=1.8;
   
   xDim = (jigTopHands && jigBotHands) ? botHandLngth + topHandLngth + handWidth * 3 :
@@ -319,9 +320,10 @@ module sandingJigFaces(){
     body();
     cutOuts();
   }
-  
-  translate([handWidth*1.5,0,lvrZOffset]) lever();
-  mirror([1,0,0]) translate([handWidth*1.5,0,lvrZOffset]) lever(botShaftDia+2*minWallThck);
+  if (showJigLever){
+    if (jigTopHands)translate([handWidth*1.5,0,lvrZOffset]) lever();
+    if (jigBotHands) mirror([1,0,0]) translate([handWidth*1.5,0,lvrZOffset]) lever(botShaftDia+2*minWallThck);
+  }
   
   module body(){
     xOffset=(jigTopHands && jigBotHands)? (topHandLngth-botHandLngth)/2 :
@@ -330,10 +332,23 @@ module sandingJigFaces(){
     difference(){
       translate([xOffset,0,bodyDims.z/2]) linear_extrude(bodyDims.z,center=true) offset(3)
         square([bodyDims.x-6,bodyDims.y-6],true);
-      //lever
+      //lever cutout
       for (ix=[-1,1]) 
         translate([ix*handWidth*1.5,0,lvrZOffset]) 
           cube([handWidth,yDim+fudge,lvrThck],true);
+      //take out some material
+      cutAwayHght=bodyDims.z-lvrZOffset+minFloorThck;
+      
+      translate([handWidth*3,0,bodyDims.z-cutAwayHght/2]) rotate([90,0,0]) 
+        linear_extrude(bodyDims.y+fudge,center=true){
+          circle(r=cutAwayHght/2);
+          translate([-cutAwayHght,0]) difference(){
+            square(cutAwayHght/2+fudge);
+            circle(r=cutAwayHght/2);
+            }
+          translate([-cutAwayHght/2,0]) square([bodyDims.x-handWidth*3+cutAwayHght/2+fudge,cutAwayHght/2+fudge]);
+          translate([0,-cutAwayHght/2]) square([bodyDims.x-handWidth*3+fudge,cutAwayHght/2+fudge]);
+          }
     }
     
   }
@@ -369,7 +384,7 @@ module sandingJigFaces(){
 module topHand(){
   shaftLen=topShaftLngth-handThck-handSpcng;
   ovThck=handThck+shaftLen;
-  handOffset= [0,0,-handThck+minRoofThck];
+  handOffset= [0,0,-handThck+minFloorThck];
   
   translate(handOffset) difference(){
     union(){
@@ -378,7 +393,7 @@ module topHand(){
       translate([0,0,-shaftLen]) linear_extrude(shaftLen)   
         circle(d=topShaftDia+2*minWallThck);
     }
-    translate([0,0,-shaftLen-fudge]) cylinder(d=topShaftDia,h=shaftLen+handThck-minRoofThck+fudge);
+    translate([0,0,-shaftLen-fudge]) cylinder(d=topShaftDia,h=shaftLen+handThck-minFloorThck+fudge);
   }
     
   
@@ -389,7 +404,7 @@ module topHand(){
 module bottomHand(){
     shaftLen=botShaftLngth;
     shaftDia=botShaftDia+2*minWallThck;
-    handZOffset=topShaftLngth+minRoofThck-handThck*2-handZDist;  
+    handZOffset=topShaftLngth+minFloorThck-handThck*2-handZDist;  
     
     //shaftAdapter
     translate([0,0,-shaftLen]) linear_extrude(shaftLen) difference(){
@@ -397,13 +412,13 @@ module bottomHand(){
       circle(d=botShaftDia);
     }
     //Roof
-    linear_extrude(minRoofThck) difference(){
+    linear_extrude(minFloorThck) difference(){
       circle(d=shaftDia);
       circle(d=2);
     }
     
     //connector
-    translate([0,0,minRoofThck]) linear_extrude(handZOffset-minRoofThck) difference(){
+    translate([0,0,minFloorThck]) linear_extrude(handZOffset-minFloorThck) difference(){
       circle(d=shaftDia);
       circle(d=topShaftDia+(minWallThck+handSpcng)*2);
     }
