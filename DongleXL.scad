@@ -1,6 +1,7 @@
 // Loosing your USB Dongle, because it's so tiny? 
 // Here's the answer!
 
+/* [Cap] */
 capDims=[14.35,6.75,6.15];
 capRad=0.3;
 capRecessWdth=1;
@@ -11,9 +12,15 @@ capTxtSize=2.2;
 capTxtDpth=0.4;
 capTxtThck=0.0;
 
+/* [Magnet] */
 magnetDia=5;
 magnetThck=1;
 magnetSpcng=0.2;
+
+/* [General] */
+//spacing for fitting parts into each other
+dongleSpcng=0.15;
+minWallThck=0.8;
 
 /* [show] */
 showCap=true;
@@ -39,16 +46,16 @@ usbPlugDepth=8.65;
 fudge=0.1;
 
 donglePos=[0,+9.0,+4.0];
-dongleSpcng=0.2;
+
+dongleScale=3.5;
 
 grabDia=12;
 grabWidth=1;
 grabZOffset=3;
 
-
 intersection(){
   difference(){
-    scale(3.5){
+    scale(dongleScale){
      usbDongle();
     }
     translate(donglePos+[0,0,-dongleSpcng]){
@@ -70,16 +77,16 @@ intersection(){
   *color("darkRed") translate([donglePos.x,donglePos.y,-50]) cube([100,100,100]);
 }
 
-*translate(donglePos) rotate([90,0,0]) 
-  usbDongle();
+translate(donglePos) rotate([90,0,0]) 
+  usbDongle(scale=1);
 
     
-module usbDongle(){
-  USB_A_plug();
-  cap();
+module usbDongle(scale=dongleScale){
+  USB_A_plug(scale=scale);
+  cap(scale=scale);
 }
 
-module cap(size=capDims,rad=capRad){
+module cap(size=capDims,rad=capRad,scale=1){
 
   if (showCap)
     color("red") difference(){
@@ -114,7 +121,13 @@ module cap(size=capDims,rad=capRad){
 }
 
 
-module USB_A_plug(cut=false){
+
+module USB_A_plug(cut=false, scale=1){
+  //limit the sheet thickness to minWallThck 
+  //consider only for spacings and sheet thickness, not for positioning!
+  sheetThck = max(usbPlugSheetThck/scale,minWallThck/scale);
+  echo(usbPlugSheetThck,sheetThck,scale,usbPlugSheetRad);
+  
   if (cut)
     offset(usbPlugSheetRad) 
           square([usbPlugDims.x-usbPlugSheetRad*2,usbPlugDims.z-usbPlugSheetRad*2],true);
@@ -129,15 +142,15 @@ module USB_A_plug(cut=false){
     if (showSheet)
       color("silver") sheet();
   }
+  //calculate the height of the cutout with the regulat sheetThck
+  plasticZOffset=usbPlugDims.z/2-usbPlugSheetThck-usbPlugUpperSpacing;
   
-  
-  plasticOffset=usbPlugDims.z/2-usbPlugSheetThck-usbPlugUpperSpacing;
   module sheet(){
     difference(){
       rotate([90,0,0]) linear_extrude(usbPlugDims.y,convexity=4) difference(){
         offset(usbPlugSheetRad) 
           square([usbPlugDims.x-usbPlugSheetRad*2,usbPlugDims.z-usbPlugSheetRad*2],true);
-        offset(usbPlugSheetRad-usbPlugSheetThck) 
+        offset(usbPlugSheetRad - sheetThck) 
           square([usbPlugDims.x-usbPlugSheetRad*2,usbPlugDims.z-usbPlugSheetRad*2],true);
       }
       for (ix=[-1,1])
@@ -145,19 +158,23 @@ module USB_A_plug(cut=false){
           linear_extrude(usbPlugDims.z+fudge,center=true) square(usbPlugHoleDims,true);
     }
   }
+  plastic();
   module plastic(){
     difference(){ 
+      //body
       rotate([90,0,0]) 
         linear_extrude(usbPlugDims.y,convexity=4)
-          offset(usbPlugSheetRad-usbPlugSheetThck) 
+          offset(usbPlugSheetRad-sheetThck-dongleSpcng/scale) 
             square([usbPlugDims.x-usbPlugSheetRad*2,usbPlugDims.z-usbPlugSheetRad*2],true);
-      translate([0,-usbPlugDims.y,plasticOffset]){ 
+      //wedge      
+      translate([0,-usbPlugDims.y,plasticZOffset]){ 
         rotate([90,0,90]) linear_extrude(usbPlugDims.x,center=true) 
           polygon([[-0.1,0.1],[-0.1,-0.38],[0.1+(0.38+0.1)/tan(30),0.1]]);
-        translate([0,-fudge,0]) rotate([-90,0,0]) 
-          linear_extrude(usbPlugDepth+fudge) 
-            translate([0,-(usbPlugDims.z-usbPlugUpperSpacing)/2+usbPlugSheetThck*2-fudge/2]) 
-              square([usbPlugDims.x-usbPlugSheetThck*2+fudge,usbPlugUpperSpacing+fudge],true);
+      //cutout (calculate with regular sheetThck)
+      translate([0,-fudge,0]) rotate([-90,0,0]) 
+        linear_extrude(usbPlugDepth+fudge) 
+          translate([0,-(usbPlugDims.z-usbPlugUpperSpacing)/2+usbPlugSheetThck*2-fudge/2]) 
+            square([usbPlugDims.x-usbPlugSheetThck*2+fudge,usbPlugUpperSpacing+fudge],true);
       }
     }
   }
@@ -170,9 +187,9 @@ module USB_A_plug(cut=false){
     plating=cut ? 0.1+fudge :0.05;
     
     for (ix=[-1,1]){
-      translate([ix*1,-usbPlugDims.y+usbPlugDepth-shortPin/2,plasticOffset-pinThck]) 
+      translate([ix*1,-usbPlugDims.y+usbPlugDepth-shortPin/2,plasticZOffset-pinThck]) 
         linear_extrude(plating+pinThck) square([1,shortPin],true);
-      translate([ix*3.5,-usbPlugDims.y+usbPlugDepth-longPin/2,plasticOffset-pinThck]) 
+      translate([ix*3.5,-usbPlugDims.y+usbPlugDepth-longPin/2,plasticZOffset-pinThck]) 
         linear_extrude(plating+pinThck) square([1,longPin],true);
     }
     
