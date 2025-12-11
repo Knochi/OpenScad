@@ -326,6 +326,16 @@ module sensor(cut=false){
   
   *rotate([90,0,0]) import("CUI_DEVICES_SP-3541.stl");
 }
+!displayBumper();
+module displayBumper(){
+  //ad a TPU bumper to prevent display from breaking again
+  translate([0,0,1.8]){
+    %ESP32RoundDisplay(cut=true,spcng=lcdSpcng);
+    ESP32RoundDisplay(cut=false,spcng=lcdSpcng);
+  }
+  
+  
+}
 *antenna();
 module antenna(){
   topRad=1.4;
