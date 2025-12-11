@@ -27,9 +27,7 @@ handSpcng=0.2;
 //spacing between top and bottom hand
 handZDist=1;
 
-//Diameter of the stem to hold threated insert
-mountStemDia=8; 
-mountInsertDia=5.6; //Ruthex M4 short is 5.6 for plastic parts
+threadInsertDia=5.6; //Ruthex M4 short is 5.6 for plastic parts
 
 /* [Sensors] */
 sensorXOffsets=[-20,-35];
@@ -48,6 +46,8 @@ jigLvrSpcng=0.1;
 /* [show] */
 showTopHand=true;
 showBotHand=true;
+showHandSpcng=true;
+
 showMotor=true;
 showPCB=true;
 showLayer0=true;
@@ -57,8 +57,9 @@ showLayer3=true;
 //Front Layer
 showLayer4=true;
 showJigLever=true;
+showJigBody=true;
 
-export="none";//["none","Layer0","Layer1","Layer2","Layer3","topHand":"Top Hand","botHand":"Bottom hand", "sandJig":"Sanding Jig"]
+export="none";//["none","Layer0","Layer1","Layer2","Layer3","Layer4","topHand":"Top Hand","botHand":"Bottom hand", "sandJig":"Sanding Jig"]
 
 /* [options] */
 roundedHands=false;
@@ -66,7 +67,7 @@ roundedCorners=false;
 //metal pins for hall sensors
 metalPins=false;
 //split the design in the middle
-splitDesign=true; 
+splitDesign=false; 
 //show which halves
 splitShow="all"; //["all","left","center","right"]
 //compensate kerf
@@ -79,6 +80,7 @@ pcbDims=[0,0,1.6];
 
 topHandLngth=clockDia/2-clock2TopHandSpcng;
 botHandLngth=clockDia/2-clock2BotHandSpcng;
+echo(str("Hand Lengths: Top: ",topHandLngth, ", Bottom: ",botHandLngth));
 
 topShaftDia=1.6;
 topShaftLngth=6.2;
@@ -89,6 +91,10 @@ botShaftLngth=4.8;
 botShaftZOffset=11.2;
 
 cornerRad= roundedCorners ? clockDist/2+brimWidth : 0;
+
+//bottom to top
+layerThck=[3,12,3,6,8];
+layerCol=["RosyBrown","Tan","BurlyWood","Wheat","NavajoWhite"];
 
 //Clock Simulation test
 handPosDigit0 =[
@@ -123,8 +129,8 @@ handPosDigit6 =[
                ];
 
                
-handPosTopBot = handPosDigit4;
-echo(handPosTopBot);
+handPosTopBot = handPosDigit8;
+
 /*
 [
   [[3, 12], [9, 12]], 
@@ -143,11 +149,16 @@ if (export=="botHand")
   !bottomHand();
 if (export=="sandJig")
   !sandingJigFaces();
-    
+  
 layerFrame();
 if (showPCB) color("darkGreen") for (ix=[0:clockCount.x-1]) translate([ix*clockDist,clockDist,1.6]) PCB();
 
 clocks();
+
+if (showHandSpcng){
+  color("red",0.2) translate([0,0,botShaftZOffset + 2]) linear_extrude(2) circle(d=clockDia-clock2BotHandSpcng*2);
+  color("green",0.2) translate([0,0,topShaftZOffset+ -1]) linear_extrude(2) circle(d=clockDia-clock2TopHandSpcng*2);
+}
 
 module clocks(){
   for(ix=[0:clockCount.x-1],iy=[0:clockCount.y-1]){
@@ -169,63 +180,82 @@ module clocks(){
 }
 
 module layerFrame(layer="all"){
-  //bottom to top
-  layerThck=[12,3,3,3,8];
-  layerCol=["RosyBrown","Tan","BurlyWood","Wheat","NavajoWhite"];
+
   //layered frame
   
   ovDims=[clockDist*(clockCount.x)+brimWidth*2,clockDist*(clockCount.y)+brimWidth*2];
   
-  //layer 0 Bottom "Frame"
   if (showLayer0)
-    color(layerCol[0]) translate([0,0,pcbDims.z-layerThck[0]]) linear_extrude(layerThck[0]) 
-      difference(){
-        baseShape();
-        translate([-clockDist/2,-clockDist/2]) square(ovDims+[-brimWidth*2,-brimWidth*2]);
-      }
-  
-  //layer 1 PCB Interface
+    color(layerCol[0]) translate([0,0,pcbDims.z-layerThck[0]-layerThck[1]]) linear_extrude(layerThck[0]) layer0();
   if (showLayer1)
-    color(layerCol[1]) translate([0,0,pcbDims.z]) linear_extrude(layerThck[1]) 
+    color(layerCol[1]) translate([0,0,pcbDims.z-layerThck[1]]) linear_extrude(layerThck[1]) layer1();
+  if (showLayer2)
+    color(layerCol[2]) translate([0,0,pcbDims.z]) linear_extrude(layerThck[2]) layer2();
+  if (showLayer3)
+    color(layerCol[3]) translate([0,0,pcbDims.z+layerThck[2]]) linear_extrude(layerThck[3]) layer3();
+  if (showLayer4)
+    color(layerCol[4]) translate([0,0,pcbDims.z+layerThck[2]+layerThck[3]]) linear_extrude(layerThck[4]) layer4();
+  
+  if (export=="Layer0")
+    !layer0();
+  if (export=="Layer1")
+    !layer1();
+  if (export=="Layer2")
+    !layer2();
+  if (export=="Layer3")
+    !layer3();
+  if (export=="Layer4")
+    !layer4();
+
+  
+  //layer 0 Bottom "Frame"
+  module layer0(){
+      #difference(){
+        baseShape();
+        translate([-clockDist*0.75,-clockDist*0.75]) square(ovDims+[-brimWidth,-brimWidth]);
+      }
+  }
+  
+  //layer 1 Bottom Screwplate
+  module layer1(){
+      difference(){
+        baseShape(splits=1);
+        translate([-clockDist/2,-clockDist/2]) square(ovDims+[-brimWidth*2,-brimWidth*2]);
+        }
+  }
+  
+  //layer 2 PCB Interface
+  module layer2(){
       difference(){
         baseShape(splits=2);
         for(ix=[0:clockCount.x-1],iy=[0:clockCount.y-1])
           translate([ix*clockDist,iy*clockDist]) offset(0.5) VID28_05(true);
-        for (ix=[0:clockCount.x-1]) translate([ix*clockDist,clockDist]) PCB(true);
+        for (ix=[0:clockCount.x-1]) translate([ix*clockDist,clockDist]) PCB(cut="pcb");
           }
-          
-  //layer 2 threated inserts
-  if (showLayer2)
-    color(layerCol[2]) translate([0,0,pcbDims.z+layerThck[1]]) linear_extrude(layerThck[2]) 
-      difference(){
-        baseShape(splits=1);
-        for(ix=[0:clockCount.x-1],iy=[0:clockCount.y-1])
-          translate([ix*clockDist,iy*clockDist]) circle(d=7);
-        if (metalPins) //metal pins to improve hall sensor performance
-          for (ix=[0:clockCount.x-1],iy=[0:clockCount.y-1],px=sensorXOffsets)
-            translate([ix*clockDist,iy*clockDist]+[px,0]) circle(d=sensorMagPinDia);
-        }
+  }
   
   //layer 3 clocks Background
-  if (showLayer3)
-    color(layerCol[3]) translate([0,0,pcbDims.z+layerThck[1]+layerThck[2]]) linear_extrude(layerThck[3]) 
+  module layer3(){
       difference(){
         baseShape(splits=2);
         for(ix=[0:clockCount.x-1],iy=[0:clockCount.y-1])
           translate([ix*clockDist,iy*clockDist]) circle(d=7);
+        for (ix=[0:clockCount.x-1]) 
+          translate([ix*clockDist,clockDist]) PCB(cut="inserts");
         if (metalPins) //metal pins to improve hall sensor performance
           for (ix=[0:clockCount.x-1],iy=[0:clockCount.y-1],px=sensorXOffsets)
             translate([ix*clockDist,iy*clockDist]+[px,0]) circle(d=sensorMagPinDia);
         }
-      
+  }
+  
   //layer 4 clocks frames
-  if (showLayer4)
-    color(layerCol[4]) translate([0,0,pcbDims.z+layerThck[1]+layerThck[2]+layerThck[3]]) linear_extrude(layerThck[4]) 
+  module layer4(){
       difference(){
         baseShape(splits=1);
         for(ix=[0:clockCount.x-1],iy=[0:clockCount.y-1])
           translate([ix*clockDist,iy*clockDist]) circle(d=clockDia);
         }
+  }
       
   module baseShape(splits=2){
     //show either the actual design with gaps or compensate for kerf
@@ -269,7 +299,7 @@ module PCB(cut=false){
   pwrPos=[-34.5,60];
   i2cPos=[[-34.54,75.35],[14.34,75.35]];
   holesPos=[[-30,15],[50,-50]];
-  if (cut){
+  if (cut=="pcb"){
     //sensors
     for (px=sensorXOffsets,py=[-clockDist,0,clockDist])
       translate([px,py]) circle(d=sensorDia);
@@ -291,10 +321,13 @@ module PCB(cut=false){
         hull() for (iy=[-1,1])
           translate([0,iy*7.62/2])
             circle(d=3);
-    //Mounting holes
     for (px=holesPos.x,py=holesPos.y)
-      translate([px,py]) circle(d=mountStemDia);
+      translate([px,py]) circle(d=4.5);
   }
+  else if (cut=="inserts") 
+    for (px=holesPos.x,py=holesPos.y)
+      translate([px,py]) circle(d=threadInsertDia);
+  
   else
     rotate([0,180,0]) import("ClockClock24.stl");
 
@@ -316,12 +349,14 @@ module sandingJigFaces(){
   
   bodyDims=[xDim,yDim,max(botShaftOvLen+jigSpcng,topShaftLngth+jigSpcng)];
   
-  difference(){
-    body();
-    cutOuts();
-  }
+  if (showJigBody)
+    difference(){
+      body();
+      cutOuts();
+    }
+  
   if (showJigLever){
-    if (jigTopHands)translate([handWidth*1.5,0,lvrZOffset]) lever();
+    if (jigTopHands) translate([handWidth*1.5,0,lvrZOffset]) lever();
     if (jigBotHands) mirror([1,0,0]) translate([handWidth*1.5,0,lvrZOffset]) lever(botShaftDia+2*minWallThck);
   }
   
