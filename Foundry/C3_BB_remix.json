@@ -207,7 +207,7 @@
             "showAntenna": "true",
             "showBody": "true",
             "showCamera": "true",
-            "showDisplay": "false",
+            "showDisplay": "true",
             "showEars": "true",
             "showFeet": "false",
             "showMagnets": "true",

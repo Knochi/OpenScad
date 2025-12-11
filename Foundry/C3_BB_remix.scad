@@ -330,19 +330,28 @@ module sensor(cut=false){
 module displayBumper(){
   //ad a TPU bumper to prevent display from breaking again
   bumpWdth=2.5;
-  frameWdth=0.5;
+  frameWdth=1.5;
   frameThck=0.6;
-  dsplThck=3.8;
+  dsplThck=3.5;
   dslpSpcng=0.2;
-  
-  linear_extrude(dsplThck) difference(){
-    offset(bumpWdth) ESP32RoundDisplay(cut="shape");
-    offset(dslpSpcng) ESP32RoundDisplay(cut="shape");
+  difference(){
+    union(){
+      translate([0,0,-1.8]){
+        linear_extrude(dsplThck,convexity=3) difference(){
+          offset(bumpWdth) ESP32RoundDisplay(cut="shape");
+          offset(dslpSpcng) ESP32RoundDisplay(cut="shape");
+        }
+        translate([0,0,-frameThck]) linear_extrude(frameThck) difference(){
+          offset(bumpWdth) ESP32RoundDisplay(cut="shape");
+          circle(18.25-frameWdth);
+        }
+      }
+    }
+    ESP32RoundDisplay(cut="plug");
+    
   }
-  translate([0,0,-frameThck]) linear_extrude(frameThck) difference(){
-    offset(bumpWdth) ESP32RoundDisplay(cut="shape");
-    circle(18.25-frameWdth);
-  }
+  %ESP32RoundDisplay();
+
 }
 *antenna();
 module antenna(){

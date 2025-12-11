@@ -278,7 +278,7 @@ module DisplayRound_1_28(){
     }
 }
 
-*ESP32RoundDisplay(cut=true);
+!ESP32RoundDisplay();
 module ESP32RoundDisplay(showPlug=false, cut=false, spcng=0.1){
   // Waveshare ESP32-S3 round 1.28" IPS display with headers
   // https://www.waveshare.com/wiki/ESP32-S3-LCD-1.28
@@ -294,9 +294,15 @@ module ESP32RoundDisplay(showPlug=false, cut=false, spcng=0.1){
   
   displayThck=3.4-1.6;
   
+  
+  
   if (cut=="shape"){
     circle(pcbRad);
     translate([0,-pcbRad+segHght]) polygon(footPoly);
+  }
+  else if (cut=="plug"){
+    translate([0,-pcbRad+segHght-footDims.y-1.5,3.18]) rotate([90,0,0]) linear_extrude(20) hull() for (ix=[-1,1]) 
+      translate([ix*(6.2-6.5/2),0]) circle(d=6.5+0.5);
   }
   else if (cut){
     translate([0,0,-spcng-displayThck]){
