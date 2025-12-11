@@ -17,9 +17,7 @@ translate([300,0,0]) AdafruitOLED23();
 translate([300,100,0]) VIM_878_DP();
 translate([500,0,0]) raspBerry7Inch();
 translate([100,180,0]) EA_DOGS164_A();
-
-
-
+translate([-100,100,0]) rotate([0,180,0]) ESP32RoundDisplay();
 
 //double 7-segment display
 *KingbrightACDx03();
@@ -296,7 +294,11 @@ module ESP32RoundDisplay(showPlug=false, cut=false, spcng=0.1){
   
   displayThck=3.4-1.6;
   
-  if (cut){
+  if (cut=="shape"){
+    circle(pcbRad);
+    translate([0,-pcbRad+segHght]) polygon(footPoly);
+  }
+  else if (cut){
     translate([0,0,-spcng-displayThck]){
       linear_extrude(displayThck+pcbThck+spcng*2)
         circle(pcbRad+spcng,$fn=42);
