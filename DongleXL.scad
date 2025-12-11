@@ -10,16 +10,18 @@ capTxt="KNOCHI";
 capFont="Arial:style=Bold";
 capTxtSize=2.2;
 capTxtDpth=0.4;
-capTxtThck=0.0;
+capTxtThck=0.0; 
 
 /* [Magnet] */
 magnetDia=5;
 magnetThck=1;
-magnetSpcng=0.2;
+magnetSpcng=0.1;
 
 /* [General] */
+//spacing for the dongle
+dongleSpcng=0.2;
 //spacing for fitting parts into each other
-dongleSpcng=0.15;
+glueSpcng=0.15;
 minWallThck=0.8;
 
 /* [show] */
@@ -28,6 +30,7 @@ showSheet=true;
 showContacts=true;
 showPlastics=true;
 showText=true;
+showOriginal=true;
 
 $fn=50;
 
@@ -68,16 +71,18 @@ intersection(){
       translate([0,0,-usbPlugDims.y]) 
         linear_extrude(usbPlugDims.y+dongleSpcng+fudge) 
           offset(dongleSpcng) USB_A_plug(true);
-      //magnet
-      translate([0,usbPlugDims.z/2+dongleSpcng-fudge,-usbPlugDims.y/2]) 
-        rotate([-90,0,0]) linear_extrude(magnetThck+magnetSpcng+fudge) 
+      //magnet cavity
+      translate([0,0,-usbPlugDims.y-magnetThck-magnetSpcng*2]) 
+        linear_extrude(magnetThck+magnetSpcng*2+fudge){
           circle(d=magnetDia+magnetSpcng*2);
+          translate([0,-capDims.y/4*dongleScale]) square([magnetDia+magnetSpcng*2,capDims.y/2*dongleScale],true);
+        }
     }
   }
-  *color("darkRed") translate([donglePos.x,donglePos.y,-50]) cube([100,100,100]);
+  color("darkRed") translate([0,4,2.5-capDims.z/2*dongleScale-fudge]) cube([capDims.x*1.2,capDims.y*dongleScale,5],true);
 }
 
-translate(donglePos) rotate([90,0,0]) 
+if (showOriginal) translate(donglePos) rotate([90,0,0]) 
   usbDongle(scale=1);
 
     
@@ -109,6 +114,8 @@ module cap(size=capDims,rad=capRad,scale=1){
             square([size.x+fudge,size.z+fudge],true);
             offset(capRad-capRecessDpth) square([size.x-capRad*2,size.z-capRad*2],true);
           }
+      //cutout for plug
+      translate([0,-size.y/2,0]) rotate([-90,0,0]) linear_extrude(1) offset(glueSpcng/dongleScale) USB_A_plug(true,scale=1);
     }
   }
   //text
@@ -126,11 +133,9 @@ module USB_A_plug(cut=false, scale=1){
   //limit the sheet thickness to minWallThck 
   //consider only for spacings and sheet thickness, not for positioning!
   sheetThck = max(usbPlugSheetThck/scale,minWallThck/scale);
-  echo(usbPlugSheetThck,sheetThck,scale,usbPlugSheetRad);
-  
   if (cut)
     offset(usbPlugSheetRad) 
-          square([usbPlugDims.x-usbPlugSheetRad*2,usbPlugDims.z-usbPlugSheetRad*2],true);
+          square([(usbPlugDims.x-usbPlugSheetRad*2),(usbPlugDims.z-usbPlugSheetRad*2)],true);
   else {
     if (showPlastics)
     color("darkSlateGrey") difference(){
@@ -146,25 +151,25 @@ module USB_A_plug(cut=false, scale=1){
   plasticZOffset=usbPlugDims.z/2-usbPlugSheetThck-usbPlugUpperSpacing;
   
   module sheet(){
-    difference(){
-      rotate([90,0,0]) linear_extrude(usbPlugDims.y,convexity=4) difference(){
+    translate([0,1,0]) difference(){
+      rotate([90,0,0]) linear_extrude(usbPlugDims.y+1,convexity=4) difference(){
         offset(usbPlugSheetRad) 
           square([usbPlugDims.x-usbPlugSheetRad*2,usbPlugDims.z-usbPlugSheetRad*2],true);
         offset(usbPlugSheetRad - sheetThck) 
           square([usbPlugDims.x-usbPlugSheetRad*2,usbPlugDims.z-usbPlugSheetRad*2],true);
       }
       for (ix=[-1,1])
-        translate([ix*usbPlugHolesDist/2,-usbPlugDims.y+usbPlugHolesYOffset,0]) 
+        translate([ix*usbPlugHolesDist/2,-usbPlugDims.y+usbPlugHolesYOffset-1,0]) 
           linear_extrude(usbPlugDims.z+fudge,center=true) square(usbPlugHoleDims,true);
     }
   }
-  plastic();
+  *plastic();
   module plastic(){
     difference(){ 
       //body
       rotate([90,0,0]) 
-        linear_extrude(usbPlugDims.y,convexity=4)
-          offset(usbPlugSheetRad-sheetThck-dongleSpcng/scale) 
+        translate([0,0,-1]) linear_extrude(usbPlugDims.y+1,convexity=4)
+          offset(usbPlugSheetRad-sheetThck-glueSpcng/scale) 
             square([usbPlugDims.x-usbPlugSheetRad*2,usbPlugDims.z-usbPlugSheetRad*2],true);
       //wedge      
       translate([0,-usbPlugDims.y,plasticZOffset]){ 
