@@ -1,3 +1,7 @@
+include <BOSL2/std.scad>
+include <BOSL2/threading.scad>
+
+
 //Drill Jig for DPS 
 /* [Dimensions] */
 minWallThck=3;
@@ -44,6 +48,8 @@ proxNutLen=22.5;
 proxClampThck=7;
 proxClampSpcng=0.5;
 
+/* [Pusher] */
+pushYOffset=35;
 
 /* [options] */
 vacChannel=true;
@@ -57,6 +63,8 @@ showClampUpper=true;
 
 showPart=true;
 showProxxon=true;
+showPusher=true;
+showPushScrew=true;
 
 showPartFit=false;
 
@@ -86,6 +94,10 @@ if (showClampUpper)
   color("lightGreen") clampUpper();
 if (showSupport)
   translate([-100.0,15,0]) proxxSupport();
+if (showPusher)
+  translate([0,pushYOffset,0]) pusher();
+if (showPushScrew)
+  translate([0,pushYOffset,0]) rotate([-90,0,0]) pushScrew();
 
 if (showPartFit)
   !difference(){
@@ -93,8 +105,54 @@ if (showPartFit)
       translate(partOffset) part();
       drillJig();
     }
-    color("darkRed") translate([-holeXPos,partOffset.y+partTopLen,-proxSupportThck-fudge]) cube([partDims.x+fudge,partDims.y+partTopLen,proxBdyDims.z],true);
+    color("darkRed") translate([-holeXPos,partOffset.y+partTopLen,-proxSupportThck-fudge]) 
+      cube([partDims.x+fudge,partDims.y+partTopLen,proxBdyDims.z],true);
   }
+
+module pusher(){
+  //press against the head of the drill
+  pushBdyDia=proxFlangeDia+proxClampThck*2;
+  pushBdyRad=5;
+  pushBdyDims=[partDims.x,20,proxBdyDims.z/2+proxSupportThck];
+  difference(){
+    union(){
+      rotate([-90,0,0]) cylinder(d=pushBdyDia,h=pushBdyDims.y);
+        translate([partOffset.x,pushBdyDims.y/2,-proxBdyDims.z/2-proxSupportThck]) 
+        linear_extrude(proxBdyDims.z/2+proxSupportThck) 
+          offset(pushBdyRad) 
+            square([partDims.x-pushBdyRad*2,pushBdyDims.y-pushBdyRad*2],true);
+    }
+    translate([0,pushBdyDims.y/2,0]) 
+      rotate([-90,0,0]) threaded_rod(d=proxFlangeDia,l=pushBdyDims.y+fudge*2,pitch=2,internal=true);
+      
+    for (ix=[-1,1])
+      translate([ix*(partDims.x/2-mountHoleCornerOffset)+partOffset.x,pushBdyDims.y/2,0]){ 
+      translate([0,0,-proxBdyDims.z/2-proxSupportThck-fudge/2]) 
+        linear_extrude(pushBdyDims.z+fudge) horizontalHole(mountHoleDia);
+      screwHead();
+    }
+  }
+}
+
+module pushScrew(){
+  pScrewHeadDia=33; //M20
+  pScrewHeadThck=15;
+  pScrewLen=50;
+  pScrewWallThck=3;
+  
+  difference(){
+    union(){
+      threaded_rod(d=proxFlangeDia-0.2,l=pScrewLen,pitch=2,anchor=BOTTOM);
+      translate([0,0,pScrewLen-pScrewHeadThck]) cylinder(d=pScrewHeadDia,h=pScrewHeadThck,$fn=6);
+    }
+    translate([0,0,-fudge]){
+      cylinder(d=proxFlangeDia-pScrewWallThck*2,h=pScrewLen+fudge*2);
+      cylinder(d1=proxFlangeDia-pScrewWallThck*1.4,d2=proxFlangeDia-pScrewWallThck*2,h=1);
+    }
+  }
+  
+  
+}
   
 *clampUpper();  
 module clampUpper(){
@@ -135,7 +193,8 @@ module proxxSupport(){
           }
       //cutOut
       translate([0,0,proxBdyDims.z/2+proxSupportThck]) rotate([0,90,0]) 
-        linear_extrude(sprtDims.x+fudge,center=true) offset(proxBdyRad) square([proxBdyDims.z-proxBdyRad*2,proxBdyDims.y-proxBdyRad*2],true);
+        linear_extrude(sprtDims.x+fudge,center=true) 
+          offset(proxBdyRad) square([proxBdyDims.z-proxBdyRad*2,proxBdyDims.y-proxBdyRad*2],true);
       //screwHead
       for (iy=[-1,1])
         translate([0,iy*(sprtDims.y/2-mountHeadDia/2-minWallThck),sprtDims.z]) screwHead();
@@ -227,11 +286,13 @@ module drillJig(){
     //slope for 45° printing
     translate([tablePos.x,0,tablePos.z]) rotate([0,90,0]) cylinder(d=20,h=tableDims.x+fudge,center=true,$fn=4);
     //version label
-    translate([tablePos.x,-tableDims.y/2,tablePos.z-fudge]) roof() rotate(90) mirror([1,0]) text(versionLabel,halign="center",valign="center");
+    *translate([tablePos.x,-tableDims.y/2,tablePos.z-fudge]) 
+      roof() 
+        rotate(90) mirror([1,0]) text(versionLabel,halign="center",valign="center");
     } 
     
 }
-
+*screwHead();
 module screwHead(){
   translate([0,0,-proxSupportThck]){
     translate([0,0,-(mountHeadDia-mountHoleDia)/2]) cylinder(d1=mountHoleDia,d2=mountHeadDia,h=(mountHeadDia-mountHoleDia)/2);

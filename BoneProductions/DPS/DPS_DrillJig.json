@@ -468,18 +468,21 @@
             "proxFlangeSpcng": "0.10000000000000001",
             "proxNutLen": "22.5",
             "proxSupportThck": "7",
-            "showClampUpper": "true",
+            "pushYOffset": "35",
+            "showClampUpper": "false",
             "showJig": "false",
             "showPart": "false",
             "showPartFit": "false",
             "showProxxon": "false",
+            "showPushScrew": "true",
+            "showPusher": "false",
             "showSupport": "false",
             "slotDims": "[1.2, 6.3, 1.6]",
             "slotZOffset": "4.7999999999999998",
             "testClamp": "false",
             "vacChannel": "true",
             "vacDia": "35",
-            "versionLabel": "CCCV48 V02"
+            "versionLabel": "V01"
         }
     }
 }
