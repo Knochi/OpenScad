@@ -50,6 +50,8 @@ proxClampSpcng=0.5;
 
 /* [Pusher] */
 pushYOffset=35;
+threadSpcng=0.4;
+threadPitch=2;
 
 /* [options] */
 vacChannel=true;
@@ -68,13 +70,31 @@ showPushScrew=true;
 
 showPartFit=false;
 
-/* [Hidden] */
-proxClampDims=[proxFlangeDia+proxClampThck*2,proxClampThck,proxFlangeDia/2+proxClampThck];
+showVacAdapter=true;
 
+/* [Hidden] */
 fudge=0.1;
 $fn=100;
 
 partOffset=[-holeXPos,-partDims.y-proxDrillZOffset-drillLength+drillDepth,-holeZPos];
+
+proxClampDims=[proxFlangeDia+proxClampThck*2,proxClampThck,proxFlangeDia/2+proxClampThck];
+
+//table
+tableDims=[partDims.x,-partOffset.y+partTopLen,proxBdyDims.z/2-partDims.z/2+partOffset.z-partSpcng+proxSupportThck];
+tablePos=[partOffset.x,-tableDims.y/2,-tableDims.z-partDims.z/2+partOffset.z-partSpcng];
+tableRad=mountHoleCornerOffset;
+tableSurfaceZOffset=-tablePos.z-tableDims.z;
+
+//Guide Block
+guideBlockDims=[tableDims.x,partTopLen+minWallThck,partDims.z+partSpcng*2+minFloorThck];
+guideBlockPos=[tablePos.x,-guideBlockDims.y/2+partOffset.y+partDims.y+minWallThck+partSpcng,guideBlockDims.z/2-tableSurfaceZOffset];
+
+vacChannelDia=tableDims.z-proxSupportThck;
+vacChannelZPos=tablePos.z+vacChannelDia/2+minFloorThck;
+vacChannelYPos=guideBlockPos.y+guideBlockDims.y/2-vacChannelDia/2-minWallThck;
+  
+
 
 if (showPart)
   color("lightgrey") difference(){
@@ -83,7 +103,7 @@ if (showPart)
   }
     
 if (showProxxon)
-  color("grey") rotate([90,0,0]) proxxonLWB();
+  rotate([90,0,0]) proxxonLWB();
 if (showJig)
   intersection(){
   color("darkgreen") drillJig();
@@ -109,6 +129,14 @@ if (showPartFit)
       cube([partDims.x+fudge,partDims.y+partTopLen,proxBdyDims.z],true);
   }
 
+if (showVacAdapter)
+  color("violet"){
+    translate([tableDims.x/2+tablePos.x-10,vacChannelYPos,vacChannelZPos]) rotate([90,-90,90]) vacAdapter();
+    translate([-tableDims.x/2+tablePos.x-minFloorThck,vacChannelYPos,vacChannelZPos]) rotate([90,-90,90]) vacSeal();
+    }
+
+  
+  
 module pusher(){
   //press against the head of the drill
   pushBdyDia=proxFlangeDia+proxClampThck*2;
@@ -123,7 +151,7 @@ module pusher(){
             square([partDims.x-pushBdyRad*2,pushBdyDims.y-pushBdyRad*2],true);
     }
     translate([0,pushBdyDims.y/2,0]) 
-      rotate([-90,0,0]) threaded_rod(d=proxFlangeDia,l=pushBdyDims.y+fudge*2,pitch=2,internal=true);
+      rotate([-90,0,0]) threaded_rod(d=proxFlangeDia,l=pushBdyDims.y+fudge*2,pitch=threadPitch,bevel=true,internal=true);
       
     for (ix=[-1,1])
       translate([ix*(partDims.x/2-mountHoleCornerOffset)+partOffset.x,pushBdyDims.y/2,0]){ 
@@ -142,7 +170,7 @@ module pushScrew(){
   
   difference(){
     union(){
-      threaded_rod(d=proxFlangeDia-0.2,l=pScrewLen,pitch=2,anchor=BOTTOM);
+      threaded_rod(d=proxFlangeDia-threadSpcng,l=pScrewLen,pitch=threadPitch,anchor=BOTTOM);
       translate([0,0,pScrewLen-pScrewHeadThck]) cylinder(d=pScrewHeadDia,h=pScrewHeadThck,$fn=6);
     }
     translate([0,0,-fudge]){
@@ -197,24 +225,12 @@ module proxxSupport(){
           offset(proxBdyRad) square([proxBdyDims.z-proxBdyRad*2,proxBdyDims.y-proxBdyRad*2],true);
       //screwHead
       for (iy=[-1,1])
-        translate([0,iy*(sprtDims.y/2-mountHeadDia/2-minWallThck),sprtDims.z]) screwHead();
+        translate([0,iy*(sprtDims.y/2-mountHeadDia/2-minWallThck),tableDims.z]) screwHead(h=sprtDims.z);
     }
 }
   
 module drillJig(){
-  //table
-  tableDims=[partDims.x,-partOffset.y+partTopLen,proxBdyDims.z/2-partDims.z/2+partOffset.z-partSpcng+proxSupportThck];
-  tablePos=[partOffset.x,-tableDims.y/2,-tableDims.z-partDims.z/2+partOffset.z-partSpcng];
-  tableRad=mountHoleCornerOffset;
-  tableSurfaceZOffset=-tablePos.z-tableDims.z;
-
-  //Guide Block
-  guideBlockDims=[tableDims.x,partTopLen+minWallThck,partDims.z+partSpcng*2+minFloorThck];
-  guideBlockPos=[tablePos.x,-guideBlockDims.y/2+partOffset.y+partDims.y+minWallThck+partSpcng,guideBlockDims.z/2-tableSurfaceZOffset];
   
-  vacChannelDia=tableDims.z-proxSupportThck;
-  vacChannelZPos=tablePos.z+vacChannelDia/2+minFloorThck;
-  vacChannelYPos=guideBlockPos.y+guideBlockDims.y/2-vacChannelDia/2-minWallThck;
   //freecut
   freeCutWidth=-guideBlockPos.y-guideBlockDims.y/2-proxNutLen-proxFlangeHght;
   freeCutPos=[tablePos.x,guideBlockPos.y+(guideBlockDims.y+freeCutWidth)/2,tablePos.z+minFloorThck];
@@ -286,17 +302,17 @@ module drillJig(){
     //slope for 45° printing
     translate([tablePos.x,0,tablePos.z]) rotate([0,90,0]) cylinder(d=20,h=tableDims.x+fudge,center=true,$fn=4);
     //version label
-    *translate([tablePos.x,-tableDims.y/2,tablePos.z-fudge]) 
+    translate([tablePos.x,-tableDims.y/2,tablePos.z-fudge]) 
       roof() 
         rotate(90) mirror([1,0]) text(versionLabel,halign="center",valign="center");
     } 
     
 }
 *screwHead();
-module screwHead(){
+module screwHead(h=proxSupportThck){
   translate([0,0,-proxSupportThck]){
-    translate([0,0,-(mountHeadDia-mountHoleDia)/2]) cylinder(d1=mountHoleDia,d2=mountHeadDia,h=(mountHeadDia-mountHoleDia)/2);
-    cylinder(d=mountHeadDia,h=proxSupportThck+fudge);
+    cylinder(d=mountHeadDia,h=h+fudge);
+    translate([0,0,-(mountHeadDia-mountHoleDia)/2]) cylinder(d1=mountHoleDia,d2=mountHeadDia,h=(mountHeadDia-mountHoleDia)/2+0.01);
   }
 }
 
@@ -326,11 +342,13 @@ module proxxonLWB(cut=false){
     cylinder(d=15,h=30+fudge);
   }
   else {
-    head();
-    translate([-neckLen,0,-4.1-endDia/2]) 
-      rotate([0,90,0]) cylinder(d1=startDia,d2=endDia,h=neckLen);
+    color("silver"){ 
+      head();
+      translate([-neckLen,0,-4.1-endDia/2]) 
+        rotate([0,90,0]) cylinder(d1=startDia,d2=endDia,h=neckLen);
+    }
     //drill
-    translate([0,0,proxDrillZOffset]) cylinder(d=drillDia,h=drillLength);
+    color("darkSlateGrey")  translate([0,0,proxDrillZOffset]) cylinder(d=drillDia,h=drillLength);
   }
   
   module head(){
@@ -363,10 +381,49 @@ module proxxonLWB(cut=false){
   }
 }
 
-*dblRndQuad();
-module dblRndQuad(size=20,r1=20,r2=5){
-  offset(r2) rotate(45) intersection_for(ix=[-1,1],iy=[-1,1])
-    translate([ix*(size/2-r1),iy*(size/2-r1)]) circle(r1);
+*vacAdapter();
+module vacAdapter(spacing=0.2,length=30,cut=false){
+  din = vacChannelDia-spacing;
+  dout= vacDia+spacing;
+  midLen=(dout+minWallThck*2-din); //45° max angle
+  botDia= cut ? vacChannelDia-minWallThck*2 : din;
+  botLen= cut ? length+minWallThck : length;
+  topDia= cut ? dout : dout + minWallThck*2;
+  topLen= cut ? length-minWallThck : length;
+  shiftX= cut ? minWallThck-din/2 :-vacChannelDia/2;
+  flangeWdth= topDia+mountHoleCornerOffset*2;
+  holeOffset=minWallThck+mountHoleDia/2;
+  shiftZ= cut ? 0.1 : 0;
+  
+  difference(){
+    union(){
+      translate([botDia/2+shiftX,0,-shiftZ]) cylinder(d=botDia,h=botLen+shiftZ);
+      translate([+shiftX,0,botLen]) 
+        linear_extrude(midLen,scale=(topDia/botDia)) translate([botDia/2,0,0]) circle(d=botDia);
+      translate([topDia/2+shiftX,0,botLen+midLen]) cylinder(d=topDia,h=topLen+shiftZ);
+      //mounting structure
+      if (!cut) translate([shiftX,0,0]) {
+        translate([-minFloorThck,-topDia/2,botLen+midLen]) cube([topDia/2+minFloorThck,topDia,topLen]);
+        translate([-minFloorThck,-flangeWdth/2,botLen+midLen]) rotate([90,0,90]) linear_extrude(minFloorThck) 
+          difference(){
+            translate([3,3]) offset(3) square([flangeWdth-6,topLen-6]);
+            for (ix=[holeOffset,flangeWdth-holeOffset]) hull(){
+              translate([ix,holeOffset]) circle(d=mountHoleDia);
+              translate([ix,topLen-holeOffset]) circle(d=mountHoleDia);
+            }
+            
+          }
+      }
+    }
+    if (!cut) vacAdapter(spacing,length,true);
+  }
+}
+
+*vacSeal();
+module vacSeal(){
+  cylinder(d=vacChannelDia-0.2,h=10);
+  cylinder(d=vacChannelDia+minFloorThck*2,h=minFloorThck);
+  translate([0,0,10]) cylinder(d1=vacChannelDia-0.2,d2=vacChannelDia-0.2-4,h=2);
 }
 
 
