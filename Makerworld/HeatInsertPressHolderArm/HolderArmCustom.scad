@@ -2,14 +2,14 @@ chamfer=0.7;
 holesDist=[12,13];
 holesZOffset=8.9+holesDist.y/2;
 screwLength=8;
-solderIronDia=16.5;
+solderIronDia=17;
 screwMaxDepth=1.5;
 leverAng=atan((14.6-8.5)/(35-4));
 
 narrowing=tan(leverAng)*(screwLength-4);
 widthAtBase=14.6*2-narrowing*2;
 baseScale=widthAtBase/(14.6*2);
-
+gapWidth=4;
 leverLength=81;
 fudge=0.1;
 $fn=26;
@@ -35,8 +35,18 @@ difference(){
         cylinder(d=4,h=4);
         translate([0,0,4]) sphere(d=4);
     }
+  //reopen with a new diameter
   translate([0,leverLength,-fudge/2]) cylinder(d=solderIronDia,h=30.8+fudge);
-  translate([-2,81,-fudge/2]) cube([4,103-81,30.8+fudge]);
+  translate([-2,leverLength,-fudge/2]) cube([gapWidth,103-81,30.8+fudge]);
+  //chamfers
+  for(iz=[0,1]){
+    mz= iz ? 0 : 1;
+    translate([0,leverLength,iz*30.8]){
+      rotate([-90,0,0]) cylinder(d=gapWidth+chamfer*2,h=103-81,$fn=4);
+      mirror([0,0,mz]) translate([0,0,-fudge-chamfer]) 
+        cylinder(d1=solderIronDia-fudge*2,d2=solderIronDia+(chamfer+fudge)*2,h=chamfer+fudge*2);
+    }
+  }
 }
 
 //modify the diameter
