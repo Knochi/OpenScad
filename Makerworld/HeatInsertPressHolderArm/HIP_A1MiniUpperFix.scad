@@ -1,4 +1,4 @@
-showCut=true;
+showCut=false;
 fudge=0.1;
 holeDia=3.5;
 headDia=6;

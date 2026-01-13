@@ -12,7 +12,7 @@ baseScale=widthAtBase/(14.6*2);
 gapWidth=4;
 leverLength=81;
 fudge=0.1;
-$fn=26;
+$fn=48;
 //modify the base for other screw Length
 difference(){
   union(){
