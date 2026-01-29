@@ -10,10 +10,10 @@ minFloorThck=0.6;
 brimWidth=50;
 
 //distance between the shafts in x and y
-clockDist=100; 
-clockDia=94;          //from screenshot
-clock2TopHandSpcng=2; //from screenshot
-clock2BotHandSpcng=8; //from screenshot
+clockDist=100;        //100 from screenshot
+clockDia=94;          //94 from screenshot
+clock2TopHandSpcng=3; //(94-91)/2=1.5 from screenshot (but we do 3mm do be sure)
+clock2BotHandSpcng=7; //(94-80)/2=7 from screenshot
 clockCount=[8,3];
 
 handWidth=10;
@@ -109,7 +109,8 @@ usbCYOffset=45;
 
 //bottom to top
 layerThck=[3,12,3,6,8];
-layerCol=["RosyBrown","Tan","BurlyWood","Wheat","NavajoWhite"];
+layerCol=["RosyBrown","Tan","BurlyWood","grey","ivory"];
+handCol="black";
 
 //distance between hangers
 hangerYPos=-40;
@@ -194,9 +195,9 @@ module clocks(){
 
       //hands
       if (showTopHand)
-        color("white") translate([0,0,topShaftZOffset]) rotate(topAngle) topHand();
+        color(handCol) translate([0,0,topShaftZOffset]) rotate(topAngle) topHand();
       if (showBotHand)
-        color("white") translate([0,0,botShaftZOffset]) rotate(botAngle) bottomHand();
+        color(handCol) translate([0,0,botShaftZOffset]) rotate(botAngle) bottomHand();
       
     }
     }
