@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="210mm"
+   height="297mm"
+   viewBox="0 0 210 297"
+   version="1.1"
+   id="svg1"
+   inkscape:version="1.4 (86a8ad7, 2024-10-11)"
+   sodipodi:docname="svgPath2SCAD.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm"
+     showgrid="true"
+     inkscape:zoom="3.1536195"
+     inkscape:cx="295.85053"
+     inkscape:cy="352.45216"
+     inkscape:window-width="1920"
+     inkscape:window-height="1129"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1">
+    <inkscape:grid
+       id="grid1"
+       units="mm"
+       originx="0"
+       originy="0"
+       spacingx="0.99999998"
+       spacingy="1"
+       empcolor="#0099e5"
+       empopacity="0.30196078"
+       color="#0099e5"
+       opacity="0.14901961"
+       empspacing="5"
+       enabled="true"
+       visible="true" />
+  </sodipodi:namedview>
+  <defs
+     id="defs1">
+    <marker
+       style="overflow:visible"
+       id="marker6"
+       refX="0"
+       refY="0"
+       orient="auto"
+       inkscape:stockid="Dot"
+       markerWidth="1"
+       markerHeight="1"
+       viewBox="0 0 1 1"
+       inkscape:isstock="true"
+       inkscape:collect="always"
+       preserveAspectRatio="xMidYMid">
+      <path
+         transform="scale(0.5)"
+         style="fill:context-stroke;fill-rule:evenodd;stroke:none"
+         d="M 5,0 C 5,2.76 2.76,5 0,5 -2.76,5 -5,2.76 -5,0 c 0,-2.76 2.3,-5 5,-5 2.76,0 5,2.24 5,5 z"
+         sodipodi:nodetypes="sssss"
+         id="path6" />
+    </marker>
+    <marker
+       style="overflow:visible"
+       id="Dot"
+       refX="0"
+       refY="0"
+       orient="auto"
+       inkscape:stockid="Dot"
+       markerWidth="1"
+       markerHeight="1"
+       viewBox="0 0 1 1"
+       inkscape:isstock="true"
+       inkscape:collect="always"
+       preserveAspectRatio="xMidYMid">
+      <path
+         transform="scale(0.5)"
+         style="fill:context-stroke;fill-rule:evenodd;stroke:none"
+         d="M 5,0 C 5,2.76 2.76,5 0,5 -2.76,5 -5,2.76 -5,0 c 0,-2.76 2.3,-5 5,-5 2.76,0 5,2.24 5,5 z"
+         sodipodi:nodetypes="sssss"
+         id="path17" />
+    </marker>
+  </defs>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <path
+       style="fill:none;stroke:#0d7ded;stroke-width:0.194;stroke-linecap:round;stroke-miterlimit:10;stroke-dasharray:none;paint-order:fill stroke markers;stroke-opacity:1;marker-end:url(#marker6)"
+       d="M 44.999999,94.999997 65.000001,79.999998"
+       id="path2" />
+    <path
+       style="fill:none;stroke:#807f7f;stroke-width:0.494;stroke-linecap:round;stroke-miterlimit:10;stroke-dasharray:none;paint-order:fill stroke markers"
+       d="m 115,94.999997 c -10,-5 -24.999998,10.000003 -35,0 -4.999998,-5 -15.041974,-15.005328 -35.000001,0"
+       id="path1" />
+    <text
+       xml:space="preserve"
+       style="font-size:4.2021px;line-height:normal;font-family:'VW Text';-inkscape-font-specification:'VW Text';text-align:start;text-decoration-color:#000000;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#000000;stroke:none;stroke-width:0.79375;stroke-linecap:round;stroke-miterlimit:10;-inkscape-stroke:none;paint-order:fill stroke markers"
+       x="45.035023"
+       y="115.23219"
+       id="text1"><tspan
+         sodipodi:role="line"
+         id="tspan1"
+         style="fill:#000000;stroke:none;stroke-width:0.79375"
+         x="45.035023"
+         y="115.23219">m <tspan
+   style="fill:#ff0000"
+   id="tspan7">45,95</tspan></tspan><tspan
+         sodipodi:role="line"
+         style="fill:#000000;stroke:none;stroke-width:0.79375"
+         x="45.035023"
+         y="120.48482"
+         id="tspan2">c <tspan
+   style="fill:#ff0000"
+   id="tspan8">20,-15 30,-5 35,0</tspan> <tspan
+   style="fill:#000080;stroke:none"
+   id="tspan11">10,10 25,-5 35,0</tspan></tspan></text>
+    <circle
+       style="fill:none;stroke:#ff0000;stroke-width:0.194;stroke-linecap:round;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1;paint-order:fill stroke markers"
+       id="path3"
+       cx="45"
+       cy="95"
+       r="0.70300001" />
+    <circle
+       style="fill:none;stroke:#000080;stroke-width:0.194;stroke-linecap:round;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1;paint-order:fill stroke markers"
+       id="path3-8"
+       cx="80"
+       cy="95"
+       r="0.70300001" />
+    <circle
+       style="fill:none;stroke:#000080;stroke-width:0.194;stroke-linecap:round;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1;paint-order:fill stroke markers"
+       id="path3-5"
+       cx="115"
+       cy="95"
+       r="0.70300001" />
+    <path
+       style="fill:none;stroke:#0d7ded;stroke-width:0.194;stroke-linecap:round;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1;paint-order:fill stroke markers;font-variation-settings:normal;opacity:1;vector-effect:none;fill-opacity:1;stroke-linejoin:miter;stroke-dashoffset:0;-inkscape-stroke:none;stop-color:#000000;stop-opacity:1;marker-end:url(#marker6)"
+       d="M 80,94.999997 75,89.999996"
+       id="path4" />
+    <path
+       style="font-variation-settings:normal;opacity:1;vector-effect:none;fill:none;fill-opacity:1;stroke:#000080;stroke-width:0.194;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:10;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;-inkscape-stroke:none;paint-order:fill stroke markers;marker-end:url(#Dot)"
+       d="M 80,94.999997 90.000001,105"
+       id="path5" />
+    <path
+       style="font-variation-settings:normal;opacity:1;vector-effect:none;fill:none;fill-opacity:1;stroke:#000080;stroke-width:0.194;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:10;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;-inkscape-stroke:none;marker-end:url(#marker6);paint-order:fill stroke markers"
+       d="m 115,94.999997 -10,-5"
+       id="path7"
+       sodipodi:nodetypes="cc" />
+  </g>
+</svg>
