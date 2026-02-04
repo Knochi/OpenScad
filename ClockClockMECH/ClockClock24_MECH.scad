@@ -10,10 +10,10 @@ minFloorThck=0.6;
 brimWidth=50;
 
 //distance between the shafts in x and y
-clockDist=100; 
-clockDia=94;          //from screenshot
-clock2TopHandSpcng=2; //from screenshot
-clock2BotHandSpcng=8; //from screenshot
+clockDist=100;        //100 from screenshot
+clockDia=94;          //94 from screenshot
+clock2TopHandSpcng=3; //(94-91)/2=1.5 from screenshot (but we do 3mm do be sure)
+clock2BotHandSpcng=7; //(94-80)/2=7 from screenshot
 clockCount=[8,3];
 
 handWidth=10;
@@ -27,9 +27,6 @@ handIdleAng=-135;
 handSpcng=0.2;
 //spacing between top and bottom hand
 handZDist=1;
-
-ruthexM4Dia=5.6; //Ruthex M4 short is 5.6 for plastic parts
-ruthexM5Dia=6.4; //Ruthex M5 std for plastic parts
 
 mountHoleDia=4.2;
 
@@ -108,11 +105,12 @@ ovDims=[clockDist*(clockCount.x)+brimWidth*2,clockDist*(clockCount.y)+brimWidth*
 baseShapePos=[-clockDist/2-brimWidth+cornerRad,-clockDist/2-brimWidth+cornerRad];
 centerPos=baseShapePos.x+ovDims.x/2;
 
-  usbCYOffset=40;
+usbCYOffset=45;
 
 //bottom to top
 layerThck=[3,12,3,6,8];
-layerCol=["RosyBrown","Tan","BurlyWood","Wheat","NavajoWhite"];
+layerCol=["RosyBrown","Tan","BurlyWood","grey","ivory"];
+handCol="black";
 
 //distance between hangers
 hangerYPos=-40;
@@ -197,9 +195,9 @@ module clocks(){
 
       //hands
       if (showTopHand)
-        color("white") translate([0,0,topShaftZOffset]) rotate(topAngle) topHand();
+        color(handCol) translate([0,0,topShaftZOffset]) rotate(topAngle) topHand();
       if (showBotHand)
-        color("white") translate([0,0,botShaftZOffset]) rotate(botAngle) bottomHand();
+        color(handCol) translate([0,0,botShaftZOffset]) rotate(botAngle) bottomHand();
       
     }
     }
@@ -208,7 +206,7 @@ module clocks(){
 module layerFrame(layer="all"){
 
   //layered frame
-  usbCCutoutDims=[25,60];
+  usbCCutoutDims=[25,63];
 
   cutOutBrimWdth=15;
   lidSpcng=0.5;
@@ -235,6 +233,7 @@ module layerFrame(layer="all"){
           screwHoles() threadInsert(4,true); 
         for (ix=[0:clockCount.x-1]) 
           translate([ix*clockDist,clockDist]) PCB(cut="inserts") mirror([0,0,1]) threadInsert(4,true); 
+        translate([centerPos,-clockDist+ usbCYOffset,0]) usbCBreakOut(true) mirror([0,0,1]) threadInsert(3,true);
       }
           
     }
@@ -298,7 +297,7 @@ module layerFrame(layer="all"){
             offset(3) square([usbCCutoutDims.x*2,usbCCutoutDims.y+cutOutBrimWdth-3],true);
           }
         //heat insert holes for hangers
-        for (pos=hangerPos) translate([pos.x,pos.y,0]) rotate(180) hanger(cut=true) circle(d=ruthexM5Dia);
+        for (pos=hangerPos) translate([pos.x,pos.y,0]) rotate(180) hanger(cut=true) threadInsert(5,cut=true);//circle(d=ruthexM5Dia);
         //cutout for USBC Breakout
         connectorBox(size=usbCCutoutDims,spcng=0);
         *translate([centerPos,(usbCCutoutDims.y-3)/2-clockDist]) offset(3) square(usbCCutoutDims+[-6,-3],true);
@@ -314,21 +313,28 @@ module layerFrame(layer="all"){
         for (ix=[0:clockCount.x-1]) translate([ix*clockDist,clockDist]) PCB(cut="pcb");
         cableSlit();
         screwHoles() circle(d=mountHoleDia);
+        //usbCBreakout - 2Positions
+        translate([centerPos,-clockDist+ usbCYOffset]) rotate([0,180,0]) usbCBreakOut(true) circle(d=3.5);
+        translate([centerPos,-clockDist+ 1.6]) rotate([0,180,0]) usbCBreakOut(true) circle(d=3.5);
+        
       }
   }
   
-  //layer 3 clocks Background
+  //layer 3 clocks Background, threaded inserts
   module layer3(){
     difference(){
       baseShape(splits=2);
       for(ix=[0:clockCount.x-1],iy=[0:clockCount.y-1])
         translate([ix*clockDist,iy*clockDist]) circle(d=7);
       for (ix=[0:clockCount.x-1]) 
-        translate([ix*clockDist,clockDist]) PCB(cut="inserts") circle(d=ruthexM4Dia);
+        translate([ix*clockDist,clockDist]) PCB(cut="inserts") threadInsert(4,cut=true); //circle(d=ruthexM4Dia);
       if (metalPins) //metal pins to improve hall sensor performance
         for (ix=[0:clockCount.x-1],iy=[0:clockCount.y-1],px=sensorXOffsets)
           translate([ix*clockDist,iy*clockDist]+[px,0]) circle(d=sensorMagPinDia);
-      screwHoles() circle(d=ruthexM4Dia); 
+      screwHoles() threadInsert(4,cut=true);//circle(d=ruthexM4Dia);
+      //usbCBreakout - 2Positions
+      translate([centerPos,-clockDist+ usbCYOffset]) rotate([0,180,0]) usbCBreakOut(true) threadInsert(3,cut=true);
+      translate([centerPos,-clockDist+ 1.6]) rotate([0,180,0]) usbCBreakOut(true) threadInsert(3,cut=true);
       }
   }
   
@@ -388,12 +394,14 @@ module layerFrame(layer="all"){
   }
   
   module cableSlit(){
+    cableWidth=7;
+    slitLen=50;
     translate([centerPos,baseShapePos.y]){
       *translate([-7.5,0]) square([15,usbCYOffset-3]);
-      translate([-1.5,+usbCYOffset]){
-        square([3,brimWidth+20]);
-        translate([1.5,brimWidth+20]) circle(d=3);
-        translate([1.5,0]) circle(d=3);
+      translate([-cableWidth/2,+usbCYOffset+cableWidth/2+12]){
+        square([cableWidth,slitLen]);
+        translate([cableWidth/2,slitLen]) circle(d=cableWidth);
+        translate([cableWidth/2,0]) circle(d=cableWidth);
       }
     }
   }
@@ -568,18 +576,23 @@ module sandingJigFaces(){
 
 
 *usbCBreakOut();
-module usbCBreakOut(){
+module usbCBreakOut(cut=false){
   dims=[21.5,12];
   pcbThck=1.6;
-  holeDia=3.2;
-  holeDist=17.5;
-  
-  color("darkRed") linear_extrude(pcbThck) difference(){
-    translate([0,dims.y/2]) square(dims,true);
+  holeDia=3;
+  holeDist=16;
+  holeYOffset=2.6;
+  if (cut)
     for (ix=[-1,1])
-      translate([ix*holeDist/2,2]) circle(d=holeDia);
+      translate([ix*holeDist/2,holeYOffset]) children();
+  else{    
+    color("darkRed") linear_extrude(pcbThck) difference(){
+      translate([0,dims.y/2]) square(dims,true);
+      for (ix=[-1,1])
+        translate([ix*holeDist/2,holeYOffset]) circle(d=holeDia);
+    }
+    translate([0,4.6,pcbThck]) usbC(plug=true);
   }
-  translate([0,3,pcbThck]) usbC(plug=true);
 }
 
   

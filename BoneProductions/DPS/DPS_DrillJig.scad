@@ -9,8 +9,8 @@ minFloorThck=2;
 peepHoleDia=15;
 vacDia=35;
 
-mountHoleDia=4.5;
-mountHeadDia=8.5;
+mountHoleDia=4.7;
+mountHeadDia=8.7;
 mountHoleCornerOffset=12;
 proxSupportThck=7;
 heatInsertDia=4.5;
@@ -220,7 +220,7 @@ module proxxSupport(){
               translate([0,iy*(sprtDims.y/2-mountHeadDia/2-minWallThck)]) rotate(90) horizontalHole(mountHoleDia);
           }
       //cutOut
-      translate([0,0,proxBdyDims.z/2+proxSupportThck]) rotate([0,90,0]) 
+      translate([0,0,proxBdyDims.z/2+proxSupportThck]) rotate([0,90,0])  
         linear_extrude(sprtDims.x+fudge,center=true) 
           offset(proxBdyRad) square([proxBdyDims.z-proxBdyRad*2,proxBdyDims.y-proxBdyRad*2],true);
       //screwHead
@@ -233,9 +233,9 @@ module drillJig(){
   
   //freecut
   freeCutWidth=-guideBlockPos.y-guideBlockDims.y/2-proxNutLen-proxFlangeHght;
-  freeCutPos=[tablePos.x,guideBlockPos.y+(guideBlockDims.y+freeCutWidth)/2,tablePos.z+minFloorThck];
+  freeCutPos=[0,guideBlockPos.y+(guideBlockDims.y+freeCutWidth)/2,tablePos.z+minFloorThck];
   
-  stopCollarLen=15;
+  stopCollarLen=27;
   
   difference(){
     //table
@@ -251,6 +251,7 @@ module drillJig(){
       translate(guideBlockPos+[0,0,-(guideBlockDims.z+1)/2]) 
         rotate([90,0,0]) linear_extrude(guideBlockDims.y,center=true) offset(guideBlockDims.z) 
           square([guideBlockDims.x-guideBlockDims.z*2,1],true);
+      
       //better stop collar
       translate([0,-proxFlangeHght-proxFlangeSpcng,0]) rotate([90,0,0]) 
         cylinder(d=proxFlangeDia-proxFlangeSpcng*2,h=stopCollarLen-proxFlangeHght-proxFlangeSpcng);
@@ -264,6 +265,11 @@ module drillJig(){
     translate([0,guideBlockPos.y+guideBlockDims.y/2+fudge/2,0]) rotate([90,0,0]) hull(){
       cylinder(d=drillDia*2,h=minWallThck+fudge);
       translate([0,vacChannelZPos,0]) cylinder(d=vacChannelDia,h=minWallThck+fudge);
+    }
+    
+    translate([0,guideBlockPos.y+guideBlockDims.y/2+fudge/2,0]){
+      cylinder(d=1,$fn=4,h=drillDia*4,center=true);
+      rotate([0,90,0]) cylinder(d=1,$fn=4,h=drillDia*4,center=true);
     }
     
     //vac channel
@@ -285,7 +291,7 @@ module drillJig(){
     //compartment for plastic chips
     translate(freeCutPos) linear_extrude(tableDims.z+fudge)
       hull() for (ix=[-1,1]) 
-        translate([ix*((tableDims.x-freeCutWidth)/2-minWallThck*2),0]) circle(d=freeCutWidth);
+        translate([ix*((vacChannelDia*2-freeCutWidth)/2),0]) circle(d=freeCutWidth);
         
     //peepHole
     translate([0,guideBlockPos.y+(guideBlockDims.y-peepHoleDia)/2-minWallThck,0]) linear_extrude(partDims.z+minFloorThck+fudge){
