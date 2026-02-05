@@ -1,0 +1,26 @@
+{
+    "fileFormatVersion": "1",
+    "parameterSets": {
+        "Neue Parameter Liste1": {
+            "baseChamfer": "0.5",
+            "baseColor": "#222222",
+            "baseThck": "2",
+            "conDims": "[2.4, 2.4, 2]",
+            "conDist": "50",
+            "conRad": "0.5",
+            "conYOffset": "3",
+            "innerDia": "40",
+            "logoFileName": "defa3ult.svg",
+            "logoSelect": "PRLogo",
+            "outerDia": "56",
+            "txtAutoSize": "true",
+            "txtColor": "#DDDDDD",
+            "txtFont": "Arial:style=Regular",
+            "txtSizeAbs": "6",
+            "txtSizeRel": "0.80000000000000004",
+            "txtStrng": "QEGOR Kilop",
+            "txtThck": "0.59999999999999998",
+            "txtVAlign": "center"
+        }
+    }
+}

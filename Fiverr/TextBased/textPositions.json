@@ -1,0 +1,13 @@
+{
+    "fileFormatVersion": "1",
+    "parameterSets": {
+        "Neue Parameter Liste1": {
+            "txt": "QEGOR Kilo",
+            "txtFont": "Arial:style=Regular",
+            "txtHAlign": "center",
+            "txtSize": "5.4000000000000004",
+            "txtSpcng": "1",
+            "txtVAlign": "center"
+        }
+    }
+}

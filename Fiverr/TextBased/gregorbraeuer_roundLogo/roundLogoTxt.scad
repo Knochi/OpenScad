@@ -6,8 +6,8 @@ include <BOSL2/std.scad>
   Open Edit -> Preferences -> Features and check "textmetrics"
 */
 /* [Text] */
-txtStrng="QEGOR";
-txtFont="Arial:style=Bold"; //font
+txtStrng="QEGOR Kilop";
+txtFont="Arial:style=Regular"; //font
 txtSizeAbs=6; 
 txtSizeRel=0.8; //[0:0.1:1]
 txtVAlign="baseline"; //["center","baseline"]
@@ -15,7 +15,8 @@ txtAutoSize=true;
 
 
 /* [Logo] */
-logoFileName="default.svg";
+logoFileName="defa3ult.svg";
+logoSelect="PRLogo"; //["import"]
 
 /* [Dimensions] */
 baseThck=2;
@@ -27,8 +28,6 @@ conDims=[2.4,2.4,2];
 conRad=0.5;
 conDist=50;
 conYOffset=3;
-
-
 
 
 /* [Colors] */
@@ -46,17 +45,14 @@ txtDescent=textmetrics(txtStrng,size=txtSize,halign="center",valign=txtVAlign, f
 
 debug=false;
 
+echo(str("TextSize=",txtSize));
+
 $fn=50;
 
-
-
-!PRLogo();
 module PRLogo(){
   
   // use the BOSL2 bezier functions: 
   // https://github.com/BelfrySCAD/BOSL2/wiki/beziers.scad
-  
-  
   
   //-- outline
   oM = [26.2222,30.4335];
@@ -275,7 +271,7 @@ module PRLogo(){
   }
 }
 
-
+/*
 //this is just to debug the function below
 module path2Bez(c=[],start=[0,0],bez=[],iter=0){
   pidx= iter==len(c)-1 ? 2 : 3;
@@ -295,7 +291,7 @@ module path2Bez(c=[],start=[0,0],bez=[],iter=0){
     echo(str("BEZ:",bez,",LEN: ",len(bez)));
     }
   }
-
+*/
 
 //this converts a relative svg path (c) into bezoer coordinates for BOSL2 bezier functions
 //in the form [pstart, c1, c2, p1, c1, c2, pend]
@@ -311,45 +307,56 @@ function path2Bez(c=[],start=[0,0],bez=[],iter=0)=let(
 
 function last(list)=list[len(list)-1];
 
-assembly();
-module assembly(){
-  //base
-  color(baseColor){
-    difference(){
-      base();
-      translate([0,0,baseThck-txtThck]) linear_extrude(txtThck+fudge){
-        circularText();
+
+color(baseColor) base();
+color(txtColor) foreGround();
+
+
+module logo(){
+  if (logoSelect=="import")
         translate([-outerDia/2,-outerDia/2]) import(file=logoFileName);
-      }
-    }
-    //back for Logo
-    linear_extrude(baseThck-txtThck) intersection(){
-      circle(d=innerDia);
-      translate([-outerDia/2,-outerDia/2]) import(file=logoFileName);
-    }
-    for (ix=[-1,1])
-      translate([ix*(conDist)/2,conYOffset,-conDims.z]) connector();
-  }
-  
-  //txt and logo
-  color(txtColor) translate([0,0,baseThck-txtThck]) linear_extrude(txtThck){
-    circularText();
-    translate([-outerDia/2,-outerDia/2]) import(file=logoFileName);
-    }
-  
-  
-  module base(){
-    difference(){
-      union(){
-        cylinder(d=outerDia,h=baseThck-baseChamfer);
-        translate([0,0,baseThck-baseChamfer]) cylinder(d1=outerDia,d2=outerDia-baseChamfer*2,h=baseChamfer);
-      }
-      translate([0,0,-fudge/2]) cylinder(d=innerDia,h=baseThck+fudge);
-    }  
-  }
+      else
+        PRLogo();
 }
 
-module connector(){
+module base(){
+  difference(){
+    ring();
+    translate([0,0,baseThck-txtThck]) linear_extrude(txtThck+fudge){
+      circularText();
+      logo();
+    }
+  }
+  //back for Logo
+  linear_extrude(baseThck-txtThck) intersection(){
+    circle(d=innerDia);
+    logo();
+  }
+  //attach studs
+  for (ix=[-1,1])
+    translate([ix*(conDist)/2,conYOffset,-conDims.z]) stud();
+}
+
+module foreGround(){
+  //txt and logo
+  translate([0,0,baseThck-txtThck]) linear_extrude(txtThck){
+    circularText();
+    logo();
+  }
+}
+  
+module ring(){
+  difference(){
+    union(){
+      cylinder(d=outerDia,h=baseThck-baseChamfer);
+      translate([0,0,baseThck-baseChamfer]) cylinder(d1=outerDia,d2=outerDia-baseChamfer*2,h=baseChamfer);
+    }
+    translate([0,0,-fudge/2]) cylinder(d=innerDia,h=baseThck+fudge);
+  }  
+}
+
+
+module stud(){
   linear_extrude(conDims.z) 
     offset(conRad) square([conDims.x-conRad*2,conDims.y-conRad*2],true);
 }
@@ -358,24 +365,57 @@ module connector(){
 *circularText();
 module circularText(rad=innerDia/2, angles=[], iter=0){
   charAng=16;
-  yOffset= (txtVAlign=="center") ? 0 : brimWdth/2-txtHght/2-txtDescent;
-  charPos=getCharPositions(txtStrng,txtSize,txtFont);
+  yOffset= (txtVAlign=="center") ? brimWdth/2 : brimWdth/2-txtHght/2-txtDescent;
+  charPos=getCharPositions(txtStrng,txtSize,txtFont,1,"center");
   
+  echo(charPos);
   
+  if (debug)
+    for (i=[0:len(txtStrng)-1]){
+      trailing=textmetrics(txtStrng[i], size=txtSize,font=txtFont,halign="center",spacing=1).position.x;
+      translate([charPos[i]-trailing,outerDia/2]){
+        text(txtStrng[i], size=txtSize,font=txtFont,halign="center");
+        translate([trailing,0]) color("red") circle(0.7);
+      }
+  }
   
   for (i=[0:len(txtStrng)-1]){
-    thisAng=atan((charPos[i])/innerDia)*2;
+    trailing=textmetrics(txtStrng[i], size=txtSize,font=txtFont,halign="center",spacing=1).position.x;
+    thisAng=atan(((charPos[i])-trailing)/innerDia)*2;
     rotate(-thisAng) translate([0,rad+yOffset]) text(txtStrng[i],size=txtSize,halign="center",valign=txtVAlign, font=txtFont);
   }
 }
 
 //get the absolute positions of each char in a string
 function getCharPositions(string,size,font="",spacing=1, halign="center",offsets=[],iter=0)=let(
+  //get the absolute start pos of the whole string
   stringPos=textmetrics(text=string,size=size,font=font, halign=halign, spacing=spacing).position.x,
-  thisChrSz=textmetrics(string[iter],size=size,font=font, halign=halign, spacing=spacing).size.x,
-  prvChrSz= iter ? textmetrics(string[iter-1],size=size,font=font, halign=halign,spacing=spacing).size.x : 0,
-  twoChrsSz=iter ? textmetrics(str(string[iter-1],string[iter]),size=size,font=font, halign=halign,spacing=spacing).size.x : 0,
-  charSpcng=twoChrsSz-thisChrSz-prvChrSz,
-  charXOffset = (halign=="center") ? (thisChrSz+prvChrSz)/2 : prvChrSz, //TODO: add "right"
-  chrOffset= (iter==0) ? stringPos + charXOffset : offsets[iter-1]+charSpcng+charXOffset
+  //if previous char was a whitespace calculate the width from three chars (two chars or just " " won't work)
+  prvChrSz= iter ? ((string[iter-1]==" ") && (iter>1)) ? 
+    getCharSizeFromString(string,size=size,font=font,halign=halign,spacing=spacing,index=iter-1) :
+    textmetrics(string[iter-1],size=size,font=font, halign=halign,spacing=spacing).size.x : 0,
+  //if current char is a whitespace calculate the width from three chars
+  thisChrSz=((string[iter]==" ") && iter) ? 
+    getCharSizeFromString(string,size=size,font=font,halign=halign,spacing=spacing,index=iter) :
+    textmetrics(string[iter],size=size,font=font, halign=halign, spacing=spacing).size.x,
+    
+  subStrng= iter ? str(string[iter-1],string[iter]) : string[iter], 
+  subStrngSz=iter ? 
+    textmetrics(subStrng,size=size,font=font, halign=halign,spacing=spacing).size.x : thisChrSz,
+  charSpcng=subStrngSz-thisChrSz-prvChrSz,
+  chrOffset= (iter==0) ? stringPos : (string[iter]==" ") ? 
+    offsets[iter-1]+prvChrSz+thisChrSz : offsets[iter-1]+prvChrSz+charSpcng,
+    
 ) iter<(len(string)) ? getCharPositions(string,size,font,spacing,halign,concat(offsets,chrOffset),iter=iter+1) : offsets;
+
+function getCharSizeFromString(string,size,font="",spacing=1, halign="left", index)= (index>0) && (index<len(string)-1) ?
+  //this considers three chars, if possible, to get the size of whitespaces
+  textmetrics(str(string[index-1],string[index],string[index+1]),
+      size,font=font,spacing=spacing, halign=halign).size.x -
+    textmetrics(string[index-1],size,font=font,spacing=spacing, halign=halign).size.x -
+    textmetrics(string[index+1],size,font=font,spacing=spacing, halign=halign).size.x : 
+    (index == 0) ?
+    textmetrics(str(string[0],string[1]),size,font=font,spacing=spacing, halign=halign).size.x -
+    textmetrics(string[index-1],size,font=font,spacing=spacing, halign=halign).size.x : 
+    textmetrics(str(string[index-1],string[index]),size,font=font,spacing=spacing, halign=halign).size.x -
+    textmetrics(string[index-1],size,font=font,spacing=spacing, halign=halign).size.x;
