@@ -24,7 +24,7 @@ handIdleAng=-135;
 
 
 //spacing between moving parts
-handSpcng=0.2;
+handSpcng=+0.5; //changed from 0.2 260301
 //spacing between top and bottom hand
 handZDist=1;
 
@@ -110,7 +110,7 @@ usbCYOffset=45;
 //bottom to top
 layerThck=[3,12,3,6,8];
 layerCol=["RosyBrown","Tan","BurlyWood","grey","ivory"];
-handCol="black";
+handCol="Ghostwhite";
 
 //distance between hangers
 hangerYPos=-40;
@@ -230,7 +230,7 @@ module layerFrame(layer="all"){
       color(layerCol[3]) linear_extrude(layerThck[3]) layer3();
       if (showInserts){
         mirror([0,0,1]) //insert from below
-          screwHoles() threadInsert(4,true); 
+          screwHoles() threadInsert(4,short=true); 
         for (ix=[0:clockCount.x-1]) 
           translate([ix*clockDist,clockDist]) PCB(cut="inserts") mirror([0,0,1]) threadInsert(4,true); 
         translate([centerPos,-clockDist+ usbCYOffset,0]) usbCBreakOut(true) mirror([0,0,1]) threadInsert(3,true);
@@ -422,9 +422,42 @@ module layerFrame(layer="all"){
   }
 }
 
+*hangerDrillJig();
+module hangerDrillJig(){
+  linear_extrude(2) difference(){
+    translate([-10,-66]) offset(2) square([20,120]);
+    translate([0,hangerYPos]) rotate(180) hanger(cut=true) 
+      circle(d=6.6); 
+    translate([0,-clockDist/2-brimWidth/4]) circle(d=4.2);
+    translate([0,clockDist-clockDist/2])  circle(d=4.2);  
+  }
+  linear_extrude(10) translate([0,hangerYPos]) rotate(180) hanger(cut=true) difference(){
+      circle(d=9.3);
+      circle(d=6.6); 
+      }
+}
+
+!dumbAssJig();
+module dumbAssJig(){
+// if plates glued wrong together!
+  drillDia=5.6;
+ holesPos=[-30,15];
+  linear_extrude(2) difference(){
+    offset(2) square([85,19],true);
+    for (px=holesPos, mi=[0,1])
+      mirror([mi,0]) translate([px,0]) circle(d=drillDia); 
+  }
+  for (px=holesPos) linear_extrude(10) translate([px,0]) difference(){
+    circle(d=drillDia+4);
+    circle(d=drillDia);
+    }
+  
+
+}
+
 
 *hanger(cut=true);
-module hanger(dia=mountHoleDia,cut=false){
+module hanger(cut=false){
   //https://amzn.eu/d/gCaAHSx
   holesPos=[22.5,42.5,54.5,62.5];
   holesDia=5.1;
@@ -450,7 +483,7 @@ module hanger(dia=mountHoleDia,cut=false){
 }
 
 
-*PCB();
+
 module PCB(cut=false){
   sensorDia=5;
   D1MiniPos=[1,33];
