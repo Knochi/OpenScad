@@ -55,8 +55,8 @@ showPCB=false;
 showBtnCutOut=false;
 showHousing=false;
 showPartsTray=true;
-showRowColumnLabels=false;
 showPCBLifter=true;
+showRowColumnLabels=true;
 testPrint=false;
 
 /* [Hidden] */
@@ -127,6 +127,7 @@ module PCB(){
 
 
 module partsTray(){
+
   difference(){
     translate([0,0,-trayOvDims.z+pcbDims.z]) linear_extrude(trayOvDims.z) offset(cavBrmWdth) square([trayOvDims.x,trayOvDims.y],true);
     //PCB
