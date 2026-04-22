@@ -50,7 +50,7 @@ showPCB=false;
 showBtnCutOut=false;
 showHousing=false;
 showPartsTray=true;
-showRowColumnLabels=true;
+showRowColumnLabels=false;
 testPrint=false;
 
 /* [Hidden] */
@@ -102,13 +102,13 @@ module partsTray(){
   cavDims=[(pcbDims.x+tray2PCBSpcng*2-cavBrmWdth*(cavCounts.x-3))/(cavCounts.x-2),
             (pcbDims.y+tray2PCBSpcng*2-cavBrmWdth*(cavCounts.y-3))/(cavCounts.y-2)];
   cavDist=cavDims+[cavBrmWdth,cavBrmWdth];
-  ovDims=[cavDims.x*cavCounts.x+cavBrmWdth*(cavCounts.x-1),
-          cavDims.y*cavCounts.y+cavBrmWdth*(cavCounts.y-1),
+  ovDims=[cavDims.x*cavCounts.x+cavBrmWdth*(cavCounts.x+1),
+          cavDims.y*cavCounts.y+cavBrmWdth*(cavCounts.y+1),
           cavDpth+trayFloorThck];
   holeDia=min(pcbDims.x,pcbDims.y)/2;
           
   difference(){
-    translate([0,0,-ovDims.z+pcbDims.z]) linear_extrude(ovDims.z) offset(cavBrmWdth) square([ovDims.x,ovDims.y],true);
+    translate([0,0,-ovDims.z+pcbDims.z]) linear_extrude(ovDims.z) offset(cavBrmWdth) square([ovDims.x-cavBrmWdth*2,ovDims.y-cavBrmWdth*2],true);
     //PCB
     linear_extrude(pcbDims.z+fudge) offset(tray2PCBSpcng) rndRect([pcbDims.x,pcbDims.y],pcbRad);
     //button
@@ -137,6 +137,13 @@ module partsTray(){
           linear_extrude(cavLabelDpth+fudge) 
             label(cavLabels[row][col]);
       }
+    }
+    //stress reliefs
+    for (ix=[-(cavCounts.x-2)/2:(cavCounts.x-2)/2],iy=[-(cavCounts.y-2)/2:(cavCounts.y-2)/2]){
+      if (ix==-(cavCounts.x-2)/2)
+        translate([0,iy*cavDist.y,-ovDims.z+pcbDims.z]) rotate([0,90,0]) linear_extrude(ovDims.x+fudge,center=true) circle(d=cavBrmWdth,$fn=4);
+      if (iy==-(cavCounts.y-2)/2)
+        translate([ix*cavDist.x,0,-ovDims.z+pcbDims.z]) rotate([90,0,0]) linear_extrude(ovDims.y+fudge,center=true) circle(d=cavBrmWdth,$fn=4);  
     }
     //center hole for PCB removal
     translate([0,0,-ovDims.z+pcbDims.z-fudge/2]) cylinder(d=holeDia,h=ovDims.z+fudge);
