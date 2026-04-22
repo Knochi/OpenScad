@@ -4,7 +4,11 @@ include <BOSL2/std.scad>
   Fiverr Order from gregorbraeuer Order No #FO8291A4AEDC4
   You need to install the latest openSCAD developer snapshot (https://openscad.org/downloads.html#snapshots) and activate "textmetrics".
   Open Edit -> Preferences -> Features and check "textmetrics"
+  For multi-object export you need to activate "lazy union" in the same menu
+  
+  For the embedded logo you need to install BOSL2 library from https://github.com/BelfrySCAD/BOSL2
 */
+
 /* [Text] */
 txtStrng="QEGOR Kilop";
 txtFont="Arial:style=Regular"; //font
@@ -45,7 +49,7 @@ txtDescent=textmetrics(txtStrng,size=txtSize,halign="center",valign=txtVAlign, f
 
 debug=false;
 
-echo(str("TextSize=",txtSize));
+if (debug) echo(str("TextSize=",txtSize));
 
 $fn=50;
 
@@ -367,8 +371,6 @@ module circularText(rad=innerDia/2, angles=[], iter=0){
   charAng=16;
   yOffset= (txtVAlign=="center") ? brimWdth/2 : brimWdth/2-txtHght/2-txtDescent;
   charPos=getCharPositions(txtStrng,txtSize,txtFont,1,"center");
-  
-  echo(charPos);
   
   if (debug)
     for (i=[0:len(txtStrng)-1]){

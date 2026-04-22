@@ -33,7 +33,7 @@ drillOffset=1.2;
 //from Surface
 drillDepth=2;
 //position from center
-holeXPos=4.5;
+holeXPos=5;
 holeZPos=-0.4; //
 
 /* [Proxxon] */
@@ -58,7 +58,7 @@ vacChannel=true;
 testClamp=false;
 
 /* [show] */
-versionLabel="V01";
+versionLabel="V04";
 showJig=true;
 showSupport=true;
 showClampUpper=true;
@@ -86,7 +86,7 @@ tablePos=[partOffset.x,-tableDims.y/2,-tableDims.z-partDims.z/2+partOffset.z-par
 tableRad=mountHoleCornerOffset;
 tableSurfaceZOffset=-tablePos.z-tableDims.z;
 
-//Guide Block
+//Guide BlockAHum0fMayb3Apparat
 guideBlockDims=[tableDims.x,partTopLen+minWallThck,partDims.z+partSpcng*2+minFloorThck];
 guideBlockPos=[tablePos.x,-guideBlockDims.y/2+partOffset.y+partDims.y+minWallThck+partSpcng,guideBlockDims.z/2-tableSurfaceZOffset];
 
@@ -106,7 +106,7 @@ if (showProxxon)
   rotate([90,0,0]) proxxonLWB();
 if (showJig)
   intersection(){
-  color("darkgreen") drillJig();
+  !color("darkgreen") drillJig();
   if (testClamp)
     translate([0,-proxClampThck,0]) cube([51,proxClampThck*2,proxBdyDims.z+proxSupportThck+fudge],true);
   }
@@ -204,10 +204,13 @@ module clampUpper(){
       }
     //spacing to clamp
     translate([0,-(proxClampDims.y)/2,0]) cube([proxClampDims.x+fudge,proxClampDims.y+fudge,proxClampSpcng],true);
+    //chamfer
+    for (y=[0,-proxClampThck],r=[proxFlangeDia/2,proxClampDims.z])
+      translate([0,y,0]) rotate([90,0,0]) rotate_extrude() translate([r,0]) circle(d=1.5,$fn=4);
   }
 }
 
-
+*proxxSupport();
 module proxxSupport(){
   chamfer=2;
   sprtDims=[mountHeadDia+minWallThck*2,proxBdyDims.y+(mountHeadDia+minWallThck*2)*2,proxSupportThck+proxBdyDims.z*0.75];
@@ -226,6 +229,16 @@ module proxxSupport(){
       //screwHead
       for (iy=[-1,1])
         translate([0,iy*(sprtDims.y/2-mountHeadDia/2-minWallThck),tableDims.z]) screwHead(h=sprtDims.z);
+      //chamfers
+      for (ix=[-1,1]){
+        translate([ix*sprtDims.x/2,0,proxSupportThck]) rotate([90,0,0])  cylinder(d=chamfer,h=proxBdyDims.z-proxBdyRad*2,$fn=4,center=true);
+        for (iy=[-1,1]){
+          translate([ix*sprtDims.x/2,iy*proxBdyDims.y/2,proxBdyDims.z/2+proxSupportThck]) 
+            cylinder(d=chamfer,h=proxBdyDims.z-proxBdyRad*2,$fn=4,center=true);
+          translate([ix*sprtDims.x/2,iy*(proxBdyDims.y/2-proxBdyRad),proxBdyRad*2-chamfer/2]) 
+            rotate([0,90,0]) rotate_extrude() translate([proxBdyRad,0]) circle(d=chamfer,$fn=4);
+        }
+      }
     }
 }
   
@@ -254,9 +267,18 @@ module drillJig(){
       
       //better stop collar
       translate([0,-proxFlangeHght-proxFlangeSpcng,0]) rotate([90,0,0]) 
-        cylinder(d=proxFlangeDia-proxFlangeSpcng*2,h=stopCollarLen-proxFlangeHght-proxFlangeSpcng);
+        cylinder(d=proxFlangeDia-proxFlangeSpcng*4,h=stopCollarLen-proxFlangeHght-proxFlangeSpcng);
       translate([0,-proxFlangeHght-proxFlangeSpcng-5,tablePos.z/2]) cube([proxFlangeDia,10,-tablePos.z],true);
     }
+    
+    //improve the inside corner
+    rotate([90,0,0]) linear_extrude(proxFlangeHght+proxFlangeSpcng* 4) difference(){
+      circle(d=proxFlangeDia+proxFlangeSpcng*2);
+      circle(d=proxFlangeDia-proxFlangeSpcng*4);
+    }
+    
+    //chamfer the flange 
+    rotate([90,0,0]) rotate_extrude() translate([proxFlangeDia/2,0]) circle(d=1.5,$fn=4);
     
     //proxxon
     rotate([90,0,0]) proxxonLWB(true);
@@ -308,10 +330,10 @@ module drillJig(){
     //slope for 45° printing
     translate([tablePos.x,0,tablePos.z]) rotate([0,90,0]) cylinder(d=20,h=tableDims.x+fudge,center=true,$fn=4);
     //version label
-    translate([tablePos.x,-tableDims.y/2,tablePos.z-fudge]) 
-      roof() 
-        rotate(90) mirror([1,0]) text(versionLabel,halign="center",valign="center");
-    } 
+    translate([tablePos.x,-tableDims.y-fudge,tablePos.z/2]) 
+      rotate([-90,180,0]) roof() 
+        mirror([1,0]) text(versionLabel,halign="center",valign="center");
+    } //difference
     
 }
 *screwHead();
