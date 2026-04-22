@@ -15,7 +15,7 @@ pcbRad=3;
 pcbSpcngXY=0.1;
 pcbSpcngZ=0.1;
 
-/* [Parts Storage] */
+/* [Parts Tray] */
 cavBrmWdth=6; 
 cavCounts=[6,4];
 cavCountAtPCB=[4,2];
@@ -31,6 +31,11 @@ cavLabelSizeRel=0.7;
 cavLabelDpth=0.4;
 cavLabelFont="Osifont";
 cavLabelOffset=0.1;
+
+/* [Part Lifter] */
+liftHght=20;
+liftChamfer=2;
+liftSpcng=1;
 
 /* [Housing] */
 minWallThck=1.2;
@@ -50,6 +55,7 @@ showPCB=false;
 showBtnCutOut=false;
 showHousing=false;
 showPartsTray=true;
+showPCBLifter=true;
 showRowColumnLabels=true;
 testPrint=false;
 
@@ -57,7 +63,17 @@ testPrint=false;
 fudge=0.1;
 $fn=50;
 
-// combine cells ranges
+//Parts Tray Dimensions
+cavDims=[(pcbDims.x+tray2PCBSpcng*2-cavBrmWdth*(cavCounts.x-3))/(cavCounts.x-2),
+          (pcbDims.y+tray2PCBSpcng*2-cavBrmWdth*(cavCounts.y-3))/(cavCounts.y-2)];
+cavDist=cavDims+[cavBrmWdth,cavBrmWdth];
+trayOvDims=[cavDims.x*cavCounts.x+cavBrmWdth*(cavCounts.x-1),
+        cavDims.y*cavCounts.y+cavBrmWdth*(cavCounts.y-1),
+        cavDpth+trayFloorThck];
+          
+trayHoleDia=min(pcbDims.x,pcbDims.y)/2;
+
+// WIP: combine cells ranges from string
 cavCombine=[[[5,1],[5,2]]];
 
 // label cells
@@ -86,6 +102,18 @@ if (showHousing)
   housing();
 if (showPCB)
   PCB();
+if (showPCBLifter)
+  translate([0,0,-trayOvDims.z+pcbDims.z]) lifter();
+  
+module lifter(){
+  liftTotHght=cavDpth+trayFloorThck+liftHght;
+  liftDia=trayHoleDia-liftSpcng*2;
+  cylinder(d=trayHoleDia-2,h=liftTotHght-liftChamfer);
+  translate([0,0,liftTotHght-liftChamfer]) 
+    cylinder(d1=liftDia,d2=liftDia-2*liftChamfer,h=liftChamfer);
+  translate([0,0,-trayFloorThck]) cylinder(d=liftTotHght*2,h=trayFloorThck);
+}
+  
 //PCB
 module PCB(){
   color("darkGreen") roundedCube();
@@ -99,16 +127,9 @@ module PCB(){
 
 
 module partsTray(){
-  cavDims=[(pcbDims.x+tray2PCBSpcng*2-cavBrmWdth*(cavCounts.x-3))/(cavCounts.x-2),
-            (pcbDims.y+tray2PCBSpcng*2-cavBrmWdth*(cavCounts.y-3))/(cavCounts.y-2)];
-  cavDist=cavDims+[cavBrmWdth,cavBrmWdth];
-  ovDims=[cavDims.x*cavCounts.x+cavBrmWdth*(cavCounts.x-1),
-          cavDims.y*cavCounts.y+cavBrmWdth*(cavCounts.y-1),
-          cavDpth+trayFloorThck];
-  holeDia=min(pcbDims.x,pcbDims.y)/2;
-          
+
   difference(){
-    translate([0,0,-ovDims.z+pcbDims.z]) linear_extrude(ovDims.z) offset(cavBrmWdth) square([ovDims.x,ovDims.y],true);
+    translate([0,0,-trayOvDims.z+pcbDims.z]) linear_extrude(trayOvDims.z) offset(cavBrmWdth) square([trayOvDims.x,trayOvDims.y],true);
     //PCB
     linear_extrude(pcbDims.z+fudge) offset(tray2PCBSpcng) rndRect([pcbDims.x,pcbDims.y],pcbRad);
     //button
@@ -139,16 +160,16 @@ module partsTray(){
       }
     }
     //center hole for PCB removal
-    translate([0,0,-ovDims.z+pcbDims.z-fudge/2]) cylinder(d=holeDia,h=ovDims.z+fudge);
+    translate([0,0,-trayOvDims.z+pcbDims.z-fudge/2]) cylinder(d=trayHoleDia,h=trayOvDims.z+fudge);
     }
     // Row and Column Labels
     if (showRowColumnLabels)
       for (ix=[-(cavCounts.x-1)/2:(cavCounts.x-1)/2],iy=[-(cavCounts.y-1)/2:(cavCounts.y-1)/2]){
         if (ix==-(cavCounts.x-1)/2) //first column
-          translate([-ovDims.x/2-cavBrmWdth-5,iy*cavDist.y,0]) 
+          translate([-trayOvDims.x/2-cavBrmWdth-5,iy*cavDist.y,0]) 
             linear_extrude(1) text(str(iy*-1+1+(cavCounts.y-1)/2),valign="center",halign="center");
         if (iy==-(cavCounts.y-1)/2) //first row
-          translate([ix*cavDist.x,ovDims.y/2+cavBrmWdth+5,0]) 
+          translate([ix*cavDist.x,trayOvDims.y/2+cavBrmWdth+5,0]) 
             linear_extrude(1) text(chr(65+ix+(cavCounts.x-1)/2),valign="center",halign="center");
       }
 
