@@ -31,11 +31,25 @@ cavLabelSizeRel=0.7;
 cavLabelDpth=0.4;
 cavLabelFont="Osifont";
 cavLabelOffset=0.1;
+showPartsTray=true;
+showPCBLifter=true;
+showRowColumnLabels=true;
 
 /* [Part Lifter] */
 liftHght=20;
 liftChamfer=2;
 liftSpcng=1;
+
+/* [CoinCellHolderHolder] */
+cchhCount=[5,5];
+cchhDist=[36,20];
+cchhBaseThck=3;
+cchhChars="0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+cchhTxtFont="";
+cchhTxtOffset=[0,3,2.15];
+cchhTxtSize=5;
+showCoinCellHolder=true;
+showCoinCellHolderHolder=true;
 
 /* [Housing] */
 minWallThck=1.2;
@@ -51,12 +65,12 @@ btnActHght=0.35;
 btnSpcngs=[0.1,0.3,0.2];
 
 /* [show] */
+export="coinCellHolderHolder"; //["partsTray","coinCellHolderHolder","pcbLifter"]
 showPCB=false;
 showBtnCutOut=false;
 showHousing=false;
-showPartsTray=true;
-showPCBLifter=true;
-showRowColumnLabels=true;
+
+
 testPrint=false;
 
 /* [Hidden] */
@@ -78,10 +92,10 @@ cavCombine=[[[5,1],[5,2]]];
 
 // label cells
 //           A       B       C      D       E          F 
-cavLabels=[["U03","U01|U02","SW01","R0-R15","S01","R04-R07"],
-          ["R02",                                    "R01|R03"],
-          ["Q03",                                    "Q01|Q02"],
-          ["D01-D08","C10","C07|C09","C08","C01-C06", "CR2016"]
+cavLabels=[["U03","U01&U02","SW01","R08-R15","S01","R04-R07"],
+          ["R02",                                    "R01&R03"],
+          ["Q03",                                    "Q01&Q02"],
+          ["D01-D08","C10","C07&C09","C08","C01-C06", ""]
           ];
 
 
@@ -90,22 +104,37 @@ hsngDims=[pcbDims.x+pcbSpcngXY*2+minWallThck*2,
           pcbDims.z+pcbSpcngZ*2+floorThck*2+highestPart];
 hsngRad=pcbRad+pcbSpcngXY+minWallThck;
 
-if (showPartsTray)
-  intersection(){
-    partsTray();
+
+if (export=="coinCellHolderHolder")
+  if (showCoinCellHolderHolder){
+    for (ix=[0:cchhCount.x-1],iy=[0:cchhCount.y-1]){
+      idx=iy+ix*cchhCount.x;
+      translate([ix*cchhDist.x,iy*cchhDist.y,cchhBaseThck]) coinCellHolderHolder();
+      #translate(cchhTxtOffset+[ix*cchhDist.x,iy*cchhDist.y,cchhBaseThck]) 
+        text(cchhChars[idx],font=cchhTxtFont,size=cchhTxtSize,valign="center",halign="center");
+    }
+    color("purple") translate([-cchhDist.x/2,-cchhDist.y/2,0]) 
+      linear_extrude(cchhBaseThck) square([cchhCount.x*cchhDist.x,cchhCount.y*cchhDist.y]);
+    }
+else if (export=="partsTray"){
+  if (showPartsTray)
+    intersection(){
+      partsTray();
     if (testPrint)
       translate([0,0,-pcbDims.z]) 
         linear_extrude(pcbDims.z*2) offset(cavBrmWdth) square([pcbDims.x,pcbDims.y],true);
   }
+}
+else if (export=="housing")
+  if (showHousing)
+    housing();
+else if (export=="PCBLifter")  
+  if (showPCBLifter)
+    translate([0,0,-trayOvDims.z+pcbDims.z]) lifter();
   
-if (showHousing)
-  housing();
 if (showPCB)
   PCB();
-if (showPCBLifter)
-  translate([0,0,-trayOvDims.z+pcbDims.z]) lifter();
-
-!lifter();  
+  
 module lifter(){
   liftTotHght=cavDpth+trayFloorThck+liftHght;
   liftDia=trayHoleDia-liftSpcng*2;
@@ -126,6 +155,31 @@ module PCB(){
         cube([(hsngDims.x+btnDims.x)/2+btnSpcngs.x+fudge,btnDims.y+btnSpcngs.y*2,btnDims.z+btnSpcngs.z*2],true);
 }
 
+*coinCellHolderHolder();
+module coinCellHolderHolder(){
+  //CR2016 holder
+  //Keystone No3026
+  sheetThck=0.25;
+  ovWdth=30.73;
+  feetDims=[(ovWdth-20.6)/2,5.08]; //incl. rad
+  blckDims=[7.9,16,1.9];
+  spcng=0.1;
+  holeDia=2*1.18;
+  minWallThck=2;
+  if (showCoinCellHolder)
+    rotate([90,0,0]) translate([0,1.9,10.05]) import("CoinCellHolder-No3026.stl");  
+  //support Block
+  color("purple"){
+    translate([0,0,blckDims.z/2]) cube(blckDims+[-spcng*2,0,0],true);
+    //sites
+    for (ix=[-1,1])
+      translate([ix*(ovWdth-feetDims.x)/2,0]) linear_extrude(0.8) 
+        difference(){
+          offset(minWallThck) square(feetDims,true);
+          offset(spcng) square(feetDims,true);
+        }
+  }
+}
 
 module partsTray(){
 
