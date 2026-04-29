@@ -1,0 +1,13 @@
+{
+    "fileFormatVersion": "1",
+    "parameterSets": {
+        "Neue Parameter Liste1": {
+            "$fn": "113",
+            "cutHght": "120",
+            "outerDia": "75",
+            "showUpperStand": "true",
+            "spacing": "0.10000000000000001",
+            "wallThck": "2.2000000000000002"
+        }
+    }
+}
