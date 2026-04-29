@@ -214,6 +214,13 @@ module partsTray(){
             label(cavLabels[row][col]);
       }
     }
+    //stress reliefs
+    for (ix=[-(cavCounts.x-2)/2:(cavCounts.x-2)/2],iy=[-(cavCounts.y-2)/2:(cavCounts.y-2)/2]){
+      if (ix==-(cavCounts.x-2)/2)
+        translate([0,iy*cavDist.y,-ovDims.z+pcbDims.z]) rotate([0,90,0]) linear_extrude(ovDims.x+fudge,center=true) circle(d=cavBrmWdth,$fn=4);
+      if (iy==-(cavCounts.y-2)/2)
+        translate([ix*cavDist.x,0,-ovDims.z+pcbDims.z]) rotate([90,0,0]) linear_extrude(ovDims.y+fudge,center=true) circle(d=cavBrmWdth,$fn=4);  
+    }
     //center hole for PCB removal
     translate([0,0,-trayOvDims.z+pcbDims.z-fudge/2]) cylinder(d=trayHoleDia,h=trayOvDims.z+fudge);
     }
