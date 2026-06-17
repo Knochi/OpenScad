@@ -1,13 +1,16 @@
 $fn=100;
 
 poleDia=30;
-wallThck=1.2;
-maxDia=160;
+wallThck=2;
+maxDia=170;
 topHght=30;
 drillDia=5.5;
+showCut=false;
 fudge=0.1;
 
 topDia=poleDia+2*wallThck;
+
+
 
 difference(){
   union(){
@@ -19,8 +22,10 @@ difference(){
     cylinder(d1=maxDia-wallThck*2+fudge/4,d2=poleDia,h=maxDia/2);
   translate([0,0,(maxDia+topHght)/2]) for (ir=[0,120,240])
     rotate([90,0,ir]) cylinder(d=drillDia,h=topDia/2+fudge);
-  for (r=[0:40:360])
+  *for (r=[0:40:360])
     rotate(r) translate([0,-maxDia/2+36,33]) rotate([51,0,0]) linear_extrude(10) leaf();
+  if (showCut)
+    color("darkRed") translate([0,-(maxDia+fudge)/2,-fudge/2]) cube([maxDia/2+fudge,maxDia+fudge,maxDia/2+topHght+fudge]);
 }
 
 

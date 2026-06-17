@@ -1,0 +1,24 @@
+{
+    "fileFormatVersion": "1",
+    "parameterSets": {
+        "Neue Parameter Liste1": {
+            "export": "none",
+            "oDia": "120",
+            "showBottom": "true",
+            "showThread": "true",
+            "showTop": "true"
+        },
+        "Neue Parameter Liste2": {
+            "export": "flesh",
+            "fleshDia": "100",
+            "iDia": "50",
+            "iHght": "85",
+            "minWallThck": "6",
+            "oDia": "120",
+            "showBottom": "true",
+            "showCut": "false",
+            "showThread": "false",
+            "showTop": "false"
+        }
+    }
+}

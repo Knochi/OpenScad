@@ -66,32 +66,37 @@ module lathe(dimensions=[],zOffset=0,iter=0){
 
 //horizontal 3DP holes 
 module horizontalHole(dia=1){
-//https://www.hydraresearch3d.com/design-rules#holes-horizontal
-a=0.3; //change to 0.6 for >0.1 layer thickness
-ang=40;
-r=dia/2;
+  //https://www.hydraresearch3d.com/design-rules#holes-horizontal
+  
+  //sin(a)=GK/HYP
+  //cos(a)=AK/HYP
+  //tan(a)=GK/AK
+  //f2(x)=
+  a=0.3; //change to 0.6 for <0.1 layer thickness
+  ang=60;
+  r=dia/2;
+  
+  //roof
+  //tangent point
+  p1=[cos(90-ang)*r,sin(90-ang)*r];
+  //crossing point
+  //px2=px1-tan(90-ang)*(r+a-py1);
+  p2=[p1.x-tan(90-ang)*(r+a-p1.y),r+a];
+  roofPoly=[[-p1.x,p1.y],[-p2.x,p2.y],p2,p1];
 
-//roof
-px1=sin(40)*r;
-py1=cos(40)*r;
-px2=sin(40)*(r+a-px1);
-py2=r+a;
-roofPoly=[[-px1,py1],[-px2,py2],[px2,py2],[px1,py1]];
-
-//bottom
-x=sqrt(pow(r+a,2)-pow(r,2));
-px3=x*r/(r+a);
-py3=-(r+a)+sqrt(pow(x,2)-pow(px3,2));
-botPoly=[[-px3,py3],[0,-r-a],[px3,py3]];
+  //bottom
+  x=sqrt(pow(r+a,2)-pow(r,2));
+  px3=x*r/(r+a);
+  py3=-(r+a)+sqrt(pow(x,2)-pow(px3,2));
+  botPoly=[[-px3,py3],[0,-r-a],[px3,py3]];
 
   polygon(roofPoly);  
   polygon(botPoly);  
   
-  circle(d=dia,$fn=36);
-    
+  circle(d=dia);
   
-
 }
+
 
 //from https://en.wikibooks.org/wiki/OpenSCAD_User_Manual/Other_Language_Features
 function fragFromR(r,ang=360)=$fn>0 ? ($fn>=3 ? $fn : 3) : ceil(max(min(360/$fa,r*2*PI*ang/(360*$fs)),5));

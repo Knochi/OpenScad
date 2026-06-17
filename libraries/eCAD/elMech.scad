@@ -52,6 +52,7 @@ translate([12,0,0]) pushButton(col="red");
 translate([12,15,0]) pushButton(col="green");
 translate([12,30,0]) pushButton(col="white");
 translate([-15,0,0]) rotEncoder();
+translate([-15,16,0]) navSwitch();
 translate([-15,30,0]) microStepper();
 translate([30,0,0]) SMDSwitch();
 translate([30,10,0]) CUI_TS02();
@@ -63,6 +64,43 @@ translate([120,0,0]) roundRocker20(true);
 translate([140,0,0]) slideSwitch();
 translate([180,0,0]) arcadeButton();
 translate([220,0,0]) toggleSwitch();
+
+
+
+*navSwitch();
+module navSwitch(){
+  // navigation switch, jostick
+  // https://www.lcsc.com/product-detail/C2858288.html
+  baseDims=[7.4,7.4,1.9];
+  baseRad=2;
+  handleDims=[1.92,1.92,3];
+  handleRad=0.3;
+  algnPinDist=3.8;
+  algnPinHght=0.5;
+  ovHght=6;
+  collarDia=3;
+  collarHght=ovHght-baseDims.z-handleDims.z;
+  pinThck=0.2;
+  pinDims=[0.2,0.7,0.8];
+  pinPitch=1.4;
+  
+  //body
+  color(blackBodyCol) linear_extrude(baseDims.z)  offset(baseRad) square([baseDims.x-baseRad*2-pinThck*2,baseDims.y-baseRad*2-pinThck*2],true);
+  //collar
+  color(blackBodyCol) translate([0,0,baseDims.z]) cylinder(d=collarDia,h=collarHght);
+  //handle
+  color(blackBodyCol) rotate(45) translate([0,0,baseDims.z+collarHght]) linear_extrude(handleDims.z) offset(handleRad) square([handleDims.x-handleRad*2,handleDims.y-handleRad*2],true);
+  //pins
+  color(metalGreyPinCol) for (ix=[-1,1],iy=[-1:1])
+    translate([ix*(baseDims.x-pinDims.x)/2,iy*pinPitch,0]) linear_extrude(pinDims.z) square([pinDims.x,pinDims.y],true);
+  color(metalGreyPinCol) for (iy=[-1,1])
+    translate([0,iy*(baseDims.y-pinThck)/2,0]) linear_extrude(pinDims.z) square([1.2,pinThck],true);
+  //alignment pins
+  color(blackBodyCol){
+    translate([0,algnPinDist/2,-algnPinHght]) cylinder(d=1.0,h=algnPinHght);
+    translate([0,-algnPinDist/2,-algnPinHght]) cylinder(d=0.7,h=algnPinHght);
+  }
+}
 
 *DIPSwitch();
 module DIPSwitch(digits=6){
