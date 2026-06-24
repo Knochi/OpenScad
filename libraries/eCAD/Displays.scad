@@ -322,6 +322,84 @@ module OLED1_3inch4pin(center=false){
   function cntrOffset(yOffset,yDim)=(PCBDims.y-yDim)/2+yOffset;
   
 }
+
+!OLED1_5inch4pin();
+module OLED1_5inch4pin(center=false){
+  //chinese OLED display 4pin 1.5Inch
+  //https://www.lcdwiki.com/1.5inch_OLED_Module_SKU%3AMC01506
+  
+  //Dimensions of the elements
+  PCBDims=[34,47,1.14];
+  PCBchamfer=1.115; //results in 0.65mm chamfer
+  glassDims=[33.9,37.3,1.44];
+  aaDims=[26.855,26.855,0.02]; //active area
+  glueThck=0.3;
+  
+  //offsets from top of PCB to top of element
+  holeYOffset=-2.5;
+  glassYOffset=-4.85;
+  hdrYOffset=-1.5;
+  aaYOffset=-7.25;
+  
+  //mounting hole pattern
+  holeDist=[29,42];
+  
+  //inner and outer diameter of mounting holes (PTH)
+  holeDiaIn=2.2; //drill
+  holeDiaOut=3.1; //copper
+  
+  //microfudge to isolate surfaces
+  mfudge=0.02;
+  
+  cntrOffset= center ? [0,0,0] : [2.54*1.5,-PCBDims.y/2-hdrYOffset,2.5];
+  
+  translate(cntrOffset){
+    //PCB
+    color(pcbBlueCol) linear_extrude(PCBDims.z)
+      difference(){
+        offset(delta=PCBchamfer,chamfer=true) square([PCBDims.x-PCBchamfer*2,PCBDims.y-PCBchamfer*2],true);
+        //screwholes
+        for (ix=[-1,1],iy=[-1,1])
+          translate([ix*holeDist.x/2,iy*holeDist.y/2+cntrOffset(holeYOffset,holeDist.y)]) circle(d=holeDiaOut);
+        //pins
+        for (ix=[-(4-1)/2:(4-1)/2])
+          translate([ix*2.54,PCBDims.y/2+hdrYOffset]) circle(d=1.0);
+        }
+    //glass
+    translate([0,0,PCBDims.z+glueThck]) 
+      color(greyBodyCol)
+        linear_extrude(glassDims.z)
+          difference(){
+            translate([0,cntrOffset(glassYOffset,glassDims.y)]) 
+              square([glassDims.x,glassDims.y],true);
+            translate([0,cntrOffset(aaYOffset,aaDims.y)]) 
+              square([aaDims.x,aaDims.y],true);
+              }
+    //active area
+    translate([0,0,PCBDims.z+glueThck]) 
+      color(blackBodyCol)
+        linear_extrude(glassDims.z-mfudge)
+          translate([0,cntrOffset(aaYOffset,aaDims.y)]) 
+            square([aaDims.x,aaDims.y],true);
+        
+    //screw holes
+    color(metalGoldPinCol) translate([0,0,mfudge/2]) linear_extrude(PCBDims.z-mfudge) 
+        for (ix=[-1,1],iy=[-1,1])
+          translate([ix*holeDist.x/2,iy*holeDist.y/2+cntrOffset(holeYOffset,holeDist.y)]) difference(){
+            circle(d=holeDiaOut);
+            circle(d=holeDiaIn);
+          }
+          
+    //pinHeader
+    translate([-2.54*1.5,PCBDims.y/2+hdrYOffset,0]) rotate([180,0,0]) MPE_087(rows=1,pins=4,A=11.3,markPin1=false);
+   
+  }
+  
+  
+  function cntrOffset(yOffset,yDim)=(PCBDims.y-yDim)/2+yOffset;
+  
+}
+
 *DisplayRound_1_28();
 module DisplayRound_1_28(){
   //TFT 1.28"

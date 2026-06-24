@@ -43,7 +43,7 @@ translate([230,0,0]) PJ398SM();
 *rotate([0,0,-90]) femHeaderSMD(20,2,center=true);
 
 
-!KFR208R(pitch=5.08, poles=8);
+*KFR208R(pitch=5.08, poles=8);
 module KFR208R(pitch=5.08,poles=2){
   bdyDims=[pitch*poles+1.5,16.8,16];
   pin1Offset=[2.98,bdyDims.y-2.6-8.2,0];
@@ -272,6 +272,7 @@ module WAGO_2601(poles=5,release=false){
 
 *color("grey") screwClampRA();
 module  screwClampRA(){
+  
   ovHght=11.2;
   ovLen=11.5;
   ovWdth=8.5;
@@ -339,6 +340,58 @@ module  screwClampRA(){
         translate([bendRad-(bendWdth+sheetThck)/2,0]) square([bendWdth+sheetThck,bendHght],true);
       }
       
+  }
+}
+
+!color("grey") screwClampRA_XFCN();
+module  screwClampRA_XFCN(){
+  //https://www.lcsc.com/datasheet/C481452.pdf
+ 
+  ovHght=9;
+  ovLen=9;
+  ovWdth=6.3;
+  bdyHght=5;
+  sheetThck=0.8;
+  sheetBendRad=1;
+  screwDia=3;
+  nutThck=2.8-sheetThck;
+  
+  pinLen=4;
+  pinWdth=1.25;
+  pinDist=5;
+     
+  
+  //body
+  translate([0,-(pinWdth+pinDist)/2,-pinLen])
+    difference(){
+      translate([0,0,ovHght-bdyHght]) body();
+      translate([0,0,ovHght-bdyHght/2]) rotate([-90,0,0]) cylinder(d=screwDia,h=ovLen+fudge);
+    } 
+    
+  *body();
+  module body(){
+    difference(){
+      linear_extrude(bdyHght,convexity=3) difference(){
+        translate([-ovWdth/2+sheetBendRad,0]) offset(sheetBendRad) square([ovWdth-sheetBendRad*2,ovLen-sheetBendRad]);
+        translate([-ovWdth/2+sheetThck,-sheetThck]) square([ovWdth-sheetThck*2,ovLen]);
+        translate([0,-sheetBendRad/2]) square([ovWdth+fudge,sheetBendRad],true);
+        }
+      }
+    translate([0,ovLen-sheetThck,bdyHght/2]) rotate([90,0,0]) linear_extrude(sheetThck,convexity=3) circle(d=screwDia+sheetThck*2);
+      
+    //base and pins
+    for (ix=[-1,1],iy=[0,1]){
+      translate([ix*(ovWdth-sheetThck)/2,pinWdth/2+iy*pinDist,0]) rotate(ix*-90) pin();
+    }
+    
+  }
+  *pin();  
+  module pin(){
+    rotate([-90,0,0])
+      linear_extrude(sheetThck,center=true){
+        translate([-pinWdth/2,0])  square([pinWdth,pinLen-pinWdth/2]);
+        translate([0,pinLen-pinWdth/2]) circle(d=pinWdth);
+      }  
   }
 }
 

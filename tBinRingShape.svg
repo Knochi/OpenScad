@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   version="1.1"
+   id="svg1"
+   width="10.077861mm"
+   height="18.525995mm"
+   viewBox="0 0 38.089553 70.019512"
+   sodipodi:docname="tBinRingShape.svg"
+   inkscape:version="1.4.3 (0d15f75042, 2025-12-25)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs1">
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath1">
+      <rect
+         style="fill:#000000;stroke:#000000;stroke-width:2.74394"
+         id="rect2"
+         width="0.15317379"
+         height="0.11427037"
+         x="0.16151494"
+         y="0.011802574"
+         ry="0.0070041073" />
+    </clipPath>
+  </defs>
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     showguides="true"
+     inkscape:zoom="16.599908"
+     inkscape:cx="23.825434"
+     inkscape:cy="50.482209"
+     inkscape:window-width="1280"
+     inkscape:window-height="722"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="g1"
+     inkscape:document-units="mm">
+    <inkscape:page
+       x="0"
+       y="0"
+       inkscape:label="1"
+       id="page1"
+       width="38.08955"
+       height="70.019516"
+       margin="0"
+       bleed="0" />
+    <sodipodi:guide
+       position="0.37200156,-143.86691"
+       orientation="1,0"
+       id="guide2"
+       inkscape:locked="false" />
+    <sodipodi:guide
+       position="0.37199156,0.37943587"
+       orientation="0,-1"
+       id="guide3"
+       inkscape:locked="false" />
+  </sodipodi:namedview>
+  <g
+     id="g1"
+     inkscape:groupmode="layer"
+     inkscape:label="1"
+     transform="translate(-289.82498,-169.37176)">
+    <path
+       style="fill:#000000;stroke:none;stroke-width:0.744;stroke-dasharray:none"
+       d="m 290.19698,239.01183 v -69.13321 l 18.13476,5.69956 c 8.17429,2.5691 12.93152,10.51635 13.84675,18.17784 l 4.8232,45.25581 z"
+       id="path2"
+       sodipodi:nodetypes="ccsscc" />
+  </g>
+</svg>
