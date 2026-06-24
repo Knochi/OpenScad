@@ -1,0 +1,16 @@
+{
+    "fileFormatVersion": "1",
+    "parameterSets": {
+        "Neue Parameter Liste1": {
+            "$fn": "100",
+            "backholderhight": "50",
+            "bottomMountingDiameter": "4",
+            "fussHintenInnen": "70",
+            "fussLaengeInnen": "200",
+            "fussVorneInnen": "90",
+            "hisize": "4.7999999999999998",
+            "materialStaerke": "3",
+            "show": "rechts"
+        }
+    }
+}

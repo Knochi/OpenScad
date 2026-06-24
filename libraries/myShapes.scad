@@ -7,6 +7,7 @@ translate([30,0,0]) linear_extrude(1)  arc(r=10, angle=50);
 translate([30,30,0]) rotate_extrude() rotate(30) arc(r=10, angle=60);
 circFromPoints([[56,32],[61,17],[50,30]],true);
 translate([0,0,0]) nGon();
+translate([20,20,0]) beanShape(d1=10,d2=7,r=5,dist=10);
 
 //-- compare facet handling of arc with rotate_extrude
 //$fs=0.2;
@@ -200,6 +201,30 @@ module circFromPoints(points=[],debug=false){
   }
 }
 
+module beanShape(d1=70,d2=50,r=50,dist=70){
+  //two circles connected by tangential radius
+  //a²=b²+c²-2*b*c*cos(alpha)
+  a=r+d2/2;
+  b=r+d1/2;
+  c=dist;
+  alpha=acos((a^2-b^2-c^2)/(-2*b*c));
+  beta=acos((b^2-a^2-c^2)/(-2*a*c));
+  echo(beta);
+  
+  Prad=[cos(alpha)*b,sin(alpha)*b];
+  P1=[cos(alpha)*d1/2,sin(alpha)*d1/2];
+  P2=[-cos(beta)*d2/2,sin(beta)*d2/2];
+  
+  difference(){
+    union(){
+      circle(d=d1);
+      translate([dist,0]) circle(d=d2);
+      polygon([P1,[P2.x+dist,P2.y],[P2.x+dist,-P2.y],[P1.x,-P1.y]]);
+    }
+    translate(Prad) circle(r);
+    translate([Prad.x,-Prad.y]) circle(r);
+  }
+}
 
 
 // --- functions ---
@@ -312,3 +337,5 @@ function c_centers(P1, P2, r)= let(
   xx = sqrt((pow(r,2) - pow(q/2,2)))*(P1.y-P2.y)/q,
   yy = sqrt((pow(r,2) - pow(q/2,2)))*(P2.x-P1.x)/q
 ) [[x3 + xx, y3+yy], [x3-xx,y3-yy]];
+
+

@@ -5,7 +5,7 @@
 // Push out axle with small screwdriver 
 
 /* [Axle] */
-axDia=2.8;
+axDia=3;
 axLen=29.1;
 axHeadThck=1.2;
 axHeadDia=4;
@@ -18,6 +18,7 @@ intOutSegmWdth=12.1;
 intInSegmWdth=7.85;
 intSegmDia=6.5;
 intDist=0.5;
+intLedgeDims=[0.7,0.8];
 
 /* [Hidden] */
 fudge=0.1;
@@ -43,6 +44,7 @@ module brioAxle(){
 
 brioInterface();
 translate([0,-intSegmDia/2-3/2-intDist,0]) cube([intOvLen,3,intSegmDia],true);
+
 module brioInterface(){
   rotate([0,90,0]) difference(){
     for (iz=[-1,1])
@@ -59,5 +61,6 @@ module brioInterface(){
       }
       cylinder(d=axHeadDia+axSpcng*2,h=axOffset+axHeadThck+axSpcng);
     }
+    translate([0,0,(intOvLen+fudge)/2-(axOffset+axSpcng)]) cylinder(d=axHeadDia+axSpcng*2,h=axOffset+axSpcng);
   }
 }

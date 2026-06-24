@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="210mm"
+   height="297mm"
+   viewBox="0 0 210 297"
+   version="1.1"
+   id="svg1"
+   inkscape:version="1.4 (86a8ad7, 2024-10-11)"
+   sodipodi:docname="quadProper_Concept.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm"
+     showguides="false"
+     inkscape:zoom="1.5768098"
+     inkscape:cx="298.0702"
+     inkscape:cy="380.83224"
+     inkscape:window-width="1920"
+     inkscape:window-height="1129"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1">
+    <sodipodi:guide
+       position="105.76233,199.23231"
+       orientation="0,-1"
+       id="guide9"
+       inkscape:locked="false" />
+    <sodipodi:guide
+       position="85.826698,158.5771"
+       orientation="1,0"
+       id="guide10"
+       inkscape:locked="false" />
+  </sodipodi:namedview>
+  <defs
+     id="defs1">
+    <marker
+       style="overflow:visible"
+       id="Triangle"
+       refX="0"
+       refY="0"
+       orient="auto-start-reverse"
+       inkscape:stockid="Triangle arrow"
+       markerWidth="1"
+       markerHeight="1"
+       viewBox="0 0 1 1"
+       inkscape:isstock="true"
+       inkscape:collect="always"
+       preserveAspectRatio="xMidYMid">
+      <path
+         transform="scale(0.5)"
+         style="fill:context-stroke;fill-rule:evenodd;stroke:context-stroke;stroke-width:1pt"
+         d="M 5.77,0 -2.88,5 V -5 Z"
+         id="path135" />
+    </marker>
+  </defs>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <circle
+       style="fill:none;stroke:#808080;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;paint-order:fill stroke markers"
+       id="path1"
+       cx="65.784325"
+       cy="97.7677"
+       r="18.284042" />
+    <circle
+       style="fill:none;stroke:#808080;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;paint-order:fill stroke markers"
+       id="circle1"
+       cx="65.784325"
+       cy="97.7677"
+       r="18.284042" />
+    <circle
+       style="fill:none;stroke:#808080;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;paint-order:fill stroke markers"
+       id="circle2"
+       cx="65.784325"
+       cy="97.7677"
+       r="16.354382" />
+    <circle
+       style="fill:none;stroke:#808080;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;paint-order:fill stroke markers"
+       id="circle3"
+       cx="105.90113"
+       cy="97.767693"
+       r="18.284042" />
+    <circle
+       style="fill:none;stroke:#808080;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;paint-order:fill stroke markers"
+       id="circle4"
+       cx="105.90113"
+       cy="97.767693"
+       r="18.284042" />
+    <circle
+       style="fill:none;stroke:#808080;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;paint-order:fill stroke markers"
+       id="circle5"
+       cx="105.90113"
+       cy="97.767693"
+       r="16.354382" />
+    <circle
+       style="fill:#ff0000;stroke:none;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;paint-order:fill stroke markers"
+       id="path5"
+       cx="65.784325"
+       cy="79.483658"
+       r="0.97885299" />
+    <circle
+       style="fill:#ff0000;stroke:none;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;paint-order:fill stroke markers"
+       id="circle6"
+       cx="70.933403"
+       cy="82.245049"
+       r="0.97885299" />
+    <circle
+       style="fill:#ff0000;stroke:none;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;paint-order:fill stroke markers"
+       id="circle7"
+       cx="70.933403"
+       cy="82.245049"
+       r="0.97885299" />
+    <circle
+       style="fill:#ff0000;stroke:none;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;paint-order:fill stroke markers"
+       id="circle8"
+       cx="102.33408"
+       cy="79.834976"
+       r="0.97885299" />
+    <circle
+       style="fill:#ff0000;stroke:none;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;paint-order:fill stroke markers"
+       id="circle9"
+       cx="99.042549"
+       cy="82.920952"
+       r="0.97885299" />
+    <circle
+       style="fill:none;stroke:#00ff00;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;paint-order:fill stroke markers"
+       id="path9"
+       cx="85.826698"
+       cy="97.7677"
+       r="40.655197" />
+    <path
+       style="fill:none;stroke:#1a1a1a;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;marker-end:url(#Triangle);paint-order:fill stroke markers"
+       d="M 85.826698,57.112503 V 47.222748"
+       id="path10" />
+    <path
+       style="fill:none;stroke:#1a1a1a;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;marker-end:url(#Triangle);paint-order:fill stroke markers"
+       d="m 85.826698,138.4229 v 9.88976"
+       id="path11" />
+    <path
+       style="fill:none;stroke:#1a1a1a;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;marker-end:url(#Triangle);paint-order:fill stroke markers"
+       d="m 126.4819,97.7677 h 9.88976"
+       id="path12" />
+    <path
+       style="fill:none;stroke:#1a1a1a;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;marker-end:url(#Triangle);paint-order:fill stroke markers"
+       d="m 45.171501,97.7677 h -9.88976"
+       id="path13" />
+    <rect
+       style="fill:none;stroke:#1a1a1a;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;paint-order:fill stroke markers"
+       id="rect13"
+       width="82.220337"
+       height="82.220337"
+       x="31.210167"
+       y="189.94577" />
+    <circle
+       style="fill:none;stroke:#1a1a1a;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;paint-order:fill stroke markers"
+       id="path14"
+       cx="31.210167"
+       cy="189.94577"
+       r="2.4330509" />
+    <circle
+       style="fill:none;stroke:#1a1a1a;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;paint-order:fill stroke markers"
+       id="path14-5"
+       cx="113.4305"
+       cy="189.94577"
+       r="2.4330509" />
+    <circle
+       style="fill:none;stroke:#1a1a1a;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;paint-order:fill stroke markers"
+       id="path14-1"
+       cx="113.4305"
+       cy="272.16611"
+       r="2.4330509" />
+    <circle
+       style="fill:none;stroke:#1a1a1a;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;paint-order:fill stroke markers"
+       id="path14-7"
+       cx="31.210167"
+       cy="272.16611"
+       r="2.4330509" />
+    <path
+       style="fill:none;stroke:#1a1a1a;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;paint-order:fill stroke markers"
+       d="m 32.714226,191.85824 22.490858,40.20447 v 0"
+       id="path15" />
+    <path
+       style="fill:none;stroke:#1a1a1a;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;paint-order:fill stroke markers"
+       d="M 31.210168,272.1661 46.815253,242.80169"
+       id="path16" />
+    <path
+       style="fill:none;stroke:#1a1a1a;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;paint-order:fill stroke markers"
+       d="M 113.4305,272.1661 97.657625,237.6"
+       id="path17" />
+    <path
+       style="fill:none;stroke:#1a1a1a;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;paint-order:fill stroke markers"
+       d="M 113.4305,189.94577 77.18644,240.78813"
+       id="path18" />
+    <circle
+       style="fill:#ff0000;stroke:none;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;paint-order:fill stroke markers"
+       id="circle7-8"
+       cx="55.205086"
+       cy="232.06271"
+       r="0.97885299" />
+    <circle
+       style="fill:#ff0000;stroke:none;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;paint-order:fill stroke markers"
+       id="circle7-8-2"
+       cx="46.815254"
+       cy="242.8017"
+       r="0.97885299" />
+    <circle
+       style="fill:#ff0000;stroke:none;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;paint-order:fill stroke markers"
+       id="circle7-8-1"
+       cx="77.18644"
+       cy="240.78813"
+       r="0.97885299" />
+    <circle
+       style="fill:#ff0000;stroke:none;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;paint-order:fill stroke markers"
+       id="circle7-8-7"
+       cx="97.657623"
+       cy="237.60001"
+       r="0.97885299" />
+  </g>
+</svg>

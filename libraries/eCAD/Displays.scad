@@ -15,6 +15,7 @@ translate([100,120,0]) FutabaVFD();
 translate([200,0,0]) Adafruit128x128TFT();
 translate([300,0,0]) AdafruitOLED23();
 translate([300,100,0]) VIM_878_DP();
+translate([300,140,0]) Futaba_9ST12();
 translate([500,0,0]) raspBerry7Inch();
 translate([100,180,0]) EA_DOGS164_A();
 translate([-100,100,0]) rotate([0,180,0]) ESP32RoundDisplay();
@@ -169,7 +170,91 @@ module OLED0_96inch4pin(center=true){
   function cntrOffset(yOffset,yDim)=(PCBDims.y-yDim)/2+yOffset;
   
 }
-
+*OLED2_42inch_RA();
+module OLED2_42inch_RA(bendHght=11,center=false,cut=false){
+  // flex perpendicular to Screen
+  // GME12864-100
+  // https://goldenmorninglcd.com/oled-display/2.42-inch-128x64-ssd1309-gme12864-100/
+  
+  ovDims=[60.5,37,2];
+  VADims=[57.01,29.49,0.02];
+  VAOffset=[1.75,1.08];//from top left edge
+  AADims=[55.01,27.49];
+  polDims=[59.5,31.5,0.2]; //polarizer
+  polOffset=[0.5,0.5];//from top left edge
+  panelDims=[ovDims.x,ovDims.y,ovDims.z-polDims.z];//glass Dims
+  tapeThck=(ovDims.z-panelDims.z)/2;
+  //flex
+  // minimum bend radius=1.5mm
+  // minimum length from display 2.0mm (including bend)
+  pxCount=[128,64];
+  pxSize=[0.40,0.40];
+  pxPitch=[0.43,0.43];
+  flexDims=[12.5,36,0.3];
+  padDims=[0.35,3.0,0.05];
+  padPitch=0.5;
+  padCnt=24;
+  flexRad=1.5;//bend radius
+  flexOffset=1;//offset for 1st bend
+  bendLngth=(2*PI*flexRad)/4; //one quarter of a circle
+  quartBends=3; //number of quarter bends
+  flexTailLngth=flexDims.y-flexOffset*2-bendLngth*quartBends-bendHght;//length of the tail
+  cntrOffset= center ? [0,0,-ovDims.z/2] : panelDims/2;
+  
+  if (cut){
+    hull() for (ix=[-1,1])
+      translate([ix*ovDims.x/2,0]) difference(){
+        circle(ovDims.z);
+        translate([0,-ovDims.z/2]) square([ovDims.z*2,ovDims.z],true);
+      }
+    translate([0,flexRad*quartBends/2+ovDims.z]) 
+      square([flexDims.x+1.0,flexRad*quartBends],true); //tolerances are 0.3mm
+  }
+  else translate(cntrOffset){
+    //panel
+    color(glassGreyCol) cube(panelDims,true);
+    //front(polarizer
+    color(blackBodyCol) translate([0,(panelDims.y-polDims.y)/2-polOffset.y,panelDims.z/2+polDims.z/2]) 
+      cube(polDims,true);
+    //VA
+      translate([(VADims.x-panelDims.x)/2+VAOffset.x,
+                 (-VADims.y+panelDims.y)/2-VAOffset.y,
+                 (panelDims.z/2+polDims.z)]){ 
+        color(darkGreyBodyCol) cube([VADims.x,VADims.y,tapeThck/4],true);
+        color(glassOrangeCol) translate([0,0,tapeThck/4]) linear_extrude(tapeThck/4) 
+                   pixels(pxCount,pxSize,pxPitch);
+        }
+    
+    //flex bend 180 degrees
+      translate([0,-(panelDims.y+flexOffset)/2,(panelDims.z-flexDims.z)/2-0.7]){
+        color(polymidCol){ 
+        cube([flexDims.x,flexOffset,flexDims.z],true);
+        translate([0,-flexOffset/2,-flexRad]) rotate([90,90,-90]) 
+          rotate_extrude(angle=180) translate([flexRad,0]) 
+            square([flexDims.z,flexDims.x],true);
+        translate([0,bendHght/2,-flexRad*2]) 
+          cube([flexDims.x,bendHght+flexOffset,flexDims.z],true);
+        translate([0,flexOffset/2+bendHght,-flexRad*3]) rotate([90,180,-90]) 
+          rotate_extrude(angle=-90) translate([flexRad,0]) 
+            square([flexDims.z,flexDims.x],true);
+        translate([0,flexOffset/2+bendHght+flexRad,-flexRad*3]) 
+          rotate([180,0,0]) linear_extrude(flexTailLngth) 
+            square([flexDims.x,flexDims.z],true);
+      }
+      //pads
+        translate([0,flexOffset/2+bendHght+flexRad-flexDims.z/2,-flexRad*3-flexTailLngth+padDims.y/2]){ 
+          color(metalGoldPinCol) for (ix=[-(padCnt-1)/2:(padCnt-1)/2])
+            translate([ix*padPitch,0,0]) rotate([90,0,0]) cube(padDims,true);
+          color(whiteBodyCol){
+            translate([-(padCnt-1)/2*padPitch,0,padDims.y/2+fudge]) rotate([90,0,0]) 
+              linear_extrude(padDims.z) text("1",size=1,halign="center");
+            translate([-(padCnt-1)/2*padPitch,flexDims.z,padDims.y/2+fudge]) rotate([90,0,180]) 
+              linear_extrude(padDims.z) text("1",size=1,halign="center");
+          }
+        }
+    }
+  }
+}
 
 *OLED1_3inch4pin();
 module OLED1_3inch4pin(center=false){
@@ -278,7 +363,7 @@ module DisplayRound_1_28(){
     }
 }
 
-!ESP32RoundDisplay();
+*ESP32RoundDisplay();
 module ESP32RoundDisplay(showPlug=false, cut=false, spcng=0.1){
   // Waveshare ESP32-S3 round 1.28" IPS display with headers
   // https://www.waveshare.com/wiki/ESP32-S3-LCD-1.28
@@ -391,6 +476,28 @@ module roundDisplayAE(){
 }
 
 
+
+*Futaba_9ST12();
+module Futaba_9ST12(){
+  // Futaba 9-ST-12 9 digit VFD
+  bdyDims=[64.5,20,3.25];
+  lensDims=[60.5,16.15,3];
+  lensRad=2;
+  studDia=4.6;
+  pinCount=19;
+  pinDims=[1.3,5,0.1];
+  pinPitch=2.5;
+  
+  linear_extrude(bdyDims.z) square([bdyDims.x,bdyDims.y],true);
+  translate([0,0,bdyDims.z]) linear_extrude(lensDims.z) 
+    offset(lensRad) square([lensDims.x-lensRad*2,lensDims.y-lensRad*2],true);
+  //stud
+  translate([bdyDims.x/2-25.3,lensDims.y/2,bdyDims.z+lensDims.z-studDia/2]) rotate([-90,0,0]) cylinder(d=studDia,h=6);
+  
+  //pins
+  color(metalGreyPinCol) for (ix=[-(pinCount-1)/2:(pinCount-1)/2])
+    translate([ix*pinPitch,-bdyDims.y/2-pinDims.y/2,2]) cube(pinDims,true);
+}
 
 *LD8133();
 module LD8133(){
