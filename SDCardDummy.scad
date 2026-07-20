@@ -7,8 +7,9 @@ cntctSurHght=1.4;
 cntcCavDist=2.5;
 cntcCavDims=[(15-6*0.6)/6,6,sdCardOvDims.z-cntctSurHght];
 cntcCav1XOffset=-8.125+cntcCavDist/2;
-cntcCav9Dims=[cntcCavDims.x,8,sdCardOvDims.z-cntctSurHght];
-cntcCav9XOffset=-8.125-cntcCavDist/2;
+cntcCav9Dims=[sdCardOvDims.x/2-0.7-sdCardBrmWdth-(8.125+0.3),8,sdCardOvDims.z-cntctSurHght];
+echo(cntcCav9Dims.x);
+cntcCav9XOffset=-8.125-0.3-cntcCav9Dims.x/2;
 cntcCav78Dims=[sdCardOvDims.x/2-0.7-sdCardBrmWdth-(-8.125+6*cntcCavDist+0.3),6,sdCardOvDims.z-cntctSurHght];
 cntcCav78XOffset=sdCardOvDims.x/2-0.7-sdCardBrmWdth-cntcCav78Dims.x/2;
 
