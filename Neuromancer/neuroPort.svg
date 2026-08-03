@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   version="1.1"
+   id="svg1"
+   width="34.00827mm"
+   height="14.200181mm"
+   viewBox="0 0 128.5352 53.669975"
+   sodipodi:docname="neuroPort.svg"
+   inkscape:version="1.4 (86a8ad7, 2024-10-11)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs1" />
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     showguides="true"
+     inkscape:zoom="11.510303"
+     inkscape:cx="80.493101"
+     inkscape:cy="0.39095408"
+     inkscape:window-width="3840"
+     inkscape:window-height="2054"
+     inkscape:window-x="-11"
+     inkscape:window-y="-11"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="g1"
+     inkscape:document-units="mm">
+    <sodipodi:guide
+       position="17.455593,865.16526"
+       orientation="0,-1"
+       id="guide1"
+       inkscape:locked="false" />
+    <sodipodi:guide
+       position="70.288099,32.612335"
+       orientation="1,0"
+       id="guide3"
+       inkscape:locked="false" />
+  </sodipodi:namedview>
+  <g
+     inkscape:groupmode="layer"
+     inkscape:label="Image"
+     id="g1"
+     transform="translate(-416.9951,-411.42478)">
+    <path
+       id="path1"
+       style="fill:none;stroke:#00ff00;stroke-width:0.755906;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;paint-order:fill stroke markers"
+       d="m 487.2832,411.80273 a 26.456694,26.456694 0 0 0 -22.50195,12.59961 h -17.61719 l -6.94922,8.51172 h -22.84179 v 10.68946 h 22.84179 l 6.94922,8.51367 h 17.61719 a 26.456694,26.456694 0 0 0 22.50195,12.59961 26.456694,26.456694 0 0 0 22.53125,-12.59961 h 18.66797 l 8.51367,-8.51367 h 8.15625 v -10.68946 h -8.15625 l -8.51367,-8.51172 H 509.81445 A 26.456694,26.456694 0 0 0 487.2832,411.80273 Z m 0,20.67969 a 5.7774324,5.7774324 0 0 1 5.45118,3.86524 h 35.22656 c 1.05887,0 1.91211,0.85323 1.91211,1.91211 0,1.05887 -0.85324,1.91015 -1.91211,1.91015 H 492.7207 a 5.7774324,5.7774324 0 0 1 -5.4375,3.86719 5.7774324,5.7774324 0 0 1 -5.4375,-3.86719 h -54.66406 c -1.05888,0 -1.91016,-0.85128 -1.91016,-1.91015 0,-1.05888 0.85128,-1.91211 1.91016,-1.91211 h 54.66406 a 5.7774324,5.7774324 0 0 1 5.4375,-3.86524 z" />
+  </g>
+</svg>

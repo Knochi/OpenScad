@@ -1,0 +1,17 @@
+{
+    "fileFormatVersion": "1",
+    "parameterSets": {
+        "Neue Parameter Liste1": {
+            "$fn": "64",
+            "watchChmf": "2",
+            "watchDia": "42",
+            "watchKnobDia": "5",
+            "watchKnobHght": "2",
+            "watchKnobPos": "0.40000000000000002",
+            "watchRad": "1",
+            "watchSensThck": "2",
+            "watchThck": "11",
+            "watchWght": "70"
+        }
+    }
+}
