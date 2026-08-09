@@ -221,7 +221,11 @@ module layerFrame(layer="all"){
   lidSpcng=0.5;
   
   if (showLayer0)
-    color(layerCol[0]) translate([0,0,pcbDims.z-layerThck[0]-layerThck[1]]) linear_extrude(layerThck[0]) layer0();
+    color(layerCol[0]) translate([0,0,pcbDims.z-layerThck[0]-layerThck[1]]){
+      linear_extrude(layerThck[0]) layer0();
+      #for (pos=hangerPos) 
+          translate([pos.x,pos.y]) hangerPlug();
+    }
     
   if (showLayer1){
     translate([0,0,pcbDims.z-layerThck[1]]){
@@ -446,7 +450,7 @@ module hangerDrillJig(){
       }
 }
 
-!handProtector();
+*handProtector();
 module handProtector(){
   
   ovHght=handProtTopSpcng+layerThck[len(layerThck)-1];
@@ -545,6 +549,39 @@ module dumbAssJig(){
 
 }
 
+*hangerShim();
+module hangerShim(thck=2){
+  linear_extrude(thck) difference(){
+    translate([0,+26]) offset(0.5) offset(-1) square([brimWidth/2,80],true);
+    rotate(180) hanger(true) circle(d=6);
+    text(str(thck),valign="center",halign="center");
+  }
+}
+
+!hangerPlug();
+module hangerPlug(){
+//stuff the holes!
+  slotWdth=0.4;
+  hingThck=0.4; //two layers
+  plugDia=6.5;
+  
+  difference(){
+    union(){
+      rotate(180) hanger(true) rotate([0,90,0]){
+        for (im=[0,1]) mirror([0,0,im])
+          translate([0,0,layerThck[1]]) cylinder(d1=plugDia,d2=plugDia-1.5,h=1.5);
+        cylinder(d=plugDia,h=layerThck[1]*2,center=true);
+      }
+      translate([0,26,brimWidth/8-0.5]) rotate([0,90,0]) linear_extrude(layerThck[0]*2+slotWdth,center=true) 
+        offset(0.5) offset(-1) square([brimWidth/4,80],true);
+    }
+    //half the cylinders
+    translate([0,26,-3.6/2]) cube([brimWidth/2+3,80,3.6],true);
+    //slot
+    translate([0,26,brimWidth/4+hingThck]) cube([slotWdth,80+fudge,brimWidth/2],true);
+  }
+  
+}
 
 *hanger(cut=true);
 module hanger(cut=false){
