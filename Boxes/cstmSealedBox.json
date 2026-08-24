@@ -1,0 +1,62 @@
+{
+    "fileFormatVersion": "1",
+    "parameterSets": {
+        "Neue Parameter Liste1": {
+            "cornerRad": "4",
+            "heatInserts": "true",
+            "lockStyle": "screws",
+            "minFloorThck": "2",
+            "minWallThck": "1.2",
+            "outerDims": "[100, 42, 35]",
+            "quality": "48",
+            "screwDia": "3",
+            "screwHdDia": "6",
+            "screwHdLen": "3",
+            "screwLen": "12",
+            "sealStyle": "square",
+            "sealThck": "2",
+            "sealWdth": "2",
+            "showBox": "true",
+            "showLid": "false",
+            "spcng": "0.20000000000000001"
+        },
+        "Neue Parameter Liste2": {
+            "cornerRad": "4",
+            "heatInserts": "true",
+            "lockStyle": "screws",
+            "minFloorThck": "2",
+            "minWallThck": "1.2",
+            "outerDims": "[110, 44, 35]",
+            "quality": "48",
+            "screwDia": "3",
+            "screwHdDia": "5",
+            "screwHdLen": "3",
+            "screwLen": "12",
+            "sealStyle": "square",
+            "sealThck": "2",
+            "sealWdth": "4",
+            "showBox": "false",
+            "showLid": "true",
+            "spcng": "0.20000000000000001"
+        },
+        "Neue Parameter Liste3": {
+            "cornerRad": "4",
+            "heatInserts": "true",
+            "lockStyle": "screws",
+            "minFloorThck": "2",
+            "minWallThck": "1.2",
+            "outerDims": "[110, 44, 35]",
+            "quality": "48",
+            "screwDia": "3",
+            "screwHdDia": "7",
+            "screwHdLen": "3",
+            "screwLen": "12",
+            "sealStyle": "square",
+            "sealThck": "2",
+            "sealWdth": "2",
+            "showBox": "true",
+            "showLid": "true",
+            "spcng": "0.20000000000000001"
+        }
+    }
+}
