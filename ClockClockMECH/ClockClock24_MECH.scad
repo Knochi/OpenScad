@@ -7,7 +7,7 @@
 
 minWallThck=1.2;
 minFloorThck=0.6;
-brimWidth=50;
+brimWidth=50;         //50 from Screenshot
 
 //distance between the shafts in x and y
 clockDist=100;        //100 from screenshot
@@ -22,13 +22,27 @@ handTopAng=-90;
 handBotAng=120;
 handIdleAng=-135;
 
-
 //spacing between moving parts
 handSpcng=+0.5; //changed from 0.2 260301
 //spacing between top and bottom hand
 handZDist=1;
 
 mountHoleDia=4.2;
+
+/* [hand protector] */
+//spacing above front surface
+handProtTopSpcng=3; 
+//lateral spacing between walls
+handProtLatSpcng=0.5;
+handProtFeltWdth=20;
+handProtFeltThck=2.7;
+//spacing around the hands
+handProtHandSpcng=0.7;
+//add felt strips for the hands
+handProtHandFeltEn=false;
+//width of the sockets where felt is touching the flat face
+handProtFeltSocketWdth=8;
+
 
 /* [Sensors] */
 sensorXOffsets=[-20,-35];
@@ -48,6 +62,8 @@ jigLvrSpcng=0.1;
 
 showTopHand=true;
 showBotHand=true;
+handPos="init";
+
 //visualize the spacing to frame
 showHandSpcng=false;
 
@@ -68,7 +84,7 @@ showJigBody=true;
 //show heat set threaded inserts
 showInserts=true;
 
-export="none";//["none","Layer0","Layer1","Layer2","Layer3","Layer4","topHand":"Top Hand","botHand":"Bottom hand", "sandJig":"Sanding Jig"]
+export="none";//["none","Layer0","Layer1","Layer2","Layer3","Layer4","topHand":"Top Hand","botHand":"Bottom hand", "sandJig":"Sanding Jig", "handProt" : "Hand Protector"]
 
 /* [options] */
 roundedHands=false;
@@ -152,24 +168,14 @@ handPosDigit6 =[
                
 handPosTopBot = handPosDigit8;
 
-/*
-[
-  [[3, 12], [9, 12]], 
-  [[3, 12], [9, 6]], 
-  [[3, 6], [9, 6]], 
-  
-  [[3, 12], [9, 12]], 
-  [[3, 12], [9, 6]], 
-  [[3, 6], [9, 6]]
-]
-*/
-
 if (export=="topHand")
   !topHand();
 if (export=="botHand")
   !bottomHand();
 if (export=="sandJig")
   !sandingJigFaces();
+if (export=="handProt")
+  !handProtector();
   
 layerFrame();
 if (showPCB){
@@ -190,9 +196,12 @@ module clocks(){
       //motors
       if (showMotor)
         VID28_05();
-      topAngle= handPosTopBot[iy][ix][0] != undef ? time2Deg(handPosTopBot[iy][ix][0]) : handTopAng;
-      botAngle= handPosTopBot[iy][ix][1] != undef ? time2Deg(handPosTopBot[iy][ix][1]) : handBotAng;
-
+      
+      
+      
+      topAngle= handPos=="init" ? -90 : handPosTopBot[iy][ix][0] != undef ? time2Deg(handPosTopBot[iy][ix][0]) : handTopAng;
+      botAngle= handPos=="init" ? -90 : handPosTopBot[iy][ix][1] != undef ? time2Deg(handPosTopBot[iy][ix][1]) : handBotAng;
+      
       //hands
       if (showTopHand)
         color(handCol) translate([0,0,topShaftZOffset]) rotate(topAngle) topHand();
@@ -212,7 +221,11 @@ module layerFrame(layer="all"){
   lidSpcng=0.5;
   
   if (showLayer0)
-    color(layerCol[0]) translate([0,0,pcbDims.z-layerThck[0]-layerThck[1]]) linear_extrude(layerThck[0]) layer0();
+    color(layerCol[0]) translate([0,0,pcbDims.z-layerThck[0]-layerThck[1]]){
+      linear_extrude(layerThck[0]) layer0();
+      #for (pos=hangerPos) 
+          translate([pos.x,pos.y]) hangerPlug();
+    }
     
   if (showLayer1){
     translate([0,0,pcbDims.z-layerThck[1]]){
@@ -437,7 +450,88 @@ module hangerDrillJig(){
       }
 }
 
-!dumbAssJig();
+*handProtector();
+module handProtector(){
+  
+  ovHght=handProtTopSpcng+layerThck[len(layerThck)-1];
+  echo(ovHght);
+  wallThck=1.2;
+  floorThck=2;
+  
+  difference(){
+    union(){
+      //floor
+      linear_extrude(floorThck) 
+        difference(){
+          hull() for (ix=[-1,1]) translate([ix*clockDist/2,0]) 
+            circle(d=clockDia-2*handProtLatSpcng);
+          hull() for (ix=[-1,1]) 
+            translate([ix*(clockDist/6+handProtFeltSocketWdth),0]) circle(d=handProtFeltWdth);
+        }
+      //walls  
+      linear_extrude(ovHght,convexity=3)
+        for(ix=[-1,1]) translate([ix*clockDist/2,0]){
+          angs= ix<0 ? [0,120,240] : [60,180,300];
+          //outer wall
+          difference(){
+            circle(d=clockDia-2*handProtLatSpcng);
+            circle(d=clockDia-2*handProtLatSpcng-2*wallThck);
+          }
+          //sockets
+          for (ir=angs)
+            rotate(ir) feltPocket(false);
+        }
+        
+        
+      //walls hands
+      for(ix=[-1,1]) translate([ix*clockDist/2,0]) linear_extrude(ovHght,convexity=3)
+        intersection(){ 
+          offset(handProtHandSpcng+wallThck){
+            rotate(-90) handShape();  
+            if (handProtHandFeltEn) translate([0,-clockDia/4]) square([handWidth+handProtFeltThck*2,handProtFeltWdth],true);
+          }
+          circle(d=clockDia-2*handProtLatSpcng);
+        }
+    }
+  //cutouts  
+  for(ix=[-1,1]) translate([ix*clockDist/2,0,-fudge/2]){
+    angs= ix<0 ? [0,120,240] : [60,180,300];
+    //hands
+    linear_extrude(ovHght+floorThck+fudge,convexity=3){
+      offset(handProtHandSpcng) rotate(-90) handShape();
+      if (handProtHandFeltEn) translate([0,-clockDia/4]) square([handWidth+handProtFeltThck*2,handProtFeltWdth],true);
+    }
+    //outer and top feltPockets
+    for (ir=angs){
+      linear_extrude(ovHght+floorThck+fudge) rotate(ir) feltPocket(true);
+      rotate(ir) translate([clockDia/2-handProtFeltSocketWdth,0,ovHght-(handProtFeltThck/4-fudge/2)]) cube([handProtFeltSocketWdth*2,handProtFeltWdth,handProtFeltThck/2+fudge],true);
+    }
+  }
+  }
+  
+  *feltPocket(false);
+  module feltPocket(cut=true){
+    if (cut)
+      intersection(){
+        difference(){
+          circle(d=clockDia+fudge);
+          circle(d=clockDia-handProtFeltThck*2);
+          }
+        translate([0,-handProtFeltWdth/2]) square([clockDia/2+handProtFeltThck+fudge,handProtFeltWdth]);
+      }
+    else //stuff to add
+     intersection(){
+        difference(){
+          circle(d=clockDia-2*handProtLatSpcng);
+          circle(d=clockDia-(handProtFeltThck+handProtFeltSocketWdth)*2);
+          }
+        translate([0,-handProtFeltWdth/2-wallThck]) square([clockDia/2+handProtFeltThck+fudge,handProtFeltWdth+wallThck*2]);
+      }
+  }
+}
+
+
+*dumbAssJig();
 module dumbAssJig(){
 // if plates glued wrong together!
   drillDia=5.6;
@@ -455,6 +549,39 @@ module dumbAssJig(){
 
 }
 
+*hangerShim();
+module hangerShim(thck=2){
+  linear_extrude(thck) difference(){
+    translate([0,+26]) offset(0.5) offset(-1) square([brimWidth/2,80],true);
+    rotate(180) hanger(true) circle(d=6);
+    text(str(thck),valign="center",halign="center");
+  }
+}
+
+!hangerPlug();
+module hangerPlug(){
+//stuff the holes!
+  slotWdth=0.4;
+  hingThck=0.4; //two layers
+  plugDia=6.5;
+  
+  difference(){
+    union(){
+      rotate(180) hanger(true) rotate([0,90,0]){
+        for (im=[0,1]) mirror([0,0,im])
+          translate([0,0,layerThck[1]]) cylinder(d1=plugDia,d2=plugDia-1.5,h=1.5);
+        cylinder(d=plugDia,h=layerThck[1]*2,center=true);
+      }
+      translate([0,26,brimWidth/8-0.5]) rotate([0,90,0]) linear_extrude(layerThck[0]*2+slotWdth,center=true) 
+        offset(0.5) offset(-1) square([brimWidth/4,80],true);
+    }
+    //half the cylinders
+    translate([0,26,-3.6/2]) cube([brimWidth/2+3,80,3.6],true);
+    //slot
+    translate([0,26,brimWidth/4+hingThck]) cube([slotWdth,80+fudge,brimWidth/2],true);
+  }
+  
+}
 
 *hanger(cut=true);
 module hanger(cut=false){
