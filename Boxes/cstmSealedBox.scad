@@ -6,9 +6,10 @@ cornerRad=4;
 spcng=0.2;
 
 /* [Sealing] */
-sealWdth=+2;
+sealWdth=+3.0;
 sealThck=2;
 sealStyle="square";
+sealPressThck=2;
 
 /* [Locking] */
 lockStyle="screws";
@@ -23,8 +24,8 @@ screwHdLen=3;
 
 /* [Show] */
 quality=48; //[12:4:100]
-showLid=false;
-showBox=true;
+showLid=true;
+showBox=false;
 
 /* [Hidden] */
 $fn=quality;
@@ -49,8 +50,8 @@ echo(screwDist);
 
 module box(lid=false){
   lidHght=minFloorThck+screwHdLen+spcng;
-  boxHght=lid ? lidHght : outerDims.z-lidHght;  
-  domeDia= lid ? screwHdDia+minWallThck*2 : insertDia+boxWallThck*2;
+  boxHght= lid ? lidHght : outerDims.z-lidHght;  
+  domeDia= insertDia+boxWallThck*2;
   
   difference(){
     union(){
@@ -82,6 +83,8 @@ module box(lid=false){
           offset(cornerRad) square([outerDims.x-cornerRad*2,outerDims.y-cornerRad*2],true);
         }
       }
+      if (lid)
+        translate([0,0,boxHght]) seal(false,true);
     }  
     //screw/insert holes
     if (lid)
@@ -99,18 +102,18 @@ module box(lid=false){
   }
 }
 
-*seal();
+#seal();
 module seal(cut=false, lid=false){
 
   if (cut)
     shape();
-  else{
+  else if (lid)
+    lidPress();
+  else
     linear_extrude(sealThck) shape();
-  } 
+  
   
   module shape(){
-    
-    
     difference(){
       offset(cornerRad-minWallThck) square([outerDims.x-cornerRad*2,outerDims.y-cornerRad*2],true);
       offset(cornerRad-minWallThck-sealWdth) square([outerDims.x-cornerRad*2,outerDims.y-cornerRad*2],true);
@@ -144,6 +147,11 @@ module seal(cut=false, lid=false){
   }
   
   module lidPress(){
-    rotate_extrude() translate([screwHdDia/2+spcng-sealWdth/2,0]) circle(d=sealWdth,$fn=4);
+    for (ix=[-1,1],iy=[-1,1])
+      translate([ix*screwDist.x/2,iy*screwDist.y/2])
+        rotate(atan2(iy,ix)+135) intersection(){
+          rotate_extrude() translate([sealCrnrRad-minWallThck,0]) circle(d=sealPressThck,$fn=4);
+          cube([sealCrnrRad-minWallThck+sealWdth/2,sealCrnrRad-minWallThck+sealWdth/2,sealPressThck]);
+        }
   }
 }
