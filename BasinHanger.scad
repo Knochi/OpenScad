@@ -10,13 +10,13 @@ potUpperWdth=63;
 potPos=[-165,0,-80];
 
 /* [pump] */
-pumpPos=[-165,0,-80];
+pumpPos=[-153,0,-160];
 pumpDims=[55.4,35.8,28];;
 
 /* [waterfall] */
-wfDims=[40,80,7];
-wfPos=[-150,0,-60];
+wfDims=[45,80,12];
 hoseOuterDia=8;
+hoseOffset=10;
 minWallThck=2;
 floorThck=3;
 
@@ -34,7 +34,7 @@ showPump=true;
 
   
 fudge=0.1;
-$fn=50;
+$fn=128;
 
 
 if (showBasin)
@@ -131,7 +131,8 @@ module waterfall(){
   //a platform with a hole
   dist=sphereRad-0.5*sqrt(4*pow(sphereRad,2)-pow(wfDims.y,2));
   ovDims=wfDims+[dist+strutThck*2+wallThck+spcng*2,0,0];
-  pos=[-sphereRad+ovDims.x/2-strutThck-wallThck/2-spcng,0,-ovDims.z/2];
+  pos=[-sphereRad+ovDims.x/2-strutThck-wallThck/2-spcng,0,-ovDims.z/2+strutThck];
+  
   difference(){
     union(){
       difference(){
@@ -145,11 +146,11 @@ module waterfall(){
         }
       }
       //outlet
-      translate(pos+[0,0,-ovDims.z/2+floorThck]) cylinder(d1=hoseOuterDia*1.1+minWallThck*2,d2=hoseOuterDia*0.85+minWallThck*2,h=hoseOuterDia);
+      translate(pos+[hoseOffset,0,-ovDims.z/2+floorThck]) cylinder(d1=hoseOuterDia*1.1+minWallThck*2,d2=hoseOuterDia*0.85+minWallThck*2,h=hoseOuterDia);
     }
     
-  translate(pos+[0,0,-fudge/2-ovDims.z/2+floorThck]) cylinder(d1=hoseOuterDia*1.1,d2=hoseOuterDia*0.85,h=hoseOuterDia+fudge);  
-  translate(pos+[0,0,-fudge/2-ovDims.z/2]) cylinder(d=hoseOuterDia*1.1,h=floorThck+fudge);  
+  translate(pos+[hoseOffset,0,-fudge/2-ovDims.z/2+floorThck]) cylinder(d1=hoseOuterDia*1.1,d2=hoseOuterDia*0.85,h=hoseOuterDia+fudge);  
+  translate(pos+[+hoseOffset,0,-fudge/2-ovDims.z/2]) cylinder(d=hoseOuterDia*1.1,h=floorThck+fudge);  
   }
   
   
