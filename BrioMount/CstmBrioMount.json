@@ -1,0 +1,19 @@
+{
+    "fileFormatVersion": "1",
+    "parameterSets": {
+        "LG 24\"": {
+            "beamThck": "3.2000000000000002",
+            "boxOffset": "-17.5",
+            "cornerRad": "3",
+            "frntWallThck": "2",
+            "monBackSpcng": "15",
+            "monFramThck": "0.59999999999999998",
+            "monFramWdth": "1.8",
+            "monTopWidth": "18.699999999999999",
+            "platformThck": "2.7000000000000002",
+            "wedgeHght": "61.200000000000003",
+            "wedgeWallThck": "2",
+            "wedgeWdth": "21.300000000000001"
+        }
+    }
+}
