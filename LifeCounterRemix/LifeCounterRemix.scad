@@ -45,6 +45,7 @@ sideDia=36; //outer dia of octagong
 sideWdth=10;
 feetProtrude=0.15; //percent
 revArrows=true;
+arrowPos="diagonal"; //["front","diagonal","top"]
 noSupportMod=false;
 
 /* [show] */
@@ -309,10 +310,12 @@ module side(isLeft=false, arrowOnly=false){
 
   chmfSmall=1; //decorative inside
   chmfBig=sideWdth/3; //decorative outside
-
-  boxRot= isLeft ? 90-36 : 90+36;
+  
+  arPos= arrowPos=="front" ? 72 : arrowPos=="top" ? 0 : 36;
+  boxRot= isLeft ? 90-arPos : 90+arPos; 
   
   //arrow orientation
+  
   arRot= revArrows ? [90,-90,90] : [90,90,90];
   arZPos= revArrows ? sideWdth/2-chmfSmall : sideWdth/2+chmfSmall ; 
           
@@ -321,7 +324,7 @@ module side(isLeft=false, arrowOnly=false){
     difference(){
       body();
       //recess for tube
-      if (noSupportMod)
+      if (noSupportMod) 
         tube(true);
       else
         translate([0,0,-fudge]) linear_extrude(minWallThck+fudge+spcng) {
