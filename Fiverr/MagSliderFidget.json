@@ -1,0 +1,26 @@
+{
+    "fileFormatVersion": "1",
+    "parameterSets": {
+        "Neue Parameter Liste1": {
+            "bdyBrmWdth": "5",
+            "bdyCstmDims": "[27, 38, 5]",
+            "bdyEdgeSize": "3",
+            "bdyEdgeStyle": "round",
+            "bdyRad": "2",
+            "bdySizeMethod": "fromMagnets",
+            "layerHght": "0.20000000000000001",
+            "magBlckXYDims": "[4, 8]",
+            "magCount": "[2, 3]",
+            "magDiscDia": "10",
+            "magPitch": "[12, 12]",
+            "magShape": "disc",
+            "magThck": "2",
+            "minBotLayers": "0",
+            "minTopLayers": "2",
+            "quality": "40",
+            "showBody": "true",
+            "showMagnets": "true",
+            "showXRay": "false"
+        }
+    }
+}
