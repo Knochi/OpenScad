@@ -1,0 +1,47 @@
+{
+    "fileFormatVersion": "1",
+    "parameterSets": {
+        "Neue Parameter Liste1": {
+            "brimHght": "12.4",
+            "clipSpcng": "0.20000000000000001",
+            "clipThck": "1",
+            "clipWdth": "10",
+            "finBdy2FinOvLap": "3",
+            "finBdySpcng": "0.5",
+            "finBdyZOffset": "-2",
+            "finCount": "7",
+            "finDist": "15",
+            "finHght": "20",
+            "finThck": "2",
+            "frameDpth": "121.5",
+            "frameHght": "7",
+            "frameInRad": "1.8",
+            "frameWdth": "100",
+            "maxHght": "17",
+            "standOffDepth": "3",
+            "wallThck": "1.7"
+        },
+        "Neue Parameter Liste2": {
+            "brimHght": "12.4",
+            "clipSpcng": "0.20000000000000001",
+            "clipThck": "1",
+            "clipWdth": "10",
+            "finBdy2FinOvLap": "3",
+            "finBdySpcng": "0.5",
+            "finBdyZOffset": "-2",
+            "finCount": "9",
+            "finDist": "15",
+            "finHght": "20",
+            "finRotation": "-40",
+            "finThck": "2",
+            "finTilt": "10",
+            "frameDpth": "121.5",
+            "frameHght": "7",
+            "frameInRad": "1.8",
+            "frameWdth": "100",
+            "maxHght": "17",
+            "standOffDepth": "3",
+            "wallThck": "1.7"
+        }
+    }
+}
