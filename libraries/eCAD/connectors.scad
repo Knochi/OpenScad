@@ -343,7 +343,7 @@ module  screwClampRA(){
   }
 }
 
-!color("grey") screwClampRA_XFCN();
+*color("grey") screwClampRA_XFCN();
 module  screwClampRA_XFCN(){
   //https://www.lcsc.com/datasheet/C481452.pdf
  
@@ -1514,6 +1514,7 @@ module testJack4mm(hdCol="red"){
       translate([0,0,22-9.2-fudge/2]) cylinder(d=4.1,h=9.2+fudge);
     }
 }
+
 
 
 

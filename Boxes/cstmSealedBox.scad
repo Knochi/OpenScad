@@ -1,5 +1,5 @@
 /* [Dimensions] */
-outerDims=[110,44,35];
+outerDims=[70,44,35];
 minWallThck=1.2;
 minFloorThck=2;
 cornerRad=4;
@@ -7,9 +7,10 @@ spcng=0.2;
 
 /* [Sealing] */
 sealWdth=+3.0;
-sealThck=2;
+sealThck=2; // 0.1
 sealStyle="square";
-sealPressThck=2;
+sealPressThck=2.0; //0.1
+sealSpcng=0.1;
 
 /* [Locking] */
 lockStyle="screws";
@@ -18,6 +19,7 @@ screwDia=3;
 screwLen=12;
 screwHdDia=6;
 screwHdLen=3;
+screwSpcng=0.1;
 
 /* [Cutout 1] */
 cOut1Side="left"; //["none","left","right","front","back"]
@@ -38,8 +40,11 @@ cOut2RelPos=0; //[-1:0.1:1]
 /* [Show] */
 quality=48; //[12:4:100]
 showLid=true;
-showBox=false;
+showBox=true;
 showSeal=true;
+showInfo=true;
+showSectionCut=false;
+export="none"; //["none","Lid","Box","Seal"]
 
 /* [Hidden] */
 
@@ -53,30 +58,51 @@ cOutRelPos=[cOut1RelPos,cOut2RelPos];
 $fn=quality;
 fudge=0.1;
 lidHght=minFloorThck+screwHdLen+spcng;
-boxWallThck=sealWdth+2*minWallThck;
-insertDia=4.5;
+boxWallThck=sealWdth+2*minWallThck+sealSpcng*2;
+
 
 //calculations for routing the seal inside the holes
 //sealCrnrRad=min(insertDia/2,screwHdDia/2)+boxWallThck-minWallThck;
-sealCrnrRad=insertDia/2+boxWallThck-minWallThck;
-smallSealOffset=sealCrnrRad-sealWdth+screwHdDia/2+spcng;
+
+sealCrnrRad=screwHdDia/2+boxWallThck-minWallThck;
+sealCrnrCntrRad=screwHdDia/2+boxWallThck/2+sealSpcng;
+smallSealOffset=sealCrnrCntrRad-sealWdth/2+(screwHdDia/2+spcng);
 
 screwDist=[outerDims.x-minWallThck*2-screwHdDia-spcng*2,
            outerDims.y-minWallThck*2-screwHdDia-spcng*2];
 
-if (showLid)
-  translate([0,0,outerDims.z]) rotate([180,0,0]) box(lid=true);
-if (showBox)
-  box(lid=false);
-if (showSeal)
-  color("blue") translate([0,0,outerDims.z-lidHght]) seal();
+intersection(){           
+  union(){
+    // -- ASY --           
+    if (showLid)
+      translate([0,0,outerDims.z]) rotate([180,0,0]) box(lid=true);
+    if (showBox)
+      box(lid=false);
+    if (showSeal)
+      color("blue") translate([0,0,outerDims.z-lidHght]) seal();
+    if (showInfo){
+      translate([0,-outerDims.y,0]) text("Inner Dimensions:",halign="center");
+      translate([0,-outerDims.y -12 ,0]) 
+        text(str(outerDims.x-boxWallThck*2,"x",outerDims.y-boxWallThck*2,"x",outerDims.z-minFloorThck*2,"mm"),halign="center");
+      }
+  }
+  if (showSectionCut)
+    color("darkred") translate([0,0,outerDims.z/2]) cube(outerDims+[-boxWallThck,-boxWallThck,fudge],true);
+}
   
-echo(screwDist);
+  
+// -- Export --
+if (export=="Lid")
+  !box(lid=true);
+if (export=="Box")
+  !box(lid=false);
+if (export=="Seal")
+  !rotate([180,0,0]) seal();
 
 module box(lid=false){
 
   boxHght= lid ? lidHght : outerDims.z-lidHght;  
-  domeDia= insertDia+boxWallThck*2;
+  domeDia= screwHdDia+boxWallThck*2;
   
   difference(){
     union(){
@@ -128,8 +154,9 @@ module box(lid=false){
         else
           translate([ix*screwDist.x/2,iy*screwDist.y/2,boxHght-screwLen]) 
             linear_extrude(screwLen+fudge) circle(d=screwDia*0.85);
+      
       //main seal cutout
-      translate([0,0,boxHght-sealThck]) linear_extrude(sealThck+fudge,convexity=3) seal(true);
+      translate([0,0,boxHght-sealThck-sealSpcng]) linear_extrude(sealThck+sealThck+fudge,convexity=3) seal(true);
       for (i=[0:len(cOutSides)-1])
         translate([0,0,boxHght]) placeOnSide(side=cOutSides[i],relPos=cOutRelPos[i]) cutOut(size=cOutSizes[i]);
     }
@@ -138,7 +165,7 @@ module box(lid=false){
 
 *seal();
 module seal(cut=false, lid=false){
-
+  thisSpcng= cut ? sealSpcng : 0;
   if (cut)
     shape();
   else if (lid)
@@ -151,8 +178,8 @@ module seal(cut=false, lid=false){
   
   module shape(){
     difference(){
-      offset(cornerRad-minWallThck) square([outerDims.x-cornerRad*2,outerDims.y-cornerRad*2],true);
-      offset(cornerRad-minWallThck-sealWdth) square([outerDims.x-cornerRad*2,outerDims.y-cornerRad*2],true);
+      offset(cornerRad-boxWallThck/2+sealWdth/2+thisSpcng) square([outerDims.x-cornerRad*2,outerDims.y-cornerRad*2],true);
+      offset(cornerRad-boxWallThck/2-sealWdth/2-thisSpcng) square([outerDims.x-cornerRad*2,outerDims.y-cornerRad*2],true);
       for (ix=[-1,1],iy=[-1,1])
         translate([ix*screwDist.x/2,iy*screwDist.y/2])
           square(smallSealOffset*2,true);
@@ -164,20 +191,20 @@ module seal(cut=false, lid=false){
       //big semicircle
       intersection(){
         difference(){
-          circle(r=sealCrnrRad);
-          circle(r=sealCrnrRad-sealWdth);
+          circle(r=sealCrnrCntrRad+sealWdth/2+thisSpcng);
+          circle(r=sealCrnrCntrRad-sealWdth/2-thisSpcng);
         }
-        square(sealCrnrRad);
+        square(sealCrnrRad+thisSpcng);
       }
       //small semicircles
-      for (pos=[[smallSealOffset,0],[0,smallSealOffset]])
+      for (pos=[[smallSealOffset,sealSpcng],[sealSpcng,smallSealOffset]])
         translate(pos)
           rotate(180) intersection(){
             difference(){
-              circle(r=screwHdDia/2+spcng);
-              circle(r=screwHdDia/2+spcng-sealWdth);
+              circle(r=screwHdDia/2+spcng+thisSpcng);
+              circle(r=screwHdDia/2+spcng-sealWdth-thisSpcng);
             }
-          square(screwHdDia/2+spcng);
+          square(screwHdDia/2+spcng+thisSpcng);
         }
     }
   }
@@ -200,33 +227,38 @@ module seal(cut=false, lid=false){
     //sides
     for (ix=[-1,1])
       translate([ix*(outerDims.x/2-minWallThck-sealWdth/2),0,0]) 
-        rotate([90,0,0]) linear_extrude(screwDist.y-sealCrnrRad*2,center=true) circle(d=sealPressThck,$fn=4);
+        rotate([90,0,0]) linear_extrude(screwDist.y-smallSealOffset*2,center=true) circle(d=sealPressThck,$fn=4);
     for (iy=[-1,1])
       translate([0,iy*(outerDims.y/2-minWallThck-sealWdth/2),0]) 
-        rotate([0,90,0]) linear_extrude(screwDist.x-sealCrnrRad*2,center=true) circle(d=sealPressThck,$fn=4);
+        rotate([0,90,0]) linear_extrude(screwDist.x-smallSealOffset*2,center=true) circle(d=sealPressThck,$fn=4);
   }
 }
 
 
-*cutOut(cOut1Size,cOut1Side,cOut1RelPos);
+*cutOut(cOut1Size,cOut1Side,cOut1RelPos,mode="seal");
 module cutOut(size=[5,5], side="left", relPos=0, sealing=0.9, mode="boxCut"){
   /*
+    cutouts to the box and adds to the seal
     modes: boxCut-> cutOut for box wall
            seal -> object to add to seal
   */
+  
+  spcng= (mode=="boxCut") ? sealSpcng : 0;
+  
   translate([0,0,-size.y/2-sealThck]) rotate([-90,0,0]){
     
     if (mode=="boxCut") translate([0,0,-fudge/2]) linear_extrude(boxWallThck+fudge) shape();
     
-    translate([0,0,boxWallThck/2]) linear_extrude(sealWdth,center=true,convexity=3) difference(){
+    translate([0,0,boxWallThck/2]) linear_extrude(sealWdth+spcng*2,center=true,convexity=3) difference(){
       union(){
         intersection(){
-          offset(sealWdth) shape();
-          translate([0,(size.y/4+sealWdth/2)]) square([sealWdth*2+size.x,size.y/2+sealWdth],true);
+          offset(sealWdth+spcng) shape();
+          translate([0,(size.y/4+sealWdth/2)]) square([sealWdth*2+size.x+spcng*2,size.y/2+sealWdth+spcng*2],true);
         }
-        translate([0,-size.y/4-fudge/2]) square([size.x+sealWdth*2,size.y/2+fudge,],true);
+        translate([0,-size.y/4-fudge/2]) square([size.x+sealWdth*2+spcng*2,size.y/2+fudge,],true);
       }
-      offset(-min(size.x,size.y)*(1-sealing)) shape();
+      //hole for cable
+      offset(-min(size.x/2,size.y/2)*(1-sealing)) shape();
     }
   }
     
@@ -308,4 +340,8 @@ module threadInsert(M=4, short=false, cut=false){
         circle(d=dia);
         circle(d=M);
       }
+}
+
+module dimension(){
+  
 }

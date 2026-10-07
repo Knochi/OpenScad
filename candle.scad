@@ -1,4 +1,4 @@
-baseOutDia=89;
+baseOutDia=89.5;
 baseOvHght=14;
 baseInDia=85.5;
 baseInHght=11.4;
@@ -15,17 +15,29 @@ cndlCeilThck=2;
 cndlCornerRad=2;
 cndlTopHoleDia=6;
 
+export="candle"; //["candle","topTest","bottomTest","none"]
+
 /* [Hidden] */
 fudge=0.1;
 basePlateHght=baseOvHght-baseInHght;
 topOffset=cndlHght-topRsnThck;
 
-$fn=48;
-!candle();
+$fn= export=="none" ? 48 : 400;
 
+if (export=="bottomTest")
+  !intersection(){
+    candle();
+    cylinder(d=cndlDia,h=baseOvHght);
+  }
+if (export=="topTest")
+  !intersection(){
+    candle();
+    translate([0,0,topOffset-cndlCeilThck]) cylinder(d=cndlDia,h=baseOvHght);
+  }
+  
 difference(){
   color("ivory") candle();
-  color("darkRed") translate([0,0,-fudge]) linear_extrude(cndlHght+fudge*2) square(baseOutDia+fudge);
+  if (export=="none") color("darkRed") translate([0,0,-fudge]) linear_extrude(cndlHght+fudge*2) square(baseOutDia+fudge);
 }
 
 %color("grey") translate([0,0,topOffset]) top();
@@ -53,7 +65,8 @@ module candle(){
       cylinder(d=baseInDia+baseSpcng*2,h=topOffset-cndlCeilThck);
       cylinder(d=cndlTopHoleDia,h=cndlHght+fudge*2);
     }
-    translate([0,0,topOffset]) cylinder(d=topRsnDia+topSpcng*2,h=topRsnThck+fudge);
+    //embedd the resin
+    translate([0,0,topOffset-topSpcng]) cylinder(d=topRsnDia+topSpcng*2,h=topRsnThck+topSpcng+fudge);
     translate([0,0,cndlHght-cndlCornerRad]) 
       rotate_extrude() translate([cndlDia/2-cndlCornerRad,0]) square(cndlCornerRad+fudge);
   }

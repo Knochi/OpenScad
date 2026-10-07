@@ -1,0 +1,21 @@
+{
+    "fileFormatVersion": "1",
+    "parameterSets": {
+        "Neue Parameter Liste1": {
+            "baseInDia": "85.5",
+            "baseInHght": "11.4",
+            "baseOutDia": "89",
+            "baseOvHght": "14",
+            "baseSpcng": "0.10000000000000001",
+            "cndlCeilThck": "2",
+            "cndlCornerRad": "2",
+            "cndlDia": "100",
+            "cndlHght": "160",
+            "cndlTopHoleDia": "6",
+            "export": "candle",
+            "topRsnDia": "41.75",
+            "topRsnThck": "3.5",
+            "topSpcng": "0.10000000000000001"
+        }
+    }
+}

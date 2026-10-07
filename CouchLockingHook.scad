@@ -90,7 +90,7 @@ module holder(){
 
 
 module connector(){
-  conDims=[13.9,184,10.1];
+  conDims=[13.9,175,10.1];
   baseDims=[hldrDims.x+hldrWallThck*2,14.5];
   baseRad=2;
   wallThick=3.7;
