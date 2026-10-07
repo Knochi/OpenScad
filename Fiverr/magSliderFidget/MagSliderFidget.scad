@@ -1,3 +1,7 @@
+/*
+  Fiverr Order #FO7312516B6C7 by c1kdiaz from 2026-09-24
+*/
+
 /* [Printing] */
 //layer height
 layerHght=0.2;
@@ -19,34 +23,44 @@ magLatSpcng=0.1;
 magZSpcng=0.1;
 
 /* [Body] */
-bdySizeMethod="fromMagnets"; //["fromMagnets" : "calculate minimal size","custom size"]
-bdyEdgeStyle="sharp"; //["sharp", "chamfer", "round"]
+bdySizeMethod="minimal"; //["minimal" : "calculate minimal size","custom size"]
+bdyEdgeStyle="chamfer"; //["sharp", "chamfer", "round"]
 //size of chamfer or rounding (limited)
-bdyEdgeSize=2;
+bdyEdgeSize=1.5;
 bdyBrmWdth=3;
 bdyCstmDims=[20,20,5];
 bdyRad=3;
 
+/* [Decor] */
+dcrRecessDepth=0.5;
+dcrRecessBrimWidth=1;
+dcrSVGFile="default.svg"; //file
+dcrSVGScale=0.8; //0.1
+dcrSVGRotate=-90;
+dcrSVGXOffset=-11;
+dcrSVGYOffset=25;
+
 /* [Colors] */
 bdyCol="#DDDDDD"; //color
 magCol="#888888"; //color
+dcrSVGCol="#AAAAAA"; //color
 
 /* [show] */
 showBody=true;
 showMagnets=true;
 showXRay=true;
 
-quality=20; //[20:4:100]
+quality=48; //[20:4:100]
 
 /* [Hidden] */
 $fn=quality;
 fudge=0.1;
 
 magDims= magShape=="disc" ? [magDiscDia,magDiscDia,magThck] : [magBlckXYDims.x,magBlckXYDims.y,magThck];
-bdyDims= bdySizeMethod=="fromMagnets" ? 
+bdyDims= bdySizeMethod=="minimal" ? 
   [(magCount.x-1)*magPitch.x+magDims.x+bdyBrmWdth*2,
    (magCount.y-1)*magPitch.y+magDims.y+bdyBrmWdth*2,
-   magThck+layerHght*(minTopLayers+minBotLayers)+magZSpcng*2] :
+   magThck+layerHght*(minTopLayers+minBotLayers)+magZSpcng*2+dcrRecessDepth] :
   bdyCstmDims;
 
 //-- ASY --
@@ -59,7 +73,7 @@ if (showBody)
       magnets(true);
     }
   else 
-    color(bdyCol) difference(){  
+    difference(){  
       body();  
       magnets(true);
     }
@@ -70,15 +84,32 @@ if (showMagnets)
   
 // -- Modules --  
 module body(){
-  hull() for (ix=[-1,1],iy=[-1,1])
-    translate([ix*(bdyDims.x/2-bdyRad),iy*(bdyDims.y/2-bdyRad)]) corner();;
+  edgeSize= min(bdyEdgeSize,bdyDims.z,bdyRad);
+  faceSize= (bdyEdgeStyle=="sharp") ? [bdyDims.x,bdyDims.y] : [bdyDims.x-(edgeSize+dcrRecessBrimWidth)*2,bdyDims.y-(edgeSize+dcrRecessBrimWidth)*2];
+  faceRad= (bdyEdgeStyle=="sharp") ? max(bdyRad-dcrRecessBrimWidth,0) : max(bdyRad-edgeSize-dcrRecessBrimWidth,0);
+  
+  
+  color(bdyCol) difference(){
+    //body
+    hull() for (ix=[-1,1],iy=[-1,1])
+      translate([ix*(bdyDims.x/2-bdyRad),iy*(bdyDims.y/2-bdyRad)]) corner();;
+    //recess
+    translate([0,0,bdyDims.z-dcrRecessDepth]) linear_extrude(dcrRecessDepth+fudge,convexity=3) 
+      offset(faceRad) square([faceSize.x-faceRad*2,faceSize.y-faceRad*2],true);
+  }
+  
+  //add vector graphics
+  color(dcrSVGCol) translate([0,0,bdyDims.z-dcrRecessDepth]) 
+    linear_extrude(dcrRecessDepth,convexity=3) 
+      scale(dcrSVGScale)
+        translate([dcrSVGXOffset,dcrSVGYOffset,0]) 
+          rotate(dcrSVGRotate)  import(dcrSVGFile);
   
   module corner(){
     
-    edgeSize= min(bdyEdgeSize,bdyDims.z,bdyRad);
     if (bdyEdgeStyle=="sharp")
       cylinder(r=bdyRad,h=bdyDims.z);
-    else {
+    else { //chamfer or round
       cylinder(r=bdyRad,h=bdyDims.z-edgeSize);
       cylinder(r=bdyRad-edgeSize,h=bdyDims.z);
     }
@@ -89,6 +120,7 @@ module body(){
           square(edgeSize);
         }
   }
+  
 }
 
 module magnets(cut=true){
