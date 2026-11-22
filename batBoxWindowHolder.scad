@@ -23,11 +23,14 @@ hldrBxRad=batBoxRad+hldr2BoxSpcng+hldrWallThck;
 
 $fn=48;
 
-translate([0,-batBoxDims.y/2,batBoxDims.z/2]) batBox();
+translate([0,-batBoxDims.y/2,batBoxDims.z/2]){
+  batBox();
+ holder();  
+}
 
 module batBox(){
   difference(){
-    rotate([0,90,0]) linear_extrude(batBoxDims.x,center=true) offset(batBoxRad) 
+    rotate([0,-90,0]) linear_extrude(batBoxDims.x,center=true) offset(batBoxRad) 
       square([batBoxDims.z-batBoxRad*2,batBoxDims.y-batBoxRad*2],true);
     translate(batBoxBtnPos+[0,batBoxWallThck/2,0]) 
       cube([batBoxBtnDims.x,batBoxWallThck+fudge,batBoxBtnDims.z],true);
@@ -40,15 +43,21 @@ module batBox(){
   translate(batBoxBtnPos+[0,(batBoxBtnDims.y+batBoxWallThck)/2-batBoxBtnDims.y,0]) 
     cube([batBoxBtnDims.x,batBoxBtnDims.y+batBoxWallThck,batBoxBtnDims.x],true);
 }  
-!holder();  
+
 module holder(){
-  
-  difference(){
-    linear_extrude(hldrBxDims.x,center=true) semiRndSquare([hldrBxDims.z,hldrBxDims.y],hldrBxRad);
-    linear_extrude(hldrBxDims.x-hldrWallThck*2,center=true) translate([(hldrWallThck+fudge)/2,0,0]) 
-      semiRndSquare([hldrBxDims.z-hldrWallThck+fudge,hldrBxDims.y-hldrWallThck*2],hldrBxRad-hldrWallThck);
-  }  
+    rotate([0,-90,0])
+    difference(){
+        linear_extrude(hldrBxDims.x,center=true) semiRndSquare([hldrBxDims.z,hldrBxDims.y],hldrBxRad);
+        linear_extrude(hldrBxDims.x-hldrWallThck*2,center=true) 
+          translate([(hldrWallThck+fudge)/2,0,0]) 
+            semiRndSquare([hldrBxDims.z-hldrWallThck+fudge,hldrBxDims.y-hldrWallThck*2],hldrBxRad-hldrWallThck);
+      //cable slit
+      #linear_extrude(hldrBxDims.x/2+fudge) square([hldrBxDims.z/2-batBoxCblPos.z,batBoxCblDias],true);
+    }  
 }
+
+
+
 
 module rndSquare(size, rad){
   offset(rad) 
