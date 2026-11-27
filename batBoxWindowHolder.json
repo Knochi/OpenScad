@@ -1,0 +1,46 @@
+{
+    "fileFormatVersion": "1",
+    "parameterSets": {
+        "Neue Parameter Liste1": {
+            "batBoxBtnDims": "[4, 1.5, 7.5]",
+            "batBoxBtnPos": "[-29, -9.5, 21.75]",
+            "batBoxCblDias": "1.5",
+            "batBoxCblPos": "[-34, -2.1, -23.75]",
+            "batBoxConDia": "5.7999999999999998",
+            "batBoxConLen": "10.6",
+            "batBoxDims": "[68, 19, 64.5]",
+            "batBoxRad": "2",
+            "batBoxWallThck": "2",
+            "hldr2BoxSpcng": "0.29999999999999999",
+            "hldr2CblSpcng": "0.5",
+            "hldrHookWdth": "40",
+            "hldrWallThck": "1",
+            "showBox": "true",
+            "showHldr": "true"
+        },
+        "Neue Parameter Liste2": {
+            "batBoxBtnDims": "[4, 1.5, 7.5]",
+            "batBoxBtnPos": "[-29, -9.5, 21.75]",
+            "batBoxCblDias": "1.5",
+            "batBoxCblPos": "[-34, -2.1, -23.75]",
+            "batBoxConDia": "5.7999999999999998",
+            "batBoxConLen": "10.6",
+            "batBoxDims": "[68, 19, 64.5]",
+            "batBoxRad": "2",
+            "batBoxWallThck": "2",
+            "cblSpoolRad": "3",
+            "cblSpoolThck": "5",
+            "hldr2BoxSpcng": "0.29999999999999999",
+            "hldr2BtnSpcng": "0.5",
+            "hldr2CblSpcng": "0.5",
+            "hldrBldLen": "15",
+            "hldrBldThck": "1.2",
+            "hldrHookWdth": "40",
+            "hldrOutRad": "0.5",
+            "hldrWallThck": "2",
+            "showBox": "true",
+            "showHldr": "true",
+            "wndwFrmThck": "19"
+        }
+    }
+}
