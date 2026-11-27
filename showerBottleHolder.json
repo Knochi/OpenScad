@@ -1,0 +1,14 @@
+{
+    "fileFormatVersion": "1",
+    "parameterSets": {
+        "Neue Parameter Liste1": {
+            "minWallThck": "1.2",
+            "showInterface": "true",
+            "showWallHk": "false",
+            "wllHkBckDims": "[77, 2, 44.5]",
+            "wllHkNudgeDia": "3",
+            "wllHkNudgeZPos": "33.5",
+            "wllHkPltDims": "[88, 6.2, 44.5]"
+        }
+    }
+}
